@@ -4,7 +4,8 @@ create_table_words = """
         wordform TEXT,
         lemma TEXT,
         pos TEXT,
-        CONSTRAINT unique_wordform_lemma_pos UNIQUE (wordform, lemma, pos)
+        poshead TEXT,
+        CONSTRAINT unique_wordform_lemma_pos_poshead UNIQUE (wordform, lemma, pos, poshead)
     );
     """
 create_table_wordfreq = """
@@ -22,9 +23,21 @@ make_wordfreq_hypertable = "SELECT create_hypertable('word_frequency', by_range(
 
 
 def create_tables(conn):
+    print("Creating tables")
     cursor = conn.cursor()
     cursor.execute(create_table_words)
     cursor.execute(create_table_wordfreq)
     cursor.execute(make_wordfreq_hypertable)
+    conn.commit()
+    cursor.close()
+
+
+def drop_tables(conn):
+    print("Dropping tables")
+    cursor = conn.cursor()
+    cursor.execute(
+        "DROP TABLE IF EXISTS word_frequency"
+    )  # hypertable needs to be dropped separately
+    cursor.execute("DROP TABLE IF EXISTS words, words_tmp, word_frequency_tmp")
     conn.commit()
     cursor.close()

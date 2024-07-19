@@ -1,0 +1,301 @@
+# third party
+import dis
+from enum import Enum
+from typing import Optional
+from psycopg import sql
+
+# local
+from datatypes import WordColumn, WordFrequencyColumn
+
+
+class QueryBuilder:
+    def __init__(self, cursor):
+        self.cursor = cursor
+
+    def word_frequency_by(
+        self,
+        id: Optional[int] = None,
+        wordform: Optional[str] = None,
+        lemma: Optional[str] = None,
+        pos: Optional[str] = None,
+        poshead: Optional[str] = None,
+        source: Optional[str] = None,
+        zero_pad: Optional[bool] = True,
+        absolute: Optional[bool] = False,
+    ) -> str:
+        time = "time.time" if zero_pad else "wf.time"
+        frequency = (
+            "COALESCE(SUM(frequency), 0)"
+            if absolute
+            else "COALESCE(SUM(frequency)::float / cs.corpus_size, 0)"
+        )
+        where_stmt = (
+            "AND"
+            if not zero_pad
+            else """
+        RIGHT JOIN generate_series(
+            (SELECT MIN(time) FROM word_frequency),
+            (SELECT MAX(time) FROM word_frequency),
+            INTERVAL '1 day'
+        ) AS time
+        ON wf.time = time.time AND"""
+        )
+        return (
+            sql.SQL(
+                """
+                SELECT {time}, {frequency} AS frequency
+                FROM word_frequency wf
+                JOIN words ON word_id = words.id
+                {where_stmt} {where}
+                JOIN ({corpus_size}) cs
+                ON cs.time = {time}
+                GROUP BY {time}, cs.corpus_size
+                ORDER BY {time}
+                """
+            )
+            .format(
+                corpus_size=sql.SQL(corpus_size_over_time()),  # type: ignore
+                time=sql.SQL(time),
+                frequency=sql.SQL(frequency),
+                where_stmt=sql.SQL(where_stmt),
+                where=self._where_and(
+                    [
+                        WordColumn.ID,
+                        WordColumn.WORDFORM,
+                        WordColumn.LEMMA,
+                        WordColumn.POS,
+                        WordColumn.POSHEAD,
+                        WordFrequencyColumn.SOURCE,
+                    ],
+                    [id, wordform, lemma, pos, poshead, source],
+                ),
+            )
+            .as_string(self.cursor)
+        )
+
+    def words_by(
+        self,
+        id: Optional[int] = None,
+        wordform: Optional[str] = None,
+        lemma: Optional[str] = None,
+        pos: Optional[str] = None,
+        poshead: Optional[str] = None,
+    ) -> str:
+        return (
+            sql.SQL(
+                """
+                SELECT id, wordform, lemma, pos, poshead
+                FROM words
+                WHERE {where}
+                """
+            )
+            .format(
+                where=self._where_and(
+                    [
+                        WordColumn.ID,
+                        WordColumn.WORDFORM,
+                        WordColumn.LEMMA,
+                        WordColumn.POS,
+                        WordColumn.POSHEAD,
+                    ],
+                    [id, wordform, lemma, pos, poshead],
+                )
+            )
+            .as_string(self.cursor)
+        )
+
+    def _where(self, column: Enum, value: Optional[str]):
+        return (
+            sql.SQL("{column} = {value}").format(
+                column=sql.Identifier(column.value), value=sql.Literal(value)
+            )
+            if value is not None
+            else sql.SQL("")
+        )
+
+    def _where_and(self, columns: list[Enum], values: list[Optional[str]]):
+        return sql.SQL(" AND ").join(
+            [
+                self._where(column, value)
+                for column, value in zip(columns, values)
+                if value is not None
+            ]
+        )
+
+    def columns(self, table: str) -> str:
+        return (
+            sql.SQL(
+                """
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = {table}
+                """
+            )
+            .format(table=sql.Literal(table))
+            .as_string(self.cursor)
+        )
+
+    def rows(self, table: str, column: str) -> str:
+        return (
+            sql.SQL("SELECT DISTINCT {column} FROM {table}")
+            .format(
+                column=sql.Identifier(column),
+                table=sql.Identifier(table),
+            )
+            .as_string(self.cursor)
+        )
+
+
+def get_wordforms_of_freq(freq: int) -> str:
+    """
+    Return a query that returns all wordforms that occur with the given frequency in the corpus.
+    """
+    return f"""
+        SELECT wordform, lemma, pos
+        FROM words
+        JOIN word_frequency wf ON words.id = wf.word_id
+        WHERE wf.frequency = {freq}
+    """
+
+
+def count_wordforms_of_freq(freq: int) -> str:
+    """
+    Return a query that returns the number of wordforms that occur with the given frequency in the corpus.
+    Note: returns 0 if the frequency is not found.
+    """
+    return f"""
+        SELECT COALESCE(COUNT(*), 0) as count
+        FROM words
+        JOIN word_frequency wf ON words.id = wf.word_id
+        WHERE wf.frequency = {freq}
+    """
+
+
+def count_wordforms_of_freqs(start_freq: int, end_freq: int) -> str:
+    """
+    Return a query that returns n rows, where n is end_freq - start_freq.
+    Each row contains the number of wordforms with the frequency start_freq + i.
+    Returns 0 if the frequency is not found. Uses generate_series to fill in missing frequencies.
+    """
+    return f"""
+        SELECT series.frequency, COALESCE(COUNT(wf.frequency), 0) as count
+        FROM generate_series({start_freq}, {end_freq}) AS series(frequency)
+        LEFT JOIN word_frequency wf ON series.frequency = wf.frequency
+        GROUP BY series.frequency
+        ORDER BY series.frequency
+    """
+
+
+def get_abs_word_freqs_by_lemma(lemma: str) -> str:
+    """Return a query that returns the absolute frequency of all wordforms that have a certain lemma."""
+    return f"""
+        SELECT wf.time, SUM(wf.frequency) AS absolute_frequency, w.wordform, w.lemma, w.pos
+        FROM word_frequency wf
+        JOIN words w ON wf.word_id = w.id
+        WHERE w.lemma = '{lemma}'
+        GROUP BY wf.time, w.wordform, w.lemma, w.pos
+        ORDER BY wf.time
+    """
+
+
+def abs_freq_over_time(word: str) -> str:
+    """Return a query that returns the absolute frequency of a word over time in all newspapers.
+    Grouped by time."""
+    return f"""
+        SELECT wf.time, SUM(wf.frequency) AS absolute_frequency
+        FROM word_frequency wf
+        JOIN words w ON wf.word_id = w.id
+        WHERE w.wordform = '{word}'
+        GROUP BY wf.time
+        ORDER BY wf.time
+    """
+
+
+def abs_freq_over_time_with_zero(wordform: str) -> str:
+    """Return a query that returns the absolute frequency of a word over time in all newspapers.
+    Grouped by time. Fills in 0 for time points where the word is not present."""
+
+    return f"""
+        SELECT time.time, COALESCE(SUM(frequency), 0) AS absolute_frequency
+        FROM word_frequency wf
+        JOIN words w ON w.id = wf.word_id
+        RIGHT JOIN generate_series(
+            (SELECT MIN(time) FROM word_frequency),
+            (SELECT MAX(time) FROM word_frequency),
+            INTERVAL '1 day'
+        ) AS time
+        ON wf.time = time.time AND w.wordform = '{wordform}'
+        GROUP BY time.time
+        ORDER BY time.time
+    """
+
+
+def corpus_size_over_time() -> str:
+    """Return a query that returns (word_frequency.time, number of rows in word_frequency where time = time )."""
+    return """
+        SELECT time.time, COALESCE(SUM(frequency), 0) AS corpus_size
+        FROM word_frequency wf
+        RIGHT JOIN generate_series(
+            (SELECT MIN(time) FROM word_frequency),
+            (SELECT MAX(time) FROM word_frequency),
+            INTERVAL '1 day'
+        ) AS time
+        ON wf.time = time.time
+        GROUP BY time.time
+        ORDER BY time.time
+    """
+
+
+def rel_freq_over_time2(word: str) -> str:
+    """Return a query that returns the absolute frequency of a word divided by the corpus size (to make it relative).
+    Grouped by time. Note the float conversion to avoid integer division."""
+    return f"""
+        SELECT time.time, COALESCE(SUM(frequency)::float / cs.corpus_size, 0) AS frequency, corpus_size
+        FROM word_frequency wf
+        RIGHT JOIN generate_series(
+            (SELECT MIN(time) FROM word_frequency),
+            (SELECT MAX(time) FROM word_frequency),
+            INTERVAL '1 day'
+        ) AS time
+        ON wf.time = time.time
+        GROUP BY time.time, frequency
+        ORDER BY time.time
+    """
+
+
+def rel_freq_over_time(word: str) -> str:
+    """Return a query that returns the absolute frequency of a word divided by the corpus size (to make it relative).
+    Grouped by time. Note the float conversion to avoid integer division."""
+    return f"""
+        SELECT cs.time, COALESCE(wf.absolute_frequency::float / cs.corpus_size, 0) AS relative_frequency
+        FROM ({corpus_size_over_time()}) cs
+        JOIN ({abs_freq_over_time_with_zero(word)}) wf
+        ON cs.time = wf.time
+        GROUP BY cs.time, wf.absolute_frequency, cs.corpus_size
+        ORDER BY cs.time;
+    """
+
+
+def abs_freq_over_time_in_source(word: str, source: str) -> str:
+    """Return a query that returns the absolute frequency of a word over time in a specific newspaper."""
+    return f"""
+        SELECT wf.time, SUM(wf.frequency) AS absolute_frequency
+        FROM word_frequency wf
+        JOIN words w ON wf.word_id = w.id
+        WHERE w.wordform = '{word}' AND wf.source = '{source}'
+        GROUP BY wf.time
+        ORDER BY wf.time;
+    """
+
+
+def word_count_in_source(source: str) -> str:
+    """Return a query that returns the number of words in a specific newspaper.
+    Grouped by time. Note that COUNT(*) is not enough: we need to sum the frequencies.
+    """
+    return f"""
+        SELECT wf.time, SUM(wf.frequency) AS total_freq
+        FROM word_frequency wf
+        WHERE wf.source = '{source}'
+        GROUP BY wf.time
+        ORDER BY wf.time;
+    """

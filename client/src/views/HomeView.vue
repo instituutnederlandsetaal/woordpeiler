@@ -1,4 +1,6 @@
 <template>
+    <input type="text" v-model="chartData.datasets[0].label" />
+    <input type="button" value="search" @click="bar.value.update()" />
     <div class="container">
         <Line ref="bar" :data="chartData" :options="chartOptions" :styles />
     </div>
@@ -59,9 +61,21 @@ const styles = ref({
     position: 'relative',
 })
 window.onclick = () => {
-    let copy = JSON.parse(JSON.stringify(chartData.value))
-    copy["datasets"][0]["data"][0]["y"]--
-    chartData.value = copy
+    // api call
+    const url = `http://localhost:8000/word_frequency?poshead=${chartData.value.datasets[0].label}&zero_pad=false`
+    fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            // data is in the form [{time: 1619500411, value: 40}, {time: 1719500411, value: 20}]
+            chartData.value.datasets[0].data = data.map((d) => {
+                return { x: d.time * 1000, y: d.frequency }
+            })
+
+            let copy = JSON.parse(JSON.stringify(chartData.value))
+            chartData.value = copy
+        })
+
+
 }
 </script>
 <style lang="scss">

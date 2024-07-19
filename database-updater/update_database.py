@@ -1,11 +1,13 @@
 from read_csv import get_wordforms
 import os
+from tqdm import tqdm
 
 create_table_words_tmp = """
     CREATE TEMP TABLE words_tmp (
         wordform TEXT,
         lemma TEXT,
-        pos TEXT
+        pos TEXT,
+        poshead TEXT
     ) ON COMMIT DROP;
 """
 
@@ -19,10 +21,10 @@ create_table_wordfreq_tmp = """
 """
 
 copy_tmp_to_words = """
-    INSERT INTO words (wordform, lemma, pos)
-    SELECT DISTINCT wordform, lemma, pos
+    INSERT INTO words (wordform, lemma, pos, poshead)
+    SELECT DISTINCT wordform, lemma, pos, poshead
     FROM words_tmp
-    ON CONFLICT (wordform, lemma, pos) DO NOTHING;
+    ON CONFLICT (wordform, lemma, pos, poshead) DO NOTHING;
 """
 
 copy_tmp_to_word_freqs = """
@@ -42,23 +44,26 @@ def update_for_wordforms(conn, data):
     cursor.execute(create_table_wordfreq_tmp)
 
     # Construct data
-    words = set([(i[1], i[2], i[3]) for i in data])
+    words = set([(i[1], i[2], i[3], i[4]) for i in data])
     # Copy to words_tmp
-    with cursor.copy("COPY words_tmp (wordform, lemma, pos) FROM STDIN") as copy:
+    with cursor.copy(
+        "COPY words_tmp (wordform, lemma, pos, poshead) FROM STDIN"
+    ) as copy:
         for w in words:
             copy.write_row(w)
     # Insert into words from words_tmp
     cursor.execute(copy_tmp_to_words)
 
     # To construct word_frequencies, we need the word id's.
-    cursor.execute("SELECT id, wordform, lemma, pos FROM words")
+    cursor.execute("SELECT id, wordform, lemma, pos, poshead FROM words")
     words_dict = {
-        (wordform, lemma, pos): id for id, wordform, lemma, pos in cursor.fetchall()
+        (wordform, lemma, pos, poshead): id
+        for id, wordform, lemma, pos, poshead in cursor.fetchall()
     }
 
     # Construct data
     word_frequencies = [
-        (i[0], words_dict[(i[1], i[2], i[3])], i[4], i[5]) for i in data
+        (i[0], words_dict[(i[1], i[2], i[3], i[4])], i[5], i[6]) for i in data
     ]
     # Copy to word_frequency_tmp
     with cursor.copy(
@@ -75,8 +80,9 @@ def update_for_wordforms(conn, data):
 
 def update(conn):
     # list all .csv files in the current directory
-    files = [f for f in os.listdir() if f.endswith(".csv")]
-    for file in files:
-        print(f"Processing {file}")
+    folder = "data/"
+    files = [folder + f for f in os.listdir(folder) if f.endswith(".csv")]
+    print(f"Found {len(files)} CSV files.")
+    for file in tqdm(files):
         data = get_wordforms(file)
         update_for_wordforms(conn, data)

@@ -3,12 +3,14 @@ services:
         image: timescale/timescaledb:latest-pg16
         restart: always
         environment:
-            - POSTGRES_USER=postgres
+            - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - POSTGRES_DB=woordwacht
+            - READER_PASSWORD=${READER_PASSWORD}
         ports:
             - '5432:5432'
         volumes:
             - database:/var/lib/postgresql/data
+            - ./database/init:/docker-entrypoint-initdb.d/
 volumes:
     database:
