@@ -1,26 +1,57 @@
 """
 This script executes the woordwacht query on blacklab server for the past argv[1] days, starting 1 week back (because indexing lags 1 week behind).
 
-Looks in the directory of argv[2] for all csv files (default argument: current directory).
+Looks in the directory of argv[3] for all csv files (default argument: current directory).
 Skips any days that already have a csv file in the directory.
 """
 
 import os
+import enum
 import sys
 from datetime import datetime, timedelta
 
+
+class Period(enum.Enum):
+    DAY = 1
+    WEEK = 7
+    MONTH = 30
+    YEAR = 365
+    HALFYEAR = 182
+    QUARTER = 91
+
+
 # get args
 try:
-    directory = sys.argv[2]
+    directory = sys.argv[3]
 except IndexError:
     directory = "."
 
+# get args
 try:
-    days = int(sys.argv[1])
-    if days < 1:
+    period = sys.argv[2]
+    if period == "d":
+        period = Period.DAY
+    elif period == "w":
+        period = Period.WEEK
+    elif period == "m":
+        period = Period.MONTH
+    elif period == "y":
+        period = Period.YEAR
+    elif period == "hy":
+        period = Period.HALFYEAR
+    elif period == "q":
+        period = Period.QUARTER
+    else:
         raise ValueError
 except IndexError:
-    days = 30
+    period = Period.DAY
+
+try:
+    length = int(sys.argv[1])
+    if length < 1:
+        raise ValueError
+except IndexError:
+    length = 30
 except ValueError:
     print("Please provide a positive integer as argument.")
     sys.exit(1)
@@ -37,9 +68,30 @@ today = datetime.now()
 one_week_ago = today - timedelta(days=7)
 
 # get all dates from the past 30 days
-dates = [one_week_ago - timedelta(days=i) for i in range(days)]
-print(f"Downloading data for the past {days} day(s).")
-print(f"Period: {dates[-1].strftime('%Y%m%d')}-{dates[0].strftime('%Y%m%d')}")
+if period == Period.DAY:
+    dates = [one_week_ago - timedelta(days=i) for i in range(length)]
+    print(f"Downloading data for the past {length} day(s).")
+    print(f"Period: {dates[-1].strftime('%Y%m%d')}-{dates[0].strftime('%Y%m%d')}")
+elif period == Period.WEEK:
+    dates = [one_week_ago - timedelta(weeks=i) for i in range(length)]
+    print(f"Downloading data for the past {length} week(s).")
+    print(f"Period: {dates[-1].strftime('%Y%m%d')}-{dates[0].strftime('%Y%m%d')}")
+elif period == Period.MONTH:
+    dates = [one_week_ago - timedelta(weeks=4 * i) for i in range(length)]
+    print(f"Downloading data for the past {length} month(s).")
+    print(f"Period: {dates[-1].strftime('%Y%m%d')}-{dates[0].strftime('%Y%m%d')}")
+elif period == Period.YEAR:
+    dates = [one_week_ago - timedelta(weeks=52 * i) for i in range(length)]
+    print(f"Downloading data for the past {length} year(s).")
+    print(f"Period: {dates[-1].strftime('%Y%m%d')}-{dates[0].strftime('%Y%m%d')}")
+elif period == Period.HALFYEAR:
+    dates = [one_week_ago - timedelta(weeks=26 * i) for i in range(length)]
+    print(f"Downloading data for the past {length} half year(s).")
+    print(f"Period: {dates[-1].strftime('%Y%m%d')}-{dates[0].strftime('%Y%m%d')}")
+elif period == Period.QUARTER:
+    dates = [one_week_ago - timedelta(weeks=13 * i) for i in range(length)]
+    print(f"Downloading data for the past {length} quarter(s).")
+    print(f"Period: {dates[-1].strftime('%Y%m%d')}-{dates[0].strftime('%Y%m%d')}")
 
 for date in dates:
     # skip dates that already have a csv file
