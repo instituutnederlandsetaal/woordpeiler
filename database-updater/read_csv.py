@@ -12,6 +12,9 @@ def get_wordforms(path="data/20240601.csv"):
     with open(path, "r") as file:
         data = csv.DictReader(file)
         for row in data:
+            # skip empty lines
+            if not "hit text: word" in row:
+                continue
             pos = row["hit text: pos_full"]
             pos_head = pos_to_pos_head(pos)
             wordforms.append(
