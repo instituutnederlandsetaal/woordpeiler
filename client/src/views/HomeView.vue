@@ -57,12 +57,9 @@ const chartOptions = ref<ChartOptions<'line'>>({
     // color: '#0ff',
     // backgroundColor: '#f00',
     // borderColor: '#0F0',
-    tooltip: {
-        callbacks: {
-            label: function (context) {
-                return context.dataset.label;
-            }
-        }
+    interaction: {
+        intersect: false,
+        mode: 'index',
     },
     scales: {
         // adapters: {
