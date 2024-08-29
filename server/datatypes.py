@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, StrEnum
 
 
 class WordColumn(Enum):
@@ -14,6 +14,13 @@ class WordFrequencyColumn(Enum):
     WORD_ID = "word_id"
     FREQUENCY = "frequency"
     SOURCE = "source"
+
+
+class PeriodType(StrEnum):
+    DAY = "day"
+    WEEK = "week"
+    MONTH = "month"
+    YEAR = "year"
 
 
 class WordRow:

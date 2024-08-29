@@ -1,20 +1,21 @@
 # standard
-from calendar import c
 import json
 import os
 from typing import Optional, Union
 from contextlib import asynccontextmanager
+import datetime
 
 # third party
 import psycopg
 from psycopg.rows import dict_row, tuple_row
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from psycopg_pool import AsyncConnectionPool
+import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
 # local
 from queries import QueryBuilder
-
-from fastapi.middleware.cors import CORSMiddleware
+from datatypes import PeriodType
 
 
 def get_conn_str():
@@ -29,7 +30,9 @@ def get_conn_str():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.async_pool = AsyncConnectionPool(conninfo=get_conn_str(), open=False)
+    app.async_pool = AsyncConnectionPool(
+        conninfo=get_conn_str(), open=False, kwargs={"prepare_threshold": 1}
+    )
     await app.async_pool.open()
     await app.async_pool.wait()
     yield
@@ -42,6 +45,7 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
     "http://localhost:5173",
+    "http://localhost:5174",
     "http://localhost:8000",
 ]
 
@@ -111,19 +115,55 @@ async def get_freq(
     pos: Optional[str] = None,
     poshead: Optional[str] = None,
     source: Optional[str] = None,
+    period_type: Optional[str] = "day",
+    period_length: Optional[int] = 1,
     zero_pad: Optional[bool] = True,
     absolute: Optional[bool] = False,
 ):
+    # Validate
+
     # ensure at least one parameter is provided
     if not any([id, wordform, lemma, pos, poshead, source]):
-        return {"error": "At least one parameter is required"}
+        raise HTTPException(
+            status_code=400, detail="At least one parameter is required"
+        )
+
+    # ensure periodType is valid
+    try:
+        period_type = PeriodType(period_type)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid periodType")
+
+    # ensure periodLength is valid
+    if period_length < 1:
+        raise HTTPException(status_code=400, detail="Invalid periodLength")
+
+    # execute
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             qb = QueryBuilder(cur)
             query = qb.word_frequency_by(
-                id, wordform, lemma, pos, poshead, source, zero_pad, absolute
+                id,
+                wordform,
+                lemma,
+                pos,
+                poshead,
+                source,
+                zero_pad,
+                absolute,
+                period_type,
+                period_length,
             )
-            print(query)
+            start = datetime.datetime.now()
             await cur.execute(query)
-            results = [{**row, "time": row["time"].timestamp()} async for row in cur]
+            end = datetime.datetime.now()
+            print(f"Query took {end - start}")
+            results = [
+                {"frequency": row["frequency"], "time": row["timebucket"].timestamp()}
+                async for row in cur
+            ]
             return results
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

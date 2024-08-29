@@ -22,6 +22,8 @@ class QueryBuilder:
         source: Optional[str] = None,
         zero_pad: Optional[bool] = True,
         absolute: Optional[bool] = False,
+        period_type: Optional[str] = "day",
+        period_length: Optional[int] = 1,
     ) -> str:
         time = "time.time" if zero_pad else "wf.time"
         frequency = (
@@ -42,7 +44,13 @@ class QueryBuilder:
         )
         return (
             sql.SQL(
-                """
+                "SELECT time_bucket('{period_length} {period_type}', time) as timebucket, AVG(frequency) as frequency FROM({dataset}) GROUP BY timebucket"
+            )
+            .format(
+                period_length=sql.Literal(period_length),
+                period_type=sql.SQL(period_type),
+                dataset=sql.SQL(
+                    """
                 SELECT {time}, {frequency} AS frequency
                 FROM word_frequency wf
                 JOIN words ON word_id = words.id
@@ -52,22 +60,22 @@ class QueryBuilder:
                 GROUP BY {time}, cs.corpus_size
                 ORDER BY {time}
                 """
-            )
-            .format(
-                corpus_size=sql.SQL(corpus_size_over_time()),  # type: ignore
-                time=sql.SQL(time),
-                frequency=sql.SQL(frequency),
-                where_stmt=sql.SQL(where_stmt),
-                where=self._where_and(
-                    [
-                        WordColumn.ID,
-                        WordColumn.WORDFORM,
-                        WordColumn.LEMMA,
-                        WordColumn.POS,
-                        WordColumn.POSHEAD,
-                        WordFrequencyColumn.SOURCE,
-                    ],
-                    [id, wordform, lemma, pos, poshead, source],
+                ).format(
+                    corpus_size=sql.SQL(corpus_size_over_time()),  # type: ignore
+                    time=sql.SQL(time),
+                    frequency=sql.SQL(frequency),
+                    where_stmt=sql.SQL(where_stmt),
+                    where=self._where_and(
+                        [
+                            WordColumn.ID,
+                            WordColumn.WORDFORM,
+                            WordColumn.LEMMA,
+                            WordColumn.POS,
+                            WordColumn.POSHEAD,
+                            WordFrequencyColumn.SOURCE,
+                        ],
+                        [id, wordform, lemma, pos, poshead, source],
+                    ),
                 ),
             )
             .as_string(self.cursor)

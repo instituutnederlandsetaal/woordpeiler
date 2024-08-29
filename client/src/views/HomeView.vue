@@ -14,6 +14,12 @@
             <input type="checkbox" v-model="shouldZeroPad" />
             zero pad
         </label>
+        <input type="number" v-model="periodLength" />
+        <select v-model="periodType">
+            <option v-for="option in periods" :value="option.value" :key="option.value">
+                {{ option.text }}
+            </option>
+        </select>
     </div>
     <div class="container">
         <Line ref="bar" :data="chartData" :options="chartOptions" :styles />
@@ -35,6 +41,9 @@ const isAbsolute = ref(true)
 const shouldZeroPad = ref(false)
 const wordform = ref('')
 const datasets = ref([])
+const periods = [{ text: 'day(s)', value: 'day' }, { text: 'week(s)', value: 'week' }, { text: 'month(s)', value: 'month' }, { text: 'year(s)', value: 'year' }]
+const periodType = ref('day')
+const periodLength = ref(1)
 
 const bar = ref(null)
 const chartData = ref<ChartData<'line'>>({
@@ -100,7 +109,7 @@ const styles = ref({
 
 function getFrequency(wordform) {
     // api call
-    const url = `http://localhost:8000/word_frequency?wordform=${wordform}&zero_pad=${shouldZeroPad.value}&absolute=${isAbsolute.value}`
+    const url = `http://localhost:8000/word_frequency?wordform=${wordform}&zero_pad=${shouldZeroPad.value}&absolute=${isAbsolute.value}&period_length=${periodLength.value}&period_type=${periodType.value}`
     fetch(url)
         .then((response) => response.json())
         .then((data) => {
