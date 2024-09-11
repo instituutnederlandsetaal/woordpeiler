@@ -106,6 +106,17 @@ async def get_words(
             return results
 
 
+@app.get("/trends")
+async def get_trends(request: Request):
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor(row_factory=dict_row) as cur:
+            qb = QueryBuilder(cur)
+            query = qb.trends()
+            await cur.execute(query)
+            results = await cur.fetchall()
+            return results
+
+
 @app.get("/word_frequency")
 async def get_freq(
     request: Request,
@@ -118,7 +129,9 @@ async def get_freq(
     period_type: Optional[str] = "day",
     period_length: Optional[int] = 1,
     zero_pad: Optional[bool] = True,
-    absolute: Optional[bool] = False,
+    absolute: Optional[bool] = None,
+    start_date: Optional[int] = None,
+    end_date: Optional[int] = None,
 ):
     # Validate
 
@@ -138,11 +151,17 @@ async def get_freq(
     if period_length < 1:
         raise HTTPException(status_code=400, detail="Invalid periodLength")
 
+    # unix time to yy-mm-dd
+    if start_date:
+        start_date = datetime.datetime.fromtimestamp(start_date).strftime("%Y-%m-%d")
+    if end_date:
+        end_date = datetime.datetime.fromtimestamp(end_date).strftime("%Y-%m-%d")
+
     # execute
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             qb = QueryBuilder(cur)
-            query = qb.word_frequency_by(
+            query = qb.tmp(
                 id,
                 wordform,
                 lemma,
@@ -153,14 +172,16 @@ async def get_freq(
                 absolute,
                 period_type,
                 period_length,
+                start_date,
+                end_date,
             )
+            print(query)
             start = datetime.datetime.now()
             await cur.execute(query)
             end = datetime.datetime.now()
             print(f"Query took {end - start}")
             results = [
-                {"frequency": row["frequency"], "time": row["timebucket"].timestamp()}
-                async for row in cur
+                {**row, "time": row["timebucket"].timestamp()} async for row in cur
             ]
             return results
 

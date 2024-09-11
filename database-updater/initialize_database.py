@@ -21,6 +21,13 @@ create_table_wordfreq = """
 
 make_wordfreq_hypertable = "SELECT create_hypertable('word_frequency', by_range('time'), if_not_exists => TRUE);"
 
+indexes = """
+CREATE INDEX IF NOT EXISTS idx_time ON word_frequency (time);
+CREATE INDEX IF NOT EXISTS idx_wordform ON words (wordform);
+CREATE INDEX IF NOT EXISTS idx_word_id ON word_frequency (word_id);
+CREATE INDEX IF NOT EXISTS idx_time_word_id ON word_frequency (time, word_id);
+"""
+
 
 def create_tables(conn):
     print("Creating tables")
@@ -39,5 +46,13 @@ def drop_tables(conn):
         "DROP TABLE IF EXISTS word_frequency"
     )  # hypertable needs to be dropped separately
     cursor.execute("DROP TABLE IF EXISTS words, words_tmp, word_frequency_tmp")
+    conn.commit()
+    cursor.close()
+
+
+def create_indexes(conn):
+    print("Creating indexes")
+    cursor = conn.cursor()
+    cursor.execute(indexes)
     conn.commit()
     cursor.close()

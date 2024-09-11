@@ -12,5 +12,20 @@ services:
         volumes:
             - database:/var/lib/postgresql/data
             - ./database/init:/docker-entrypoint-initdb.d/
+    server:
+        image: woordwacht/server
+        build:
+            context: server
+        restart: always
+        ports:
+            - '8000:8000'
+
+    client:
+        image: woordwacht/client
+        build:
+            context: client
+        restart: always
+        ports:
+            - '5173:5173'
 volumes:
     database:

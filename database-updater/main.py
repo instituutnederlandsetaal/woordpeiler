@@ -1,11 +1,12 @@
 # standard
 import os
+from venv import create
 
 # third party
 import psycopg
 
 # local
-from initialize_database import create_tables, drop_tables
+from initialize_database import create_tables, drop_tables, create_indexes
 from update_database import update
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
@@ -14,6 +15,7 @@ CONNECTION = f"postgres://postgres:{POSTGRES_PASSWORD}@localhost:5432/woordwacht
 
 if __name__ == "__main__":
     with psycopg.connect(CONNECTION) as conn:
-        drop_tables(conn)
-        create_tables(conn)
-        update(conn)
+        # drop_tables(conn)
+        # create_tables(conn)
+        # update(conn)
+        create_indexes(conn)
