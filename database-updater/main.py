@@ -17,7 +17,7 @@ CONNECTION = f"postgres://postgres:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES
 
 if __name__ == "__main__":
     with psycopg.connect(CONNECTION) as conn:
-        # drop_tables(conn)
-        # create_tables(conn)
-        # update(conn)
+        drop_tables(conn)
+        create_tables(conn)
+        update(conn)
         create_indexes(conn)

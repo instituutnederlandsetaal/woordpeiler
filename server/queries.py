@@ -12,6 +12,132 @@ class QueryBuilder:
     def __init__(self, cursor):
         self.cursor = cursor
 
+    def ref_corp_trends(
+        self,
+        period_type: Optional[str] = "day",
+        period_length: Optional[int] = 1,
+        trend_type: Optional[str] = "absolute",
+    ) -> str:
+        
+        time_span = sql.SQL("{period_length} {period_type}").format(period_length=sql.Literal(period_length), period_type=sql.SQL(period_type))
+
+        if trend_type == "delta":
+            return sql.SQL("""
+        WITH daily_counts as (
+            SELECT
+                time,
+                word_id,
+                SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq,
+                SUM(frequency) as abs_freq
+            FROM word_frequency
+            GROUP BY word_id, time
+        ),
+        timely_counts as ( -- timebucket the counts
+            SELECT
+                time_bucket('{time_span}', time) as timebucket,
+                word_id,
+                SUM(abs_freq) as abs_freq, -- sum the absolute frequency
+                AVG(rel_freq) as rel_freq -- average the relative frequency
+            FROM daily_counts
+            GROUP BY timebucket, word_id
+        ),
+        lagged_counts as ( -- lag the counts
+            SELECT
+                timebucket as time,
+                LAG(timebucket) OVER (PARTITION BY word_id ORDER BY timebucket) as prev_time,
+                word_id,
+                abs_freq,
+                rel_freq,
+                LAG(abs_freq) OVER (PARTITION BY word_id ORDER BY timebucket) as prev_abs_freq,
+                LAG(rel_freq) OVER (PARTITION BY word_id ORDER BY timebucket) as prev_rel_freq
+            FROM timely_counts
+        ),
+        deltas as ( -- calculate the deltas
+            SELECT
+                time,
+                word_id,
+                abs_freq,
+                rel_freq,
+                (rel_freq - prev_rel_freq) / prev_rel_freq as delta
+            FROM lagged_counts
+            WHERE prev_abs_freq IS NOT NULL AND prev_rel_freq IS NOT NULL
+        )
+        SELECT *, wordform FROM deltas
+        JOIN words ON words.id = word_id
+        WHERE poshead != 'nou-p'
+        ORDER BY ABS(delta) DESC
+        LIMIT 100
+    """).format(time_span=time_span).as_string(self.cursor)
+
+        keyness = sql.SQL("""
+            WITH daily_counts as (
+                SELECT
+                    time,
+                    word_id,
+                    SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq,
+                    SUM(frequency) as abs_freq
+                FROM word_frequency
+                GROUP BY word_id, time
+            ),
+            reference_corpus as (
+                SELECT
+                    word_id,
+                    AVG(rel_freq) * 1000000 as rel_freq,
+                    SUM(abs_freq) as abs_freq -- note how abs_freq is summed and rel_freq is averaged
+                FROM daily_counts rl
+                WHERE time_bucket('{time_span}', rl.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+                GROUP BY word_id -- So here we already average the relative frequency over all days, which leaves one number per word_id
+            ),
+            target_corpus as (
+                SELECT
+                    word_id,
+                    AVG(rel_freq) * 1000000 as rel_freq,
+                    SUM(abs_freq) as abs_freq
+                FROM daily_counts rl
+                WHERE time_bucket('{time_span}', rl.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+                GROUP BY word_id
+            ),
+            keyness as (
+                SELECT
+                    1 + tc.rel_freq as target_rel_freq,
+                    1 + COALESCE(rf.rel_freq,0) as ref_rel_freq,
+                    (1 + tc.rel_freq) / (1 + COALESCE(rf.rel_freq,0)) as keyness,
+                    tc.rel_freq - COALESCE(rf.rel_freq,0) as rel_delta,
+                    tc.abs_freq as target_abs_freq,
+                    COALESCE(rf.abs_freq,0) as ref_abs_freq,
+                    tc.word_id
+                FROM target_corpus tc
+                LEFT JOIN reference_corpus rf ON tc.word_id = rf.word_id
+            )""").format(time_span=time_span)
+        filter = None
+        if trend_type == "keyness":
+            filter = sql.SQL( """
+                {keyness}
+                SELECT
+                    keyness,
+                    wordform,
+                    poshead
+                FROM keyness
+                JOIN words ON words.id = word_id
+                WHERE poshead != 'nou-p'
+                ORDER BY keyness DESC
+                LIMIT 100
+            """)
+        elif trend_type == "absolute":
+            filter = sql.SQL("""
+                {keyness}
+                SELECT
+                    target_abs_freq,
+                    wordform,
+                    poshead
+                FROM keyness
+                JOIN words ON words.id = word_id
+                WHERE ref_abs_freq = 0 AND poshead != 'nou-p'
+                ORDER BY target_abs_freq DESC
+                LIMIT 100
+            """)
+        return filter.format(keyness=keyness).as_string(self.cursor)
+
     def tmp(
         self,
         id: Optional[int] = None,

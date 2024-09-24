@@ -4,6 +4,7 @@ import os
 from typing import Optional, Union
 from contextlib import asynccontextmanager
 import datetime
+from dotenv import load_dotenv
 
 # third party
 import psycopg
@@ -16,6 +17,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # local
 from queries import QueryBuilder
 from datatypes import PeriodType
+
+load_dotenv()
 
 
 def get_conn_str():
@@ -107,11 +110,16 @@ async def get_words(
 
 
 @app.get("/trends")
-async def get_trends(request: Request):
+async def get_trends(
+    request: Request,
+    period_type: Optional[str] = "day",
+    period_length: Optional[int] = 1,
+    trend_type: Optional[str] = "absolute",
+    ):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             qb = QueryBuilder(cur)
-            query = qb.trends()
+            query = qb.ref_corp_trends(period_type, period_length, trend_type)
             await cur.execute(query)
             results = await cur.fetchall()
             return results

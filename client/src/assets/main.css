@@ -61,7 +61,7 @@ nav a:hover {
   text-decoration: underline;
 }
 
-header .logo>div.fa {
+header .logo div.fa {
   padding: 0 1rem;
 }
 
@@ -91,6 +91,20 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.wordlist .p-skeleton {
+  flex: 1;
+}
+
+.wordlist .p-listbox {
+  flex: 1;
+  min-height: 0;
+
+  .p-listbox-list-container {
+    height: 100% !important;
+    max-height: none !important;
+  }
 }
 
 .newWord {

@@ -6,6 +6,9 @@ import os
 import psycopg
 from psycopg.rows import dict_row
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # local
 from queries import (
     rel_freq_over_time2,
@@ -323,7 +326,7 @@ def execute_query(conn):
         FROM (
             SELECT DISTINCT word_id FROM daily_totals
         )
-        CROSS JOIN ( SELECT DISTINCT time FROM daily_totals )
+        CROSS JOIN ( SELECT DISTINCT time FROM daily_totals ) LIMIT 100
     ),
     absolutes_per_word_per_date AS (
         SELECT
@@ -434,85 +437,53 @@ def execute_query(conn):
         GROUP BY time_bucket('1 year', word_frequency.time)
     """
 
-    time_span = "1 year"
+    time_span = "3 year"
 
     keyness = f"""
-        WITH ref_corpus_size as (
-            SELECT
-                SUM(frequency) AS ref_corpus_size
-            FROM word_frequency wf
-            WHERE time_bucket('{time_span}', wf.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
-        ), 
-        reference_corpus_rel_per_day as (
+        WITH daily_counts as (
             SELECT
                 time,
                 word_id,
-                -- corpus size of that day
-                -- SUM(SUM(frequency)) OVER (PARTITION BY time) AS corpus_size,
-                -- relative frequency of the word
-                SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq
+                SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq,
+                SUM(frequency) as abs_freq
             FROM word_frequency
             GROUP BY word_id, time
         ),
-        reference_corpus_rel_per_word as (
+        reference_corpus as (
             SELECT
                 word_id,
-                AVG(rel_freq) * 1000000 as rel_freq
-            FROM reference_corpus_rel_per_day rl
+                AVG(rel_freq) * 1000000 as rel_freq,
+                SUM(abs_freq) as abs_freq -- note how abs_freq is summed and rel_freq is averaged
+            FROM daily_counts rl
             WHERE time_bucket('{time_span}', rl.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
-            GROUP BY word_id
+            GROUP BY word_id -- So here we already average the relative frequency over all days, which leaves one number per word_id
         ),
-        -- reference_corpus as (
-        --     SELECT
-        --         SUM(frequency) as abs_freq, -- this should be relative day frequency: 
-        --         SUM(frequency)::float * 1000000  / ref_corpus_size AS rel_freq,
-        --         word_id,
-        --         ref_corpus_size
-        --     FROM word_frequency wf, ref_corpus_size 
-        --     WHERE time_bucket('{time_span}', wf.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
-        --     GROUP BY word_id, ref_corpus_size
-        -- ),
-        target_corpus_size as (
-            SELECT
-                SUM(frequency) AS target_corpus_size
-            FROM word_frequency wf
-            WHERE time_bucket('{time_span}', wf.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
-        ),
-        target_corpus_rel_per_word as (
+        target_corpus as (
             SELECT
                 word_id,
-                AVG(rel_freq) * 1000000 as rel_freq
-            FROM reference_corpus_rel_per_day rl
+                AVG(rel_freq) * 1000000 as rel_freq,
+                SUM(abs_freq) as abs_freq
+            FROM daily_counts rl
             WHERE time_bucket('{time_span}', rl.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
             GROUP BY word_id
         ),
-        -- target_corpus as (
-        --     SELECT
-        --         SUM(frequency) as abs_freq, 
-        --         SUM(frequency)::float * 1000000  / target_corpus_size AS rel_freq,
-        --         word_id,
-        --         target_corpus_size
-        --     FROM word_frequency wf, target_corpus_size 
-        --     WHERE time_bucket('{time_span}', wf.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
-        --     GROUP BY word_id, target_corpus_size
-        -- ),
         keyness as (
             SELECT
                 1 + tc.rel_freq as target_rel_freq,
                 1 + COALESCE(rf.rel_freq,0) as ref_rel_freq,
                 (1 + tc.rel_freq) / (1 + COALESCE(rf.rel_freq,0)) as keyness,
                 tc.rel_freq - COALESCE(rf.rel_freq,0) as rel_delta,
-                --tc.abs_freq as target_abs_freq,
-                --COALESCE(rf.abs_freq,0) as ref_abs_freq,
+                tc.abs_freq as target_abs_freq,
+                COALESCE(rf.abs_freq,0) as ref_abs_freq,
                 tc.word_id
-            FROM target_corpus_rel_per_word tc
-            LEFT JOIN reference_corpus_rel_per_word rf ON tc.word_id = rf.word_id
+            FROM target_corpus tc
+            LEFT JOIN reference_corpus rf ON tc.word_id = rf.word_id
         )
     """
 
     test12 = f"""
         {keyness}
-        SELECT * FROM reference_corpus_rel_per_word
+        SELECT * FROM reference_corpus
         JOIN words ON words.id = word_id
         WHERE wordform = 'de'
         """
@@ -530,6 +501,19 @@ def execute_query(conn):
         LIMIT 100
     """
 
+    highest_rel_freq_with_no_previous_occurence = f"""
+        {keyness}
+        SELECT
+            target_rel_freq,
+            wordform,
+            poshead
+        FROM keyness
+        JOIN words ON words.id = word_id
+        WHERE ref_abs_freq = 1 AND poshead != 'nou-p'
+        ORDER BY target_rel_freq DESC
+        LIMIT 100
+    """
+
     highest_keyness = f"""
         {keyness}
         SELECT
@@ -538,7 +522,7 @@ def execute_query(conn):
             poshead
         FROM keyness
         JOIN words ON words.id = word_id
-        --WHERE poshead != 'nou-p'
+        WHERE poshead != 'nou-p'
         ORDER BY keyness DESC
         LIMIT 100
     """
@@ -555,8 +539,84 @@ def execute_query(conn):
         LIMIT 100
     """
 
+    time_span = "1 year"
+
+    test17 = f"""
+        WITH all_dates as (
+            SELECT DISTINCT time
+            FROM word_frequency
+        ),
+        all_word_ids as (
+            SELECT DISTINCT word_id
+            FROM word_frequency
+        ),
+        all_dates_and_word_ids as (
+            SELECT
+                time,
+                word_id
+            FROM all_dates
+            CROSS JOIN all_word_ids
+        ),
+        daily_counts as (
+            SELECT
+                time,
+                word_id,
+                SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq,
+                SUM(frequency) as abs_freq
+            FROM word_frequency
+            GROUP BY word_id, time
+        ),
+        mapped_counts as ( -- map the daily_counts to all_dates_and word_ids and coalesce 0
+            SELECT
+                all_dates_and_word_ids.time,
+                all_dates_and_word_ids.word_id,
+                COALESCE(abs_freq, 0) as abs_freq,
+                COALESCE(rel_freq, 0) as rel_freq
+            FROM all_dates_and_word_ids
+            LEFT JOIN daily_counts ON all_dates_and_word_ids.time = daily_counts.time AND all_dates_and_word_ids.word_id = daily_counts.word_id
+        ),
+        timely_counts as ( -- timebucket the counts
+            SELECT
+                time_bucket('{time_span}', time) as timebucket,
+                word_id,
+                SUM(abs_freq) as abs_freq, -- sum the absolute frequency
+                AVG(rel_freq) as rel_freq -- average the relative frequency
+            FROM mapped_counts
+            GROUP BY timebucket, word_id
+        ),
+        lagged_counts as ( -- lag the counts
+            SELECT
+                timebucket as time,
+                LAG(timebucket) OVER (PARTITION BY word_id ORDER BY timebucket) as prev_time,
+                word_id,
+                abs_freq,
+                rel_freq,
+                LAG(abs_freq) OVER (PARTITION BY word_id ORDER BY timebucket) as prev_abs_freq,
+                LAG(rel_freq) OVER (PARTITION BY word_id ORDER BY timebucket) as prev_rel_freq
+            FROM timely_counts
+        ),
+        deltas as ( -- calculate the deltas
+            SELECT
+                time,
+                word_id,
+                abs_freq,
+                rel_freq,
+                --(rel_freq - prev_rel_freq) / prev_rel_freq as delta -- we need avoid division by zero though, so a better way would be to use a CASE statement as in the following line
+                (CASE WHEN prev_rel_freq = 0 THEN 0 ELSE (rel_freq - prev_rel_freq) / prev_rel_freq END) as delta
+
+            FROM lagged_counts
+            WHERE prev_abs_freq IS NOT NULL AND prev_rel_freq IS NOT NULL
+        )
+        SELECT *, wordform FROM deltas
+        JOIN words ON words.id = word_id
+        ORDER BY ABS(delta) DESC -- next step is to find those with a big increase in delta but a small decrease. 
+        -- perhaps (max_delta - min_delta) / max_delta, as this means that a word with an increase of 10 but 
+        -- a decrease of 1 has a score of 0.9 (even at its lowest it stays at 90% of its peak)
+        LIMIT 100
+    """
+
     # execute the query
-    cursor.execute(highest_keyness)
+    cursor.execute(test17)
 
     n = 0
     for row in cursor.fetchall():
