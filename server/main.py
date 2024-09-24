@@ -16,7 +16,9 @@ from queries import (
 
 READER_USER = os.getenv("READER_USER", "reader")
 READER_PASSWORD = os.getenv("READER_PASSWORD", "reader")
-CONNECTION = f"postgres://{READER_USER}:{READER_PASSWORD}@localhost:5432/woordwacht"
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+CONNECTION = f"postgres://{READER_USER}:{READER_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/woordwacht"
 
 
 def execute_query(conn):

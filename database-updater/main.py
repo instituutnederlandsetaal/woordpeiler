@@ -11,7 +11,9 @@ from update_database import update
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
-CONNECTION = f"postgres://postgres:{POSTGRES_PASSWORD}@localhost:5432/woordwacht"
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+CONNECTION = f"postgres://postgres:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/woordwacht"
 
 if __name__ == "__main__":
     with psycopg.connect(CONNECTION) as conn:
