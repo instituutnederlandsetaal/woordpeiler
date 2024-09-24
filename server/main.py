@@ -432,11 +432,129 @@ def execute_query(conn):
         GROUP BY time_bucket('1 year', word_frequency.time)
     """
 
-    test11 = """
+    time_span = "1 year"
+
+    keyness = f"""
+        WITH ref_corpus_size as (
+            SELECT
+                SUM(frequency) AS ref_corpus_size
+            FROM word_frequency wf
+            WHERE time_bucket('{time_span}', wf.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+        ), 
+        reference_corpus_rel_per_day as (
+            SELECT
+                time,
+                word_id,
+                -- corpus size of that day
+                -- SUM(SUM(frequency)) OVER (PARTITION BY time) AS corpus_size,
+                -- relative frequency of the word
+                SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq
+            FROM word_frequency
+            GROUP BY word_id, time
+        ),
+        reference_corpus_rel_per_word as (
+            SELECT
+                word_id,
+                AVG(rel_freq) * 1000000 as rel_freq
+            FROM reference_corpus_rel_per_day rl
+            WHERE time_bucket('{time_span}', rl.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+            GROUP BY word_id
+        ),
+        -- reference_corpus as (
+        --     SELECT
+        --         SUM(frequency) as abs_freq, -- this should be relative day frequency: 
+        --         SUM(frequency)::float * 1000000  / ref_corpus_size AS rel_freq,
+        --         word_id,
+        --         ref_corpus_size
+        --     FROM word_frequency wf, ref_corpus_size 
+        --     WHERE time_bucket('{time_span}', wf.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+        --     GROUP BY word_id, ref_corpus_size
+        -- ),
+        target_corpus_size as (
+            SELECT
+                SUM(frequency) AS target_corpus_size
+            FROM word_frequency wf
+            WHERE time_bucket('{time_span}', wf.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+        ),
+        target_corpus_rel_per_word as (
+            SELECT
+                word_id,
+                AVG(rel_freq) * 1000000 as rel_freq
+            FROM reference_corpus_rel_per_day rl
+            WHERE time_bucket('{time_span}', rl.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+            GROUP BY word_id
+        ),
+        -- target_corpus as (
+        --     SELECT
+        --         SUM(frequency) as abs_freq, 
+        --         SUM(frequency)::float * 1000000  / target_corpus_size AS rel_freq,
+        --         word_id,
+        --         target_corpus_size
+        --     FROM word_frequency wf, target_corpus_size 
+        --     WHERE time_bucket('{time_span}', wf.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+        --     GROUP BY word_id, target_corpus_size
+        -- ),
+        keyness as (
+            SELECT
+                1 + tc.rel_freq as target_rel_freq,
+                1 + COALESCE(rf.rel_freq,0) as ref_rel_freq,
+                (1 + tc.rel_freq) / (1 + COALESCE(rf.rel_freq,0)) as keyness,
+                tc.rel_freq - COALESCE(rf.rel_freq,0) as rel_delta,
+                --tc.abs_freq as target_abs_freq,
+                --COALESCE(rf.abs_freq,0) as ref_abs_freq,
+                tc.word_id
+            FROM target_corpus_rel_per_word tc
+            LEFT JOIN reference_corpus_rel_per_word rf ON tc.word_id = rf.word_id
+        )
+    """
+
+    test12 = f"""
+        {keyness}
+        SELECT * FROM reference_corpus_rel_per_word
+        JOIN words ON words.id = word_id
+        WHERE wordform = 'de'
+        """
+
+    highest_abs_freq_with_no_previous_occurence = f"""
+        {keyness}
+        SELECT
+            target_abs_freq,
+            wordform,
+            poshead
+        FROM keyness
+        JOIN words ON words.id = word_id
+        WHERE ref_abs_freq = 0 AND poshead != 'nou-p'
+        ORDER BY target_abs_freq DESC
+        LIMIT 100
+    """
+
+    highest_keyness = f"""
+        {keyness}
+        SELECT
+            keyness,
+            wordform,
+            poshead
+        FROM keyness
+        JOIN words ON words.id = word_id
+        --WHERE poshead != 'nou-p'
+        ORDER BY keyness DESC
+        LIMIT 100
+    """
+
+    highest_rel_delta = f"""
+        {keyness}
+        SELECT
+            rel_delta,
+            wordform,
+            poshead
+        FROM keyness
+        JOIN words ON words.id = word_id
+        ORDER BY rel_delta DESC
+        LIMIT 100
     """
 
     # execute the query
-    cursor.execute(test6)
+    cursor.execute(highest_keyness)
 
     n = 0
     for row in cursor.fetchall():

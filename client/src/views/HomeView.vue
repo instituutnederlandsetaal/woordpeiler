@@ -8,6 +8,7 @@
             </div>
         </div>
         <nav>
+            <a href="/trends">trends</a>
             <a href="/help">help</a>
             <a href="/about">about</a>
         </nav>
@@ -94,7 +95,7 @@
                         </AccordionContent>
                     </AccordionPanel>
                 </Accordion>
-                <Button class="search-btn" label="Search" @click="search" />
+                <Button class="search-btn" label="Search" @click="search" :disabled="dataSeries.length == 0" />
             </Panel>
         </div>
         <div class="graph">
@@ -141,6 +142,7 @@ import SelectButton from 'primevue/selectbutton';
 import DatePicker from 'primevue/datepicker';
 import InputNumber from 'primevue/inputnumber';
 import infixRpnEval from 'infix-rpn-eval';
+import { externalTooltipHandler } from '@/js/tooltip.js';
 
 interface DataSeries {
     wordform?: string;
@@ -242,11 +244,18 @@ const chartOptions = ref<ChartOptions<'line'>>({
             hitRadius: 20,
         },
     },
-    // plugins: {
-    //     colors: {
-    //         forceOverride: true
-    //     }
-    // }
+    plugins: {
+        tooltip: {
+            interaction: {
+                mode: "index"
+            },
+            enabled: false,
+            external: externalTooltipHandler
+        },
+        // colors: {
+        //     forceOverride: true
+        // }
+    }
 })
 const styles = ref({
     height: '300px',
