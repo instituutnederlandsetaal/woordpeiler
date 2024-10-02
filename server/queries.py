@@ -18,11 +18,26 @@ class QueryBuilder:
         period_length: Optional[int] = 1,
         trend_type: Optional[str] = "absolute",
     ) -> str:
-        
-        time_span = sql.SQL("{period_length} {period_type}").format(period_length=sql.Literal(period_length), period_type=sql.SQL(period_type))
+
+        time_span = sql.SQL("{period_length} {period_type}").format(
+            period_length=sql.Literal(period_length), period_type=sql.SQL(period_type)
+        )
+
+        if trend_type == "delta-min-max":
+            return sql.SQL(
+                """
+            SELECT min_delta, max_delta, wordform FROM word_deltas
+            JOIN words ON words.id = word_id
+            WHERE min_delta > 0.5 AND poshead != 'nou-p'
+            ORDER BY max_delta DESC
+            LIMIT 100
+        """
+            ).as_string(self.cursor)
 
         if trend_type == "delta":
-            return sql.SQL("""
+            return (
+                sql.SQL(
+                    """
         WITH daily_counts as (
             SELECT
                 time,
@@ -67,9 +82,14 @@ class QueryBuilder:
         WHERE poshead != 'nou-p'
         ORDER BY ABS(delta) DESC
         LIMIT 100
-    """).format(time_span=time_span).as_string(self.cursor)
+    """
+                )
+                .format(time_span=time_span)
+                .as_string(self.cursor)
+            )
 
-        keyness = sql.SQL("""
+        keyness = sql.SQL(
+            """
             WITH daily_counts as (
                 SELECT
                     time,
@@ -108,10 +128,12 @@ class QueryBuilder:
                     tc.word_id
                 FROM target_corpus tc
                 LEFT JOIN reference_corpus rf ON tc.word_id = rf.word_id
-            )""").format(time_span=time_span)
+            )"""
+        ).format(time_span=time_span)
         filter = None
         if trend_type == "keyness":
-            filter = sql.SQL( """
+            filter = sql.SQL(
+                """
                 {keyness}
                 SELECT
                     keyness,
@@ -122,9 +144,11 @@ class QueryBuilder:
                 WHERE poshead != 'nou-p'
                 ORDER BY keyness DESC
                 LIMIT 100
-            """)
+            """
+            )
         elif trend_type == "absolute":
-            filter = sql.SQL("""
+            filter = sql.SQL(
+                """
                 {keyness}
                 SELECT
                     target_abs_freq,
@@ -135,7 +159,8 @@ class QueryBuilder:
                 WHERE ref_abs_freq = 0 AND poshead != 'nou-p'
                 ORDER BY target_abs_freq DESC
                 LIMIT 100
-            """)
+            """
+            )
         return filter.format(keyness=keyness).as_string(self.cursor)
 
     def tmp(
@@ -159,6 +184,23 @@ class QueryBuilder:
             if source is not None
             else sql.SQL("")
         )
+        word_filters = [id, wordform, lemma, pos, poshead]
+        if any(word_filters):
+            word_where = sql.SQL("WHERE {where}").format(
+                where=self._where_and(
+                    [
+                        WordColumn.ID,
+                        WordColumn.WORDFORM,
+                        WordColumn.LEMMA,
+                        WordColumn.POS,
+                        WordColumn.POSHEAD,
+                    ],
+                    word_filters,
+                )
+            )
+        else:
+            word_where = sql.SQL("")
+
         if start_date is None and end_date is None:
             date_filter = sql.SQL("")
         else:
@@ -190,7 +232,7 @@ class QueryBuilder:
         with filtered_ids as (
             SELECT DISTINCT id
             FROM words
-            WHERE {word_where}
+            {word_where}
         ),
         corpus_size as (
             SELECT DISTINCT
@@ -233,16 +275,7 @@ class QueryBuilder:
                 date_filter=date_filter,
                 period_length=sql.Literal(period_length),
                 period_type=sql.SQL(period_type),
-                word_where=self._where_and(
-                    [
-                        WordColumn.ID,
-                        WordColumn.WORDFORM,
-                        WordColumn.LEMMA,
-                        WordColumn.POS,
-                        WordColumn.POSHEAD,
-                    ],
-                    [id, wordform, lemma, pos, poshead],
-                ),
+                word_where=word_where,
             )
             .as_string(self.cursor)
         )

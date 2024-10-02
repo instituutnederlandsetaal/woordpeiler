@@ -50,8 +50,8 @@ const timeBucketOptions = ["day", "week", "month", "year"]
 const timeBucketSize = ref(1)
 const timeBucketType = ref("year")
 
-const trendTypes = ["keyness", "absolute", "delta"]
-const trendType = ref("keyness")
+const trendTypes = ["keyness", "absolute", "delta", "delta-min-max"]
+const trendType = ref("delta-min-max")
 
 watch(selectedTrend, () => {
     GraphStore.dataSeries = []

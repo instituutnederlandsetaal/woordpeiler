@@ -7,7 +7,7 @@ const getOrCreateTooltip = (chart) => {
         tooltipEl.style.borderRadius = '3px';
         tooltipEl.style.color = 'white';
         tooltipEl.style.opacity = 1;
-        tooltipEl.style.pointerEvents = 'none';
+        tooltipEl.style.pointerEvents = 'all !important';
         tooltipEl.style.position = 'absolute';
         tooltipEl.style.transform = 'translate(-50%, 0)';
         tooltipEl.style.transition = 'all .1s ease';
@@ -26,7 +26,6 @@ export const externalTooltipHandler = (context) => {
     // Tooltip Element
     const { chart, tooltip } = context;
     const tooltipEl = getOrCreateTooltip(chart);
-    tooltipEl.style.pointerEvents = 'none'
 
     // if (!tooltipEl) {
     //     tooltipEl = document.createElement('div');
@@ -96,10 +95,14 @@ export const externalTooltipHandler = (context) => {
             const td = document.createElement('td');
             td.style.borderWidth = 0;
 
-            const text = document.createTextNode(body);
+            const link = document.createElement("a")
+            const word = body.toString().split(":")[0]
+            link.href = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits?patt=" + encodeURIComponent(`[word="${word}"]`)
+            link.target = "_blank"
+            link.innerHTML = body
 
             td.appendChild(span);
-            td.appendChild(text);
+            td.appendChild(link);
             tr.appendChild(td);
             tableBody.appendChild(tr);
         });
