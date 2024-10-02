@@ -24,7 +24,7 @@ copy_tmp_to_words = """
     INSERT INTO words (wordform, lemma, pos, poshead)
     SELECT DISTINCT wordform, lemma, pos, poshead
     FROM words_tmp
-    ON CONFLICT (wordform, lemma, pos, poshead) DO NOTHING;
+    ON CONFLICT (md5(wordform || '|' || lemma || '|' || pos || '|' || poshead)) DO NOTHING;
 """
 
 copy_tmp_to_word_freqs = """

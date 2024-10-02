@@ -5,9 +5,11 @@ create_table_words = """
         lemma TEXT,
         pos TEXT,
         poshead TEXT,
-        CONSTRAINT unique_wordform_lemma_pos_poshead UNIQUE (wordform, lemma, pos, poshead)
+        hash_value TEXT GENERATED ALWAYS AS (md5(wordform || lemma || pos)) STORED,
+        CONSTRAINT unique_hash_value UNIQUE (hash_value)
     );
     """
+# -- CREATE UNIQUE INDEX unique_wordform_lemma_pos_poshead ON words (md5(wordform || lemma || pos || poshead));
 create_table_wordfreq = """
     CREATE TABLE IF NOT EXISTS word_frequency (
         time TIMESTAMPTZ NOT NULL,
@@ -42,10 +44,18 @@ def create_tables(conn):
 def drop_tables(conn):
     print("Dropping tables")
     cursor = conn.cursor()
+
+    # tables
     cursor.execute(
-        "DROP TABLE IF EXISTS word_frequency"
+        "DROP TABLE IF EXISTS word_frequency CASCADE"
     )  # hypertable needs to be dropped separately
-    cursor.execute("DROP TABLE IF EXISTS words, words_tmp, word_frequency_tmp")
+    cursor.execute("DROP TABLE IF EXISTS words, words_tmp, word_frequency_tmp CASCADE")
+
+    # indexes
+    cursor.execute(
+        "DROP INDEX IF EXISTS idx_time, idx_wordform, idx_word_id, idx_time_word_id CASCADE"
+    )
+
     conn.commit()
     cursor.close()
 
