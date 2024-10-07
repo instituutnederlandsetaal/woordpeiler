@@ -9,11 +9,8 @@
                 </div>
             </template>
             <template #icons>
-                <Button
-                    text
-                    severity="secondary"
-                    @click="() => GraphStore.dataSeries.splice(GraphStore.dataSeries.indexOf(dataSerie), 1)"
-                >
+                <Button text severity="secondary"
+                    @click="() => GraphStore.dataSeries.splice(GraphStore.dataSeries.indexOf(dataSerie), 1)">
                     <span class="pi pi-trash"></span>
                 </Button>
             </template>
@@ -39,26 +36,22 @@
             </div>
             <div class="formSplit">
                 <label for="newspaper">Newspaper</label>
-                <Select
-                    id="newspaper"
-                    v-model="dataSerie.newspaper"
-                    :options="newspaperOpts"
-                    showClear
-                    placeholder="Newspaper"
-                />
+                <Select id="newspaper" v-model="dataSerie.newspaper" :options="newspaperOpts" showClear
+                    placeholder="Newspaper" />
+            </div>
+
+            <div class="formSplit">
+                <label for="variant">Variant</label>
+                <Select id="variant" v-model="dataSerie.variant" :options="variantOpts" showClear
+                    placeholder="Variant" />
             </div>
 
             <!-- </AccordionContent>
                         </AccordionPanel>
                     </Accordion> -->
         </Panel>
-        <Button
-            style="border: 2px dashed #ccc; background: #eee; min-height: 40px"
-            class="newWord"
-            severity="secondary"
-            outlined
-            @click="() => GraphStore.dataSeries.push({ color: randomColor() })"
-        >
+        <Button style="border: 2px dashed #ccc; background: #eee; min-height: 40px" class="newWord" severity="secondary"
+            outlined @click="() => GraphStore.dataSeries.push({ color: randomColor() })">
             <span class="pi pi-plus"></span> Add
         </Button>
     </ScrollPanel>
@@ -108,6 +101,9 @@ onMounted(() => {
             newspaperOpts.value = data
         })
 })
+
+const variantOpts = ref(["nl", "be"])
+
 
 onMounted(() => {
     // read wordform url parameter

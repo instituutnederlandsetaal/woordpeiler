@@ -1,3 +1,4 @@
+from codecs import unicode_escape_decode
 from dataclasses import dataclass, astuple
 from enum import Enum
 from tkinter import E
@@ -18,30 +19,55 @@ from sql import (
     copy_select_tmp_data_to_word_freqs,
 )
 
-ALLOWED_SOURCES = [
+ALLOWED_SOURCES = {
     # België
-    "Het Nieuwsblad",
-    "Gazet van Antwerpen",
-    "De Standaard",
-    "Het Belang van Limburg",
-    "Het Laatste Nieuws",
-    "De Morgen",
-    "Wablieft",
+    "be": [
+        "Het Nieuwsblad",
+        "Gazet van Antwerpen",
+        "De Standaard",
+        "Het Belang van Limburg",
+        "Het Laatste Nieuws",
+        "De Morgen",
+        "Wablieft",
+    ],
     # Nederland
-    "Volkskrant",
-    "NRC Handelsblad",
-    "Algemeen Dagblad",
-    "Trouw",
-    "nrc.next",
-    "Parool" "NRC",
-    "De Volkskrant",
-    "Het Parool",
-    "Trouw Weekend Bijlagen",
-    "Meppele Courant",
-    "Volkskrant Maganzine",
-    "Trouw Specials",
-    "NRC Next",
-]
+    "nl": [
+        "Volkskrant",
+        "NRC Handelsblad",
+        "Algemeen Dagblad",
+        "Trouw",
+        "nrc.next",
+        "Parool" "NRC",
+        "De Volkskrant",
+        "Het Parool",
+        "Trouw Weekend Bijlagen",
+        "Meppeler Courant",
+        "Volkskrant Maganzine",
+        "Trouw Specials",
+        "NRC Next",
+    ],
+}
+
+
+# helper
+def sources_table(cursor: Cursor):
+    # create table
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS sources (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            variant TEXT NOT NULL
+        );
+        """
+    )
+    # insert data
+    for variant, sources in ALLOWED_SOURCES.items():
+        for source in sources:
+            cursor.execute(
+                "INSERT INTO sources (name, variant) VALUES (%s, %s)",
+                (source, variant),
+            )
 
 
 class RowNames(int, Enum):

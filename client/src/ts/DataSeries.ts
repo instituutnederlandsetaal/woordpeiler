@@ -4,4 +4,5 @@ export interface DataSeries {
     lemma?: string
     newspaper?: string
     color?: string
+    variant?: string
 }
