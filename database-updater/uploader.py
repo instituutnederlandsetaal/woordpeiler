@@ -10,6 +10,7 @@ import traceback
 
 from tqdm import tqdm
 from psycopg import Connection, Cursor
+from psycopg.rows import dict_row
 
 from sql import (
     copy_tmp_to_words,
@@ -159,8 +160,9 @@ class StreamingCSVReader:
 class Uploader:
     def __init__(self, conn: Connection, path: str) -> None:
         self.conn: Connection = conn
-        self.cursor_name = "cursor"
-        self.cursor: Cursor = conn.cursor(self.cursor_name)
+        self.cursor_name = "my_name"
+        self.cursor: Cursor = conn.cursor()
+        self.server_cursor = conn.cursor(self.cursor_name, row_factory=dict_row)
         self.path: str = path
         self.chunk_size: int = 100_000
         self.upload()
@@ -174,10 +176,8 @@ class Uploader:
                     self.__create_tmp_tables()
                     # print("uploading words")
                     self.__upload_words(chunk)
-                    # print("retrieving word id dict")
-                    word_dict = self.__retrieve_word_id_dict()
                     # print("uploading frequencies")
-                    self.__upload_frequencies(chunk, word_dict)
+                    self.__upload_frequencies(chunk)
                     self.conn.commit()
                     pbar.update(self.chunk_size)
                     if i % 10 == 0:
@@ -191,8 +191,8 @@ class Uploader:
             self.cursor.close()
 
     def __create_tmp_tables(self):
-        self.cursor.execute(create_table_words_tmp)
         self.cursor.execute(create_table_wordfreq_tmp)
+        self.cursor.execute(create_table_words_tmp)
 
     def __upload_words(self, rows: list[CSVRow]):
         with self.cursor.copy(
@@ -203,37 +203,34 @@ class Uploader:
         # Insert into words from words_tmp
         self.cursor.execute(copy_tmp_to_words)
 
-    def __retrieve_word_id_dict(self) -> dict[tuple, int]:
-        self.cursor.execute("SELECT id, wordform, lemma, pos, poshead FROM words")
-        return {
-            ((wordform, lemma, pos, poshead)): id
-            for id, wordform, lemma, pos, poshead in self.cursor.fetchall()
-        }
-
-    def __upload_frequencies(self, rows: list[CSVRow], word_dict: dict[tuple, int]):
+    def __upload_frequencies(self, rows: list[CSVRow]):
         # first filter out rows with sources not in ALLOWED_SOURCES
         # rows = [row for row in rows if row.source in ALLOWED_SOURCES]
         # second filter out invalid years that don't have 4 digits. with regex
         rows = [row for row in rows if re.match(r"^\d{4}$", row.year)]
-        # Construct data
-        frequencies = [
-            FrequencyEntry(
-                time=f"{row.year}0101",
-                word_id=word_dict[(row.wordform, row.lemma, row.pos, row.poshead)],
-                frequency=row.frequency,
-                source=row.source,
-            )
-            for row in rows
-        ]
 
-        # Where time, word_id, source is the same: sum the frequencies
+        self.server_cursor.execute(
+            "SELECT id, wordform, lemma, pos, poshead FROM words"
+        )
         combined_frequencies = {}
-        for freq in frequencies:
-            key = (freq.time, freq.word_id, freq.source)
-            if key in combined_frequencies:
-                combined_frequencies[key] += freq
-            else:
-                combined_frequencies[key] = freq
+        for row in self.server_cursor:
+            key = (row["wordform"], row["lemma"], row["pos"])
+            matching_rows = [r for r in rows if (r.wordform, r.lemma, r.pos) == key]
+
+            for r in matching_rows:
+                freq = FrequencyEntry(
+                    time=f"{r.year}0101",
+                    word_id=row["id"],
+                    frequency=r.frequency,
+                    source=r.source,
+                )
+                # Where time, word_id, source is the same: sum the frequencies
+                key = (freq.time, freq.word_id, freq.source)
+                if key in combined_frequencies:
+                    combined_frequencies[key] += freq
+                else:
+                    combined_frequencies[key] = freq
+
         frequencies = combined_frequencies.values()
 
         # Copy to tmp table
