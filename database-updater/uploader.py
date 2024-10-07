@@ -13,10 +13,9 @@ from psycopg import Connection, Cursor
 from psycopg.rows import dict_row
 
 from sql import (
-    copy_tmp_to_words,
-    create_table_words_tmp,
-    create_table_wordfreq_tmp,
-    copy_tmp_to_word_freqs,
+    create_table_data_tmp,
+    copy_select_tmp_words_to_words,
+    copy_select_tmp_data_to_word_freqs,
 )
 
 ALLOWED_SOURCES = [
@@ -63,8 +62,8 @@ class CSVRow:
     lemma: str
     pos: str
     poshead: str
-    frequency: int
     source: str
+    frequency: int
 
 
 @dataclass
@@ -171,18 +170,21 @@ class Uploader:
         total_lines = StreamingCSVReader.linecount(self.path)
         try:
             with tqdm(total=total_lines, desc="Processing Lines") as pbar:
-                i = 0
+                # i = 0
                 for chunk in tqdm(StreamingCSVReader(self.path, self.chunk_size)):
+
                     self.__create_tmp_tables()
-                    # print("uploading words")
-                    self.__upload_words(chunk)
-                    # print("uploading frequencies")
-                    self.__upload_frequencies(chunk)
+                    self.__insert_rows(chunk)
+                    self.__extract_words()
+                    self.__upload_frequencies()
+
                     self.conn.commit()
                     pbar.update(self.chunk_size)
-                    if i % 10 == 0:
-                        self.cursor.close()
-                        self.cursor = self.conn.cursor(self.cursor_name)
+                    # i += 1
+                    # if i == 10:
+                    self.cursor.close()
+                    self.cursor = self.conn.cursor()
+                    # exit()
         except Exception as e:
             print("Error in Uploader")
             print(e)
@@ -191,53 +193,61 @@ class Uploader:
             self.cursor.close()
 
     def __create_tmp_tables(self):
-        self.cursor.execute(create_table_wordfreq_tmp)
-        self.cursor.execute(create_table_words_tmp)
+        self.cursor.execute(create_table_data_tmp)
 
-    def __upload_words(self, rows: list[CSVRow]):
-        with self.cursor.copy(
-            "COPY words_tmp (wordform, lemma, pos, poshead) FROM STDIN"
-        ) as copy:
-            for row in rows:
-                copy.write_row((row.wordform, row.lemma, row.pos, row.poshead))
-        # Insert into words from words_tmp
-        self.cursor.execute(copy_tmp_to_words)
-
-    def __upload_frequencies(self, rows: list[CSVRow]):
-        # first filter out rows with sources not in ALLOWED_SOURCES
-        # rows = [row for row in rows if row.source in ALLOWED_SOURCES]
-        # second filter out invalid years that don't have 4 digits. with regex
+    def __clean_data(self, rows: list[CSVRow]) -> list[CSVRow]:
         rows = [row for row in rows if re.match(r"^\d{4}$", row.year)]
+        unique = {}
+        for r in rows:
+            key = (
+                r.year,
+                r.wordform,
+                r.lemma,
+                r.pos,
+                r.poshead,
+                r.source,
+            )  # TODO kijken naar poshead
+            if key in unique:
+                # print(f"Duplicate: {r}")
+                # print(f"Original: {unique[key]}")
+                unique[key] += r.frequency
+            else:
+                unique[key] = r.frequency
+        return [
+            CSVRow(
+                year=k[0],
+                wordform=k[1],
+                lemma=k[2],
+                pos=k[3],
+                poshead=k[4],
+                source=k[5],
+                frequency=v,
+            )
+            for k, v in unique.items()
+        ]
 
-        self.server_cursor.execute(
-            "SELECT id, wordform, lemma, pos, poshead FROM words"
-        )
-        combined_frequencies = {}
-        for row in self.server_cursor:
-            key = (row["wordform"], row["lemma"], row["pos"])
-            matching_rows = [r for r in rows if (r.wordform, r.lemma, r.pos) == key]
-
-            for r in matching_rows:
-                freq = FrequencyEntry(
-                    time=f"{r.year}0101",
-                    word_id=row["id"],
-                    frequency=r.frequency,
-                    source=r.source,
-                )
-                # Where time, word_id, source is the same: sum the frequencies
-                key = (freq.time, freq.word_id, freq.source)
-                if key in combined_frequencies:
-                    combined_frequencies[key] += freq
-                else:
-                    combined_frequencies[key] = freq
-
-        frequencies = combined_frequencies.values()
-
-        # Copy to tmp table
+    def __insert_rows(self, rows: list[CSVRow]):
+        rows = self.__clean_data(rows)
         with self.cursor.copy(
-            "COPY word_frequency_tmp (time, word_id, frequency, source) FROM STDIN"
+            "COPY data_tmp (wordform, lemma, pos, poshead, time, frequency, source) FROM STDIN"
         ) as copy:
-            for freq in frequencies:
-                copy.write_row(astuple(freq))
-        # Insert into word_frequency from tmp table
-        self.cursor.execute(copy_tmp_to_word_freqs)
+            for r in rows:
+                copy.write_row(
+                    (
+                        r.wordform,
+                        r.lemma,
+                        r.pos,
+                        r.poshead,
+                        f"{r.year}0101",
+                        r.frequency,
+                        r.source,
+                    )
+                )
+
+    def __extract_words(self):
+        # Insert into words from data_tmp
+        self.cursor.execute(copy_select_tmp_words_to_words)
+
+    def __upload_frequencies(self):
+        # Insert into word_frequency from data_tmp
+        self.cursor.execute(copy_select_tmp_data_to_word_freqs)
