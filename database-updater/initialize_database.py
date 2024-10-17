@@ -51,12 +51,17 @@ def drop_tables(conn):
     )  # hypertable needs to be dropped separately
     cursor.execute("DROP TABLE IF EXISTS words, words_tmp, word_frequency_tmp CASCADE")
 
-    # indexes
+    drop_indexes(conn)
+
+    conn.commit()
+    cursor.close()
+
+
+def drop_indexes(conn):
+    cursor = conn.cursor()
     cursor.execute(
         "DROP INDEX IF EXISTS idx_time, idx_wordform, idx_word_id, idx_time_word_id CASCADE"
     )
-
-    conn.commit()
     cursor.close()
 
 
@@ -64,5 +69,49 @@ def create_indexes(conn):
     print("Creating indexes")
     cursor = conn.cursor()
     cursor.execute(indexes)
+    conn.commit()
+    cursor.close()
+
+
+def create_lookup_tables(conn):
+    print("Creating lookup tables")
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT time, SUM(frequency) AS size
+        INTO corpus_size
+        FROM word_frequency
+        GROUP BY time
+    """
+    )
+    cursor.execute(
+        """
+        SELECT DISTINCT poshead 
+        INTO posheads
+        FROM words
+        """
+    )
+    cursor.execute(
+        """
+        SELECT DISTINCT pos 
+        INTO posses
+        FROM words
+        """
+    )
+    cursor.execute(
+        """
+        SELECT DISTINCT source 
+        INTO sources
+        FROM word_frequency
+        """
+    )
+    conn.commit()
+    cursor.close()
+
+
+def analyse(conn):
+    print("Analysing tables")
+    cursor = conn.cursor()
+    cursor.execute("ANALYSE")
     conn.commit()
     cursor.close()

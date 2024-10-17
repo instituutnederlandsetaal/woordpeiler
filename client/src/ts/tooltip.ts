@@ -12,6 +12,8 @@ const getOrCreateTooltip = (chart) => {
         tooltipEl.style.transform = 'translate(-50%, 0)';
         tooltipEl.style.transition = 'all .1s ease';
 
+        tooltipEl.className = 'tooltip';
+
         const table = document.createElement('table');
         table.style.margin = '0px';
 
@@ -61,8 +63,9 @@ export const externalTooltipHandler = (context) => {
         const bodyLines = tooltip.body.map(b => b.lines);
 
         const tableHead = document.createElement('thead');
-
+        let aTitle = null
         titleLines.forEach(title => {
+            aTitle = title
             const tr = document.createElement('tr');
             tr.style.borderWidth = 0;
 
@@ -97,7 +100,9 @@ export const externalTooltipHandler = (context) => {
 
             const link = document.createElement("a")
             const word = body.toString().split(":")[0]
-            link.href = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits?patt=" + encodeURIComponent(`[word="${word}"]`)
+            const dateSplit = aTitle.split("-")
+            const date = dateSplit[2] + dateSplit[1] + dateSplit[0]
+            link.href = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits?patt=" + encodeURIComponent(`[word="${word}"]`) + "&filter=" + encodeURIComponent(`medium:newspaper AND witnessYear_from:${dateSplit[2]} AND witnessMonth_from:${dateSplit[1]} AND witnessDay_from:${dateSplit[0]}`)
             link.target = "_blank"
             link.innerHTML = body
 

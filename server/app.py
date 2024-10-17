@@ -49,7 +49,7 @@ origins = [
     "http://localhost:8080",
     "http://localhost:5173",
     "http://localhost:5174",
-    "http://localhost:8000"
+    "http://localhost:8000",
 ]
 
 app.add_middleware(
@@ -115,7 +115,7 @@ async def get_trends(
     period_type: Optional[str] = "day",
     period_length: Optional[int] = 1,
     trend_type: Optional[str] = "absolute",
-    ):
+):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             qb = QueryBuilder(cur)
@@ -132,7 +132,6 @@ async def get_freq(
     wordform: Optional[str] = None,
     lemma: Optional[str] = None,
     pos: Optional[str] = None,
-    poshead: Optional[str] = None,
     source: Optional[str] = None,
     period_type: Optional[str] = "day",
     period_length: Optional[int] = 1,
@@ -142,6 +141,11 @@ async def get_freq(
     end_date: Optional[int] = None,
 ):
     # Validate
+    poshead = None
+    if pos != None:
+        if "(" not in pos:
+            poshead = pos
+            pos = None
 
     # ensure at least one parameter is provided
     if not any([id, wordform, lemma, pos, poshead, source]):

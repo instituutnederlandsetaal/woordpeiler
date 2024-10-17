@@ -1,13 +1,16 @@
-from codecs import unicode_escape_decode
-from dataclasses import dataclass, astuple
+from dataclasses import dataclass
 from enum import Enum
-from tkinter import E
 from typing import Any, Iterator
 import gzip
 import re
-import os
 import subprocess
 import traceback
+import sys
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 
 from tqdm import tqdm
 from psycopg import Connection, Cursor
@@ -19,7 +22,7 @@ from sql import (
     copy_select_tmp_data_to_word_freqs,
 )
 
-ALLOWED_SOURCES = {
+ALLOWED_SOURCES_DICT = {
     # België
     "be": [
         "Het Nieuwsblad",
@@ -48,6 +51,10 @@ ALLOWED_SOURCES = {
     ],
 }
 
+ALLOWED_SOURCES_LIST = [
+    source for sources in ALLOWED_SOURCES_DICT.values() for source in sources
+]
+
 
 # helper
 def sources_table(cursor: Cursor):
@@ -62,7 +69,7 @@ def sources_table(cursor: Cursor):
         """
     )
     # insert data
-    for variant, sources in ALLOWED_SOURCES.items():
+    for variant, sources in ALLOWED_SOURCES_DICT.items():
         for source in sources:
             cursor.execute(
                 "INSERT INTO sources (name, variant) VALUES (%s, %s)",
@@ -72,22 +79,20 @@ def sources_table(cursor: Cursor):
 
 class RowNames(int, Enum):
     lemma = 0
-    pos = 1
-    wordform = 2
-    year = 3
+    wordform = 1
+    pos = 2
+    date = 3
     source = 4
-    frequency = 6
-    # month = 1
+    frequency = 5
 
 
 @dataclass
 class CSVRow:
-    year: str
-    # month: str
-    wordform: str
     lemma: str
+    wordform: str
     pos: str
     poshead: str
+    date: str
     source: str
     frequency: int
 
@@ -142,26 +147,26 @@ class StreamingCSVReader:
         return pos.split("(")[0]
 
     def __iter__(self) -> Iterator[list[CSVRow]]:
-        with gzip.open(self.path) as file:
+        with gzip.open(self.path, mode="rt", encoding="utf-8") as file:
             chunk: list[CSVRow] = []
             for line in file:
-                row = line.decode("utf-8").strip().split("\t")
+                row = line.strip().split("\t")
                 try:
                     pos = row[RowNames.pos]
                     chunk.append(
                         CSVRow(
-                            year=row[RowNames.year],
                             wordform=row[RowNames.wordform],
                             lemma=row[RowNames.lemma],
                             pos=pos,
                             poshead=self.__pos_to_pos_head(pos),
+                            date=row[RowNames.date],
                             frequency=int(row[RowNames.frequency]),
                             source=row[RowNames.source],
                         )
                     )
                 except Exception as e:
-                    print(f"Error in line: {line}")
-                    print(e)
+                    eprint(f"Error in line: {line}")
+                    eprint(e)
 
                 if len(chunk) >= self.chunk_size:
                     yield chunk
@@ -189,28 +194,25 @@ class Uploader:
         self.cursor: Cursor = conn.cursor()
         self.server_cursor = conn.cursor(self.cursor_name, row_factory=dict_row)
         self.path: str = path
-        self.chunk_size: int = 100_000
+        self.chunk_size: int = 1_000_000
         self.upload()
 
     def upload(self):
         total_lines = StreamingCSVReader.linecount(self.path)
         try:
             with tqdm(total=total_lines, desc="Processing Lines") as pbar:
-                # i = 0
                 for chunk in tqdm(StreamingCSVReader(self.path, self.chunk_size)):
-
+                    # insert
                     self.__create_tmp_tables()
                     self.__insert_rows(chunk)
                     self.__extract_words()
                     self.__upload_frequencies()
-
+                    # commit and refresh cursor
                     self.conn.commit()
-                    pbar.update(self.chunk_size)
-                    # i += 1
-                    # if i == 10:
                     self.cursor.close()
                     self.cursor = self.conn.cursor()
-                    # exit()
+                    # tqdm
+                    pbar.update(self.chunk_size)
         except Exception as e:
             print("Error in Uploader")
             print(e)
@@ -222,11 +224,15 @@ class Uploader:
         self.cursor.execute(create_table_data_tmp)
 
     def __clean_data(self, rows: list[CSVRow]) -> list[CSVRow]:
-        rows = [row for row in rows if re.match(r"^\d{4}$", row.year)]
+        # only valid dates
+        rows = [row for row in rows if re.match(r"^\d{8}$", row.date)]
+        # only valid sources
+        rows = [row for row in rows if row.source in ALLOWED_SOURCES_LIST]
+
         unique = {}
         for r in rows:
             key = (
-                r.year,
+                r.date,
                 r.wordform,
                 r.lemma,
                 r.pos,
@@ -234,14 +240,14 @@ class Uploader:
                 r.source,
             )  # TODO kijken naar poshead
             if key in unique:
-                # print(f"Duplicate: {r}")
-                # print(f"Original: {unique[key]}")
+                eprint(f"Duplicate: {r}")
+                eprint(f"Original: {unique[key]}")
                 unique[key] += r.frequency
             else:
                 unique[key] = r.frequency
         return [
             CSVRow(
-                year=k[0],
+                date=k[0],
                 wordform=k[1],
                 lemma=k[2],
                 pos=k[3],
@@ -264,7 +270,7 @@ class Uploader:
                         r.lemma,
                         r.pos,
                         r.poshead,
-                        f"{r.year}0101",
+                        r.date,
                         r.frequency,
                         r.source,
                     )

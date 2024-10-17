@@ -178,3 +178,11 @@ canvas {
   display: flex;
   flex-direction: column;
 }
+
+.tooltip a {
+  color: white; 
+}
+
+.tooltip a:visited {
+  color: white;
+}

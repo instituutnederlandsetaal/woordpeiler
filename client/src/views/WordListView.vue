@@ -32,12 +32,16 @@
             </div>
             <div class="formSplit">
                 <label for="pos">Part of speech</label>
-                <Select id="pos" v-model="dataSerie.pos" :options="posOptions" showClear placeholder="Part of speech" />
+                <CascadeSelect :loading="posLoading" id="pos" v-model="dataSerie.pos" :options="posOptions"
+                    optionGroupLabel="label" optionGroupChildren="items" showClear placeholder="Part of speech" />
+
+                <!-- <Select id="pos" v-model="dataSerie.pos" :options="posOptions" optionGroupLabel="label"
+                    :loading="posLoading" optionGroupChildren="items" showClear placeholder="Part of speech" /> -->
             </div>
             <div class="formSplit">
                 <label for="newspaper">Newspaper</label>
-                <Select id="newspaper" v-model="dataSerie.newspaper" :options="newspaperOpts" showClear
-                    placeholder="Newspaper" />
+                <Select id="newspaper" :loading="sourceLoading" v-model="dataSerie.newspaper" :options="newspaperOpts"
+                    showClear placeholder="Newspaper" />
             </div>
 
             <div class="formSplit">
@@ -75,23 +79,49 @@ import Select from "primevue/select"
 import SelectButton from "primevue/selectbutton"
 import DatePicker from "primevue/datepicker"
 import InputNumber from "primevue/inputnumber"
+import CascadeSelect from 'primevue/cascadeselect';
 
 import { computed, onMounted, ref, watch } from "vue"
 
 import { useGraphStore, displayName, randomColor } from "@/store/GraphStore"
 
 const GraphStore = useGraphStore()
+const posLoading = ref(true)
+const posOptions = ref(null)
+onMounted(async () => {
+    let posHeads = null
+    let posses = null
+    const posHeadUrl = "http://localhost:8000/ls/words/poshead"
+    const posUrl = "http://localhost:8000/ls/words/pos"
 
-const posOptions = ref([])
-onMounted(() => {
-    const url = "http://localhost:8000/ls/words/poshead"
-    fetch(url)
+    await fetch(posHeadUrl)
         .then((response) => response.json())
         .then((data) => {
-            posOptions.value = data
+            posHeads = data
         })
+    await fetch(posUrl)
+        .then((response) => response.json())
+        .then((data) => {
+            posses = data
+        })
+
+    // posses is now in the form [NOU(num=sg), NOU(num=pl), AA, ...]
+    // We want to transform this into [{label: "NOU", items: [{label: "NOU(num=sg)", value: "NOU(num=sg)"}]}, {label: "AA", items: ...]}, ...]
+    posses = posHeads.map((posHead) => {
+        return {
+            label: posHead,
+            items: [posHead].concat(posses.filter((pos) => pos.startsWith(posHead)).map((pos) => {
+                return pos
+            }))
+        }
+    })
+
+
+    posOptions.value = posses
+    posLoading.value = false
 })
 
+const sourceLoading = ref(true)
 const newspaperOpts = ref([])
 onMounted(() => {
     const url = "http://localhost:8000/ls/word_frequency/source"
@@ -99,6 +129,7 @@ onMounted(() => {
         .then((response) => response.json())
         .then((data) => {
             newspaperOpts.value = data
+            sourceLoading.value = false
         })
 })
 
@@ -122,4 +153,5 @@ onMounted(() => {
     }
     GraphStore.search()
 })
+
 </script>

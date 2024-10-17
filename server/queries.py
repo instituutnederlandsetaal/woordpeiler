@@ -230,17 +230,14 @@ class QueryBuilder:
             sql.SQL(
                 """
         with filtered_ids as (
-            SELECT DISTINCT id
+            SELECT id
             FROM words
             {word_where}
         ),
         corpus_size as (
-            SELECT DISTINCT
-                time,
-                SUM(frequency) AS corpus_size
-            FROM word_frequency
+            SELECT time, size as corpus_size
+            FROM corpus_size
             {date_filter}
-            GROUP BY time
         ),
         daily_freq AS (
             SELECT 
@@ -487,6 +484,12 @@ class QueryBuilder:
         )
 
     def rows(self, table: str, column: str) -> str:
+        if table == "words" and column == "poshead":
+            return sql.SQL("SELECT * FROM posheads").as_string(self.cursor)
+        elif table == "words" and column == "pos":
+            return sql.SQL("SELECT * FROM posses").as_string(self.cursor)
+        elif table == "word_frequency" and column == "source":
+            return sql.SQL("SELECT * FROM sources").as_string(self.cursor)
         return (
             sql.SQL("SELECT DISTINCT {column} FROM {table}")
             .format(

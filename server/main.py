@@ -1,12 +1,15 @@
 # standard
+import datetime
 import json
 import os
+import re
 
 # third party
 import psycopg
 from psycopg.rows import dict_row
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # local
@@ -21,7 +24,7 @@ READER_USER = os.getenv("READER_USER", "reader")
 READER_PASSWORD = os.getenv("READER_PASSWORD", "reader")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-CONNECTION = f"postgres://{READER_USER}:{READER_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/woordwacht"
+CONNECTION = f"postgres://postgres:postgres@{POSTGRES_HOST}:{POSTGRES_PORT}/woordwacht"
 
 
 def execute_query(conn):
@@ -437,7 +440,7 @@ def execute_query(conn):
         GROUP BY time_bucket('1 year', word_frequency.time)
     """
 
-    time_span = "3 year"
+    time_span = "1 year"
 
     keyness = f"""
         WITH daily_counts as (
@@ -601,23 +604,76 @@ def execute_query(conn):
                 word_id,
                 abs_freq,
                 rel_freq,
-                --(rel_freq - prev_rel_freq) / prev_rel_freq as delta -- we need avoid division by zero though, so a better way would be to use a CASE statement as in the following line
-                (CASE WHEN prev_rel_freq = 0 THEN 0 ELSE (rel_freq - prev_rel_freq) / prev_rel_freq END) as delta
+                (CASE WHEN prev_rel_freq = 0 THEN 1 ELSE  rel_freq / prev_rel_freq END) as delta
+                --(CASE WHEN prev_rel_freq = 0 THEN 1 ELSE (rel_freq - prev_rel_freq) / prev_rel_freq END) as delta -- instead of 0, could do 1
 
             FROM lagged_counts
             WHERE prev_abs_freq IS NOT NULL AND prev_rel_freq IS NOT NULL
         )
-        SELECT *, wordform FROM deltas
-        JOIN words ON words.id = word_id
-        ORDER BY ABS(delta) DESC -- next step is to find those with a big increase in delta but a small decrease. 
+        --min_max_deltas as (
+            SELECT
+                word_id,
+                MAX(delta) as max_delta,
+                MIN(delta) as min_delta
+            INTO word_deltas
+            FROM deltas
+            GROUP BY word_id
+        --)
+        --SELECT min_delta, max_delta, wordform FROM min_max_deltas
+        --JOIN words ON words.id = word_id
+        --ORDER BY max_delta DESC
+        
+        --WHERE min_delta > 0.1
+        -- next step is to find those with a big increase in delta but a small decrease. 
         -- perhaps (max_delta - min_delta) / max_delta, as this means that a word with an increase of 10 but 
         -- a decrease of 1 has a score of 0.9 (even at its lowest it stays at 90% of its peak)
+        
+        -- LIMIT 100
+    """
+
+    select_deltas = """
+        SELECT min_delta, max_delta, wordform FROM word_deltas
+        JOIN words ON words.id = word_id
+        WHERE min_delta > 0.5 AND poshead != 'nou-p'
+        ORDER BY max_delta DESC
         LIMIT 100
     """
 
     # execute the query
-    cursor.execute(test17)
+    # most frequest word
 
+    # cursor.execute(
+    #     """
+    #     SELECT
+    #         time,
+    #         word_id,
+    #         SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq,
+    #         SUM(frequency) as abs_freq
+    #     INTO daily_counts
+    #     FROM word_frequency
+    #     GROUP BY word_id, time
+    # """
+    # )
+
+    # word counts:
+    cursor.execute(
+        """
+        SELECT * FROM sources
+        """
+    )
+    # cursor.close()
+    # return
+
+    # A table that can be used to plot a line graph with y=num_of_words and x=frequency
+    # that is, how many words have a frequency of 1, 2, 3, etc.
+
+    # my_dict = cursor.fetchall()
+    # i = 0
+    # for record in cursor:
+    #     i += record["id"]
+    # print(i)
+    # cursor.close()
+    # return
     n = 0
     for row in cursor.fetchall():
         n += 1
@@ -627,6 +683,7 @@ def execute_query(conn):
             print(json.dumps(row))
         except Exception as e:
             print(row)
+
     print(f"{n} rows")
     cursor.close()
 

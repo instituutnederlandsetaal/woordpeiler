@@ -49,6 +49,7 @@ const chartOptions = ref<ChartOptions<"line">>({
     interaction: {
         intersect: false,
         mode: "index",
+        // axis: "xy",
     },
     scales: {
         // adapters: {

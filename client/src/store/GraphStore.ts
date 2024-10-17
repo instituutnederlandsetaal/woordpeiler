@@ -38,7 +38,7 @@ export const useGraphStore = defineStore('GraphStore', () => {
         // param map
         const wordSearch = {
             wordform: ds.wordform,
-            poshead: ds.pos,
+            pos: ds.pos,
             lemma: ds.lemma,
             source: ds.newspaper,
         }
