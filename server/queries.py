@@ -469,6 +469,9 @@ class QueryBuilder:
                 if value is not None
             ]
         )
+    
+    def tables(self) -> str:
+        return sql.SQL("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'").as_string(self.cursor)
 
     def columns(self, table: str) -> str:
         return (

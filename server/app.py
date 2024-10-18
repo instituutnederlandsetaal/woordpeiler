@@ -65,6 +65,15 @@ app.add_middleware(
 def read_root():
     return {"version": "0.0.1"}
 
+@app.get("/ls/")
+async def get_tables(request: Request):
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor() as cur:
+            qb = QueryBuilder(cur)
+            query = qb.tables()
+            await cur.execute(query)
+            results = [row[0] async for row in cur]
+            return results
 
 @app.get("/ls/{table}")
 async def get_columns(request: Request, table: str):
