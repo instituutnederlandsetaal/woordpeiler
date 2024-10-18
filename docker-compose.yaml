@@ -11,7 +11,7 @@ services:
             - '5432:5432'
         volumes:
             - database:/var/lib/postgresql/data
-            - ./database/init:/docker-entrypoint-initdb.d/
+            - ./database/init_db:/docker-entrypoint-initdb.d/
     server:
         image: woordwacht/server
         build:

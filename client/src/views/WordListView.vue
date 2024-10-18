@@ -124,7 +124,7 @@ onMounted(async () => {
 const sourceLoading = ref(true)
 const newspaperOpts = ref([])
 onMounted(() => {
-    const url = "http://localhost:8000/ls/word_frequency/source"
+    const url = "http://localhost:8000/ls/sources/source"
     fetch(url)
         .then((response) => response.json())
         .then((data) => {

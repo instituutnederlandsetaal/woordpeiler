@@ -44,7 +44,7 @@ class QueryBuilder:
                 word_id,
                 SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq,
                 SUM(frequency) as abs_freq
-            FROM word_frequency
+            FROM frequencies
             GROUP BY word_id, time
         ),
         timely_counts as ( -- timebucket the counts
@@ -96,7 +96,7 @@ class QueryBuilder:
                     word_id,
                     SUM(frequency) / SUM(SUM(frequency)) OVER (PARTITION BY time) rel_freq,
                     SUM(frequency) as abs_freq
-                FROM word_frequency
+                FROM frequencies
                 GROUP BY word_id, time
             ),
             reference_corpus as (
@@ -105,7 +105,7 @@ class QueryBuilder:
                     AVG(rel_freq) * 1000000 as rel_freq,
                     SUM(abs_freq) as abs_freq -- note how abs_freq is summed and rel_freq is averaged
                 FROM daily_counts rl
-                WHERE time_bucket('{time_span}', rl.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+                WHERE time_bucket('{time_span}', rl.time) != (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM frequencies wf)
                 GROUP BY word_id -- So here we already average the relative frequency over all days, which leaves one number per word_id
             ),
             target_corpus as (
@@ -114,7 +114,7 @@ class QueryBuilder:
                     AVG(rel_freq) * 1000000 as rel_freq,
                     SUM(abs_freq) as abs_freq
                 FROM daily_counts rl
-                WHERE time_bucket('{time_span}', rl.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM word_frequency wf)
+                WHERE time_bucket('{time_span}', rl.time) = (SELECT MAX(time_bucket('{time_span}', wf.time)) FROM frequencies wf)
                 GROUP BY word_id
             ),
             keyness as (
@@ -241,12 +241,12 @@ class QueryBuilder:
         ),
         daily_freq AS (
             SELECT 
-                word_frequency.time,
+                frequencies.time,
                 SUM(frequency) AS abs_freq
             FROM filtered_ids
-            JOIN word_frequency ON word_frequency.word_id = filtered_ids.id
+            JOIN frequencies ON frequencies.word_id = filtered_ids.id
             {source_where}
-            GROUP BY word_frequency.time
+            GROUP BY frequencies.time
         ),
         daily_totals AS (
             SELECT
@@ -301,8 +301,8 @@ class QueryBuilder:
             if not zero_pad
             else """
         RIGHT JOIN generate_series(
-            (SELECT MIN(time) FROM word_frequency),
-            (SELECT MAX(time) FROM word_frequency),
+            (SELECT MIN(time) FROM frequencies),
+            (SELECT MAX(time) FROM frequencies),
             INTERVAL '1 day'
         ) AS time
         ON wf.time = time.time AND"""
@@ -318,7 +318,7 @@ class QueryBuilder:
                 dataset=sql.SQL(
                     """
                 SELECT {time}, {frequency} AS frequency
-                FROM word_frequency wf
+                FROM frequencies wf
                 JOIN words ON word_id = words.id
                 {where_stmt} {where}
                 JOIN ({corpus_size}) cs
@@ -354,7 +354,7 @@ class QueryBuilder:
                 SELECT 
                     time,
                     SUM(frequency) AS corpus_size
-                FROM word_frequency
+                FROM frequencies
                 GROUP BY time
             ),
             daily_word_totals AS (
@@ -362,7 +362,7 @@ class QueryBuilder:
                     time, 
                     word_id,
                     SUM(frequency) AS abs_freq
-                FROM word_frequency
+                FROM frequencies
                 GROUP BY time, word_id
             ),
             timebuckets AS (
@@ -488,7 +488,7 @@ class QueryBuilder:
             return sql.SQL("SELECT * FROM posheads").as_string(self.cursor)
         elif table == "words" and column == "pos":
             return sql.SQL("SELECT * FROM posses").as_string(self.cursor)
-        elif table == "word_frequency" and column == "source":
+        elif table == "frequencies" and column == "source":
             return sql.SQL("SELECT * FROM sources").as_string(self.cursor)
         return (
             sql.SQL("SELECT DISTINCT {column} FROM {table}")
@@ -507,7 +507,7 @@ def get_wordforms_of_freq(freq: int) -> str:
     return f"""
         SELECT wordform, lemma, pos
         FROM words
-        JOIN word_frequency wf ON words.id = wf.word_id
+        JOIN frequencies wf ON words.id = wf.word_id
         WHERE wf.frequency = {freq}
     """
 
@@ -520,7 +520,7 @@ def count_wordforms_of_freq(freq: int) -> str:
     return f"""
         SELECT COALESCE(COUNT(*), 0) as count
         FROM words
-        JOIN word_frequency wf ON words.id = wf.word_id
+        JOIN frequencies wf ON words.id = wf.word_id
         WHERE wf.frequency = {freq}
     """
 
@@ -534,7 +534,7 @@ def count_wordforms_of_freqs(start_freq: int, end_freq: int) -> str:
     return f"""
         SELECT series.frequency, COALESCE(COUNT(wf.frequency), 0) as count
         FROM generate_series({start_freq}, {end_freq}) AS series(frequency)
-        LEFT JOIN word_frequency wf ON series.frequency = wf.frequency
+        LEFT JOIN frequencies wf ON series.frequency = wf.frequency
         GROUP BY series.frequency
         ORDER BY series.frequency
     """
@@ -544,7 +544,7 @@ def get_abs_word_freqs_by_lemma(lemma: str) -> str:
     """Return a query that returns the absolute frequency of all wordforms that have a certain lemma."""
     return f"""
         SELECT wf.time, SUM(wf.frequency) AS absolute_frequency, w.wordform, w.lemma, w.pos
-        FROM word_frequency wf
+        FROM frequencies wf
         JOIN words w ON wf.word_id = w.id
         WHERE w.lemma = '{lemma}'
         GROUP BY wf.time, w.wordform, w.lemma, w.pos
@@ -557,7 +557,7 @@ def abs_freq_over_time(word: str) -> str:
     Grouped by time."""
     return f"""
         SELECT wf.time, SUM(wf.frequency) AS absolute_frequency
-        FROM word_frequency wf
+        FROM frequencies wf
         JOIN words w ON wf.word_id = w.id
         WHERE w.wordform = '{word}'
         GROUP BY wf.time
@@ -571,11 +571,11 @@ def abs_freq_over_time_with_zero(wordform: str) -> str:
 
     return f"""
         SELECT time.time, COALESCE(SUM(frequency), 0) AS absolute_frequency
-        FROM word_frequency wf
+        FROM frequencies wf
         JOIN words w ON w.id = wf.word_id
         RIGHT JOIN generate_series(
-            (SELECT MIN(time) FROM word_frequency),
-            (SELECT MAX(time) FROM word_frequency),
+            (SELECT MIN(time) FROM frequencies),
+            (SELECT MAX(time) FROM frequencies),
             INTERVAL '1 day'
         ) AS time
         ON wf.time = time.time AND w.wordform = '{wordform}'
@@ -585,13 +585,13 @@ def abs_freq_over_time_with_zero(wordform: str) -> str:
 
 
 def corpus_size_over_time() -> str:
-    """Return a query that returns (word_frequency.time, number of rows in word_frequency where time = time )."""
+    """Return a query that returns (frequencies.time, number of rows in frequencies where time = time )."""
     return """
         SELECT time.time, COALESCE(SUM(frequency), 0) AS corpus_size
-        FROM word_frequency wf
+        FROM frequencies wf
         RIGHT JOIN generate_series(
-            (SELECT MIN(time) FROM word_frequency),
-            (SELECT MAX(time) FROM word_frequency),
+            (SELECT MIN(time) FROM frequencies),
+            (SELECT MAX(time) FROM frequencies),
             INTERVAL '1 day'
         ) AS time
         ON wf.time = time.time
@@ -605,10 +605,10 @@ def rel_freq_over_time2(word: str) -> str:
     Grouped by time. Note the float conversion to avoid integer division."""
     return f"""
         SELECT time.time, COALESCE(SUM(frequency)::float / cs.corpus_size, 0) AS frequency, corpus_size
-        FROM word_frequency wf
+        FROM frequencies wf
         RIGHT JOIN generate_series(
-            (SELECT MIN(time) FROM word_frequency),
-            (SELECT MAX(time) FROM word_frequency),
+            (SELECT MIN(time) FROM frequencies),
+            (SELECT MAX(time) FROM frequencies),
             INTERVAL '1 day'
         ) AS time
         ON wf.time = time.time
@@ -634,7 +634,7 @@ def abs_freq_over_time_in_source(word: str, source: str) -> str:
     """Return a query that returns the absolute frequency of a word over time in a specific newspaper."""
     return f"""
         SELECT wf.time, SUM(wf.frequency) AS absolute_frequency
-        FROM word_frequency wf
+        FROM frequencies wf
         JOIN words w ON wf.word_id = w.id
         WHERE w.wordform = '{word}' AND wf.source = '{source}'
         GROUP BY wf.time
@@ -648,7 +648,7 @@ def word_count_in_source(source: str) -> str:
     """
     return f"""
         SELECT wf.time, SUM(wf.frequency) AS total_freq
-        FROM word_frequency wf
+        FROM frequencies wf
         WHERE wf.source = '{source}'
         GROUP BY wf.time
         ORDER BY wf.time;
