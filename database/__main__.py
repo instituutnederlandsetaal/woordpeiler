@@ -25,7 +25,7 @@ if __name__ == "__main__":
         drop_all(conn)
         create_tables(conn)
 
-        folder = "database/data" #sys.argv[1]
+        folder = sys.argv[1]
         all_files = os.listdir(folder)
         for file in tqdm(all_files, file=sys.stdout):
             path = os.path.join(folder, file)

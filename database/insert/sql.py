@@ -3,11 +3,11 @@ create_table_data_tmp = """
         wordform TEXT,
         lemma TEXT,
         pos TEXT,
-        poshead VARCHAR(30),
+        poshead TEXT,
         time TIMESTAMPTZ NOT NULL,
         frequency INTEGER,
-        source VARCHAR(30),
-        language VARCHAR(30)
+        source TEXT,
+        language TEXT
     ) ON COMMIT DROP;
 """
 

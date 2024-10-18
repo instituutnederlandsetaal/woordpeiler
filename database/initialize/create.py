@@ -7,7 +7,7 @@ create_table_words = """
         wordform TEXT,
         lemma TEXT,
         pos TEXT,
-        poshead VARCHAR(30),
+        poshead TEXT,
         hash_value TEXT GENERATED ALWAYS AS (md5(wordform || lemma || pos)) STORED,
         CONSTRAINT unique_word_row UNIQUE (hash_value),
         CONSTRAINT word_key UNIQUE (id)
@@ -17,8 +17,8 @@ create_table_words = """
 create_table_sources = """
     CREATE TABLE IF NOT EXISTS sources (
         id SERIAL,
-        source VARCHAR(30),
-        language VARCHAR(30),
+        source TEXT,
+        language TEXT,
         CONSTRAINT unique_source_row UNIQUE (source, language),
         CONSTRAINT source_key UNIQUE (id)
     );
@@ -36,11 +36,14 @@ create_table_frequencies = """
     );
 """
 
+
 def create_tables(conn: Connection) -> None:
     print("Creating tables.")
     with conn.cursor() as cursor:
         cursor.execute(create_table_words)
         cursor.execute(create_table_sources)
         cursor.execute(create_table_frequencies)
-        cursor.execute("SELECT create_hypertable('frequencies', by_range('time'), if_not_exists => TRUE);")
+        cursor.execute(
+            "SELECT create_hypertable('frequencies', by_range('time'), if_not_exists => TRUE);"
+        )
     conn.commit()
