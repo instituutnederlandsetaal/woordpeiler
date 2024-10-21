@@ -23,9 +23,13 @@ CONNECTION = f"postgres://postgres:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES
 
 
 def analyze(CONNECTION):
-    with psycopg.connect(CONNECTION) as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("ANALYZE")
+    conn = psycopg.connect(CONNECTION)
+    conn.autocommit = True
+    cursor = conn.cursor()
+    cursor.execute("VACUUM ANALYZE;")
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 if __name__ == "__main__":
@@ -44,7 +48,7 @@ if __name__ == "__main__":
         with psycopg.connect(CONNECTION) as conn:
             Uploader(conn, path)
         i += 1
-        if i == 5:
+        if i == 2:
             break
 
     analyze(CONNECTION)
@@ -111,15 +115,38 @@ if __name__ == "__main__":
                     time TIMESTAMPTZ NOT NULL,
                     word_id INTEGER,
                     source_id INTEGER,
-                    frequency INTEGER,
-                    FOREIGN KEY (word_id) REFERENCES words (id),
-                    FOREIGN KEY (source_id) REFERENCES sources (id)
+                    frequency INTEGER
                 );
             """
             )
             cursor.execute(
                 "SELECT create_hypertable('frequencies', by_range('time'), if_not_exists => TRUE);"
             )
+
+    analyze(CONNECTION)
+
+    with timer("helper indexes"):
+        print("creating helper indexes for insert frequencies")
+        with psycopg.connect(CONNECTION) as conn:
+            with conn.cursor() as cursor:
+
+                cursor.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_wordform ON words (wordform);"
+                    "CREATE INDEX IF NOT EXISTS idx_lemma ON words (lemma);"
+                    "CREATE INDEX IF NOT EXISTS idx_poshead ON words (poshead);"
+                    "CREATE INDEX IF NOT EXISTS idx_pos ON words (pos);"
+                    "CREATE INDEX IF NOT EXISTS idx_wordform_lemma ON words (wordform, lemma);"
+                    "CREATE INDEX IF NOT EXISTS idx_wordform_pos ON words (wordform, pos);"
+                    "CREATE INDEX IF NOT EXISTS idx_wordform_poshead ON words (wordform, poshead);"
+                    "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_pos ON words (wordform, lemma, pos);"
+                    "CREATE INDEX IF NOT EXISTS idx_wordform_lemma_poshead ON words (wordform, lemma, poshead);"
+                    "CREATE INDEX IF NOT EXISTS idx_lemma_pos ON words (lemma, pos);"
+                    "CREATE INDEX IF NOT EXISTS idx_lemma_poshead ON words (lemma, poshead);"
+                    # Table sources: source, language
+                    "CREATE INDEX IF NOT EXISTS idx_source ON sources (source);"
+                    "CREATE INDEX IF NOT EXISTS idx_language ON sources (language);"
+                    "CREATE INDEX IF NOT EXISTS idx_source_language ON sources (source, language);"
+                )
 
     analyze(CONNECTION)
 
@@ -143,9 +170,48 @@ if __name__ == "__main__":
         with conn.cursor() as cursor:
             cursor.execute("DROP TABLE data_tmp_deduped")
 
-    # create indexes
-    with timer("creating indexes"):
-        with psycopg.connect(CONNECTION) as conn:
-            index_all(conn)
+    analyze(CONNECTION)
 
+    # indexes for frequencies
+    print("Creating indexes for frequencies")
+    with psycopg.connect(CONNECTION) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS idx_word_id ON frequencies (word_id);"
+                "CREATE INDEX IF NOT EXISTS idx_source_id ON frequencies (source_id);"
+                "CREATE INDEX IF NOT EXISTS idx_time_word_id ON frequencies (time, word_id);"
+                "CREATE INDEX IF NOT EXISTS idx_time_source_id ON frequencies (time, source_id);"
+                "CREATE INDEX IF NOT EXISTS idx_time_word_id_source_id ON frequencies (time, word_id, source_id);"
+                "CREATE INDEX IF NOT EXISTS idx_word_id_source_id ON frequencies (word_id, source_id);"
+            )
+
+    analyze(CONNECTION)
+
+    # lookup tables
+    print("Creating lookup tables")
+    with timer("Creating lookup tables"):
+        with psycopg.connect(CONNECTION) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT time, SUM(frequency) AS size
+                    INTO corpus_size
+                    FROM frequencies
+                    GROUP BY time
+                """
+                )
+                cursor.execute(
+                    "SELECT poshead INTO posheads FROM words GROUP BY poshead"
+                )
+                cursor.execute("SELECT pos INTO posses FROM words GROUP BY pos")
+
+    # create indexes
+    ######################
+    # niet uncommenten vanwege dubbele indexen
+    ######################
+    # with timer("creating indexes"):
+    #     with psycopg.connect(CONNECTION) as conn:
+    #         index_all(conn)
+
+    analyze(CONNECTION)
     print("Done")
