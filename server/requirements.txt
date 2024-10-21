@@ -4,8 +4,7 @@ certifi==2024.7.4
 click==8.1.7
 dnspython==2.6.1
 email_validator==2.2.0
-fastapi==0.111.1
-fastapi-cli==0.0.4
+fastapi[standard]
 h11==0.14.0
 httpcore==1.0.5
 httptools==0.6.1
@@ -16,7 +15,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 psycopg==3.1.19
-psycopg-binary==3.1.19
+psycopg-binary==3.2.2
 psycopg-pool==3.2.2
 pydantic==2.8.2
 pydantic_core==2.20.1
