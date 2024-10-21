@@ -11,4 +11,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Run the start.sh script when the container starts
-CMD ["fastapi run app.py"]
+CMD ["fastapi", "run", "app.py"]

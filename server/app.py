@@ -50,6 +50,8 @@ origins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:8000",
+    "http://corpustrends.dev.ivdnt.loc",
+    "http://corpustrends.dev.ivdnt.loc:8000",
 ]
 
 app.add_middleware(
@@ -65,6 +67,7 @@ app.add_middleware(
 def read_root():
     return {"version": "0.0.1"}
 
+
 @app.get("/ls/")
 async def get_tables(request: Request):
     async with request.app.async_pool.connection() as conn:
@@ -74,6 +77,7 @@ async def get_tables(request: Request):
             await cur.execute(query)
             results = [row[0] async for row in cur]
             return results
+
 
 @app.get("/ls/{table}")
 async def get_columns(request: Request, table: str):
