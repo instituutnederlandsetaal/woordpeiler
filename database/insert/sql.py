@@ -1,5 +1,5 @@
 create_table_data_tmp = """
-    CREATE TEMP TABLE data_tmp (
+    CREATE TABLE data_tmp (
         wordform TEXT,
         lemma TEXT,
         pos TEXT,
@@ -8,7 +8,7 @@ create_table_data_tmp = """
         frequency INTEGER,
         source TEXT,
         language TEXT
-    ) ON COMMIT DROP;
+    )
 """
 
 copy_select_tmp_words_to_words = """

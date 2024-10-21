@@ -18,8 +18,6 @@ from tqdm import tqdm
 from psycopg import Connection, Cursor
 
 
-
-
 class Uploader:
     def __init__(self, conn: Connection, path: str) -> None:
         self.conn: Connection = conn
@@ -31,16 +29,14 @@ class Uploader:
     def upload(self):
         total_lines = StreamingCSVReader.linecount(self.path)
         try:
-            with tqdm(total=total_lines, desc="Processing Lines", file=sys.stdout) as pbar:
+            with tqdm(
+                total=total_lines, desc="Processing Lines", file=sys.stdout
+            ) as pbar:
                 for chunk in tqdm(StreamingCSVReader(self.path, self.chunk_size)):
                     # insert
-                    self.__create_tmp_tables()
+                    # self.__create_tmp_tables()
                     self.__insert_rows(chunk)
-                    self.__extract_from_rows()
-                    # commit and refresh cursor
-                    self.conn.commit()
-                    self.cursor.close()
-                    self.cursor = self.conn.cursor()
+                    # self.__extract_from_rows()
                     # tqdm
                     pbar.update(self.chunk_size)
         except Exception as e:
@@ -58,39 +54,7 @@ class Uploader:
         rows = [row for row in rows if re.match(r"^\d{8}$", row.date)]
         # only valid sources
         rows = [row for row in rows if row.medium == "newspaper"]
-
-        unique = {}
-        for r in rows:
-            key = (
-                r.date,
-                r.wordform,
-                r.lemma,
-                r.pos,
-                r.poshead,
-                r.source,
-                r.medium,
-                r.language,
-            )
-            if key in unique:
-                eprint(f"Duplicate: {r}")
-                eprint(f"Original: {unique[key]}")
-                unique[key] += r.frequency
-            else:
-                unique[key] = r.frequency
-        return [
-            CSVRow(
-                date=k[0],
-                wordform=k[1],
-                lemma=k[2],
-                pos=k[3],
-                poshead=k[4],
-                source=k[5],
-                medium=k[6],
-                language=k[7],
-                frequency=v,
-            )
-            for k, v in unique.items()
-        ]
+        return rows
 
     def __insert_rows(self, rows: list[CSVRow]):
         rows = self.__clean_data(rows)
@@ -115,5 +79,3 @@ class Uploader:
         self.cursor.execute(copy_select_tmp_words_to_words)
         self.cursor.execute(copy_select_tmp_sources_to_sources)
         self.cursor.execute(copy_select_tmp_data_to_word_freqs)
-
-
