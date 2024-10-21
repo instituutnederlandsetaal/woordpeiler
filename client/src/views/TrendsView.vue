@@ -11,13 +11,8 @@
                     <br />
                     <SelectButton v-model="trendType" :options="trendTypes" />
                 </Panel>
-                <Listbox
-                    v-if="trends.length != 0"
-                    multiple
-                    metaKeySelection
-                    v-model="selectedTrend"
-                    :options="trends"
-                />
+                <Listbox v-if="trends.length != 0" multiple metaKeySelection v-model="selectedTrend"
+                    :options="trends" />
                 <Skeleton v-else />
             </div>
             <SearchOptionsView />
@@ -41,6 +36,7 @@ import InputNumber from "primevue/inputnumber"
 
 import { ref, onMounted, watch } from "vue"
 import { useGraphStore, randomColor } from "@/store/GraphStore"
+import { apiURL } from "@/ts/api"
 
 const GraphStore = useGraphStore()
 const trends = ref([])
@@ -67,7 +63,7 @@ watch([timeBucketSize, timeBucketType, trendType], () => {
 })
 
 function getTrends() {
-    const url = `http://localhost:8000/trends?period_length=${timeBucketSize.value}&period_type=${timeBucketType.value}&trend_type=${trendType.value}`
+    const url = `${apiURL}/trends?period_length=${timeBucketSize.value}&period_type=${timeBucketType.value}&trend_type=${trendType.value}`
     fetch(url)
         .then((response) => response.json())
         .then((data) => {

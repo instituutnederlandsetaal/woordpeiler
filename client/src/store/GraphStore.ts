@@ -2,6 +2,8 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { DataSeries } from "@/ts/DataSeries"
 import type { SearchSettings } from "@/ts/SearchSettings"
+import { apiURL } from "@/ts/api"
+
 
 export function displayName(str) {
     return Object.entries(str)
@@ -58,7 +60,7 @@ export const useGraphStore = defineStore('GraphStore', () => {
         const searchParamsString = new URLSearchParams(searchParams).toString()
 
         // api call
-        const url = `http://localhost:8000/word_frequency?${wordSearchString}&${searchParamsString}`
+        const url = `${apiURL}/word_frequency?${wordSearchString}&${searchParamsString}`
         fetch(url)
             .then((response) => response.json())
             .then((data) => {

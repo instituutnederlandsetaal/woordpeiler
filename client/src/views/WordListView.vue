@@ -85,14 +85,16 @@ import { computed, onMounted, ref, watch } from "vue"
 
 import { useGraphStore, displayName, randomColor } from "@/store/GraphStore"
 
+import { apiURL } from "@/ts/api"
+
 const GraphStore = useGraphStore()
 const posLoading = ref(true)
 const posOptions = ref(null)
 onMounted(async () => {
     let posHeads = null
     let posses = null
-    const posHeadUrl = "http://localhost:8000/ls/words/poshead"
-    const posUrl = "http://localhost:8000/ls/words/pos"
+    const posHeadUrl = `${apiURL}/ls/words/poshead`
+    const posUrl = `${apiURL}/ls/words/pos`
 
     await fetch(posHeadUrl)
         .then((response) => response.json())
@@ -124,7 +126,7 @@ onMounted(async () => {
 const sourceLoading = ref(true)
 const newspaperOpts = ref([])
 onMounted(() => {
-    const url = "http://localhost:8000/ls/sources/source"
+    const url = `${apiURL}/ls/sources/source`
     fetch(url)
         .then((response) => response.json())
         .then((data) => {
