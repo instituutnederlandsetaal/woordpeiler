@@ -39,7 +39,6 @@ if __name__ == "__main__":
             cursor.execute(create_table_data_tmp)
 
     # insert
-    i = 0
     folder = sys.argv[1]
     all_files = os.listdir(folder)
     for file in tqdm(all_files, file=sys.stdout):
@@ -47,9 +46,6 @@ if __name__ == "__main__":
         print(f"Uploading {path}")
         with psycopg.connect(CONNECTION) as conn:
             Uploader(conn, path)
-        i += 1
-        if i == 2:
-            break
 
     analyze(CONNECTION)
 
