@@ -12,6 +12,7 @@ services:
         volumes:
             - database:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
+            - ./database/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
     server:
         image: woordwacht/server
         environment:
