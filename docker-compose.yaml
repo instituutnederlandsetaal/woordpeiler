@@ -3,7 +3,7 @@ services:
     database:
         image: timescale/timescaledb:latest-pg16
         restart: always
-        shm_size: 1gb
+        shm_size: 2gb
         environment:
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
