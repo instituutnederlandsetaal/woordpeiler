@@ -2,53 +2,32 @@
     <Panel class="searchOptions">
         <Accordion>
             <AccordionPanel value="0">
-                <AccordionHeader> Advanced options </AccordionHeader>
+                <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="advancedSearch">
                     <div class="formSplit">
-                        <label>Frequency</label>
-                        <SelectButton
-                            v-model="GraphStore.searchSettings.frequencyType"
-                            :options="frequencyTypeOptions"
-                            optionValue="value"
-                            optionLabel="label"
-                        />
+                        <label>Frequentie</label>
+                        <SelectButton v-model="GraphStore.searchSettings.frequencyType" :options="frequencyTypeOptions"
+                            optionValue="value" optionLabel="label" />
                     </div>
-                    <label>Date range</label>
+                    <label>Periode</label>
                     <div class="dateRange">
-                        <DatePicker
-                            v-model="GraphStore.searchSettings.startDate"
-                            showIcon
-                            fluid
-                            iconDisplay="input"
-                            dateFormat="dd-M-yy"
-                        />
-                        <DatePicker
-                            v-model="GraphStore.searchSettings.endDate"
-                            showIcon
-                            fluid
-                            iconDisplay="input"
-                            dateFormat="dd-M-yy"
-                        />
+                        <DatePicker v-model="GraphStore.searchSettings.startDate" showIcon fluid iconDisplay="input"
+                            dateFormat="dd-M-yy" />
+                        <DatePicker v-model="GraphStore.searchSettings.endDate" showIcon fluid iconDisplay="input"
+                            dateFormat="dd-M-yy" />
                     </div>
-                    <label>Average over period</label>
+                    <label>Gemiddeld over</label>
                     <div class="timeBucket">
-                        <InputNumber
-                            v-model="GraphStore.searchSettings.timeBucketSize"
-                            inputId="withoutgrouping"
-                            :useGrouping="false"
-                            fluid
-                        />
-                        <SelectButton v-model="GraphStore.searchSettings.timeBucketType" :options="timeBucketOptions" />
+                        <InputNumber v-model="GraphStore.searchSettings.timeBucketSize" inputId="withoutgrouping"
+                            :useGrouping="false" fluid />
+                        <SelectButton v-model="GraphStore.searchSettings.timeBucketType" :options="timeBucketOptions"
+                            optionValue="value" optionLabel="label" />
                     </div>
                 </AccordionContent>
             </AccordionPanel>
         </Accordion>
-        <Button
-            class="search-btn"
-            label="Search"
-            @click="GraphStore.search"
-            :disabled="GraphStore.dataSeries.length == 0"
-        />
+        <Button class="search-btn" label="Zoeken" @click="GraphStore.search"
+            :disabled="GraphStore.dataSeries.length == 0" />
     </Panel>
 </template>
 
@@ -76,8 +55,13 @@ import { useGraphStore } from "@/store/GraphStore"
 const GraphStore = useGraphStore()
 
 const frequencyTypeOptions = [
-    { label: "relative", value: "rel_freq" },
-    { label: "absolute", value: "abs_freq" },
+    { label: "relatief", value: "rel_freq" },
+    { label: "absoluut", value: "abs_freq" },
 ]
-const timeBucketOptions = ["day", "week", "month", "year"]
+const timeBucketOptions = [
+    { label: "dag", value: "day" },
+    { label: "week", value: "week" },
+    { label: "maand", value: "month" },
+    { label: "jaar", value: "year" },
+]
 </script>

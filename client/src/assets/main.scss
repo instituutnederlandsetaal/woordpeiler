@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import './base.css';
 
 body {
@@ -77,14 +78,13 @@ main {
   flex-direction: column;
   padding: 1rem;
   min-height: 0;
+  gap: 1em;
 }
 
 .wordlist {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding-bottom: 1rem;
-  padding-right: 1rem;
 }
 
 .wordlist div.p-scrollpanel-content {
@@ -133,10 +133,14 @@ main {
   flex: 1;
   display: flex;
   padding: 1rem;
+
   /* max-height: 400px;
   max-width: 800px;
   height: 400px;
   width: 800px; */
+  >.p-panel {
+    padding: 2rem;
+  }
 }
 
 .graph>div,
@@ -151,11 +155,22 @@ canvas {
   align-items: center;
 }
 
+$theme: #62b6ff;
+
 :root:root {
-  --p-scrollpanel-bar-background: #aaa
+  --p-scrollpanel-bar-background: #aaa;
+  --p-primary-color: #{$theme};
+  --p-highlight-color: #000;
+  --p-highlight-focus-color: #000;
+  --p-highlight-focus-background: #{color.adjust($theme, $lightness: 20%)};
+  --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
+  --p-primary-active-color: #{color.adjust($theme, $lightness: -20%)};
+  --p-primary-hover-color: #{color.adjust($theme, $lightness: -10%)};
+
 }
 
-#app .p-select {
+#app .p-select,
+#app .p-cascadeselect {
   width: 218px;
 }
 
@@ -180,9 +195,20 @@ canvas {
 }
 
 .tooltip a {
-  color: white; 
+  color: white;
 }
 
 .tooltip a:visited {
   color: white;
+}
+
+svg,
+#my_dataviz {
+  /* important for responsiveness */
+  display: block;
+  fill: none;
+  stroke: none;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }

@@ -21,9 +21,9 @@ export const useGraphStore = defineStore('GraphStore', () => {
     let datasets = ref({})
     let dataSeries = ref<DataSeries[]>([])
     let searchSettings = ref<SearchSettings>({
-        timeBucketType: "day",
+        timeBucketType: "year",
         timeBucketSize: 1,
-        startDate: new Date(new Date().setFullYear(new Date().getFullYear() - 20)),
+        startDate: new Date('2000-01-01'),
         endDate: new Date(),
         frequencyType: "rel_freq",
     })
@@ -39,15 +39,18 @@ export const useGraphStore = defineStore('GraphStore', () => {
     function getFrequency(ds: DataSeries) {
         // param map
         const wordSearch = {
-            wordform: ds.wordform,
+            wordform: ds.wordform?.trim()?.toLowerCase(),
             pos: ds.pos,
             lemma: ds.lemma,
             source: ds.newspaper,
-        }
+            language: ds.language
+        } 
+        
         // Remove falsy values, and blank strings (could be tabs and spaces)
         Object.keys(wordSearch).forEach(
             (key) => (wordSearch[key] == null || wordSearch[key].trim() === "") && delete wordSearch[key]
         )
+
         // to string
         const wordSearchString = new URLSearchParams(wordSearch).toString()
 

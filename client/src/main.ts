@@ -1,4 +1,4 @@
-import './assets/main.css'
+import '@/assets/main.scss'
 import 'primeicons/primeicons.css'
 
 import { createApp } from 'vue'
@@ -16,6 +16,12 @@ app.use(PrimeVue, {
         options: {
             darkModeSelector: '.my-app-dark',
         }
+    },
+    locale: {
+        monthNamesShort: ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'],
+        monthNames: ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'],
+        dayNamesMin: ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'],
+        firstDayOfWeek: 0,
     }
 });
 

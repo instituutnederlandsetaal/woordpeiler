@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     # insert
     folder = sys.argv[1]
-    all_files = os.listdir(folder)
+    all_files = os.listdir(folder)[:5]
     for file in tqdm(all_files, file=sys.stdout):
         path = os.path.join(folder, file)
         print(f"Uploading {path}")
@@ -200,6 +200,9 @@ if __name__ == "__main__":
                     "SELECT poshead INTO posheads FROM words GROUP BY poshead"
                 )
                 cursor.execute("SELECT pos INTO posses FROM words GROUP BY pos")
+                cursor.execute(
+                    "SELECT source_id, COUNT(DISTINCT time) INTO days_per_source FROM frequencies GROUP BY source_id;"
+                )
 
     # create indexes
     ######################

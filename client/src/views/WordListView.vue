@@ -5,7 +5,7 @@
                 <ColorPicker id="color" v-model="dataSerie.color" />
                 <div class="panelHeader">
                     <template v-if="displayName(dataSerie)"> {{ displayName(dataSerie) }} </template>
-                    <template v-else> new word </template>
+                    <template v-else></template>
                 </div>
             </template>
             <template #icons>
@@ -16,7 +16,7 @@
             </template>
 
             <div class="formSplit">
-                <label for="word">Word</label><br />
+                <label for="word">Woord</label><br />
                 <InputText id="word" v-model="dataSerie.wordform" />
             </div>
 
@@ -31,23 +31,23 @@
                 <InputText id="lemma" v-model="dataSerie.lemma" />
             </div>
             <div class="formSplit">
-                <label for="pos">Part of speech</label>
+                <label for="pos">Woordsoort</label>
                 <CascadeSelect :loading="posLoading" id="pos" v-model="dataSerie.pos" :options="posOptions"
-                    optionGroupLabel="label" optionGroupChildren="items" showClear placeholder="Part of speech" />
+                    optionGroupLabel="label" optionGroupChildren="items" showClear placeholder="Woordsoort" />
 
                 <!-- <Select id="pos" v-model="dataSerie.pos" :options="posOptions" optionGroupLabel="label"
                     :loading="posLoading" optionGroupChildren="items" showClear placeholder="Part of speech" /> -->
             </div>
             <div class="formSplit">
-                <label for="newspaper">Newspaper</label>
+                <label for="newspaper">Krant</label>
                 <Select id="newspaper" :loading="sourceLoading" v-model="dataSerie.newspaper" :options="newspaperOpts"
-                    showClear placeholder="Newspaper" />
+                    showClear placeholder="Krant" />
             </div>
 
             <div class="formSplit">
-                <label for="variant">Variant</label>
-                <Select id="variant" v-model="dataSerie.variant" :options="variantOpts" showClear
-                    placeholder="Variant" />
+                <label for="variant">Taalvariëteit</label>
+                <Select id="variant" v-model="dataSerie.language" :options="variantOpts" showClear optionLabel="label"
+                    optionValue="value" placeholder="Taalvariëteit" />
             </div>
 
             <!-- </AccordionContent>
@@ -56,7 +56,7 @@
         </Panel>
         <Button style="border: 2px dashed #ccc; background: #eee; min-height: 40px" class="newWord" severity="secondary"
             outlined @click="() => GraphStore.dataSeries.push({ color: randomColor() })">
-            <span class="pi pi-plus"></span> Add
+            <span class="pi pi-plus"></span>
         </Button>
     </ScrollPanel>
 </template>
@@ -109,15 +109,16 @@ onMounted(async () => {
 
     // posses is now in the form [NOU(num=sg), NOU(num=pl), AA, ...]
     // We want to transform this into [{label: "NOU", items: [{label: "NOU(num=sg)", value: "NOU(num=sg)"}]}, {label: "AA", items: ...]}, ...]
-    posses = posHeads.map((posHead) => {
+    posses = posHeads.filter(posHead => !["punct", "__eos__"].includes(posHead)).map((posHead) => {
         return {
             label: posHead,
-            items: [posHead].concat(posses.filter((pos) => pos.startsWith(posHead)).map((pos) => {
+            items: [posHead].concat(posses.filter((pos) => pos.startsWith(posHead) && pos.includes("(") && !pos.includes("()")).map((pos) => {
                 return pos
             }))
         }
-    })
 
+    })
+    // Remove punct and __eos__
 
     posOptions.value = posses
     posLoading.value = false
@@ -135,7 +136,12 @@ onMounted(() => {
         })
 })
 
-const variantOpts = ref(["nl", "be"])
+const variantOpts = ref([
+    { label: "Antilliaans-Nederlands", value: "AN" },
+    { label: "Belgisch-Nederlands", value: "BN" },
+    { label: "Nederlands-Nederlands", value: "NN" },
+    { label: "Surinaams-Nederlands", value: "SN" },
+])
 
 
 onMounted(() => {

@@ -3,6 +3,7 @@ export interface DataSeries {
     pos?: string
     lemma?: string
     newspaper?: string
+    language?: string
     color?: string
     variant?: string
 }

@@ -1,40 +1,37 @@
 # standard
 import json
 import os
-from typing import Optional, Union
+from token import OP
+from typing import Annotated, Optional, Union
 from contextlib import asynccontextmanager
 import datetime
-from dotenv import load_dotenv
 
 # third party
 import psycopg
 from psycopg.rows import dict_row, tuple_row
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Query
 from psycopg_pool import AsyncConnectionPool
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 # local
 from queries import QueryBuilder
 from datatypes import PeriodType
+from connection import get_reader_conn_str
 
 load_dotenv()
-
-
-def get_conn_str():
-    return f"""
-    dbname={os.getenv('POSTGRES_DB', 'woordwacht')}
-    user={os.getenv('READER_USER', 'reader')}
-    password={os.getenv('READER_PASSWORD', 'reader')}
-    host={os.getenv('POSTGRES_HOST', 'localhost')}
-    port={os.getenv('POSTGRES_PORT', '5432')}
-    """
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.async_pool = AsyncConnectionPool(
-        conninfo=get_conn_str(), open=False, kwargs={"prepare_threshold": 1}
+        max_lifetime=30,
+        max_idle=30,
+        max_waiting=30,
+        conninfo=get_reader_conn_str(),
+        open=False,
+        kwargs={"prepare_threshold": 1},
     )
     await app.async_pool.open()
     await app.async_pool.wait()
@@ -122,17 +119,33 @@ async def get_words(
             return results
 
 
+@app.get("/language")
+async def get_typical_language_words(
+    request: Request,
+    language: Optional[str] = None,
+    exclude: Annotated[Optional[list], Query()] = None,
+):
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor(row_factory=dict_row) as cur:
+            qb = QueryBuilder(cur)
+            query = qb.get_typical_language_words(language, exclude)
+            await cur.execute(query)
+            results = await cur.fetchall()
+            return results
+
+
 @app.get("/trends")
 async def get_trends(
     request: Request,
     period_type: Optional[str] = "day",
     period_length: Optional[int] = 1,
-    trend_type: Optional[str] = "absolute",
+    trend_type: Optional[str] = None,
+    exclude: Annotated[Optional[list], Query()] = None,
 ):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             qb = QueryBuilder(cur)
-            query = qb.ref_corp_trends(period_type, period_length, trend_type)
+            query = qb.ref_corp_trends(period_type, period_length, trend_type, exclude)
             await cur.execute(query)
             results = await cur.fetchall()
             return results
@@ -146,6 +159,7 @@ async def get_freq(
     lemma: Optional[str] = None,
     pos: Optional[str] = None,
     source: Optional[str] = None,
+    language: Optional[str] = None,
     period_type: Optional[str] = "day",
     period_length: Optional[int] = 1,
     zero_pad: Optional[bool] = True,
@@ -193,6 +207,7 @@ async def get_freq(
                 pos,
                 poshead,
                 source,
+                language,
                 zero_pad,
                 absolute,
                 period_type,
@@ -205,9 +220,7 @@ async def get_freq(
             await cur.execute(query)
             end = datetime.datetime.now()
             print(f"Query took {end - start}")
-            results = [
-                {**row, "time": row["timebucket"].timestamp()} async for row in cur
-            ]
+            results = [{**row, "time": row["time"].timestamp()} async for row in cur]
             return results
 
 

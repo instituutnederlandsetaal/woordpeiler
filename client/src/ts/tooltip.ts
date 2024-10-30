@@ -102,7 +102,7 @@ export const externalTooltipHandler = (context) => {
             const word = body.toString().split(":")[0]
             const dateSplit = aTitle.split("-")
             const date = dateSplit[2] + dateSplit[1] + dateSplit[0]
-            link.href = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits?patt=" + encodeURIComponent(`[word="${word}"]`) + "&filter=" + encodeURIComponent(`medium:newspaper AND witnessYear_from:${dateSplit[2]} AND witnessMonth_from:${dateSplit[1]} AND witnessDay_from:${dateSplit[0]}`)
+            link.href = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits?patt=" + encodeURIComponent(`[word="${word}"]`) + "&filter=" + encodeURIComponent(`medium:newspaper AND witnessYear_from:${dateSplit[2]} AND witnessMonth_from:${dateSplit[1]} AND witnessDay_from:${dateSplit[0]}`)
             link.target = "_blank"
             link.innerHTML = body
 

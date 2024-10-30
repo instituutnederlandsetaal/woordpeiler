@@ -1,20 +1,29 @@
 <template>
     <div class="graph">
-        <Panel header="graph">
-            <template #icons>
-                <Button text severity="secondary">
+        <div class="p-panel">
+
+            <!-- old -->
+            <!-- <Panel> -->
+            <!-- <template #icons> -->
+            <!-- <Button text severity="secondary">
                     <span class="pi pi-download"></span>
-                </Button>
-            </template>
+                </Button> -->
+            <!-- </template> -->
             <div v-if="GraphStore.datasets.length === 0" class="emptyGraph">
                 <ProgressSpinner />
             </div>
             <div style="position: relative" v-else>
                 <Line ref=" bar" :data="chartData" :options="chartOptions" />
             </div>
-        </Panel>
+            <!-- </Panel> -->
+
+            <!-- new -->
+            <!-- <D3GraphView v-if="data?.length" :data="data" /> -->
+
+        </div>
     </div>
 </template>
+
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue"
@@ -28,10 +37,56 @@ import "chartjs-adapter-date-fns"
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js/auto"
 import { Bar, Line } from "vue-chartjs"
 import { externalTooltipHandler } from "@/ts/tooltip"
-
+import D3GraphView from "@/views/D3GraphView.vue"
 import { useGraphStore } from "@/store/GraphStore"
 
 const GraphStore = useGraphStore()
+const data = computed(() => {
+    if (!GraphStore.datasets?.length) {
+        return []
+        return [
+            {
+                name: 'kat',
+                color: '#ff0000',
+                data: [
+                    {
+                        x: new Date('2020-10-10').getTime(),
+                        y: 1,
+                    },
+                    {
+                        x: new Date('2022-10-10').getTime(),
+                        y: 7,
+                    },
+                    {
+                        x: new Date().getTime(),
+                        y: 2
+                    },
+                ]
+            },
+            {
+                name: 'hond',
+                color: '#00ff00',
+                data: [
+                    {
+                        x: new Date('2020-10-10').getTime(),
+                        y: 3,
+                    },
+                    {
+                        x: new Date('2022-10-10').getTime(),
+                        y: 6,
+                    },
+                    {
+                        x: new Date().getTime(),
+                        y: 4
+                    }
+                ]
+            }
+        ]
+    }
+    const d = GraphStore.datasets
+    console.log(d)
+    return d
+})
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 // https://stackblitz.com/github/apertureless/vue-chartjs/tree/main/sandboxes/reactive

@@ -5,18 +5,10 @@
             <!--Trendsettings-->
             <Accordion value="0" class="p-panel">
                 <AccordionPanel value="0">
-                    <AccordionHeader>Trendinstellingen</AccordionHeader>
+                    <AccordionHeader>Taalvariëteitinstellingen</AccordionHeader>
                     <AccordionContent class="advancedSearch">
-                        <label>Trends van afgelopen</label>
-                        <div class="timeBucket">
-                            <InputNumber v-model="timeBucketSize" inputId="withoutgrouping" :useGrouping="false"
-                                fluid />
-                            <SelectButton v-model="timeBucketType" :options="timeBucketOptions" optionValue="value"
-                                optionLabel="label" />
-                        </div>
-
                         <div class="formSplit">
-                            <label>Trendsoort</label>
+                            <label>Taalvariëteit</label>
                             <SelectButton v-model="trendType" :options="trendTypes" />
                         </div>
 
