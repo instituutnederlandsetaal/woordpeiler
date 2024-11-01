@@ -18,7 +18,7 @@ services:
         command: "-c 'config_file=/etc/postgres/postgresql.conf'"
 
     server:
-        image: woordwacht/server:${VERSION_LABEL}
+        image: instituutnederlandsetaal/corpustrends-server:${VERSION_LABEL}
         environment:
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -33,7 +33,7 @@ services:
             - '8000:8000'
 
     client:
-        image: woordwacht/client:${VERSION_LABEL}
+        image: instituutnederlandsetaal/corpustrends-client:${VERSION_LABEL}
         build:
             context: client
         restart: unless-stopped
