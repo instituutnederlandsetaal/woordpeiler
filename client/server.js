@@ -1,9 +1,14 @@
 const express = require('express');
+const history = require('connect-history-api-fallback')
+
 const app = express();
 const port = 8080;
 const staticFileMiddleware = express.static('dist')
+
+// Note!: use history should come before use static middleware. Otherwise subpages don't load.
+app.use(history({ index: '/index.html' }))
 app.use(staticFileMiddleware)
-app.use('/', staticFileMiddleware)
+
 app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`)
 })
