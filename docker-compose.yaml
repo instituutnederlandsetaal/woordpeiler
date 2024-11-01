@@ -2,7 +2,7 @@ services:
 
     database:
         image: timescale/timescaledb:latest-pg16
-        restart: always
+        restart: unless-stopped
         shm_size: 2gb
         environment:
             - POSTGRES_USER=${POSTGRES_USER}
@@ -18,7 +18,7 @@ services:
         command: "-c 'config_file=/etc/postgres/postgresql.conf'"
 
     server:
-        image: woordwacht/server
+        image: woordwacht/server:${VERSION_LABEL}
         environment:
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -28,15 +28,15 @@ services:
             - POSTGRES_PORT=${POSTGRES_PORT}
         build:
             context: server
-        restart: always
+        restart: unless-stopped
         ports:
             - '8000:8000'
 
     client:
-        image: woordwacht/client
+        image: woordwacht/client:${VERSION_LABEL}
         build:
             context: client
-        restart: always
+        restart: unless-stopped
         ports:
             - '80:8080'
 
