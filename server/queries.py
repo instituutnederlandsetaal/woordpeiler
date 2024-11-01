@@ -43,17 +43,11 @@ class QueryBuilder:
                         SUM(abs_freq) / SUM(SUM(abs_freq)) OVER () as rel_freq,
                         SUM(abs_freq) as abs_freq 
                     FROM monthly_counts dc 
-                    WHERE dc.time >= (SELECT MAX(time_bucket('{time_span}',cs.time)) FROM corpus_size cs) 
+                    WHERE dc.time >= (SELECT MAX(time_bucket('{time_span}',crs.time)) FROM corpus_size crs) 
                     GROUP BY word_id
-                ),
-                rc as (
-                    SELECT 
-                        word_id, 
-                        SUM(abs_freq) / SUM(SUM(abs_freq)) OVER () as rel_freq,
-                        SUM(abs_freq) as abs_freq 
-                    FROM monthly_counts dc 
-                    WHERE dc.time < (SELECT MAX(time_bucket('{time_span}',cs.time)) FROM corpus_size cs) 
-                    GROUP BY word_id
+                ), cs AS (
+	                SELECT SUM(size) as size 
+                    FROM corpus_size
                 )
                 SELECT
                     w.wordform,
@@ -63,11 +57,11 @@ class QueryBuilder:
                     tc.word_id,
                     tc.abs_freq as tc_abs_freq,
                     tc.rel_freq as tc_rel_freq,
-                    COALESCE(rc.abs_freq, 0) as rc_abs_freq,
-                    COALESCE(rc.rel_freq, 0) as rc_rel_freq,
-                    (1 + tc.rel_freq * 1e6) / (1 + COALESCE(rc.rel_freq, 0) * 1e6) as keyness
-                FROM tc
-                LEFT JOIN rc ON tc.word_id = rc.word_id
+                    rc.frequency - tc.abs_freq as rc_abs_freq,
+                    rc.frequency / cs.size as rc_rel_freq,
+                    (1 + tc.rel_freq * 1e6) / (1 + ((rc.frequency - tc.abs_freq) / cs.size) * 1e6) as keyness
+                FROM tc CROSS JOIN cs
+                LEFT JOIN frequency_all rc ON tc.word_id = rc.word_id
                 LEFT JOIN words w ON tc.word_id = w.id
                 {where_pos}
                 ORDER BY keyness DESC
@@ -96,15 +90,6 @@ class QueryBuilder:
                     FROM monthly_counts dc 
                     WHERE time_bucket('{time_span}', dc.time) = (SELECT MAX(time_bucket('{time_span}',cs.time)) FROM corpus_size cs) 
                     GROUP BY word_id
-                ),
-                rc as (
-                    SELECT 
-                        word_id, 
-                        SUM(abs_freq) / SUM(SUM(abs_freq)) OVER () as rel_freq,
-                        SUM(abs_freq) as abs_freq 
-                    FROM monthly_counts dc 
-                    WHERE time_bucket('{time_span}', dc.time) != (SELECT MAX(time_bucket('{time_span}',cs.time)) FROM corpus_size cs) 
-                    GROUP BY word_id
                 )
                 SELECT
                     w.wordform,
@@ -113,13 +98,11 @@ class QueryBuilder:
                     w.poshead,
                     tc.word_id,
                     tc.abs_freq as tc_abs_freq,
-                    tc.rel_freq as tc_rel_freq,
-                    COALESCE(rc.abs_freq, 0) as rc_abs_freq,
-                    COALESCE(rc.rel_freq, 0) as rc_rel_freq
+                    rc.frequency - tc.abs_freq as rc_abs_freq
                 FROM tc
-                LEFT JOIN rc ON tc.word_id = rc.word_id
+                LEFT JOIN frequency_all rc ON tc.word_id = rc.word_id
                 LEFT JOIN words w ON tc.word_id = w.id 
-                WHERE (COALESCE(rc.rel_freq, 0) * 1e6) < 10 {where_pos}
+                WHERE (rc.frequency - tc.abs_freq) <= 10 {where_pos}
                 ORDER BY tc.abs_freq DESC
                 LIMIT 1000;
                 """
