@@ -12,7 +12,7 @@ services:
         ports:
             - '${POSTGRES_PORT}:5432'
         volumes:
-            - database:/var/lib/postgresql/data
+            - woordwacht_database:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
         command: "-c 'config_file=/etc/postgres/postgresql.conf'"
@@ -41,4 +41,5 @@ services:
             - '80:8080'
 
 volumes:
-    database:
+    woordwacht_database:
+        external: true
