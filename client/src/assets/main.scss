@@ -79,15 +79,46 @@ main {
   padding: 1rem;
   min-height: 0;
   gap: 1em;
+  justify-content: space-between;
 }
 
 .wordlist {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .p-panel-content-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    .p-panel-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+
+      .p-listbox {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+
+
+        .p-listbox-list-container {
+          flex: 1;
+          max-height: none !important;
+          min-height: 0 !important;
+        }
+      }
+    }
+  }
 }
 
-.wordlist div.p-scrollpanel-content {
+.wordlist .p-scrollpanel-content {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -97,15 +128,15 @@ main {
   flex: 1;
 }
 
-.wordlist .p-listbox {
-  flex: 1;
-  min-height: 0;
+// .wordlist .p-listbox {
+//   flex: 1;
+//   min-height: 0;
 
-  .p-listbox-list-container {
-    height: 100% !important;
-    max-height: none !important;
-  }
-}
+//   .p-listbox-list-container {
+//     height: 100% !important;
+//     max-height: none !important;
+//   }
+// }
 
 .newWord {
   width: 100%;
