@@ -16,7 +16,6 @@ export function randomColor() {
     return Math.floor(Math.random() * 16777215).toString(16)
 }
 
-// test
 export const useGraphStore = defineStore('GraphStore', () => {
     let datasets = ref({})
     let dataSeries = ref<DataSeries[]>([])
@@ -69,6 +68,7 @@ export const useGraphStore = defineStore('GraphStore', () => {
             .then((data) => {
                 // data is in the form [{time: 1619500411, value: 40}, {time: 1719500411, value: 20}]
                 const dataset = {
+                    datapoint: ds,
                     label: displayName(ds),
                     borderColor: `#${ds.color}`,
                     backgroundColor: `#${ds.color}`,

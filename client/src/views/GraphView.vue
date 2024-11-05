@@ -1,25 +1,12 @@
 <template>
     <div class="graph">
         <div class="p-panel">
-
             <!-- old -->
-            <!-- <Panel> -->
-            <!-- <template #icons> -->
-            <!-- <Button text severity="secondary">
-                    <span class="pi pi-download"></span>
-                </Button> -->
-            <!-- </template> -->
             <div v-if="GraphStore.datasets.length === 0" class="emptyGraph">
                 <ProgressSpinner />
             </div>
-            <div style="position: relative" v-else>
-                <Line ref=" bar" :data="chartData" :options="chartOptions" />
-            </div>
-            <!-- </Panel> -->
-
+            <D3GraphView v-else :data="data" />
             <!-- new -->
-            <!-- <D3GraphView v-if="data?.length" :data="data" /> -->
-
         </div>
     </div>
 </template>
@@ -84,7 +71,6 @@ const data = computed(() => {
         ]
     }
     const d = GraphStore.datasets
-    console.log(d)
     return d
 })
 
