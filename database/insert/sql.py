@@ -1,5 +1,5 @@
 create_table_data_tmp = """
-    CREATE TABLE data_tmp (
+    CREATE TABLE IF NOT EXISTS data_tmp (
         wordform TEXT,
         lemma TEXT,
         pos TEXT,
@@ -15,7 +15,7 @@ copy_select_tmp_words_to_words = """
     INSERT INTO words (wordform, lemma, pos, poshead)
     SELECT DISTINCT wordform, lemma, pos, poshead
     FROM data_tmp
-    ON CONFLICT (hash_value) DO NOTHING;
+    ON CONFLICT (wordform, lemma, pos, poshead) DO NOTHING;
 """
 
 copy_select_tmp_sources_to_sources = """
@@ -34,4 +34,11 @@ copy_select_tmp_data_to_word_freqs = """
     JOIN sources ON sources.source = data_tmp.source AND sources.language = data_tmp.language
     ON CONFLICT (time, word_id, source_id)
     DO UPDATE SET frequency = frequencies.frequency + EXCLUDED.frequency;
+"""
+
+create_corpus_size = """
+    SELECT time, SUM(frequency) AS size
+    INTO corpus_size
+    FROM frequencies
+    GROUP BY time
 """

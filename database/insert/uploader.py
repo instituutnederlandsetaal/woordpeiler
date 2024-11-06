@@ -6,12 +6,8 @@ import sys
 # local
 from database.insert.streaming_csv_reader import StreamingCSVReader
 from database.insert.datatypes import CSVRow
-from database.util.util import eprint
 from database.insert.sql import (
     create_table_data_tmp,
-    copy_select_tmp_words_to_words,
-    copy_select_tmp_sources_to_sources,
-    copy_select_tmp_data_to_word_freqs,
 )
 
 from tqdm import tqdm
@@ -34,9 +30,8 @@ class Uploader:
             ) as pbar:
                 for chunk in tqdm(StreamingCSVReader(self.path, self.chunk_size)):
                     # insert
-                    # self.__create_tmp_tables()
-                    self.__insert_rows(chunk)
-                    # self.__extract_from_rows()
+                    self.__create_tmp_tables()
+                    self.insert_rows(chunk)
                     # tqdm
                     pbar.update(self.chunk_size)
         except Exception as e:
@@ -56,7 +51,7 @@ class Uploader:
         rows = [row for row in rows if row.medium == "newspaper"]
         return rows
 
-    def __insert_rows(self, rows: list[CSVRow]):
+    def insert_rows(self, rows: list[CSVRow]):
         rows = self.__clean_data(rows)
         with self.cursor.copy(
             "COPY data_tmp (wordform, lemma, pos, poshead, time, frequency, source, language) FROM STDIN"
@@ -74,8 +69,3 @@ class Uploader:
                         r.language,
                     )
                 )
-
-    def __extract_from_rows(self):
-        self.cursor.execute(copy_select_tmp_words_to_words)
-        self.cursor.execute(copy_select_tmp_sources_to_sources)
-        self.cursor.execute(copy_select_tmp_data_to_word_freqs)

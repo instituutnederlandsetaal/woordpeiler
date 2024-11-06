@@ -11,7 +11,7 @@ from database.initialize.create import create_tables
 from database.initialize.drop import drop_all
 from database.initialize.index import index_all
 from database.insert.uploader import Uploader
-from database.insert.sql import create_table_data_tmp
+from database.insert.sql import create_table_data_tmp, create_corpus_size
 from database.util.timer import timer
 
 
@@ -188,21 +188,14 @@ if __name__ == "__main__":
     with timer("Creating lookup tables"):
         with psycopg.connect(CONNECTION) as conn:
             with conn.cursor() as cursor:
-                cursor.execute(
-                    """
-                    SELECT time, SUM(frequency) AS size
-                    INTO corpus_size
-                    FROM frequencies
-                    GROUP BY time
-                """
-                )
+                cursor.execute(create_corpus_size)
                 cursor.execute(
                     "SELECT poshead INTO posheads FROM words GROUP BY poshead"
                 )
                 cursor.execute("SELECT pos INTO posses FROM words GROUP BY pos")
-                cursor.execute(
-                    "SELECT source_id, COUNT(DISTINCT time) INTO days_per_source FROM frequencies GROUP BY source_id;"
-                )
+                # cursor.execute(
+                #    "SELECT source_id, COUNT(DISTINCT time) INTO days_per_source FROM frequencies GROUP BY source_id;"
+                # )
 
     # create indexes
     ######################

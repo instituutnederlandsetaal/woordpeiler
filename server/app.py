@@ -13,23 +13,19 @@ from fastapi import FastAPI, Request, HTTPException, Query
 from psycopg_pool import AsyncConnectionPool
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 
 # local
 from queries import QueryBuilder
 from datatypes import PeriodType
 from connection import get_reader_conn_str
 
-load_dotenv()
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    conn_str = get_reader_conn_str()
+    print(conn_str)
     app.async_pool = AsyncConnectionPool(
-        max_lifetime=30,
-        max_idle=30,
-        max_waiting=30,
-        conninfo=get_reader_conn_str(),
+        conninfo=conn_str,
         open=False,
         kwargs={"prepare_threshold": 1},
     )
