@@ -65,6 +65,14 @@ def get_rows(path="data/20240601.csv") -> list[CSVRow]:
     return rows
 
 
+def execute_query(reason: str, queries: list[str]):
+    with timer(reason):
+        with psycopg.connect(get_writer_conn_str()) as conn:
+            with conn.cursor() as cursor:
+                for query in queries:
+                    cursor.execute(query)
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python -m database.data_update <data_dir>")
@@ -183,3 +191,113 @@ if __name__ == "__main__":
 
     with timer("Analyze"):
         analyze()
+
+    # update keyness tables
+    # first copy frequencies to a temp table
+    # because grouping on hypertables is slow
+    execute_query(
+        "copy frequencies to temp table",
+        [
+            """
+                CREATE TABLE frequency_tmp AS
+                SELECT time, word_id, source_id, frequency
+                FROM frequencies;
+            """
+        ],
+    )
+
+    # create daily_counts
+    execute_query(
+        "create daily_counts",
+        [
+            """
+                DROP TABLE IF EXISTS daily_counts;
+            """,
+            """
+                SELECT 
+                    time, 
+                    word_id, 
+                    SUM(frequency) as abs_freq 
+                INTO daily_counts
+                FROM frequency_tmp
+                GROUP BY 
+                    time, 
+                    word_id;
+            """,
+            """
+                DROP TABLE frequency_tmp;
+            """,
+            """
+                CREATE INDEX idx_daily_counts_time_word_id_INC_abs_freq ON daily_counts (time, word_id) INCLUDE (abs_freq);
+            """,
+        ],
+    )
+    # monthly_counts
+    execute_query(
+        "create monthly_counts",
+        [
+            """
+                DROP TABLE IF EXISTS monthly_counts;
+            """,
+            """
+                SELECT 
+                    time_bucket('1 month', time) AS time,
+                    word_id, 
+                    SUM(abs_freq) as abs_freq 
+                INTO monthly_counts
+                FROM daily_counts
+                GROUP BY 
+                    time_bucket('1 month', time), 
+                    word_id;
+            """,
+            """
+                CREATE INDEX idx_monthly_counts_time_word_id_INC_abs_freq ON monthly_counts (time, word_id) INCLUDE (abs_freq);
+            """,
+        ],
+    )
+    # yearly_counts
+    execute_query(
+        "create yearly_counts",
+        [
+            """
+                DROP TABLE IF EXISTS yearly_counts;
+            """,
+            """
+                SELECT 
+                    time_bucket('1 year', time) AS time,
+                    word_id, 
+                    SUM(abs_freq) as abs_freq 
+                INTO yearly_counts
+                FROM monthly_counts
+                GROUP BY 
+                    time_bucket('1 year', time), 
+                    word_id;
+            """,
+            """
+                CREATE INDEX idx_yearly_counts_time_word_id_INC_abs_freq ON yearly_counts (time, word_id) INCLUDE (abs_freq);
+            """,
+        ],
+    )
+    # total counts
+    execute_query(
+        "create total_counts",
+        [
+            """
+                DROP TABLE IF EXISTS total_counts;
+            """,
+            """
+                SELECT 
+                    word_id, 
+                    SUM(abs_freq) as abs_freq 
+                INTO total_counts
+                FROM monthly_counts
+                GROUP BY 
+                    word_id;
+            """,
+            """
+                UPDATE total_counts 
+                SET rel_freq = abs_freq / (SELECT SUM(abs_freq) 
+                FROM total_counts);
+            """,
+        ],
+    )
