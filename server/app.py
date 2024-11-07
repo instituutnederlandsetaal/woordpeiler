@@ -23,14 +23,15 @@ from connection import get_reader_conn_str
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     conn_str = get_reader_conn_str()
-    print(conn_str)
     app.async_pool = AsyncConnectionPool(
         conninfo=conn_str,
         open=False,
-        kwargs={"prepare_threshold": 1},
+        kwargs={"prepare_threshold": 0},
+        check=AsyncConnectionPool.check_connection,
     )
     await app.async_pool.open()
     await app.async_pool.wait()
+    print("Connection pool opened")
     yield
     await app.async_pool.close()
 
@@ -59,6 +60,11 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"version": "0.0.1"}
+
+
+@app.get("/health")
+def health():
+    return app.async_pool.get_stats()
 
 
 @app.get("/ls/")
