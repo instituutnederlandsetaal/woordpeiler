@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 
 # third party
 import traceback
-from networkx import cut_size
 import psycopg
 
 # local
@@ -116,19 +115,25 @@ if __name__ == "__main__":
 
     # all data inserted, now update the tables
 
-    # add unique constraint to words
+    # add unique constraints
     constraint_words = """
         ALTER TABLE words
         ADD CONSTRAINT wordform_lemma_pos_unique
         UNIQUE (wordform, lemma, pos, poshead);
     """
-
-    # add unique constraint to sources
     constraint_sources = """
         ALTER TABLE sources
         ADD CONSTRAINT source_language_unique
         UNIQUE (source, language);
     """
+    try:
+        with timer(f"Adding unique contraints"):
+            with psycopg.connect(get_writer_conn_str()) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(constraint_words)
+                    cursor.execute(constraint_sources)
+    except:
+        pass  # ignore if constraints already exist
 
     # words and sources
     with timer(f"Inserting into words and sources"):
