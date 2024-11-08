@@ -31,44 +31,6 @@ const GraphStore = useGraphStore()
 const data = computed(() => {
     if (!GraphStore.datasets?.length) {
         return []
-        return [
-            {
-                name: 'kat',
-                color: '#ff0000',
-                data: [
-                    {
-                        x: new Date('2020-10-10').getTime(),
-                        y: 1,
-                    },
-                    {
-                        x: new Date('2022-10-10').getTime(),
-                        y: 7,
-                    },
-                    {
-                        x: new Date().getTime(),
-                        y: 2
-                    },
-                ]
-            },
-            {
-                name: 'hond',
-                color: '#00ff00',
-                data: [
-                    {
-                        x: new Date('2020-10-10').getTime(),
-                        y: 3,
-                    },
-                    {
-                        x: new Date('2022-10-10').getTime(),
-                        y: 6,
-                    },
-                    {
-                        x: new Date().getTime(),
-                        y: 4
-                    }
-                ]
-            }
-        ]
     }
     const d = GraphStore.datasets
     return d

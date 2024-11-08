@@ -83,7 +83,8 @@ import CascadeSelect from 'primevue/cascadeselect';
 
 import { computed, onMounted, ref, watch } from "vue"
 
-import { useGraphStore, displayName, randomColor } from "@/store/GraphStore"
+import { useGraphStore, displayName } from "@/store/GraphStore"
+import { randomColor } from "@/ts/color"
 
 import { apiURL } from "@/ts/api"
 
@@ -163,3 +164,16 @@ onMounted(() => {
 })
 
 </script>
+<style scoped lang="scss">
+.wordlist {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+
+    :deep(.p-scrollpanel-content) {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>

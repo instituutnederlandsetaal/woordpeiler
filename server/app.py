@@ -142,13 +142,16 @@ async def get_trends(
     period_type: Optional[str] = "day",
     period_length: Optional[int] = 1,
     trend_type: Optional[str] = None,
+    modifier: Optional[int] = None,
     exclude: Annotated[Optional[list], Query()] = None,
 ):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             qb = QueryBuilder(cur)
-            query = qb.ref_corp_trends(period_type, period_length, trend_type, exclude)
-            await cur.execute(query)
+            query = qb.ref_corp_trends(
+                period_type, period_length, trend_type, modifier, exclude
+            )
+            await time_query(query, cur)
             results = await cur.fetchall()
             return results
 
@@ -217,13 +220,17 @@ async def get_freq(
                 start_date,
                 end_date,
             )
-            print(query)
-            start = datetime.datetime.now()
-            await cur.execute(query)
-            end = datetime.datetime.now()
-            print(f"Query took {end - start}")
+            await time_query(query, cur)
             results = [{**row, "time": row["time"].timestamp()} async for row in cur]
             return results
+
+
+async def time_query(query, cur):
+    print(query)
+    start = datetime.datetime.now()
+    await cur.execute(query)
+    end = datetime.datetime.now()
+    print(f"Query took {end - start}")
 
 
 if __name__ == "__main__":

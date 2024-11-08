@@ -7,17 +7,24 @@
                 <AccordionPanel value="0">
                     <AccordionHeader>Trendinstellingen</AccordionHeader>
                     <AccordionContent class="advancedSearch">
-                        <label>Trends van afgelopen</label>
-                        <div class="timeBucket">
-                            <InputNumber v-model="timeBucketSize" inputId="withoutgrouping" :useGrouping="false"
-                                fluid />
+                        <div class="formSplit">
+                            <label>Afgelopen</label>
+                            <InputNumber class="modifierInput" v-model="timeBucketSize" inputId="withoutgrouping"
+                                :useGrouping="false" />
                             <SelectButton v-model="timeBucketType" :options="timeBucketOptions" optionValue="value"
                                 optionLabel="label" />
                         </div>
 
                         <div class="formSplit">
                             <label>Trendsoort</label>
-                            <SelectButton v-model="trendType" :options="trendTypes" />
+                            <SelectButton v-model="trendType" :options="trendTypes" optionValue="value"
+                                optionLabel="label" />
+                        </div>
+
+                        <div class="formSplit">
+                            <label>{{ modifierLabel }}</label>
+                            <InputNumber class="modifierInput" v-model="modifier" inputId="withoutgrouping"
+                                :useGrouping="false" />
                         </div>
 
 
@@ -27,7 +34,7 @@
                 </AccordionPanel>
             </Accordion>
 
-            <Panel v-if="filteredTrends.length != 0" header="Trendresultaten" class="wordlist">
+            <Panel v-if="filteredTrends.length != 0" header="Trendresultaten" class="trendlist">
                 <div class="formSplit">
                     <label>Uitsluiten</label>
                     <MultiSelect v-model="selectedPosHead" display="chip" :options="posHeadOptions"
@@ -57,6 +64,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, watch, computed } from "vue"
+import { useGraphStore } from "@/store/GraphStore"
+import { randomColor } from "@/ts/color"
+import { apiURL } from "@/ts/api"
+// Components
 import Skeleton from "primevue/skeleton"
 import Accordion from "primevue/accordion"
 import AccordionPanel from "primevue/accordionpanel"
@@ -74,16 +86,18 @@ import Chip from "primevue/chip"
 import Badge from "primevue/badge"
 import MultiSelect from "primevue/multiselect"
 
-import { ref, onMounted, watch, computed } from "vue"
-import { useGraphStore, randomColor } from "@/store/GraphStore"
-import { apiURL } from "@/ts/api"
-
+// stores
 const GraphStore = useGraphStore()
+
+// fields
+/** trends multiselect */
 const trends = ref([])
+const trendsLoading = ref(false)
 const selectedTrend = ref(null)
+/** trends accordion */
 const trendAccordion = ref()
 const tabOpen = ref("0")
-
+/** timebucket */
 const timeBucketOptions = [
     { label: "week", value: "week" },
     { label: "maand", value: "month" },
@@ -91,28 +105,34 @@ const timeBucketOptions = [
 ]
 const timeBucketSize = ref(1)
 const timeBucketType = ref("year")
-
-const trendTypes = ["keyness", "absolute"]
+/** trend types */
+const trendTypes = [
+    { label: "keyness", value: "keyness" },
+    { label: "absolute frequentie", value: "absolute" }
+]
 const trendType = ref("keyness")
-const trendsLoading = ref(false)
-
+/** poshead exclusion */
 const selectedPosHead = ref(["nou-p", "res", "num"])
 const posHeadOptions = ref([])
 const posHeadLoading = ref(true)
+/** modifier */
+const modifier = ref(1)
+/** What does the modifier mean */
+const modifierLabels = {
+    keyness: "Smoothingparameter",
+    absolute: "Maximumfrequentie in referentiecorpus",
+}
+const modifierLabel = computed(() => modifierLabels[trendType.value])
 
+
+
+// computed
 const filteredTrends = computed(() => {
     return trends.value.filter((i) => !selectedPosHead.value.includes(i.poshead))
 })
 
-watch(selectedTrend, () => {
-    GraphStore.dataSeries = []
-    for (const trend of Object.values(selectedTrend.value)) {
-        GraphStore.dataSeries.push({ wordform: trend.wordform, pos: trend.poshead, color: randomColor() })
-    }
-    GraphStore.search()
-})
-
-
+// Methods
+/** search trends */
 function getTrends() {
     trends.value = []
     tabOpen.value = parseInt(tabOpen.value) + 1;
@@ -120,6 +140,7 @@ function getTrends() {
         period_length: timeBucketSize.value.toString(),
         period_type: timeBucketType.value,
         trend_type: trendType.value,
+        modifier: modifier.value.toString(),
     }
     searchParams = Object.entries(searchParams).concat(selectedPosHead.value.map((posHead) => ["exclude", posHead]))
     const searchParamsString = new URLSearchParams(searchParams).toString()
@@ -153,7 +174,66 @@ function formatNumber(num: number): number {
     return Math.floor(num * 10) / 10
 }
 
+// Lifecycle
 onMounted(() => {
     getPosHeadOptions()
 })
+
+watch(selectedTrend, () => {
+    GraphStore.dataSeries = []
+    for (const trend of Object.values(selectedTrend.value)) {
+        GraphStore.dataSeries.push({ wordform: trend.wordform, pos: trend.pos, color: randomColor() })
+    }
+    GraphStore.search()
+})
 </script>
+
+<style scoped lang="scss">
+.modifierInput {
+    flex-basis: 60px;
+
+    :deep(input) {
+        width: 100%;
+    }
+}
+
+:deep(.trendlist) {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .p-panel-content-container {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+
+        .p-panel-content {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+
+            .p-listbox {
+                flex: 1;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                margin-top: 0.5rem;
+
+                .p-listbox-list-container {
+                    flex: 1;
+                    max-height: none !important;
+                    min-height: 0 !important;
+                }
+            }
+        }
+    }
+
+    .p-skeleton {
+        flex: 1;
+    }
+}
+</style>

@@ -18,6 +18,7 @@ class QueryBuilder:
         period_type: Optional[str] = "day",
         period_length: Optional[int] = 1,
         trend_type: Optional[str] = "absolute",
+        modifier: Optional[int] = 1,
         poshead_exclusions: Optional[list[str]] = None,
     ) -> str:
 
@@ -48,9 +49,9 @@ class QueryBuilder:
                 keyness AS (
                     SELECT
                         tc.word_id,
-                        (1 + tc.rel_freq * 1e6) / (1 + rc.rel_freq * 1e6) as keyness
+                        ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.rel_freq * 1e6) as keyness
                     FROM tc
-                    LEFT JOIN frequency_all rc ON tc.word_id = rc.word_id
+                    LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
                     ORDER BY keyness DESC
                     LIMIT 1000
                 )
@@ -67,6 +68,7 @@ class QueryBuilder:
                         if poshead_exclusions is not None
                         else sql.SQL("")
                     ),
+                    modifier=sql.Literal(modifier),
                 )
                 .as_string(self.cursor)
             )
@@ -86,16 +88,16 @@ class QueryBuilder:
                     SELECT
                         tc.word_id,
                         tc.abs_freq AS tc_abs_freq,
-                        rc.frequency - tc.abs_freq AS keyness
+                        rc.abs_freq - tc.abs_freq AS keyness
                     FROM tc
-                    LEFT JOIN frequency_all rc ON tc.word_id = rc.word_id
+                    LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
                 ),
                 filter AS (
                     SELECT
                         k.word_id,
                         tc_abs_freq
                     FROM keyness k
-                    WHERE k.keyness <= 10
+                    WHERE k.keyness <= {modifier}
                     ORDER BY k.tc_abs_freq DESC
                     LIMIT 1000
                 )
@@ -114,6 +116,7 @@ class QueryBuilder:
                         if poshead_exclusions is not None
                         else sql.SQL("")
                     ),
+                    modifier=sql.Literal(modifier),
                 )
                 .as_string(self.cursor)
             )
