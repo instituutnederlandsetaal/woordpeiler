@@ -54,7 +54,7 @@
                 </Listbox>
             </Panel>
 
-            <Skeleton class="wordlist" v-else-if="trendsLoading" />
+            <Skeleton class="trendlist" v-else-if="trendsLoading" />
 
 
             <SearchOptionsView />
@@ -230,10 +230,6 @@ watch(selectedTrend, () => {
                 }
             }
         }
-    }
-
-    .p-skeleton {
-        flex: 1;
     }
 }
 </style>
