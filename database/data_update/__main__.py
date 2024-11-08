@@ -202,7 +202,13 @@ if __name__ == "__main__":
                 CREATE TABLE frequency_tmp AS
                 SELECT time, word_id, source_id, frequency
                 FROM frequencies;
+            """,
             """
+                CREATE INDEX idx_TMP_time_word_id_INC_frequency ON frequency_tmp(time, word_id) INCLUDE (frequency);
+            """,
+            """
+                SET enable_bitmapscan = off;
+            """,
         ],
     )
 
@@ -290,14 +296,21 @@ if __name__ == "__main__":
                     word_id, 
                     SUM(abs_freq) as abs_freq 
                 INTO total_counts
-                FROM monthly_counts
+                FROM yearly_counts
                 GROUP BY 
                     word_id;
+            """,
+            """
+                ALTER TABLE total_counts
+                ADD COLUMN rel_freq FLOAT;
             """,
             """
                 UPDATE total_counts 
                 SET rel_freq = abs_freq / (SELECT SUM(abs_freq) 
                 FROM total_counts);
+            """,
+            """
+                SET enable_bitmapscan = off;
             """,
         ],
     )
