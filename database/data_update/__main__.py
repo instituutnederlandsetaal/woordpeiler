@@ -1,5 +1,6 @@
 # standard
 import os
+import subprocess
 import sys
 import csv
 from datetime import datetime, timedelta
@@ -109,7 +110,28 @@ if __name__ == "__main__":
             # only curl if file does not exist
             if not os.path.exists(f"{data_dir}/{date_str}.csv"):
                 with timer(f"Downloading {date_str}.csv"):
-                    os.system(curl_command)
+                    # curl downloads go wrong sometimes, even though there is data for that day
+                    tries = 0
+                    while True:
+                        try:
+                            result = subprocess.run(
+                                curl_command,
+                                shell=True,
+                                check=True,
+                                capture_output=True,
+                                text=True,
+                            )
+                            break  # success
+                        except subprocess.CalledProcessError as e:
+                            tries += 1
+                            if tries == 3:
+                                print(
+                                    f"Error: Curl return code: {e.returncode}.\nOutput: {e.output}"
+                                )
+                                break  # skip this day, investigate later
+                            else:
+                                print(f"Failed to curl. Will try again")
+
             else:
                 print(f"File {date_str}.csv already exists, skipping download")
 
@@ -314,3 +336,4 @@ if __name__ == "__main__":
             """,
         ],
     )
+    print("Done!")
