@@ -42,3 +42,14 @@ create_corpus_size = """
     FROM frequencies
     GROUP BY time
 """
+
+constraint_words = """
+    ALTER TABLE words
+    ADD CONSTRAINT wordform_lemma_pos_unique
+    UNIQUE (wordform, lemma, pos, poshead);
+"""
+constraint_sources = """
+    ALTER TABLE sources
+    ADD CONSTRAINT source_language_unique
+    UNIQUE (source, language);
+"""

@@ -3,15 +3,16 @@ import re
 import traceback
 import sys
 
+# third party
+from tqdm import tqdm
+from psycopg import Connection, Cursor
+
 # local
 from database.insert.streaming_csv_reader import StreamingCSVReader
 from database.insert.datatypes import CSVRow
 from database.insert.sql import (
     create_table_data_tmp,
 )
-
-from tqdm import tqdm
-from psycopg import Connection, Cursor
 
 
 class Uploader:
