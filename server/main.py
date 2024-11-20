@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # local
-from queries import (
+from server.query.queries import (
     rel_freq_over_time2,
     abs_freq_over_time_with_zero,
     corpus_size_over_time,

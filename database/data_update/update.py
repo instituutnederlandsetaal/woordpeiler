@@ -45,11 +45,10 @@ def update_table():
     )
 
     # update corpus size
-    with timer("Updating corpus size"):
-        with psycopg.connect(get_writer_conn_str()) as conn:
-            with conn.cursor() as cursor:
-                cursor.execute("DROP TABLE corpus_size")
-                cursor.execute(create_corpus_size)
+    time_query(
+        reason="Updating corpus size",
+        queries=["DROP TABLE corpus_size", create_corpus_size],
+    )
 
     # drop data update, which is now processed
     execute_query(["DROP TABLE data_tmp"])
