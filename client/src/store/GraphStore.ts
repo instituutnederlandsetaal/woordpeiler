@@ -62,13 +62,14 @@ export const useGraphStore = defineStore('GraphStore', () => {
             .then((response) => response.json())
             .then((data) => {
                 // data is in the form [{time: 1619500411, value: 40}, {time: 1719500411, value: 20}]
+                const multiplier = searchSettings.value.frequencyType == "rel_freq" ? 1000000 : 1
                 const dataset = {
                     datapoint: ds,
                     label: displayName(ds),
                     borderColor: `#${ds.color}`,
                     backgroundColor: `#${ds.color}`,
                     data: data.map((d) => {
-                        return { x: d.time * 1000, y: d[searchSettings.value.frequencyType] * 1000000 }
+                        return { x: d.time * 1000, y: d[searchSettings.value.frequencyType] * multiplier }
                     }),
                 }
                 datasets.value.push(dataset)
