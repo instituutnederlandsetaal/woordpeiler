@@ -167,7 +167,10 @@ onMounted(() => {
     GraphStore.search()
 })
 
-function invalidWord(word: string): boolean {
+function invalidWord(word?: string): boolean {
+    if (!word) {
+        return false
+    }
     return word.trim().includes(" ")
 }
 
