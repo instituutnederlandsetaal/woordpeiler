@@ -15,9 +15,13 @@
                 </Button>
             </template>
 
+            <p class="warning" v-if="invalidWord(dataSerie.wordform) || invalidWord(dataSerie.lemma)">Zoeken op meerdere
+                woorden is
+                niet mogelijk.</p>
+
             <div class="formSplit">
                 <label for="word">Woord</label><br />
-                <InputText id="word" v-model="dataSerie.wordform" />
+                <InputText :invalid="invalidWord(dataSerie.wordform)" id="word" v-model="dataSerie.wordform" />
             </div>
 
             <!-- <Accordion value="1">
@@ -28,7 +32,7 @@
                             <AccordionContent> -->
             <div class="formSplit">
                 <label for="lemma">Lemma</label>
-                <InputText id="lemma" v-model="dataSerie.lemma" />
+                <InputText :invalid="invalidWord(dataSerie.lemma)" id=" lemma" v-model="dataSerie.lemma" />
             </div>
             <div class="formSplit">
                 <label for="pos">Woordsoort</label>
@@ -163,6 +167,10 @@ onMounted(() => {
     GraphStore.search()
 })
 
+function invalidWord(word: string): boolean {
+    return word.trim().includes(" ")
+}
+
 </script>
 <style scoped lang="scss">
 .wordlist {
@@ -175,5 +183,10 @@ onMounted(() => {
         flex-direction: column;
         gap: 1rem;
     }
+}
+
+.warning {
+    color: red;
+    margin-bottom: 0.5rem;
 }
 </style>
