@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "server"
+		},
+		{
+			"path": "database"
+		},
+		{
+			"path": "client"
+		}
+	],
+	"settings": {
+		"python.analysis.extraPaths": [
+			"..",
+		],
+		"python.autoComplete.extraPaths": [
+			"..",
+		]
+	}
+}

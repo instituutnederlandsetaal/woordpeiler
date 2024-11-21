@@ -168,6 +168,7 @@ onMounted(() => {
 })
 
 function invalidWord(word?: string): boolean {
+    return false
     if (!word) {
         return false
     }

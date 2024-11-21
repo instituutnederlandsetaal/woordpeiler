@@ -1,8 +1,10 @@
 # standard
+from re import S
 from typing import Optional
+from datetime import datetime
 
 # third party
-from psycopg import Cursor
+from psycopg import AsyncCursor
 from psycopg.sql import Literal, SQL, Composable
 
 # local
@@ -25,38 +27,50 @@ class WordFrequencyQuery(QueryBuilder):
         poshead: Optional[str] = None,
         source: Optional[str] = None,
         language: Optional[str] = None,
-        period_type: PeriodType = PeriodType.YEAR,
-        period_length: Optional[int] = 1,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        period_type: str = "year",
+        period_length: int = 1,
+        start_date: Optional[int] = None,
+        end_date: Optional[int] = None,
     ) -> None:
         self.word_filter = WordFrequencyQuery.get_word_filter(
             id, wordform, lemma, pos, poshead
         )
         self.source_filter = WordFrequencyQuery.get_source_filter(source, language)
         self.time_range = WordFrequencyQuery.get_time_range(start_date, end_date)
-        self.time_span = Literal(f"{period_length} {period_type.value}")
+        self.time_span = WordFrequencyQuery.get_time_span(period_type, period_length)
+
+    @staticmethod
+    def get_time_span(period_type: str, period_length: int) -> Literal:
+        period_type = PeriodType(period_type)
+        if period_length < 1:
+            raise ValueError("Invalid periodLength")
+        return Literal(f"{period_length} {period_type.value}")
+
+    @staticmethod
+    def _where_time(
+        unixtime: Optional[int], operator: str = "<"
+    ) -> Optional[Composable]:
+        if unixtime is not None:
+            date: str = datetime.fromtimestamp(unixtime).strftime("%Y%m%d")
+            return SQL("cs.time {operator} {date}").format(
+                date=Literal(date), operator=SQL(operator)
+            )
+        return None
 
     @staticmethod
     def get_time_range(
-        start_date: Optional[str], end_date: Optional[str]
+        unix_start_date: Optional[int], unix_end_date: Optional[int]
     ) -> Composable:
-        # example: WHERE cs.time > '20200606' AND cs.time < '20220630'
-        time_range = SQL("")  # default
-        if start_date is not None and end_date is not None:
-            time_range = SQL(
-                "WHERE cs.time > {start_date} AND cs.time < {end_date}"
-            ).format(start_date=Literal(start_date), end_date=Literal(end_date))
-        elif start_date is not None:
-            time_range = SQL("WHERE cs.time > {start_date}").format(
-                start_date=Literal(start_date)
-            )
-        elif end_date is not None:
-            time_range = SQL("WHERE cs.time < {end_date}").format(
-                end_date=Literal(end_date)
-            )
 
-        return time_range
+        start_date_where = WordFrequencyQuery._where_time(unix_start_date, ">")
+        end_date_where = WordFrequencyQuery._where_time(unix_end_date, "<")
+
+        if any([start_date_where, end_date_where]):
+            return SQL("WHERE ") + SQL(" AND ").join(
+                [i for i in [start_date_where, end_date_where] if i is not None]
+            )
+        else:
+            return SQL("")
 
     @staticmethod
     def get_source_filter(source: Optional[str], language: Optional[str]) -> Composable:
@@ -102,7 +116,7 @@ class WordFrequencyQuery(QueryBuilder):
 
         return word_filter
 
-    def build(self, cursor: Cursor) -> ExecutableQuery:
+    def build(self, cursor: AsyncCursor) -> ExecutableQuery:
         query = SQL(
             """
             WITH filter AS (

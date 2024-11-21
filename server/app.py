@@ -1,6 +1,8 @@
 # standard
 from typing import Annotated, Optional
 import datetime
+import os
+import sys
 
 # third party
 from psycopg.rows import dict_row
@@ -8,11 +10,13 @@ from fastapi import Request, HTTPException, Query
 import uvicorn
 
 # local
+from server.query.arithmetical_query import ArithmeticalQuery
 from server.query.listing_query import ListingQuery
 from server.query.trends_query import TrendsQuery
 from server.query.word_frequency_query import WordFrequencyQuery
 from server.util.datatypes import PeriodType
 from server.config.config import FastAPI, create_app_with_config
+from server.util.unix_timestamp_row_factory import UnixTimestampRowFactory
 
 app: FastAPI = create_app_with_config()
 
@@ -71,6 +75,30 @@ async def get_trends(
             return await cur.fetchall()
 
 
+@app.get("/math")
+async def get_math(
+    request: Request,
+    formula: str,
+    source: Optional[str] = None,
+    language: Optional[str] = None,
+    period_type: str = "year",
+    period_length: int = 1,
+    start_date: Optional[int] = None,
+    end_date: Optional[int] = None,
+):
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor(row_factory=UnixTimestampRowFactory) as cur:
+            return await ArithmeticalQuery(
+                formula,
+                source,
+                language,
+                period_type,
+                period_length,
+                start_date,
+                end_date,
+            ).execute(cur)
+
+
 @app.get("/word_frequency")
 async def get_freq(
     request: Request,
@@ -80,11 +108,24 @@ async def get_freq(
     pos: Optional[str] = None,
     source: Optional[str] = None,
     language: Optional[str] = None,
-    period_type: Optional[str] = "year",
+    period_type: str = "year",
     period_length: int = 1,
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
 ):
+    # send to math
+    if wordform and ("+" in wordform or "/" in wordform):
+        return await get_math(
+            request,
+            wordform,
+            source,
+            language,
+            period_type,
+            period_length,
+            start_date,
+            end_date,
+        )
+
     # Validate
     poshead = None
     if pos != None:
@@ -98,25 +139,13 @@ async def get_freq(
             status_code=400, detail="At least one parameter is required"
         )
 
-    # ensure periodType is valid
-    try:
-        period_type = PeriodType(period_type)
-    except:
-        raise HTTPException(status_code=400, detail="Invalid periodType")
-
     # ensure periodLength is valid
     if period_length < 1:
         raise HTTPException(status_code=400, detail="Invalid periodLength")
 
-    # unix time to yy-mm-dd
-    if start_date:
-        start_date = datetime.datetime.fromtimestamp(start_date).strftime("%Y-%m-%d")
-    if end_date:
-        end_date = datetime.datetime.fromtimestamp(end_date).strftime("%Y-%m-%d")
-
     # execute
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=dict_row) as cur:
+        async with conn.cursor(row_factory=UnixTimestampRowFactory) as cur:
             await WordFrequencyQuery(
                 id=id,
                 wordform=wordform,
@@ -130,8 +159,7 @@ async def get_freq(
                 start_date=start_date,
                 end_date=end_date,
             ).build(cur).execute()
-            results = [{**row, "time": row["time"].timestamp()} async for row in cur]
-            return results
+            return await cur.fetchall()
 
 
 if __name__ == "__main__":

@@ -12,9 +12,9 @@ export function displayName(str) {
         .join(" ")
 }
 export const useGraphStore = defineStore('GraphStore', () => {
-    let datasets = ref({})
-    let dataSeries = ref<DataSeries[]>([])
-    let searchSettings = ref<SearchSettings>({
+    const datasets = ref({})
+    const dataSeries = ref<DataSeries[]>([])
+    const searchSettings = ref<SearchSettings>({
         timeBucketType: "year",
         timeBucketSize: 1,
         startDate: new Date('2000-01-01'),
@@ -62,14 +62,14 @@ export const useGraphStore = defineStore('GraphStore', () => {
             .then((response) => response.json())
             .then((data) => {
                 // data is in the form [{time: 1619500411, value: 40}, {time: 1719500411, value: 20}]
-                const multiplier = searchSettings.value.frequencyType == "rel_freq" ? 1000000 : 1
+                //const multiplier = searchSettings.value.frequencyType == "rel_freq" ? 1000000 : 1
                 const dataset = {
                     datapoint: ds,
                     label: displayName(ds),
                     borderColor: `#${ds.color}`,
                     backgroundColor: `#${ds.color}`,
                     data: data.map((d) => {
-                        return { x: d.time * 1000, y: d[searchSettings.value.frequencyType] * multiplier }
+                        return { x: d.time * 1000, y: d[searchSettings.value.frequencyType] }
                     }),
                 }
                 datasets.value.push(dataset)

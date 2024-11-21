@@ -4,8 +4,9 @@ from typing import Optional
 from datetime import datetime
 
 # third party
-from psycopg import AsyncCursor, Cursor
+from psycopg import AsyncCursor
 from psycopg.sql import Composable, Composed, Identifier, Literal, SQL
+from psycopg.abc import Query
 
 
 class QueryBuilder:
@@ -16,9 +17,9 @@ class QueryBuilder:
     3. call ExecutableQuery.execute(): the query will be executed.
     """
 
-    query: Optional[str] = None
+    query: str
 
-    def build(self, cursor: Cursor) -> "ExecutableQuery":
+    def build(self, cursor: AsyncCursor) -> "ExecutableQuery":
         """
         Construct a query using the cursor.
         """
@@ -50,14 +51,18 @@ class QueryBuilder:
 
 
 class ExecutableQuery:
+    cursor: AsyncCursor
+    query: Composable
+    verbose: bool = True
+
     def __init__(
-        self, cursor: AsyncCursor, query: Composed, verbose: bool = True
+        self, cursor: AsyncCursor, query: Composable, verbose: bool = True
     ) -> None:
         self.cursor = cursor
         self.query = query
         self.verbose = verbose
 
-    async def execute(self) -> None:
+    async def execute(self) -> AsyncCursor:
         start = datetime.now()
         await self.cursor.execute(self.query)
         end = datetime.now()
@@ -65,3 +70,5 @@ class ExecutableQuery:
         if self.verbose:
             print(self.query.as_string(self.cursor))
             print(f"Query took {end - start}")
+
+        return self.cursor
