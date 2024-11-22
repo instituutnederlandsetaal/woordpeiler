@@ -2,13 +2,10 @@
 FROM python:3.12-bookworm
 
 # copy everything
-COPY . .
-
-# Copy the requirements file to the working directory
-COPY requirements.txt .
+COPY . ./server
 
 # Install the Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r server/requirements.txt
 
 # Run the start.sh script when the container starts
-CMD ["fastapi", "run"]
+CMD ["fastapi", "run", "server/app.py"]

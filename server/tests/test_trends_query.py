@@ -7,8 +7,8 @@ import psycopg
 # local
 from server.query.word_frequency_query import WordFrequencyQuery
 from server.config.connection import get_reader_conn_str
-from util.datatypes import DataSeries
-from util.dataseries_row_factory import DataSeriesRowFactory
+from server.util.datatypes import DataSeries
+from server.util.dataseries_row_factory import DataSeriesRowFactory
 
 
 class WordFrequencyQueryTest(unittest.IsolatedAsyncioTestCase):

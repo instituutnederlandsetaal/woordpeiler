@@ -2,7 +2,7 @@ from typing import Any, Sequence
 from psycopg import Cursor
 from datetime import datetime
 
-from util.datatypes import DataSeries
+from server.util.datatypes import DataSeries
 
 
 class DataSeriesRowFactory:

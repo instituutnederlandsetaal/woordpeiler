@@ -9,7 +9,7 @@ from PolStringConvertor import infixToPostfix
 
 # local
 from server.query.word_frequency_query import WordFrequencyQuery
-from util.datatypes import DataSeries
+from server.util.datatypes import DataSeries
 
 
 class ArithmeticalQuery:

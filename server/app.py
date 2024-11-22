@@ -12,8 +12,8 @@ from server.query.listing_query import ListingQuery
 from server.query.trends_query import TrendsQuery
 from server.query.word_frequency_query import WordFrequencyQuery
 from server.config.config import FastAPI, create_app_with_config
-from util.dataseries_row_factory import DataSeriesRowFactory
-from util.datatypes import DataSeries
+from server.util.dataseries_row_factory import DataSeriesRowFactory
+from server.util.datatypes import DataSeries
 
 app: FastAPI = create_app_with_config()
 
