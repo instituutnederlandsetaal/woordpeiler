@@ -1,5 +1,4 @@
 # standard
-from re import S
 from typing import Optional
 from datetime import datetime
 
@@ -8,7 +7,7 @@ from psycopg import AsyncCursor
 from psycopg.sql import Literal, SQL, Composable
 
 # local
-from server.util.datatypes import PeriodType, WordColumn
+from server.util.datatypes import DataSeries, PeriodType, WordColumn
 from server.query.query_builder import ExecutableQuery, QueryBuilder
 
 
@@ -61,7 +60,6 @@ class WordFrequencyQuery(QueryBuilder):
     def get_time_range(
         unix_start_date: Optional[int], unix_end_date: Optional[int]
     ) -> Composable:
-
         start_date_where = WordFrequencyQuery._where_time(unix_start_date, ">")
         end_date_where = WordFrequencyQuery._where_time(unix_end_date, "<")
 
@@ -116,7 +114,7 @@ class WordFrequencyQuery(QueryBuilder):
 
         return word_filter
 
-    def build(self, cursor: AsyncCursor) -> ExecutableQuery:
+    def build(self, cursor: AsyncCursor) -> ExecutableQuery[DataSeries]:
         query = SQL(
             """
             WITH filter AS (

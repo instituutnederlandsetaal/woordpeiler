@@ -1,4 +1,7 @@
+from dataclasses import dataclass
+from decimal import Decimal
 from enum import Enum
+
 
 class WordColumn(Enum):
     ID = "id"
@@ -51,3 +54,11 @@ class WordFrequencyRow:
 
     def __str__(self):
         return f"WordFrequencyRow({self.time}, {self.word_id}, {self.frequency}, {self.source})"
+
+
+@dataclass
+class DataSeries:
+    time: int
+    size: Decimal
+    abs_freq: Decimal
+    rel_freq: Decimal

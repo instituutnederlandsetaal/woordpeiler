@@ -1,12 +1,11 @@
 # standard
 from enum import Enum
-from typing import Optional
+from typing import Optional, Any
 from datetime import datetime
 
 # third party
 from psycopg import AsyncCursor
-from psycopg.sql import Composable, Composed, Identifier, Literal, SQL
-from psycopg.abc import Query
+from psycopg.sql import Composable, Identifier, Literal, SQL
 
 
 class QueryBuilder:
@@ -19,7 +18,7 @@ class QueryBuilder:
 
     query: str
 
-    def build(self, cursor: AsyncCursor) -> "ExecutableQuery":
+    def build(self, cursor: AsyncCursor) -> "ExecutableQuery[Any]":
         """
         Construct a query using the cursor.
         """
@@ -50,7 +49,7 @@ class QueryBuilder:
         )
 
 
-class ExecutableQuery:
+class ExecutableQuery[T]:
     cursor: AsyncCursor
     query: Composable
     verbose: bool = True
@@ -72,3 +71,7 @@ class ExecutableQuery:
             print(f"Query took {end - start}")
 
         return self.cursor
+
+    async def execute_fetchall(self) -> list[T]:
+        await self.execute()
+        return await self.cursor.fetchall()  # type: ignore (database type)

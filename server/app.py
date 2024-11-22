@@ -1,11 +1,8 @@
 # standard
 from typing import Annotated, Optional
-import datetime
-import os
-import sys
 
 # third party
-from psycopg.rows import dict_row
+from psycopg.rows import dict_row, class_row
 from fastapi import Request, HTTPException, Query
 import uvicorn
 
@@ -14,9 +11,9 @@ from server.query.arithmetical_query import ArithmeticalQuery
 from server.query.listing_query import ListingQuery
 from server.query.trends_query import TrendsQuery
 from server.query.word_frequency_query import WordFrequencyQuery
-from server.util.datatypes import PeriodType
 from server.config.config import FastAPI, create_app_with_config
-from server.util.unix_timestamp_row_factory import UnixTimestampRowFactory
+from util.dataseries_row_factory import DataSeriesRowFactory
+from util.datatypes import DataSeries
 
 app: FastAPI = create_app_with_config()
 
@@ -35,9 +32,7 @@ def health():
 async def get_tables(request: Request):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor() as cur:
-            await ListingQuery().build(cur).execute()
-            results = [row[0] async for row in cur]
-            return results
+            return await ListingQuery().build(cur).execute_fetchall()
 
 
 @app.get("/ls/{table}")
@@ -53,26 +48,25 @@ async def get_columns(request: Request, table: str):
 async def get_rows(request: Request, table: str, column: str):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor() as cur:
-            await ListingQuery(table, column).build(cur).execute()
-            results = [row[0] async for row in cur]
-            return results
+            return await ListingQuery(table, column).build(cur).execute_fetchall()
 
 
 @app.get("/trends")
 async def get_trends(
     request: Request,
-    period_type: Optional[str] = "month",
-    period_length: Optional[int] = 1,
-    trend_type: Optional[str] = "absolute",
-    modifier: Optional[int] = 1,
-    exclude: Annotated[Optional[list], Query()] = None,
+    period_type: str = "month",
+    period_length: int = 1,
+    trend_type: str = "absolute",
+    modifier: int = 1,
+    exclude: Annotated[Optional[list[str]], Query()] = None,
 ):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
-            await TrendsQuery(period_type, period_length, trend_type, modifier).build(
-                cur
-            ).execute()
-            return await cur.fetchall()
+            return (
+                await TrendsQuery(period_type, period_length, trend_type, modifier)
+                .build(cur)
+                .execute_fetchall()
+            )
 
 
 @app.get("/math")
@@ -87,7 +81,7 @@ async def get_math(
     end_date: Optional[int] = None,
 ):
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=UnixTimestampRowFactory) as cur:
+        async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
             return await ArithmeticalQuery(
                 formula,
                 source,
@@ -128,7 +122,7 @@ async def get_freq(
 
     # Validate
     poshead = None
-    if pos != None:
+    if pos is not None:
         if "(" not in pos:
             poshead = pos
             pos = None
@@ -139,27 +133,26 @@ async def get_freq(
             status_code=400, detail="At least one parameter is required"
         )
 
-    # ensure periodLength is valid
-    if period_length < 1:
-        raise HTTPException(status_code=400, detail="Invalid periodLength")
-
     # execute
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=UnixTimestampRowFactory) as cur:
-            await WordFrequencyQuery(
-                id=id,
-                wordform=wordform,
-                lemma=lemma,
-                pos=pos,
-                poshead=poshead,
-                source=source,
-                language=language,
-                period_type=period_type,
-                period_length=period_length,
-                start_date=start_date,
-                end_date=end_date,
-            ).build(cur).execute()
-            return await cur.fetchall()
+        async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
+            return (
+                await WordFrequencyQuery(
+                    id=id,
+                    wordform=wordform,
+                    lemma=lemma,
+                    pos=pos,
+                    poshead=poshead,
+                    source=source,
+                    language=language,
+                    period_type=period_type,
+                    period_length=period_length,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+                .build(cur)
+                .execute_fetchall()
+            )
 
 
 if __name__ == "__main__":

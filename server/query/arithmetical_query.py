@@ -1,26 +1,15 @@
 # standard
 from collections import deque
-from dataclasses import dataclass
 from decimal import Decimal
-from typing import Any, Optional, TypedDict
-from datetime import datetime
+from typing import Any, Optional
 
 # third party
 from psycopg import AsyncCursor
-from psycopg.sql import Literal, SQL, Composable, Identifier
 from PolStringConvertor import infixToPostfix
 
 # local
 from server.query.word_frequency_query import WordFrequencyQuery
-from server.query.query_builder import ExecutableQuery, QueryBuilder
-
-
-@dataclass
-class DataSeries(TypedDict):
-    time: datetime
-    size: Decimal
-    abs_freq: Decimal
-    rel_freq: Decimal
+from util.datatypes import DataSeries
 
 
 class ArithmeticalQuery:
@@ -31,8 +20,8 @@ class ArithmeticalQuery:
         language: Optional[str] = None,
         period_type: str = "year",
         period_length: int = 1,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        start_date: Optional[int] = None,
+        end_date: Optional[int] = None,
     ):
         self.formula = formula
         self.source = source
@@ -58,15 +47,19 @@ class ArithmeticalQuery:
                 result = self.calculate(token, operand1, operand2)
                 operands.append(result)
             else:
-                await WordFrequencyQuery(
-                    wordform=token,
-                    source=self.source,
-                    language=self.language,
-                    period_type=self.period_type,
-                    period_length=self.period_length,
-                    start_date=self.start_date,
-                    end_date=self.end_date,
-                ).build(cursor).execute()
+                await (
+                    WordFrequencyQuery(
+                        wordform=token,
+                        source=self.source,
+                        language=self.language,
+                        period_type=self.period_type,
+                        period_length=self.period_length,
+                        start_date=self.start_date,
+                        end_date=self.end_date,
+                    )
+                    .build(cursor)
+                    .execute()
+                )
                 data_series: list[DataSeries] = await cursor.fetchall()  # type: ignore (database call)
                 operands.append(data_series)
 
@@ -87,23 +80,27 @@ class ArithmeticalQuery:
 
     def add(self, a: list[DataSeries], b: list[DataSeries]) -> list[DataSeries]:
         for i in range(len(a)):
-            a[i]["rel_freq"] += b[i]["rel_freq"]
-            a[i]["abs_freq"] += b[i]["abs_freq"]
+            a[i].rel_freq += b[i].rel_freq
+            a[i].abs_freq += b[i].abs_freq
         return a
 
     def subtract(self, a: list[DataSeries], b: list[DataSeries]) -> list[DataSeries]:
         for i in range(len(a)):
-            a[i]["rel_freq"] -= b[i]["rel_freq"]
-            a[i]["abs_freq"] -= b[i]["abs_freq"]
+            a[i].rel_freq -= b[i].rel_freq
+            a[i].abs_freq -= b[i].abs_freq
         return a
 
     def divide(self, a: list[DataSeries], b: list[DataSeries]) -> list[DataSeries]:
         for i in range(len(a)):
-            for key in ["abs_freq", "rel_freq"]:
-                if b[i][key] == 0 and a[i][key] == 0:
-                    a[i][key] = Decimal(0.5)
-                elif b[i][key] == 0:
-                    a[i][key] = Decimal(1)
-                else:
-                    a[i][key] /= b[i][key]
+            a[i].abs_freq = self.safe_divide(a[i].abs_freq, b[i].abs_freq)
+            a[i].rel_freq = self.safe_divide(a[i].rel_freq, b[i].rel_freq)
         return a
+
+    def safe_divide(self, numerator: Decimal, denominator: Decimal) -> Decimal:
+        if denominator == 0 and numerator == 0:
+            # both are equally present (this does assume queries like: a / (a + b) )
+            return Decimal(0.5)
+        elif denominator == 0:
+            return Decimal(1)
+        else:
+            return numerator / denominator
