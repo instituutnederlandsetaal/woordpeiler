@@ -19,3 +19,15 @@ def execute_query(queries: list[str]):
         with conn.cursor() as cursor:
             for query in queries:
                 cursor.execute(query)
+
+
+# separate analyze because of transaction issues
+def analyze():
+    with timer("Analyze"):
+        conn = psycopg.connect(get_writer_conn_str())
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute("ANALYZE")
+        conn.commit()
+        cursor.close()
+        conn.close()

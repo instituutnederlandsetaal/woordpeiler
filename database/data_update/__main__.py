@@ -10,6 +10,7 @@ import psycopg
 from database.connection import get_writer_conn_str
 from database.data_update.insert import insert_date
 from database.data_update.update import update_table
+from database.data_update.lookup_tables import create_lookup_tables
 
 
 if __name__ == "__main__":
@@ -44,3 +45,6 @@ if __name__ == "__main__":
 
     # all data inserted, now update the tables
     update_table()
+
+    # create lookup tables
+    create_lookup_tables()
