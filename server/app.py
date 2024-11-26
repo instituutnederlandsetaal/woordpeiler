@@ -2,7 +2,7 @@
 from typing import Annotated, Optional
 
 # third party
-from psycopg.rows import dict_row, class_row
+from psycopg.rows import dict_row, namedtuple_row
 from fastapi import Request, HTTPException, Query
 import uvicorn
 
@@ -12,8 +12,10 @@ from server.query.listing_query import ListingQuery
 from server.query.trends_query import TrendsQuery
 from server.query.word_frequency_query import WordFrequencyQuery
 from server.config.config import FastAPI, create_app_with_config
-from server.util.dataseries_row_factory import DataSeriesRowFactory
-from server.util.datatypes import DataSeries
+from server.util.dataseries_row_factory import (
+    DataSeriesRowFactory,
+    SingleValueRowFactory,
+)
 
 app: FastAPI = create_app_with_config()
 
@@ -38,16 +40,14 @@ async def get_tables(request: Request):
 @app.get("/ls/{table}")
 async def get_columns(request: Request, table: str):
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor() as cur:
-            await ListingQuery(table).build(cur).execute()
-            results = [row[0] async for row in cur]
-            return results
+        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
+            return await ListingQuery(table).build(cur).execute_fetchall()
 
 
 @app.get("/ls/{table}/{column}")
 async def get_rows(request: Request, table: str, column: str):
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor() as cur:
+        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
             return await ListingQuery(table, column).build(cur).execute_fetchall()
 
 

@@ -23,3 +23,11 @@ class DataSeriesRowFactory:
         if field == "rel_freq":
             return value * 1_000_000
         return value
+
+
+class SingleValueRowFactory:
+    def __init__(self, cursor: Cursor[Any]):
+        pass
+
+    def __call__(self, values: Sequence[Any]) -> Any:
+        return values[0]
