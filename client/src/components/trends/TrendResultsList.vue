@@ -4,7 +4,7 @@
         <div class="formSplit">
             <label>Uitsluiten</label>
             <MultiSelect v-model="selectedPosHead" display="chip" :options="posHeadOptions" placeholder="Woordsoort"
-                :loading="posHeadLoading" style="width:70%;" />
+                :loading="posHeadLoading" class="posSelect" />
         </div>
 
         <Listbox class="p-panel" multiple metaKeySelection v-model="selectedTrend" filter :options="filteredTrends"
@@ -91,3 +91,19 @@ watch(selectedTrend, () => {
     search()
 })
 </script>
+
+<style scoped lang="scss">
+:deep(.p-chip-label) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.posSelect {
+    flex: 1;
+    min-width: 0;
+}
+
+.formSplit {
+    gap: 1rem;
+}
+</style>
