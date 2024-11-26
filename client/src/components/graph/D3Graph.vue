@@ -2,22 +2,28 @@
     <div id="my_dataviz" ref="resizeRef"></div>
     <div id="tooltip"></div>
 </template>
+
+
 <script setup lang="ts">
-import { onMounted, watchEffect } from "vue";
-import useResizeObserver from "@/ts/resizeObserver";
-import { useGraphStore } from "@/store/GraphStore"
-import { el } from "date-fns/locale";
+// Libraries & Stores
+import { onMounted, watchEffect, ref } from "vue";
+import { storeToRefs } from "pinia";
+import { useSearchResultsStore } from "@/stores/SearchResultsStore";
+import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
+// Primevue
 
-const GraphStore = useGraphStore()
+import useResizeObserver from "@/ts/resizeObserver"
+import { nl } from "date-fns/locale";
 
-const props = defineProps(["data"]);
+// Stores
+const { searchSettings } = storeToRefs(useSearchSettingsStore());
+const { searchResults } = storeToRefs(useSearchResultsStore());
 
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
 
 onMounted(() => {
-
     // Define the Dutch locale
     const dutchLocale = {
         "dateTime": "%A %e %B %Y %X",
@@ -72,21 +78,21 @@ onMounted(() => {
 
     // data
     watchEffect(() => {
-
         // clear the svg
         svg.selectAll(".line-group").remove();
 
         // first update the axes
         // because data will be drawn based on the axes
-        const flat = props.data.flatMap(d => d.data);
+        const flat = searchResults.value.flatMap(d => d.data);
         x.domain(d3.extent(flat, d => d.x));
         xAxis.call(d3.axisBottom(x));
-        y.domain(d3.extent(flat, d => d.y));
+        // y domain from 0 to max value
+        y.domain([0, d3.max(flat, d => d.y)]);
         yAxis.call(d3.axisLeft(y));
 
 
         // add empty g for each dataseries and data-label it
-        props.data.forEach(series => {
+        searchResults.value.forEach(series => {
             svg.append("g")
                 .attr("data-name", series.label)
                 .attr("clip-path", "url(#clip)")
@@ -94,7 +100,7 @@ onMounted(() => {
         });
 
         // Legend
-        props.data.forEach((series, i) => {
+        searchResults.value.forEach((series, i) => {
             const legendItem = legend.append("g")
                 .attr("class", "legend-item")
                 .attr("transform", `translate(${i * 100}, 0)`)
@@ -122,7 +128,7 @@ onMounted(() => {
         });
 
         // draw the lines
-        props.data.forEach(series => {
+        searchResults.value.forEach(series => {
             svg.select(`.line-group[data-name='${series.label}']`)
                 .selectAll('.line')
                 .data([series])
@@ -137,7 +143,7 @@ onMounted(() => {
         });
 
         // Draw the dots
-        props.data.forEach(series => {
+        searchResults.value.forEach(series => {
             // link data
             series.data.forEach(d => {
                 d.datapoint = series.datapoint;
@@ -227,7 +233,7 @@ onMounted(() => {
         if (!extent) {
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-            x.domain(d3.extent(props.data.flatMap(d => d.data), d => d.x))
+            x.domain(d3.extent(searchResults.value.flatMap(d => d.data), d => d.x))
         } else {
             // A selection was made
             // remove the grey brush area
@@ -296,7 +302,6 @@ function truncateRound(value: number, decimals) {
 }
 
 function tooltipHtml(d) {
-    console.log(d)
     const date = d3.timeFormat("%Y-%m-%d")(d.x);
     const value = truncateRound(d.y, 1).toLocaleString();
     const href = constructBlLink(d);
@@ -344,7 +349,7 @@ function constructBLFilter(d) {
         medium: "newspaper",
         witnessYear_from: d3.timeFormat("%Y")(d.x),
     }
-    const timeBucket = GraphStore.searchSettings.timeBucketType;
+    const timeBucket = searchSettings.timeBucketType;
 
     if (timeBucket == "month") {
         filters["witnessMonth_from"] = parseInt(d3.timeFormat("%m")(d.x))

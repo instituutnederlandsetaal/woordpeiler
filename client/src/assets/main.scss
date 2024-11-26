@@ -1,5 +1,6 @@
 @use 'sass:color';
 @import './base.css';
+@import './primevue.scss';
 
 body {
   font-family: Helvetica, Arial, sans-serif;
@@ -141,24 +142,7 @@ canvas {
   align-items: center;
 }
 
-$theme: #62b6ff;
 
-:root:root {
-  --p-scrollpanel-bar-background: #aaa;
-  --p-primary-color: #{$theme};
-  --p-highlight-color: #000;
-  --p-highlight-focus-color: #000;
-  --p-highlight-focus-background: #{color.adjust($theme, $lightness: 20%)};
-  --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
-  --p-primary-active-color: #{color.adjust($theme, $lightness: -20%)};
-  --p-primary-hover-color: #{color.adjust($theme, $lightness: -10%)};
-
-}
-
-#app .p-select,
-#app .p-cascadeselect {
-  width: 218px;
-}
 
 .panelHeader {
   overflow: hidden;

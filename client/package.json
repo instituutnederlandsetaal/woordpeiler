@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.5",
+    "axios": "^1.7.7",
     "chart.js": "^4.4.3",
     "chartjs-adapter-date-fns": "^3.0.0",
     "d3": "^7.9.0",
     "date-fns": "^3.6.0",
-    "infix-rpn-eval": "^1.0.0",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.5",

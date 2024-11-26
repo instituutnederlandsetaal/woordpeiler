@@ -14,6 +14,7 @@
         <nav>
             <a href="/">grafiek</a>
             <a href="/trends">trends</a>
+            <a href="/uitleg">uitleg</a>
         </nav>
     </header>
 </template>

@@ -2,8 +2,9 @@
     <div class="graph">
         <div class="p-panel">
             <!-- old -->
-            <div v-if="GraphStore.datasets.length === 0" class="emptyGraph">
-                <ProgressSpinner />
+            <div v-if="GraphStore.datasets" class="emptyGraph">
+                <!-- <ProgressSpinner /> -->
+                <p>Zoek een woord</p>
             </div>
             <D3GraphView v-else :data="data" />
             <!-- new -->
@@ -15,19 +16,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue"
 
-import Panel from "primevue/panel"
-import Button from "primevue/button"
-import ProgressSpinner from "primevue/progressspinner"
 import type { ChartOptions, ChartData } from "chart.js"
-import { nl } from "date-fns/locale"
 import "chartjs-adapter-date-fns"
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js/auto"
-import { Bar, Line } from "vue-chartjs"
 import { externalTooltipHandler } from "@/ts/tooltip"
-import D3GraphView from "@/views/D3GraphView.vue"
-import { useGraphStore } from "@/store/GraphStore"
+import D3GraphView from "@/components/graph/GraphWrapper.vue"
+import { useSearchResultsStore } from "@/stores/SearchResultsStore"
 
-const GraphStore = useGraphStore()
+const GraphStore = useSearchResultsStore()
 const data = computed(() => {
     if (!GraphStore.datasets?.length) {
         return []
