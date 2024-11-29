@@ -24,8 +24,8 @@ class WordFrequencyQueryTest(unittest.IsolatedAsyncioTestCase):
         result: list[DataSeries] = (
             await WordFrequencyQuery(
                 wordform="de",
-                period_type="year",
-                period_length=1,
+                bucket_type="year",
+                bucket_size=1,
             )
             .build(self.cursor)
             .execute_fetchall()

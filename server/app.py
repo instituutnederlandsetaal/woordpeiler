@@ -2,7 +2,7 @@
 from typing import Annotated, Optional
 
 # third party
-from psycopg.rows import dict_row, namedtuple_row
+from psycopg.rows import class_row
 from fastapi import Request, HTTPException, Query
 import uvicorn
 
@@ -16,7 +16,7 @@ from server.util.dataseries_row_factory import (
     DataSeriesRowFactory,
     SingleValueRowFactory,
 )
-from server.util.datatypes import DataSeries
+from server.util.datatypes import DataSeries, TrendItem
 
 app: FastAPI = create_app_with_config()
 
@@ -55,16 +55,16 @@ async def get_rows(request: Request, table: str, column: str):
 @app.get("/trends")
 async def get_trends(
     request: Request,
-    period_type: str = "month",
-    period_length: int = 1,
     trend_type: str = "absolute",
-    modifier: int = 1,
+    modifier: float = 1,
+    start_date: Optional[int] = None,
+    end_date: Optional[int] = None,
     exclude: Annotated[Optional[list[str]], Query()] = None,
-):
+) -> list[TrendItem]:
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=dict_row) as cur:
+        async with conn.cursor(row_factory=class_row(TrendItem)) as cur:
             return (
-                await TrendsQuery(period_type, period_length, trend_type, modifier)
+                await TrendsQuery(trend_type, modifier, start_date, end_date)
                 .build(cur)
                 .execute_fetchall()
             )

@@ -62,3 +62,10 @@ class DataSeries:
     size: Decimal
     abs_freq: Decimal
     rel_freq: Decimal
+
+
+@dataclass
+class TrendItem:
+    keyness: Decimal | float
+    poshead: str
+    wordform: str
