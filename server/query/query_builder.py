@@ -1,11 +1,23 @@
 # standard
 from enum import Enum
+from token import OP
 from typing import Optional, Any
 from datetime import datetime
 
 # third party
-from psycopg import AsyncCursor
-from psycopg.sql import Composable, Identifier, Literal, SQL
+from psycopg import AsyncCursor, Cursor
+from psycopg.sql import Composable, Identifier, Literal, SQL, Composed
+
+type BaseCursor = Cursor | AsyncCursor
+type Query = SQL | Composed
+
+
+class Operator(Enum):
+    EQ = "="
+    GT = ">"
+    LT = "<"
+    GE = ">="
+    LE = "<="
 
 
 class QueryBuilder:
@@ -16,9 +28,7 @@ class QueryBuilder:
     3. call ExecutableQuery.execute(): the query will be executed.
     """
 
-    query: str
-
-    def build(self, cursor: AsyncCursor) -> "ExecutableQuery[Any]":
+    def build(self, cursor: BaseCursor) -> "ExecutableQuery[Any]":
         """
         Construct a query using the cursor.
         """
@@ -48,22 +58,52 @@ class QueryBuilder:
             ]
         )
 
+    @staticmethod
+    def _where_time(
+        column: Identifier,
+        operator: Operator,
+        unixtime: Optional[int],
+    ) -> Optional[Composable]:
+        if unixtime is not None:
+            date: str = datetime.fromtimestamp(unixtime).strftime("%Y%m%d")
+            return SQL("{column} {operator} {date}").format(
+                column=column,
+                operator=SQL(operator.value),
+                date=Literal(date),
+            )
+        return None
+
+    @staticmethod
+    def get_date_filter(
+        column: Identifier, start: Optional[int], end: Optional[int]
+    ) -> Composable:
+        start_where = QueryBuilder._where_time(column, Operator.GE, start)
+        end_where = QueryBuilder._where_time(column, Operator.LE, end)
+
+        if any([start_where, end_where]):
+            return SQL("WHERE ") + SQL(" AND ").join(
+                [i for i in [start_where, end_where] if i is not None]
+            )
+        else:
+            return SQL("")
+
 
 class ExecutableQuery[T]:
-    cursor: AsyncCursor
-    query: Composable
+    cursor: BaseCursor
+    query: Query
     verbose: bool = True
 
-    def __init__(
-        self, cursor: AsyncCursor, query: Composable, verbose: bool = True
-    ) -> None:
+    def __init__(self, cursor: BaseCursor, query: Query, verbose: bool = True) -> None:
         self.cursor = cursor
         self.query = query
         self.verbose = verbose
 
-    async def execute(self) -> AsyncCursor:
+    async def execute(self) -> BaseCursor:
         start = datetime.now()
-        await self.cursor.execute(self.query)
+        if type(self.cursor) is AsyncCursor:
+            await self.cursor.execute(self.query)
+        else:
+            self.cursor.execute(self.query)
         end = datetime.now()
 
         if self.verbose:

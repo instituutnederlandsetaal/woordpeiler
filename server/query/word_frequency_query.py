@@ -1,21 +1,19 @@
 # standard
 from typing import Optional
-from datetime import datetime
 
 # third party
-from psycopg import AsyncCursor
-from psycopg.sql import Literal, SQL, Composable
+from psycopg.sql import Literal, SQL, Composable, Identifier
 
 # local
 from server.util.datatypes import DataSeries, PeriodType, WordColumn
-from server.query.query_builder import ExecutableQuery, QueryBuilder
+from server.query.query_builder import ExecutableQuery, QueryBuilder, BaseCursor
 
 
 class WordFrequencyQuery(QueryBuilder):
-    time_span: Literal
+    time_bucket: Literal
     word_filter: Composable
     source_filter: Composable
-    time_range: Composable
+    date_filter: Composable
 
     def __init__(
         self,
@@ -26,8 +24,8 @@ class WordFrequencyQuery(QueryBuilder):
         poshead: Optional[str] = None,
         source: Optional[str] = None,
         language: Optional[str] = None,
-        period_type: str = "year",
-        period_length: int = 1,
+        bucket_type: str = "year",
+        bucket_size: int = 1,
         start_date: Optional[int] = None,
         end_date: Optional[int] = None,
     ) -> None:
@@ -35,40 +33,17 @@ class WordFrequencyQuery(QueryBuilder):
             id, wordform, lemma, pos, poshead
         )
         self.source_filter = WordFrequencyQuery.get_source_filter(source, language)
-        self.time_range = WordFrequencyQuery.get_time_range(start_date, end_date)
-        self.time_span = WordFrequencyQuery.get_time_span(period_type, period_length)
+        self.date_filter = QueryBuilder.get_date_filter(
+            Identifier("cs", "time"), start_date, end_date
+        )
+        self.time_bucket = WordFrequencyQuery.get_time_bucket(bucket_type, bucket_size)
 
     @staticmethod
-    def get_time_span(period_type: str, period_length: int) -> Literal:
-        period_type = PeriodType(period_type)
-        if period_length < 1:
+    def get_time_bucket(bucket_type: str, bucket_size: int) -> Literal:
+        bucket_type = PeriodType(bucket_type)
+        if bucket_size < 1:
             raise ValueError("Invalid periodLength")
-        return Literal(f"{period_length} {period_type.value}")
-
-    @staticmethod
-    def _where_time(
-        unixtime: Optional[int], operator: str = "<"
-    ) -> Optional[Composable]:
-        if unixtime is not None:
-            date: str = datetime.fromtimestamp(unixtime).strftime("%Y%m%d")
-            return SQL("cs.time {operator} {date}").format(
-                date=Literal(date), operator=SQL(operator)
-            )
-        return None
-
-    @staticmethod
-    def get_time_range(
-        unix_start_date: Optional[int], unix_end_date: Optional[int]
-    ) -> Composable:
-        start_date_where = WordFrequencyQuery._where_time(unix_start_date, ">")
-        end_date_where = WordFrequencyQuery._where_time(unix_end_date, "<")
-
-        if any([start_date_where, end_date_where]):
-            return SQL("WHERE ") + SQL(" AND ").join(
-                [i for i in [start_date_where, end_date_where] if i is not None]
-            )
-        else:
-            return SQL("")
+        return Literal(f"{bucket_size} {bucket_type.value}")
 
     @staticmethod
     def get_source_filter(source: Optional[str], language: Optional[str]) -> Composable:
@@ -114,7 +89,7 @@ class WordFrequencyQuery(QueryBuilder):
 
         return word_filter
 
-    def build(self, cursor: AsyncCursor) -> ExecutableQuery[DataSeries]:
+    def build(self, cursor: BaseCursor) -> ExecutableQuery[DataSeries]:
         query = SQL(
             """
             WITH filter AS (
@@ -125,24 +100,24 @@ class WordFrequencyQuery(QueryBuilder):
                     GROUP BY time
             ) 
             SELECT 
-                time_bucket({time_span},cs.time) as time, 
+                time_bucket({time_bucket},cs.time) as time, 
                 SUM(COALESCE(frequency, 0)) as abs_freq, 
                 SUM(cs.size) as size, 
                 SUM(COALESCE(frequency, 0))/SUM(cs.size) as rel_freq 
             FROM corpus_size cs 
                 LEFT JOIN filter f 
                     ON cs.time = f.time 
-            {time_range}
+            {date_filter}
             GROUP BY 
-                time_bucket({time_span},cs.time) 
+                time_bucket({time_bucket},cs.time) 
             ORDER BY
-                time_bucket({time_span},cs.time);
+                time_bucket({time_bucket},cs.time);
         """
         ).format(
             source_filter=self.source_filter,
-            time_range=self.time_range,
+            date_filter=self.date_filter,
             word_filter=self.word_filter,
-            time_span=self.time_span,
+            time_bucket=self.time_bucket,
         )
 
         return ExecutableQuery(cursor, query)

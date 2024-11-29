@@ -16,6 +16,7 @@ from server.util.dataseries_row_factory import (
     DataSeriesRowFactory,
     SingleValueRowFactory,
 )
+from server.util.datatypes import DataSeries
 
 app: FastAPI = create_app_with_config()
 
@@ -79,7 +80,7 @@ async def get_math(
     period_length: int = 1,
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
-):
+) -> list[DataSeries]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
             return await ArithmeticalQuery(
@@ -106,7 +107,7 @@ async def get_freq(
     period_length: int = 1,
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
-):
+) -> list[DataSeries]:
     # send to math
     if wordform and ("+" in wordform or "/" in wordform):
         return await get_math(
@@ -145,8 +146,8 @@ async def get_freq(
                     poshead=poshead,
                     source=source,
                     language=language,
-                    period_type=period_type,
-                    period_length=period_length,
+                    bucket_type=period_type,
+                    bucket_size=period_length,
                     start_date=start_date,
                     end_date=end_date,
                 )

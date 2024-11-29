@@ -31,7 +31,7 @@ class ArithmeticalQuery:
         self.start_date = start_date
         self.end_date = end_date
 
-    async def execute(self, cursor: AsyncCursor) -> Any:
+    async def execute(self, cursor: AsyncCursor) -> list[DataSeries]:
         # Evaluate an RPN expression
         # https://www.101computing.net/reverse-polish-notation/
         tokens = infixToPostfix(self.formula)
@@ -52,8 +52,8 @@ class ArithmeticalQuery:
                         wordform=token,
                         source=self.source,
                         language=self.language,
-                        period_type=self.period_type,
-                        period_length=self.period_length,
+                        bucket_type=self.period_type,
+                        bucket_size=self.period_length,
                         start_date=self.start_date,
                         end_date=self.end_date,
                     )
