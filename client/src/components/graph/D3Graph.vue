@@ -349,26 +349,29 @@ function constructBLFilter(d) {
         medium: "newspaper",
         witnessYear_from: d3.timeFormat("%Y")(d.x),
     }
-    const timeBucket = searchSettings.timeBucketType;
+    const timeBucket = searchSettings.value.timeBucketType;
 
-    if (timeBucket == "month") {
+    if (timeBucket != "year") {
         filters["witnessMonth_from"] = parseInt(d3.timeFormat("%m")(d.x))
-    } else if (timeBucket == "week") {
-        const startYear = d3.timeFormat("%Y")(d.x)
-        const startMonth = parseInt(d3.timeFormat("%m")(d.x))
-        const startDay = parseInt(d3.timeFormat("%d")(d.x))
-
-        const endX = new Date(d.x)
-        endX.setDate(endX.getDate() + 7)
-
-        const endYear = d3.timeFormat("%Y")(endX)
-        const endMonth = parseInt(d3.timeFormat("%m")(endX))
-        const endDay = parseInt(d3.timeFormat("%d")(endX))
-
-        filters["witnessYear_from"] = `[${startYear} TO ${endYear}]`
-        filters["witnessMonth_from"] = `[${startMonth} TO ${endMonth}]`
-        filters["witnessDay_from"] = `[${startDay} TO ${endDay}]`
     }
+    // Weeks are not supported in BlackLab ???
+
+    // else if (timeBucket == "week") {
+    //     const startYear = d3.timeFormat("%Y")(d.x)
+    //     const startMonth = parseInt(d3.timeFormat("%m")(d.x))
+    //     const startDay = parseInt(d3.timeFormat("%d")(d.x))
+
+    //     const endX = new Date(d.x)
+    //     endX.setDate(endX.getDate() + 7)
+
+    //     const endYear = d3.timeFormat("%Y")(endX)
+    //     const endMonth = parseInt(d3.timeFormat("%m")(endX))
+    //     const endDay = parseInt(d3.timeFormat("%d")(endX))
+
+    //     filters["witnessYear_from"] = `[${startYear} TO ${endYear}]`
+    //     filters["witnessMonth_from"] = `[${startMonth} TO ${endMonth}]`
+    //     filters["witnessDay_from"] = `[${startDay} TO ${endDay}]`
+    // }
 
 
     if (d.datapoint.newspaper) {

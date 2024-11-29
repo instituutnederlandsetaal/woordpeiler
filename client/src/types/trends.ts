@@ -1,6 +1,6 @@
 export type TrendSettings = {
-    periodType: string;
-    periodLength: number;
+    startDate: Date;
+    endDate: Date;
     trendType: string;
     modifier: number;
 }

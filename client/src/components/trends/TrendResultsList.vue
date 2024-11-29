@@ -96,6 +96,7 @@ watch(selectedTrend, () => {
 :deep(.p-chip-label) {
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: smaller;
 }
 
 .posSelect {

@@ -7,6 +7,7 @@ import { useSearchItemsStore } from '@/stores/SearchItemsStore'
 import type { SearchItem, GraphItem } from "@/types/Search"
 import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
+import { toTimestamp } from '@/ts/date'
 
 export function displayName(str) {
     return Object.entries(str)
@@ -54,8 +55,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             language: ds.language,
             period_length: searchSettings.value.timeBucketSize,
             period_type: searchSettings.value.timeBucketType,
-            start_date: Math.floor(searchSettings.value.startDate.getTime() / 1000),
-            end_date: Math.floor(searchSettings.value.endDate.getTime() / 1000),
+            start_date: toTimestamp(searchSettings.value.startDate),
+            end_date: toTimestamp(searchSettings.value.endDate),
         }
 
         SearchAPI.getSearch(searchRequest)
@@ -66,7 +67,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
                     borderColor: `#${ds.color}`,
                     backgroundColor: `#${ds.color}`,
                     data: response.data.map((d) => {
-                        return { x: d.time * 1000, y: d[searchSettings.value.frequencyType] }
+                        return { x: d.time * 1000, y: parseFloat(d[searchSettings.value.frequencyType]) }
                     }),
                 }
                 searchResults.value.push(dataset)

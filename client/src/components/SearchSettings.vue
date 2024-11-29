@@ -35,6 +35,7 @@
 import { useSearchSettingsStore } from "@/stores/SearchSettingsStore"
 import { useSearchResultsStore } from "@/stores/SearchResultsStore"
 import { useSearchItemsStore } from "@/stores/SearchItemsStore"
+import { storeToRefs } from "pinia"
 // Components
 import Accordion from "primevue/accordion"
 import AccordionPanel from "primevue/accordionpanel"
@@ -48,6 +49,6 @@ import InputNumber from "primevue/inputnumber"
 
 // Stores
 const { searchSettings, frequencyTypeOptions, timeBucketOptions } = useSearchSettingsStore()
-const { searchItems } = useSearchItemsStore()
+const { searchItems } = storeToRefs(useSearchItemsStore())
 const { search } = useSearchResultsStore()
 </script>
