@@ -1,3 +1,6 @@
+@use 'sass:color';
+
+
 $theme: #62b6ff;
 
 :root:root {
@@ -10,15 +13,32 @@ $theme: #62b6ff;
     --p-primary-active-color: #{color.adjust($theme, $lightness: -20%)};
     --p-primary-hover-color: #{color.adjust($theme, $lightness: -10%)};
 
-    // Border radius
+    // Dialog
+    --p-dialog-header-padding: 1rem;
+
+    // All border radius
     --p-border-radius-xs: 0;
     --p-border-radius-sm: 0;
     --p-border-radius-md: 0;
     --p-border-radius-lg: 0;
     --p-border-radius-xl: 0;
+    --p-button-rounded-border-radius: 0;
+
+    .p-button-rounded {
+        border-radius: 0;
+    }
+
+    *:focus-visible {
+        outline: 0;
+    }
 }
 
-#app .p-select,
-#app .p-cascadeselect {
-    width: 218px;
+.wordlist {
+
+    .p-select,
+    .p-inputtext,
+    .p-cascadeselect {
+        width: 200px;
+    }
+
 }
