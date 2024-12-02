@@ -1,5 +1,5 @@
 // Libraries & Stores
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 // Types & API
 import type { SelectLabel } from '@/types/UI'
@@ -23,6 +23,21 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
         { label: "Nederlands-Nederlands", value: "NN" },
         { label: "Surinaams-Nederlands", value: "SN" },
     ])
+    // computed
+    const isValid = computed<Boolean>(() => {
+        // empty array
+        if (searchItems.value.length === 0) {
+            return false
+        }
+        // Check if every item has at least one field filled in
+        for (const i of searchItems.value) {
+            const containsAtLeastOne = i.wordform || i.pos || i.lemma || i.newspaper || i.language
+            if (!containsAtLeastOne) {
+                return false
+            }
+        }
+        return true
+    })
     // Methods
     /** Fetch all unique sources and parts of speech */
     async function fetchOptions() {
@@ -62,7 +77,7 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     // Export
     return {
         // Fields
-        searchItems, sourceOptions, languageOptions, posOptions,
+        searchItems, sourceOptions, languageOptions, posOptions, isValid,
         // Methods
         fetchOptions
     }

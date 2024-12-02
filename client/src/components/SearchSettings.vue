@@ -26,7 +26,7 @@
                 </AccordionContent>
             </AccordionPanel>
         </Accordion>
-        <Button class="search-btn" label="Zoeken" @click="search" :disabled="!searchItems.length" />
+        <Button class="search-btn" label="Zoeken" @click="search" :disabled="!isValid" />
     </Panel>
 </template>
 
@@ -49,6 +49,6 @@ import InputNumber from "primevue/inputnumber"
 
 // Stores
 const { searchSettings, frequencyTypeOptions, timeBucketOptions } = useSearchSettingsStore()
-const { searchItems } = storeToRefs(useSearchItemsStore())
+const { isValid } = storeToRefs(useSearchItemsStore())
 const { search } = useSearchResultsStore()
 </script>
