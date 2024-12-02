@@ -24,7 +24,7 @@ import { useErrorsStore } from './stores/ErrorsStore';
 // Components
 import AppHeader from '@/components/AppHeader.vue';
 // primevue
-import Dialog from 'primevue/dialog'
+import Dialog from "primevue/dialog"
 
 // Stores
 const errorStore = useErrorsStore()

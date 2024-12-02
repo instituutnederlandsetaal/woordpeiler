@@ -5,19 +5,23 @@
 
 
 <script setup lang="ts">
-// Libraries & Stores
-import { onMounted, watchEffect, ref } from "vue";
+// Libraries
+import { onMounted, watchEffect, ref, computed } from "vue";
 import { storeToRefs } from "pinia";
+import * as d3 from "d3";
+// Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
 import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
-// Primevue
-
+// Util
 import useResizeObserver from "@/ts/resizeObserver"
-import { nl } from "date-fns/locale";
+import { GraphItem } from "@/types/Search";
 
 // Stores
 const { searchSettings } = storeToRefs(useSearchSettingsStore());
 const { searchResults } = storeToRefs(useSearchResultsStore());
+
+// Computed
+const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.datapoint.visible));
 
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
@@ -80,10 +84,11 @@ onMounted(() => {
     watchEffect(() => {
         // clear the svg
         svg.selectAll(".line-group").remove();
+        svg.selectAll(".legend-item").remove();
 
         // first update the axes
         // because data will be drawn based on the axes
-        const flat = searchResults.value.flatMap(d => d.data);
+        const flat = visible.value.flatMap(d => d.data);
         x.domain(d3.extent(flat, d => d.x));
         xAxis.call(d3.axisBottom(x));
         // y domain from 0 to max value
@@ -92,7 +97,7 @@ onMounted(() => {
 
 
         // add empty g for each dataseries and data-label it
-        searchResults.value.forEach(series => {
+        visible.value.forEach(series => {
             svg.append("g")
                 .attr("data-name", series.label)
                 .attr("clip-path", "url(#clip)")
@@ -100,7 +105,7 @@ onMounted(() => {
         });
 
         // Legend
-        searchResults.value.forEach((series, i) => {
+        visible.value.forEach((series, i) => {
             const legendItem = legend.append("g")
                 .attr("class", "legend-item")
                 .attr("transform", `translate(${i * 100}, 0)`)
@@ -111,6 +116,19 @@ onMounted(() => {
                     line.style("display", currentlyVisible ? "none" : null);
                     // Toggle strikethrough style
                     d3.select(this).select("text").classed("hidden-line", currentlyVisible);
+                    // update the y domain
+                    const visibleLabels = legend.selectAll(".legend-item text:not(.hidden-line)").nodes().map(d => d.textContent);
+                    const visibleSeries = visible.value.filter(d => visibleLabels.includes(d.label));
+                    y.domain([0, d3.max(visibleSeries.flatMap(d => d.data), d => d.y)]);
+                    yAxis.transition().duration(animationDuration).call(d3.axisLeft(y));
+                    // update the lines
+                    svg.selectAll(".line").transition().duration(animationDuration)
+                        .attr("d", d => lineGen(d.data));
+                    // update the dots
+                    svg.selectAll(".dot")
+                        .transition().duration(animationDuration)
+                        .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
+
                 });
             legendItem.append("rect")
                 .attr("class", "legend-square")
@@ -118,7 +136,7 @@ onMounted(() => {
                 .attr("y", -8)
                 .attr("width", 12)
                 .attr("height", 12)
-                .style("fill", series.backgroundColor);
+                .style("fill", "#" + series.datapoint.color);
             legendItem.append("text")
                 .text(series.label)
                 .style("fill", 'black')
@@ -128,7 +146,7 @@ onMounted(() => {
         });
 
         // draw the lines
-        searchResults.value.forEach(series => {
+        visible.value.forEach(series => {
             svg.select(`.line-group[data-name='${series.label}']`)
                 .selectAll('.line')
                 .data([series])
@@ -136,14 +154,14 @@ onMounted(() => {
                 .attr("class", "line")
                 .attr("d", d => lineGen(d.data))
                 .attr("fill", "none")
-                .attr("stroke", series.backgroundColor)
+                .attr("stroke", "#" + series.datapoint.color)
                 .attr("stroke-width", 2)
                 .style("pointer-events", "none");
 
         });
 
         // Draw the dots
-        searchResults.value.forEach(series => {
+        visible.value.forEach(series => {
             // link data
             series.data.forEach(d => {
                 d.datapoint = series.datapoint;
@@ -157,7 +175,7 @@ onMounted(() => {
                 .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
             dot.append("circle")
                 .attr("r", 4)
-                .attr("fill", series.backgroundColor)
+                .attr("fill", "#" + series.datapoint.color)
             dot.append("circle")
                 .attr("class", "hit-area")
                 .attr("r", 15)
@@ -168,8 +186,6 @@ onMounted(() => {
         // tooltip events
         const tooltip = d3.select("#tooltip");
         let tooltipVisible = false;
-        let tooltipIdle = null;
-        function tooltipIdler() { tooltipIdle = null; }
         let left, top;
 
         svg.selectAll(".hit-area")
@@ -233,7 +249,7 @@ onMounted(() => {
         if (!extent) {
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-            x.domain(d3.extent(searchResults.value.flatMap(d => d.data), d => d.x))
+            x.domain(d3.extent(visible.value.flatMap(d => d.data), d => d.x))
         } else {
             // A selection was made
             // remove the grey brush area
@@ -277,10 +293,10 @@ onMounted(() => {
         xAxis.attr("clip-path", "url(#clip)").attr("transform", `translate(0, ${height})`).call(d3.axisBottom(x));
 
         y.range([height, 0]);
-        yAxis.call(d3.axisLeft(y));
+        yAxis.attr("clip-path", "url(#clip)").attr("transform", `translate(0, 0)`).call(d3.axisLeft(y));
 
         const clipMargin = 20;
-        clip.attr("width", width).attr("height", height + 2 * clipMargin).attr("y", -clipMargin);
+        clip.attr("width", width).attr("height", height + 2 * clipMargin).attr("y", -clipMargin).attr("x", -clipMargin);
         brush.extent([[0, 0], [width, height]]).on("end", updateChart)
         brushEl.call(brush);
         // lines
@@ -303,7 +319,7 @@ function truncateRound(value: number, decimals) {
 
 function tooltipHtml(d) {
     const date = d3.timeFormat("%Y-%m-%d")(d.x);
-    const value = truncateRound(d.y, 1).toLocaleString();
+    const value = truncateRound(d.y, 2).toLocaleString();
     const href = constructBlLink(d);
     return `${date}<br><b>${value}</b><br/><a target='_blank' href='${href}'>Zoeken in CHN</a>`
 }
@@ -354,29 +370,11 @@ function constructBLFilter(d) {
     if (timeBucket != "year") {
         filters["witnessMonth_from"] = parseInt(d3.timeFormat("%m")(d.x))
     }
-    // Weeks are not supported in BlackLab ???
-
-    // else if (timeBucket == "week") {
-    //     const startYear = d3.timeFormat("%Y")(d.x)
-    //     const startMonth = parseInt(d3.timeFormat("%m")(d.x))
-    //     const startDay = parseInt(d3.timeFormat("%d")(d.x))
-
-    //     const endX = new Date(d.x)
-    //     endX.setDate(endX.getDate() + 7)
-
-    //     const endYear = d3.timeFormat("%Y")(endX)
-    //     const endMonth = parseInt(d3.timeFormat("%m")(endX))
-    //     const endDay = parseInt(d3.timeFormat("%d")(endX))
-
-    //     filters["witnessYear_from"] = `[${startYear} TO ${endYear}]`
-    //     filters["witnessMonth_from"] = `[${startMonth} TO ${endMonth}]`
-    //     filters["witnessDay_from"] = `[${startDay} TO ${endDay}]`
-    // }
-
 
     if (d.datapoint.newspaper) {
         filters["titleLevel2"] = `"${d.datapoint.newspaper}"`
     }
+
     return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
 }
 </script>

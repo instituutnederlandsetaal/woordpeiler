@@ -9,6 +9,10 @@
                 </div>
             </template>
             <template #icons>
+                <Button text severity="secondary" @click="searchItem.visible = !searchItem.visible">
+                    <span v-if="searchItem.visible" class="pi pi-eye"></span>
+                    <span v-else class="pi pi-eye-slash"></span>
+                </Button>
                 <Button text severity="secondary" @click="() => searchItems.splice(searchItems.indexOf(searchItem), 1)">
                     <span class="pi pi-trash"></span>
                 </Button>
@@ -51,16 +55,17 @@
 
         </Panel>
         <Button style="border: 2px dashed #ccc; background: #eee; min-height: 40px" class="newWord" severity="secondary"
-            outlined @click="() => searchItems.push({ color: randomColor() })">
+            outlined @click="() => searchItems.push({ color: randomColor(), visible: true })">
             <span class="pi pi-plus"></span>
         </Button>
     </ScrollPanel>
 </template>
 
 <script setup lang="ts">
-// Libraries & Stores
+// Libraries
 import { onMounted } from "vue"
 import { storeToRefs } from 'pinia'
+// Stores
 import { useSearchItemsStore } from "@/stores/SearchItemsStore"
 // Components
 import InputText from "primevue/inputtext"
@@ -70,7 +75,7 @@ import Button from "primevue/button"
 import ScrollPanel from "primevue/scrollpanel"
 import Select from "primevue/select"
 import CascadeSelect from 'primevue/cascadeselect'
-
+// Util
 import { displayName } from "@/stores/SearchResultsStore"
 import { randomColor } from "@/ts/color"
 

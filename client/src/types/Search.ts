@@ -13,7 +13,15 @@ export interface SearchItem {
     newspaper?: string
     language?: string
     color?: string
-    variant?: string
+    visible?: boolean
+}
+
+export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
+    return a.wordform === b.wordform &&
+        a.pos === b.pos &&
+        a.lemma === b.lemma &&
+        a.newspaper === b.newspaper &&
+        a.language === b.language;
 }
 
 export type TimeSeries = {
@@ -25,7 +33,5 @@ export type GraphItem = {
     datapoint: SearchItem;
     data: TimeSeries[];
     label: string;
-    borderColor: string;
-    backgroundColor: string;
 }
 

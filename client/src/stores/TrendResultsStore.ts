@@ -1,10 +1,13 @@
+// Libraries
 import { defineStore, storeToRefs } from "pinia"
-import { useTrendSettingsStore } from "./TrendSettingsStore"
 import { ref } from "vue"
-import type { TrendResult } from "@/types/trends"
+// Stores
+import { useTrendSettingsStore } from "./TrendSettingsStore"
+// API
 import * as TrendAPI from "@/api/trends"
 import type { TrendRequest } from "@/api/trends"
-import { tr } from "date-fns/locale"
+import type { TrendResult } from "@/types/trends"
+// Utils
 import { toTimestamp } from "@/ts/date"
 
 export const useTrendResultsStore = defineStore('TrendResults', () => {
