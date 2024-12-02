@@ -4,16 +4,13 @@ import { defineStore, storeToRefs } from 'pinia'
 import { useSearchSettingsStore } from '@/stores/SearchSettingsStore'
 import { useSearchItemsStore } from '@/stores/SearchItemsStore'
 // Types & API
-import type { SearchItem, GraphItem } from "@/types/Search"
+import { type SearchItem, type GraphItem, equalSearchItem } from "@/types/Search"
 import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
 
-export function displayName(str) {
-    return Object.entries(str)
-        .filter(([key, value]) => value && key !== "color")
-        .map(([key, value]) => value)
-        .join(" ")
+export function displayName(i: SearchItem): string {
+    return `${i.wordform || ""} ${i.lemma || ""} ${i.pos || ""} ${i.newspaper || ""} ${i.language || ""}`
 }
 
 export const useSearchResultsStore = defineStore('SearchResults', () => {
@@ -24,35 +21,37 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     const isSearching = ref(false)
     // Methods
     function search() {
-        isSearching.value = true
-        // save cookies
-        localStorage.setItem("dataSeries", JSON.stringify(searchItems.value))
-        searchResults.value = []
-        searchItems.value.forEach((ds) => getFrequency(ds))
-    }
+        // save current search to local storage
+        localStorage.setItem("searchItems", JSON.stringify(searchItems.value))
 
-    function getFrequency(ds: SearchItem) {
-        // param map
-        const wordSearch = {
-            wordform: ds.wordform?.trim()?.toLowerCase(),
-            pos: ds.pos,
-            lemma: ds.lemma,
-            source: ds.newspaper,
-            language: ds.language
+        // if search settings changed, all search results are invalidated
+        const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")
+        if (JSON.stringify(oldSearchSettings) !== JSON.stringify(searchSettings.value)) {
+            searchResults.value = []
+            localStorage.setItem("searchSettings", JSON.stringify(searchSettings.value))
         }
 
-        // Remove falsy values, and blank strings (could be tabs and spaces)
-        Object.keys(wordSearch).forEach(
-            (key) => (wordSearch[key] == null || wordSearch[key].trim() === "") && delete wordSearch[key]
-        )
-
-
+        // remove irrelevant search results
+        searchResults.value = searchResults.value.filter((i) => searchItems.value.some((j) => equalSearchItem(i.datapoint, j)))
+        // newly added search items
+        const toBeSearched = searchItems.value.filter((i: SearchItem) => !searchResults.value.map((x) => x.datapoint).some((j) => equalSearchItem(i, j)))
+        // search for each search item
+        toBeSearched.forEach((ds) => getFrequency(ds))
+        // only loading screen if we're searching
+        if (toBeSearched.length > 0) {
+            isSearching.value = true
+        }
+    }
+    function getFrequency(item: SearchItem) {
+        // construct search request, partly from unsanitized user input
         const searchRequest: SearchAPI.SearchRequest = {
-            wordform: ds.wordform,
-            lemma: ds.lemma,
-            pos: ds.pos,
-            source: ds.newspaper,
-            language: ds.language,
+            // unsanitized user input
+            wordform: item.wordform?.trim()?.toLowerCase(),
+            lemma: item.lemma?.trim()?.toLowerCase(),
+            // fixed values
+            pos: item.pos,
+            source: item.newspaper,
+            language: item.language,
             period_length: searchSettings.value.timeBucketSize,
             period_type: searchSettings.value.timeBucketType,
             start_date: toTimestamp(searchSettings.value.startDate),
@@ -62,10 +61,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         SearchAPI.getSearch(searchRequest)
             .then((response: SearchResponse) => {
                 const dataset: GraphItem = {
-                    datapoint: ds,
-                    label: displayName(ds),
-                    borderColor: `#${ds.color}`,
-                    backgroundColor: `#${ds.color}`,
+                    datapoint: item,
+                    label: displayName(item),
                     data: response.data.map((d) => {
                         return { x: d.time * 1000, y: parseFloat(d[searchSettings.value.frequencyType]) }
                     }),
