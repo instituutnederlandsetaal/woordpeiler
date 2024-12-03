@@ -3,7 +3,7 @@
         <Panel toggleable v-for="searchItem in searchItems" :key="searchItem"
             :class="{ 'invalid': invalidSearchItem(searchItem) }">
             <template #header>
-                <ColorPicker id="color" v-model="searchItem.color" />
+                    <ColorPicker id="color" v-model="searchItem.color" />
                 <div class="panelHeader">
                     <template v-if="displayName(searchItem)"> {{ displayName(searchItem) }} </template>
                     <template v-else></template>
@@ -67,6 +67,7 @@ import { onMounted } from "vue"
 import { storeToRefs } from 'pinia'
 // Stores
 import { useSearchItemsStore } from "@/stores/SearchItemsStore"
+import { useSearchResultsStore } from "@/stores/SearchResultsStore"
 // Components
 import InputText from "primevue/inputtext"
 import ColorPicker from "primevue/colorpicker"
@@ -83,32 +84,31 @@ import { randomColor } from "@/ts/color"
 const searchItemsStore = useSearchItemsStore()
 const { searchItems, posOptions, sourceOptions, languageOptions } = storeToRefs(searchItemsStore)
 const { fetchOptions } = searchItemsStore
+const { search } = useSearchResultsStore()
 
 // Lifecycle
 onMounted(() =>
     fetchOptions()
 )
 
-// onMounted(() => {
-//     // read wordform url parameter
-//     const urlParams = new URLSearchParams(window.location.search)
-//     const wordform = urlParams.get("wordform")
-//     if (wordform) {
-//         GraphStore.dataSeries.push({ wordform: wordform, color: randomColor() })
-//     } else {
-//         // retrieve dataseries from cookies
-//         if (localStorage.getItem("dataSeries")) {
-//             GraphStore.dataSeries = JSON.parse(localStorage.getItem("dataSeries"))
-//         } else {
-//             // A random new entry when no cookies were stored
-//             GraphStore.dataSeries.push({ color: randomColor() })
-//         }
-//     }
-// })
-
-function invalidWord(word?: string): boolean {
-    return false
-}
+onMounted(() => {
+    // read wordform url parameter
+    const urlParams = new URLSearchParams(window.location.search)
+    const wordform = urlParams.get("wordform")
+    if (wordform) {
+        searchItems.value.push({ wordform: wordform, color: randomColor() })
+        search()
+    } else {
+        // retrieve dataseries from cookies
+        if (localStorage.getItem("searchItems")) {
+            searchItems.value = JSON.parse(localStorage.getItem("searchItems"))
+            search()
+        } else {
+            // A random new entry when no cookies were stored
+            searchItems.value.push({ color: randomColor() })
+        }
+    }
+})
 
 </script>
 <style scoped lang="scss">
