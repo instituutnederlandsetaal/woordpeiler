@@ -40,6 +40,10 @@ app.use(router)
 
 // global config
 app.config.globalProperties.$internal = ["localhost", ".ivdnt.loc"].some((url) => window.location.hostname.includes(url)) // check if we are on a local environment
+// url parameter to force external mode
+if (window.location.search.includes("extern")) {
+    app.config.globalProperties.$internal = false
+}
 
 // launch app
 app.mount('#app')
