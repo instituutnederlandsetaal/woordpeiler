@@ -2,10 +2,13 @@
     <header role="banner">
         <div class="logo">
             <a href="/">
-                <div class="fa fa-4x fa-line-chart" aria-hidden="true"></div>
+                <img src="@/assets/corpustrends-logo.svg" alt="logo" />
             </a>
             <div class="logo-text">
-                <h2>/instituut voor de Nederlandse taal/</h2>
+                <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
+                    / instituut voor de Nederlandse&nbsp;taal&nbsp;/
+                </a>
+                <!-- <h2>/instituut voor de Nederlandse taal/</h2> -->
                 <a href="/">
                     <h1>corpustrends</h1>
                 </a>
@@ -20,3 +23,10 @@
         </nav>
     </header>
 </template>
+
+<style scoped lang="scss">
+img {
+    width: 100px;
+    margin: 0 0.5rem;
+}
+</style>
