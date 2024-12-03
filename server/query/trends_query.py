@@ -1,5 +1,8 @@
 # standard
+import calendar
+from datetime import datetime
 from enum import Enum
+from itertools import count
 from typing import Optional
 
 # third party
@@ -32,6 +35,28 @@ class TrendsQuery(QueryBuilder):
         self.date_filter = QueryBuilder.get_date_filter(
             Identifier("counts", "time"), start_date, end_date
         )
+        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date)
+
+    @staticmethod
+    def get_counts_table(
+        start_date: Optional[int], end_date: Optional[int]
+    ) -> Identifier:
+        start = datetime.fromtimestamp(start_date)
+        end = datetime.fromtimestamp(end_date)
+        # yearly checks
+        starts_on_new_years_day = start.month == 1 and start.day == 1
+        ends_on_new_years_eve = end.month == 12 and end.day == 31
+        # monthly checks
+        starts_on_first_of_month = start.day == 1
+        days_in_month = calendar.monthrange(end.year, end.month)[1]
+        ends_on_last_of_month = end.day == days_in_month
+        # return
+        if starts_on_new_years_day and ends_on_new_years_eve:
+            return Identifier("yearly_counts")
+        elif starts_on_first_of_month and ends_on_last_of_month:
+            return Identifier("monthly_counts")
+        else:
+            return Identifier("daily_counts")
 
     def build(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
         if self.trend_type == TrendType.ABSOLUTE:
@@ -48,7 +73,7 @@ class TrendsQuery(QueryBuilder):
                     SELECT
                         word_id,
                         SUM(abs_freq) as abs_freq
-                    FROM daily_counts counts
+                    FROM {counts_table} counts
                     {date_filter}
                     GROUP BY word_id
                 ),
@@ -79,6 +104,7 @@ class TrendsQuery(QueryBuilder):
         ).format(
             date_filter=self.date_filter,
             modifier=self.modifier,
+            counts_table=self.counts_table,
         )
 
         return ExecutableQuery(cursor, query)
@@ -90,7 +116,7 @@ class TrendsQuery(QueryBuilder):
                 SELECT
                     word_id,
                     SUM(abs_freq) / SUM(SUM(abs_freq)) OVER () as rel_freq
-                FROM daily_counts counts
+                FROM {counts_table} counts
                 {date_filter}
                 GROUP BY word_id
             ),
@@ -113,6 +139,7 @@ class TrendsQuery(QueryBuilder):
         ).format(
             date_filter=self.date_filter,
             modifier=self.modifier,
+            counts_table=self.counts_table,
         )
 
         return ExecutableQuery(cursor, query)
