@@ -31,6 +31,13 @@ $theme: #62b6ff;
     *:focus-visible {
         outline: 0;
     }
+
+    .p-cascadeselect-list {
+        max-height: 100%;
+        height: fit-content;
+        overflow: auto;
+    }
+
 }
 
 .wordlist {

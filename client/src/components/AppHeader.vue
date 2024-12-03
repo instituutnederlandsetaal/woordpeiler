@@ -12,8 +12,10 @@
             </div>
         </div>
         <nav>
-            <a href="/">grafiek</a>
-            <a href="/trends">trends</a>
+            <template v-if="$internal">
+                <a href="/">grafiek</a>
+                <a href="/trends">trends</a>
+            </template>
             <a href="/uitleg">uitleg</a>
         </nav>
     </header>

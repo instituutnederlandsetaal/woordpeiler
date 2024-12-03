@@ -126,8 +126,15 @@ main {
   width: 800px; */
   >.p-panel {
     padding: 2rem;
+
   }
 }
+
+.p-panel {
+  border: 1px solid #e2e8f0;
+  background: white;
+}
+
 
 .graph>div,
 canvas {
@@ -189,4 +196,60 @@ div.invalid {
 p.invalid {
   color: red;
   margin-bottom: 0.5rem;
+}
+
+@media screen and (max-width: 1200px) {
+  body {
+    overflow: auto;
+    height: fit-content;
+  }
+
+  main {
+    flex-direction: column;
+    justify-content: flex-end;
+
+    flex-flow: column-reverse;
+    min-height: auto;
+  }
+
+  .graph {
+    max-height: 500px;
+    min-height: 500px;
+  }
+
+  .search {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  .searchOptions {
+    width: 500px;
+    height: fit-content;
+  }
+
+}
+
+@media screen and (max-width: 800px) {
+  body {
+    overflow: auto;
+    height: fit-content;
+  }
+
+  main {
+    flex-direction: column;
+    justify-content: flex-end;
+    // reverse
+    flex-flow: column-reverse;
+    min-height: auto;
+  }
+
+  .search {
+    width: 100%;
+    flex-flow: column-reverse;
+  }
+
+  .graph {
+    max-height: 400px;
+    min-height: 400px;
+  }
 }
