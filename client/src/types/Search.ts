@@ -14,6 +14,7 @@ export interface SearchItem {
     language?: string
     color?: string
     visible?: boolean
+    loading?: boolean
 }
 
 export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
@@ -24,14 +25,26 @@ export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
         a.language === b.language;
 }
 
+export function displayName(i: SearchItem): string {
+    return `${i.wordform || ""} ${i.lemma || ""} ${i.pos || ""} ${i.newspaper || ""} ${i.language || ""}`
+}
+
+export function invalidInputText(text?: string): boolean {
+    return text?.trim().includes(" ") === true
+}
+
+export function invalidSearchItem(item: SearchItem): boolean {
+    return displayName(item).trim() == "" || invalidInputText(item.wordform) || invalidInputText(item.lemma)
+}
+
 export type TimeSeries = {
     x: number;
     y: number;
 }
 
 export type GraphItem = {
-    datapoint: SearchItem;
+    searchItem: SearchItem;
     data: TimeSeries[];
-    label: string;
+    uuid: string;
 }
 

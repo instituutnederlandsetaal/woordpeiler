@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 // Types & API
 import type { SelectLabel } from '@/types/UI'
-import type { SearchItem } from '@/types/Search'
+import { invalidSearchItem, type SearchItem } from '@/types/Search'
 import * as ListingAPI from '@/api/listing'
 
 /**
@@ -31,8 +31,7 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
         }
         // Check if every item has at least one field filled in
         for (const i of searchItems.value) {
-            const containsAtLeastOne = i.wordform || i.pos || i.lemma || i.newspaper || i.language
-            if (!containsAtLeastOne) {
+            if (invalidSearchItem(i)) {
                 return false
             }
         }

@@ -5,7 +5,7 @@
         <TrendResultsList v-if="trendResults.length != 0" />
         <Skeleton class="trendlist" v-else-if="trendsLoading" />
 
-        <SearchOptionsView />
+        <SearchOptionsView v-if="searchItems.length != 0" />
     </div>
     <D3Graph />
 </template>
@@ -14,6 +14,7 @@
 // Libraries & Stores
 import { storeToRefs } from "pinia"
 import { useTrendResultsStore } from "@/stores/TrendResultsStore"
+import { useSearchItemsStore } from "@/stores/SearchItemsStore"
 // Primevue
 import Skeleton from "primevue/skeleton"
 // Components
@@ -24,6 +25,7 @@ import TrendResultsList from "@/components/trends/TrendResultsList.vue"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore());
+const { searchItems } = storeToRefs(useSearchItemsStore());
 
 </script>
 

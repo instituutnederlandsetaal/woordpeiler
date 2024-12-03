@@ -1,6 +1,7 @@
 <template>
     <ScrollPanel class="wordlist">
-        <Panel toggleable v-for="searchItem in searchItems" :key="searchItem">
+        <Panel toggleable v-for="searchItem in searchItems" :key="searchItem"
+            :class="{ 'invalid': invalidSearchItem(searchItem) }">
             <template #header>
                 <ColorPicker id="color" v-model="searchItem.color" />
                 <div class="panelHeader">
@@ -18,20 +19,19 @@
                 </Button>
             </template>
 
-            <p class="warning" v-if="invalidWord(searchItem.wordform) || invalidWord(searchItem.lemma)">Zoeken op
-                meerdere
-                woorden is
-                niet mogelijk.</p>
+            <p class="invalid" v-if="invalidInputText(searchItem.wordform) || invalidInputText(searchItem.lemma)">
+                Zoeken op woordgroepen is niet mogelijk.
+            </p>
 
             <div class="formSplit">
                 <label for="word">Woord</label><br />
-                <InputText :invalid="invalidWord(searchItem.wordform)" id="word" v-model="searchItem.wordform" />
+                <InputText :invalid="invalidInputText(searchItem.wordform)" id="word" v-model="searchItem.wordform" />
             </div>
 
             <template v-if="$internal">
                 <div class="formSplit">
                     <label for="lemma">Lemma</label>
-                    <InputText :invalid="invalidWord(searchItem.lemma)" id=" lemma" v-model="searchItem.lemma" />
+                    <InputText :invalid="invalidInputText(searchItem.lemma)" id=" lemma" v-model="searchItem.lemma" />
                 </div>
                 <div class="formSplit">
                     <label for="pos">Woordsoort</label>
@@ -76,7 +76,7 @@ import ScrollPanel from "primevue/scrollpanel"
 import Select from "primevue/select"
 import CascadeSelect from 'primevue/cascadeselect'
 // Util
-import { displayName } from "@/stores/SearchResultsStore"
+import { displayName, invalidSearchItem, invalidInputText } from "@/types/Search"
 import { randomColor } from "@/ts/color"
 
 // Store

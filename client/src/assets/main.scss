@@ -181,3 +181,12 @@ svg,
   height: 100%;
   overflow: visible;
 }
+
+div.invalid {
+  border-color: red;
+}
+
+p.invalid {
+  color: red;
+  margin-bottom: 0.5rem;
+}
