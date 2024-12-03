@@ -27,13 +27,13 @@
                 </Button>
             </template>
 
-            <p class="invalid" v-if="invalidInputText(searchItem.wordform) || invalidInputText(searchItem.lemma)">
+            <p class="invalid" v-if="invalidInputText(searchItem.lemma)">
                 Zoeken op woordgroepen is niet mogelijk.
             </p>
 
             <div class="formSplit">
                 <label for="word">Woord</label><br />
-                <InputText :invalid="invalidInputText(searchItem.wordform)" id="word" v-model="searchItem.wordform" />
+                <InputText id="word" v-model="searchItem.wordform" />
             </div>
 
             <template v-if="$internal">

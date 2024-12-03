@@ -34,7 +34,7 @@ export function invalidInputText(text?: string): boolean {
 }
 
 export function invalidSearchItem(item: SearchItem): boolean {
-    return displayName(item).trim() == "" || invalidInputText(item.wordform) || invalidInputText(item.lemma)
+    return displayName(item).trim() == "" || invalidInputText(item.lemma)
 }
 
 export type TimeSeries = {

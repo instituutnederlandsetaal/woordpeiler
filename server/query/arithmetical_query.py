@@ -99,7 +99,7 @@ class ArithmeticalQuery:
     def safe_divide(self, numerator: Decimal, denominator: Decimal) -> Decimal:
         if denominator == 0 and numerator == 0:
             # both are equally present (this does assume queries like: a / (a + b) )
-            return Decimal(0.5)
+            return Decimal(0)
         elif denominator == 0:
             return Decimal(1)
         else:
