@@ -2,8 +2,15 @@
     <ScrollPanel class="wordlist">
         <Panel toggleable v-for="searchItem in searchItems" :key="searchItem"
             :class="{ 'invalid': invalidSearchItem(searchItem) }">
+
             <template #header>
+                <div>
                     <ColorPicker id="color" v-model="searchItem.color" />
+                    <Button text severity="secondary" @click="searchItem.visible = !searchItem.visible">
+                        <span v-if="searchItem.visible" class="pi pi-eye"></span>
+                        <span v-else class="pi pi-eye-slash"></span>
+                    </Button>
+                </div>
                 <div class="panelHeader">
                     <template v-if="displayName(searchItem)"> {{ displayName(searchItem) }} </template>
                     <template v-else></template>

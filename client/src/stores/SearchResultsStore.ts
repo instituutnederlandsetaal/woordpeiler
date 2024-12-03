@@ -1,5 +1,5 @@
 // Libraries & Stores
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
 import { useSearchSettingsStore } from '@/stores/SearchSettingsStore'
 import { useSearchItemsStore } from '@/stores/SearchItemsStore'
@@ -8,10 +8,7 @@ import { type SearchItem, type GraphItem, equalSearchItem } from "@/types/Search
 import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
-
-export function displayName(i: SearchItem): string {
-    return `${i.wordform || ""} ${i.lemma || ""} ${i.pos || ""} ${i.newspaper || ""} ${i.language || ""}`
-}
+import { v4 as uuidv4 } from 'uuid';
 
 export const useSearchResultsStore = defineStore('SearchResults', () => {
     // Fields
@@ -32,9 +29,9 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         }
 
         // remove irrelevant search results
-        searchResults.value = searchResults.value.filter((i) => searchItems.value.some((j) => equalSearchItem(i.datapoint, j)))
+        searchResults.value = searchResults.value.filter((i) => searchItems.value.some((j) => equalSearchItem(i.searchItem, j)))
         // newly added search items
-        const toBeSearched = searchItems.value.filter((i: SearchItem) => !searchResults.value.map((x) => x.datapoint).some((j) => equalSearchItem(i, j)))
+        const toBeSearched = searchItems.value.filter((i: SearchItem) => !searchResults.value.map((x) => x.searchItem).some((j) => equalSearchItem(i, j)))
         // search for each search item
         toBeSearched.forEach((ds) => getFrequency(ds))
         // only loading screen if we're searching
@@ -63,8 +60,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         SearchAPI.getSearch(searchRequest)
             .then((response: SearchResponse) => {
                 const dataset: GraphItem = {
-                    datapoint: item,
-                    label: displayName(item),
+                    searchItem: JSON.parse(JSON.stringify(item)),
+                    uuid: uuidv4(),
                     data: response.data.map((d) => {
                         return { x: d.time * 1000, y: parseFloat(d[searchSettings.value.frequencyType]) }
                     }),
@@ -76,6 +73,20 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
                 item.loading = false
             })
     }
+    // Lifecycle
+    /** ensure that color and visibility updates to search items also update the result items */
+    watch(() => searchItems.value, () => {
+        // for each search item, try to find the corresponding search result (using equalSearchItem())
+        searchResults.value.forEach((result) => {
+            // find the corresponding search item
+            const searchItem = searchItems.value.find((item) => equalSearchItem(item, result.searchItem))
+            // if found, update the color and visibility
+            if (searchItem) {
+                result.searchItem.color = searchItem.color
+                result.searchItem.visible = searchItem.visible
+            }
+        })
+    }, { deep: true })
     // Export
     return {
         // Fields

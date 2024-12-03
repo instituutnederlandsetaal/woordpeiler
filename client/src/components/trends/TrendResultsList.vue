@@ -85,7 +85,8 @@ watch(selectedTrend, () => {
         searchItems.value.push({
             wordform: trendItem.wordform,
             pos: trendItem.poshead,
-            color: randomColor()
+            color: randomColor(),
+            visible: true
         })
     }
     search()

@@ -21,11 +21,12 @@ const { searchSettings } = storeToRefs(useSearchSettingsStore());
 const { searchResults } = storeToRefs(useSearchResultsStore());
 
 // Computed
-const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.datapoint.visible));
+const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
 
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
+const maxPoints = 500;
 
 onMounted(() => {
     // Define the Dutch locale
@@ -43,26 +44,24 @@ onMounted(() => {
     // Set up the Dutch locale in D3
     d3.timeFormatDefaultLocale(dutchLocale);
 
-    const { width, height } = resizeState.dimensions;
 
     // append the svg object to the body of the page
     const svg = d3.select("#my_dataviz")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
         .append("g")
 
     // Add X axis --> it is a date format
     const x = d3.scaleTime()
-    const xAxis = svg.append("g")
+    const xAxis = svg.append("g").attr("class", "x-axis")
 
     // Add Y axis
     const y = d3.scaleLinear()
-    const yAxis = svg.append("g")
+    const yAxis = svg.append("g").attr("class", "y-axis")
 
     // Add a clipPath: everything out of this area won't be drawn.
     const clip = svg.append("defs").append("svg:clipPath")
         .attr("id", "clip")
+        .attr("class", "clip")
         .append("svg:rect")
 
     // Add brushing
@@ -86,9 +85,14 @@ onMounted(() => {
         svg.selectAll(".line-group").remove();
         svg.selectAll(".legend-item").remove();
 
-        // first update the axes
-        // because data will be drawn based on the axes
+        // Sample the data to maxPoints
         const flat = visible.value.flatMap(d => d.data);
+        // const zoomLevel = x.domain()[1] - x.domain()[0];
+        // const totalPoints = flat.length;
+        // const sampleRate = Math.max(1, Math.floor(totalPoints / maxPoints));
+        const sampledData = visible.value
+
+        // first update the axes
         x.domain(d3.extent(flat, d => d.x));
         xAxis.call(d3.axisBottom(x));
         // y domain from 0 to max value
@@ -97,37 +101,25 @@ onMounted(() => {
 
 
         // add empty g for each dataseries and data-label it
-        visible.value.forEach(series => {
+        sampledData.forEach(series => {
             svg.append("g")
-                .attr("data-name", series.label)
+                .attr("data-name", series.uuid)
                 .attr("clip-path", "url(#clip)")
                 .attr("class", "line-group");
         });
 
         // Legend
-        visible.value.forEach((series, i) => {
+        sampledData.forEach((series, i) => {
             const legendItem = legend.append("g")
                 .attr("class", "legend-item")
                 .attr("transform", `translate(${i * 100}, 0)`)
                 .on("click", function () {
                     // Toggle visibility of the corresponding line and dots
-                    const line = svg.selectAll(`g[data-name='${series.label}']`);
+                    const line = svg.selectAll(`g[data-name='${series.uuid}']`);
                     const currentlyVisible = line.style("display") !== "none";
                     line.style("display", currentlyVisible ? "none" : null);
                     // Toggle strikethrough style
                     d3.select(this).select("text").classed("hidden-line", currentlyVisible);
-                    // update the y domain
-                    const visibleLabels = legend.selectAll(".legend-item text:not(.hidden-line)").nodes().map(d => d.textContent);
-                    const visibleSeries = visible.value.filter(d => visibleLabels.includes(d.label));
-                    y.domain([0, d3.max(visibleSeries.flatMap(d => d.data), d => d.y)]);
-                    yAxis.transition().duration(animationDuration).call(d3.axisLeft(y));
-                    // update the lines
-                    svg.selectAll(".line").transition().duration(animationDuration)
-                        .attr("d", d => lineGen(d.data));
-                    // update the dots
-                    svg.selectAll(".dot")
-                        .transition().duration(animationDuration)
-                        .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
 
                 });
             legendItem.append("rect")
@@ -136,9 +128,9 @@ onMounted(() => {
                 .attr("y", -8)
                 .attr("width", 12)
                 .attr("height", 12)
-                .style("fill", "#" + series.datapoint.color);
+                .style("fill", "#" + series.searchItem.color);
             legendItem.append("text")
-                .text(series.label)
+                .text(series.searchItem.wordform)
                 .style("fill", 'black')
                 .style("font-size", 15)
                 .attr("x", 20)
@@ -146,28 +138,28 @@ onMounted(() => {
         });
 
         // draw the lines
-        visible.value.forEach(series => {
-            svg.select(`.line-group[data-name='${series.label}']`)
+        sampledData.forEach(series => {
+            svg.select(`.line-group[data-name='${series.uuid}']`)
                 .selectAll('.line')
                 .data([series])
                 .enter().append("path")
                 .attr("class", "line")
                 .attr("d", d => lineGen(d.data))
                 .attr("fill", "none")
-                .attr("stroke", "#" + series.datapoint.color)
+                .attr("stroke", "#" + series.searchItem.color)
                 .attr("stroke-width", 2)
                 .style("pointer-events", "none");
 
         });
 
         // Draw the dots
-        visible.value.forEach(series => {
+        sampledData.forEach(series => {
             // link data
             series.data.forEach(d => {
-                d.datapoint = series.datapoint;
+                d.searchItem = series.searchItem;
             });
 
-            const dot = svg.select(`.line-group[data-name='${series.label}']`)
+            const dot = svg.select(`.line-group[data-name='${series.uuid}']`)
                 .selectAll('.dot')
                 .data(series.data)
                 .enter().append("g")
@@ -175,7 +167,7 @@ onMounted(() => {
                 .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
             dot.append("circle")
                 .attr("r", 4)
-                .attr("fill", "#" + series.datapoint.color)
+                .attr("fill", "#" + series.searchItem.color)
             dot.append("circle")
                 .attr("class", "hit-area")
                 .attr("r", 15)
@@ -239,12 +231,9 @@ onMounted(() => {
     function idled() { idleTimeout = null; }
 
     // A function that update the chart for given boundaries
-    function updateChart(event) {
-
+    function brushChart(event) {
         // What are the selected boundaries?
         const extent = event.selection
-
-
 
         if (!extent) {
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
@@ -265,39 +254,55 @@ onMounted(() => {
         // Update axis and line position
         xAxis.transition().duration(animationDuration).call(d3.axisBottom(x))
 
-        // lines
-        svg.selectAll(".line").transition().duration(animationDuration)
-            .attr("d", d => lineGen(d.data))
+        // // Sample the data to maxPoints
+        // const startX = x.domain()[0];
+        // const endX = x.domain()[1];
+        // const flat = visible.value.flatMap(d => d.data).filter(d => d.x >= startX && d.x <= endX);
+        // const totalPoints = flat.length;
+        // const sampleRate = Math.max(1, Math.floor(totalPoints / maxPoints));
+        // const sampledData = visible.value.map(series => ({
+        //     ...series,
+        //     data: flat.filter((_, index) => index % sampleRate === 0)
+        // }));
 
-        // dots
-        svg.selectAll(".dot")
-            .transition().duration(animationDuration)
-            .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
-
+        // update the lines and dots data
+        visible.value.forEach(series => {
+            svg.select(`.line-group[data-name='${series.uuid}']`)
+                .selectAll('.line')
+                .data([series])
+                .transition().duration(animationDuration)
+                .attr("d", d => lineGen(d.data))
+            svg.select(`.line-group[data-name='${series.uuid}']`)
+                .selectAll('.dot')
+                .data(series.data)
+                .transition().duration(animationDuration)
+                .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
+        })
     }
 
     // If user double click, reinitialize the chart
     svg.on("dblclick", function () {
         // fake a call to updateChart
-        updateChart({ selection: null })
+        brushChart({ selection: null })
     });
 
     // responsive resize
     watchEffect(() => {
+        let { width, height } = resizeState.dimensions;
+        const svgMargin = { x: 15, y: 0 };
+        width -= svgMargin.x * 2;
 
-        const { width, height } = resizeState.dimensions;
-
-        svg.attr("width", width).attr("height", height);
+        svg.attr("width", width - svgMargin.x).attr("height", height).attr("transform", `translate(${svgMargin.x * 2}, 0)`);
 
         x.range([0, width]);
-        xAxis.attr("clip-path", "url(#clip)").attr("transform", `translate(0, ${height})`).call(d3.axisBottom(x));
+        xAxis.attr("transform", `translate(0, ${height})`).call(d3.axisBottom(x));
 
         y.range([height, 0]);
-        yAxis.attr("clip-path", "url(#clip)").attr("transform", `translate(0, 0)`).call(d3.axisLeft(y));
+        yAxis.attr("transform", `translate(0, 0)`).call(d3.axisLeft(y));
 
-        const clipMargin = 20;
-        clip.attr("width", width).attr("height", height + 2 * clipMargin).attr("y", -clipMargin).attr("x", -clipMargin);
-        brush.extent([[0, 0], [width, height]]).on("end", updateChart)
+        const clipMargin = { x: 3, y: 10 };
+        clip.attr("width", width + 2 * clipMargin.x).attr("height", height + 2 * clipMargin.y).attr("x", -clipMargin.x).attr("y", -clipMargin.y);
+        brush.extent([[0, 0], [width, height]]).on("end", brushChart)
         brushEl.call(brush);
         // lines
         svg.selectAll(".line").attr("d", d => lineGen(d.data));
@@ -328,7 +333,7 @@ function tooltipHtml(d) {
 function constructBlLink(d): string {
 
     const params = {
-        patt: constructBLPatt(d.datapoint),
+        patt: constructBLPatt(d.searchItem),
         filter: constructBLFilter(d),
         interface: JSON.stringify({ form: "search", patternMode: "expert" }),
         groupDisplayMode: "relative hits",
@@ -371,8 +376,8 @@ function constructBLFilter(d) {
         filters["witnessMonth_from"] = parseInt(d3.timeFormat("%m")(d.x))
     }
 
-    if (d.datapoint.newspaper) {
-        filters["titleLevel2"] = `"${d.datapoint.newspaper}"`
+    if (d.searchItem.newspaper) {
+        filters["titleLevel2"] = `"${d.searchItem.newspaper}"`
     }
 
     return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
@@ -398,6 +403,18 @@ function constructBLFilter(d) {
 .legend-text {
     font-size: 12px;
     color: black;
+}
+
+.overlay {
+    cursor: crosshair;
+}
+
+.x-axis {
+    font-size: calc(0.5vw + 0.3rem)
+}
+
+.y-axis {
+    font-size: calc(0.5vw + 0.3rem)
 }
 
 /* Step 2: Style the tooltip */
