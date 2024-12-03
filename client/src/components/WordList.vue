@@ -9,11 +9,12 @@
                     <template v-else></template>
                 </div>
             </template>
+
             <template #icons>
-                <Button text severity="secondary" @click="searchItem.visible = !searchItem.visible">
-                    <span v-if="searchItem.visible" class="pi pi-eye"></span>
-                    <span v-else class="pi pi-eye-slash"></span>
-                </Button>
+                <span v-if="searchItem.loading">
+                    <span class="pi pi-spin pi-spinner"></span>
+                </span>
+
                 <Button text severity="secondary" @click="() => searchItems.splice(searchItems.indexOf(searchItem), 1)">
                     <span class="pi pi-trash"></span>
                 </Button>
@@ -124,8 +125,14 @@ onMounted(() => {
     }
 }
 
-.warning {
-    color: red;
-    margin-bottom: 0.5rem;
+:deep(.p-panel-header-actions)>* {
+    display: inline-flex;
+    font-size: 16px;
+    padding: 0.5rem;
+    margin: 0;
+}
+
+:deep(.p-panel-header) {
+    padding-right: 0.5rem !important;
 }
 </style>

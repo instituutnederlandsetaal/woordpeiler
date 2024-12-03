@@ -57,6 +57,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             start_date: toTimestamp(searchSettings.value.startDate),
             end_date: toTimestamp(searchSettings.value.endDate),
         }
+        // loading icon per item
+        item.loading = true
 
         SearchAPI.getSearch(searchRequest)
             .then((response: SearchResponse) => {
@@ -71,6 +73,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             })
             .finally(() => {
                 isSearching.value = false
+                item.loading = false
             })
     }
     // Export
