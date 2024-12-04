@@ -5,15 +5,15 @@
 
             <template #header>
                 <div>
-                    <ColorPicker id="color" v-model="searchItem.color" />
+                    <ColorPicker id="color" v-model="searchItem.color" title="Kleur in grafiek" />
                     <Button text severity="secondary" @click="searchItem.visible = !searchItem.visible">
-                        <span v-if="searchItem.visible" class="pi pi-eye"></span>
-                        <span v-else class="pi pi-eye-slash"></span>
+                        <span v-if="searchItem.visible" class="pi pi-eye" title="Getoond in grafiek"></span>
+                        <span v-else class="pi pi-eye-slash" title="Verborgen in grafiek"></span>
                     </Button>
                 </div>
                 <div class="panelHeader">
                     <template v-if="displayName(searchItem)"> {{ displayName(searchItem) }} </template>
-                    <template v-else></template>
+                    <template v-else><i>lege zoekterm</i></template>
                 </div>
             </template>
 
@@ -22,7 +22,8 @@
                     <span class="pi pi-spin pi-spinner"></span>
                 </span>
 
-                <Button text severity="secondary" @click="() => searchItems.splice(searchItems.indexOf(searchItem), 1)">
+                <Button text severity="secondary" @click="() => searchItems.splice(searchItems.indexOf(searchItem), 1)"
+                    title="Verwijderen">
                     <span class="pi pi-trash"></span>
                 </Button>
             </template>
@@ -51,7 +52,7 @@
                 <div class="formSplit">
                     <label for="newspaper">Krant</label>
                     <Select id="newspaper" v-model="searchItem.newspaper" :options="sourceOptions" showClear
-                        placeholder="Krant" />
+                        placeholder="Krant" :loading="!sourceOptions.length" />
                 </div>
             </template>
 
@@ -63,7 +64,8 @@
 
         </Panel>
         <Button style="border: 2px dashed #ccc; background: #eee; min-height: 40px" class="newWord" severity="secondary"
-            outlined @click="() => searchItems.push({ color: randomColor(), visible: true })">
+            title="Zoekterm toevoegen" outlined
+            @click="() => searchItems.push({ color: randomColor(), visible: true })">
             <span class="pi pi-plus"></span>
         </Button>
     </ScrollPanel>
@@ -113,7 +115,7 @@ onMounted(() => {
             search()
         } else {
             // A random new entry when no cookies were stored
-            searchItems.value.push({ color: randomColor() })
+            searchItems.value.push({ color: randomColor(), visible: true })
         }
     }
 })
@@ -129,6 +131,15 @@ onMounted(() => {
         display: flex;
         flex-direction: column;
         gap: 1rem;
+    }
+
+    .newWord {
+        width: 100%;
+
+        &:hover,
+        &:active {
+            background: #e0e0e0 !important;
+        }
     }
 }
 

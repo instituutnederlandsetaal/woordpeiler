@@ -154,7 +154,8 @@ canvas {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 200px;
+  text-align: left;
+  flex: 1 1 0;
 }
 
 .emptyGraph {

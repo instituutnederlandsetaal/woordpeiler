@@ -26,7 +26,7 @@ export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
 }
 
 export function displayName(i: SearchItem): string {
-    return `${i.wordform || ""} ${i.lemma || ""} ${i.pos || ""} ${i.newspaper || ""} ${i.language || ""}`
+    return `${i.wordform || ""} ${i.lemma || ""} ${i.pos || ""} ${i.newspaper || ""} ${i.language || ""}`.trim()
 }
 
 export function invalidInputText(text?: string): boolean {
