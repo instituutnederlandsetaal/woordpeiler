@@ -6,33 +6,33 @@
 
                 <div class="formSplit">
                     <label>Periode</label>
-                    <SelectButton v-model="selectedPeriod" :options="periodOptions" optionValue="value"
+                    <SelectButton v-model="trendSettings.period" :options="periodOptions" optionValue="value"
                         optionLabel="label" />
                 </div>
 
-                <template v-if="selectedPeriod == 'other'">
+                <template v-if="trendSettings.period == 'other'">
                     <div class="formSplit">
-                        <DatePicker v-model="trendSettings.startDate" showIcon fluid iconDisplay="input"
+                        <DatePicker v-model="trendSettings.other.start" showIcon fluid iconDisplay="input"
                             dateFormat="dd-M-yy" />
-                        <DatePicker v-model="trendSettings.endDate" showIcon fluid iconDisplay="input"
+                        <DatePicker v-model="trendSettings.other.end" showIcon fluid iconDisplay="input"
                             dateFormat="dd-M-yy" />
                     </div>
                 </template>
-                <template v-else-if="selectedPeriod == 'year'">
+                <template v-else-if="trendSettings.period == 'year'">
                     <div class="formSplit">
                         <label>Jaar</label>
-                        <DatePicker v-model="trendSettings.startDate" view="year" dateFormat="yy"
+                        <DatePicker v-model="trendSettings.year.start" view="year" dateFormat="yy"
                             v-on:date-select="setYearEndDate()" />
                     </div>
                 </template>
-                <template v-else-if="selectedPeriod == 'month'">
+                <template v-else-if="trendSettings.period == 'month'">
                     <div class="formSplit">
                         <label>Maand</label>
-                        <DatePicker v-model="trendSettings.startDate" view="month" dateFormat="MM yy"
+                        <DatePicker v-model="trendSettings.month.start" view="month" dateFormat="MM yy"
                             v-on:date-select="setMonthEndDate()" />
                     </div>
                 </template>
-                <template v-else-if="selectedPeriod == 'week'">
+                <template v-else-if="trendSettings.period == 'week'">
                     <div class="formSplit">
                         <label>Week</label>
                         <DatePicker v-model="week" view="date" dateFormat="dd M yy" selectionMode="range" class="week"
@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 // Libraries & Stores
-import { computed, ref } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useTrendSettingsStore } from "@/stores/TrendSettingsStore"
 import { useTrendResultsStore } from "@/stores/TrendResultsStore"
 // Primevue
@@ -76,18 +76,11 @@ import DatePicker from "primevue/datepicker"
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 
 // Stores
-const { trendSettings, trendTypeOptions, modifierOptions } = useTrendSettingsStore()
+const { trendSettings, trendTypeOptions, modifierOptions, periodOptions } = useTrendSettingsStore()
 const { getTrends } = useTrendResultsStore()
 
 // Fields
 const tabOpen = ref("0")
-const periodOptions: SelectLabel[] = [
-    { label: "week", value: "week" },
-    { label: "maand", value: "month" },
-    { label: "jaar", value: "year" },
-    { label: "anders", value: "other" },
-]
-const selectedPeriod = ref("year")
 const week = ref<Date[]>([])
 
 // Computed
@@ -101,11 +94,11 @@ function closeTab() {
 }
 
 function setYearEndDate() {
-    trendSettings.endDate = toLastDayOfYear(trendSettings.startDate)
+    trendSettings.year.end = toLastDayOfYear(trendSettings.year.start)
 }
 
 function setMonthEndDate() {
-    trendSettings.endDate = toLastDayOfMonth(trendSettings.startDate)
+    trendSettings.month.end = toLastDayOfMonth(trendSettings.month.start)
 }
 
 function setWeekCorrectly() {
@@ -115,10 +108,34 @@ function setWeekCorrectly() {
     week.value[1] = new Date(week.value[0])
     week.value[1].setDate(week.value[1].getDate() - week.value[1].getDay() + 6)
     // set in settings
-    trendSettings.startDate = week.value[0]
-    trendSettings.endDate = week.value[1]
+    trendSettings.week.start = week.value[0]
+    trendSettings.week.end = week.value[1]
 }
-
+// Lifecycle
+// watch old and new value of period
+watch(() => trendSettings.period, (newValue, oldValue) => {
+    if (newValue == null) {
+        // reset to old
+        setTimeout(() => {
+            trendSettings.period = oldValue
+        }, 0)
+    }
+})
+// same for trendType
+watch(() => trendSettings.trendType, (newValue, oldValue) => {
+    if (newValue == null) {
+        setTimeout(() => {
+            trendSettings.trendType = oldValue
+        }, 0)
+    }
+})
+onMounted(() => {
+    // set initial week
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    week.value = [oneWeekAgo, null]
+    setWeekCorrectly()
+})
 </script>
 
 <style scoped lang="scss">

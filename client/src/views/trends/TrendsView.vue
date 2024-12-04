@@ -2,8 +2,11 @@
     <div class="search">
         <TrendSettings />
 
-        <TrendResultsList v-if="trendResults.length != 0" />
+        <TrendResultsList v-if="trendResults?.length > 0" />
         <Skeleton class="trendlist" v-else-if="trendsLoading" />
+        <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
+            <p>Probeer een andere zoekopdracht.</p>
+        </Panel>
 
         <SearchOptionsView v-if="searchItems.length != 0" />
     </div>
@@ -17,6 +20,7 @@ import { useTrendResultsStore } from "@/stores/TrendResultsStore"
 import { useSearchItemsStore } from "@/stores/SearchItemsStore"
 // Primevue
 import Skeleton from "primevue/skeleton"
+import Panel from "primevue/panel"
 // Components
 import SearchOptionsView from "@/components/SearchSettings.vue"
 import TrendSettings from "@/components/trends/TrendSettings.vue"

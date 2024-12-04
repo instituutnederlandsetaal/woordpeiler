@@ -21,6 +21,10 @@ export function toLastDayOfMonth(date: Date): Date {
     return new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 0)
 }
 
+export function toFirstDayOfMonth(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), 1)
+}
+
 /** For a given date, get the ISO week number
  *
  * Based on information at:

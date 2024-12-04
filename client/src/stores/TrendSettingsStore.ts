@@ -1,5 +1,5 @@
 // Libraries & Stores
-import { getNewYearsDay, getNewYearsEve } from "@/ts/date"
+import { getNewYearsDay, getNewYearsEve, toFirstDayOfMonth, toLastDayOfMonth } from "@/ts/date"
 import type { TrendSettings } from "@/types/trends"
 import type { SelectLabel } from "@/types/UI"
 import { defineStore } from "pinia"
@@ -8,10 +8,13 @@ import { ref } from "vue"
 export const useTrendSettingsStore = defineStore('TrendSettings', () => {
     // Fields
     const trendSettings = ref<TrendSettings>({
-        startDate: getNewYearsDay(),
-        endDate: getNewYearsEve(),
+        year: { start: getNewYearsDay(), end: getNewYearsEve() },
+        month: { start: toFirstDayOfMonth(new Date()), end: toLastDayOfMonth(new Date()) },
+        week: { start: new Date(), end: new Date() },
+        other: { start: new Date(), end: new Date() },
         trendType: "absolute",
         modifier: 1,
+        period: "year",
     })
     const trendTypeOptions: SelectLabel[] = [
         { label: "keyness", value: "keyness" },
@@ -21,6 +24,12 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
         keyness: "Smoothingparameter",
         absolute: "Maximumfrequentie in referentiecorpus",
     }
+    const periodOptions: SelectLabel[] = [
+        { label: "week", value: "week" },
+        { label: "maand", value: "month" },
+        { label: "jaar", value: "year" },
+        { label: "anders", value: "other" },
+    ]
     // Export
-    return { trendSettings, trendTypeOptions, modifierOptions }
+    return { trendSettings, trendTypeOptions, modifierOptions, periodOptions }
 })

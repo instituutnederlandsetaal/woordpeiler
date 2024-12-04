@@ -19,11 +19,12 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
     function getTrends() {
         trendResults.value = []
         trendsLoading.value = true
+        const selectedPeriod: DateRange = trendSettings.value[trendSettings.value.period]
         const trendRequest: TrendRequest = {
             trend_type: trendSettings.value.trendType,
             modifier: trendSettings.value.modifier,
-            start_date: toTimestamp(trendSettings.value.startDate),
-            end_date: toTimestamp(trendSettings.value.endDate),
+            start_date: toTimestamp(selectedPeriod.start),
+            end_date: toTimestamp(selectedPeriod.end),
         }
 
         TrendAPI.getTrends(trendRequest)

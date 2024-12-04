@@ -48,13 +48,13 @@ const { search } = useSearchResultsStore();
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
-const selectedPosHead = ref(["nou-p", "res", "num"])
+const selectedPosHead = ref(["punct", "res", "num"])
 const posHeadOptions = ref<string[]>([])
 const posHeadLoading = ref(true)
 
 // Computed
 const filteredTrends = computed(() => {
-    return trendResults.value.filter((i) => !selectedPosHead.value.includes(i.poshead))
+    return trendResults.value?.filter((i) => !selectedPosHead.value.includes(i.poshead))
 })
 
 // Methods
@@ -84,7 +84,8 @@ watch(selectedTrend, () => {
     for (const trendItem of selectedTrend.value) {
         searchItems.value.push({
             wordform: trendItem.wordform,
-            pos: trendItem.poshead,
+            pos: trendItem.pos,
+            lemma: trendItem.lemma,
             color: randomColor(),
             visible: true
         })
