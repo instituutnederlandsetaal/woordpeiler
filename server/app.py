@@ -1,8 +1,8 @@
 # standard
-from typing import Annotated, Optional
+from typing import Annotated, Any, Optional
 
 # third party
-from psycopg.rows import class_row
+from psycopg.rows import class_row, dict_row
 from fastapi import Request, HTTPException, Query
 import uvicorn
 
@@ -59,12 +59,13 @@ async def get_trends(
     modifier: float = 1,
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
+    enriched: bool = True,
     exclude: Annotated[Optional[list[str]], Query()] = None,
-) -> list[TrendItem]:
+) -> list[Any]:
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=class_row(TrendItem)) as cur:
+        async with conn.cursor(row_factory=dict_row) as cur:
             return (
-                await TrendsQuery(trend_type, modifier, start_date, end_date)
+                await TrendsQuery(trend_type, modifier, start_date, end_date, enriched)
                 .build(cur)
                 .execute_fetchall()
             )

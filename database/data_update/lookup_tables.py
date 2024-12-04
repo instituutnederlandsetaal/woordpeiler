@@ -141,6 +141,65 @@ def create_daily_monthly_yearly_total_counts():
     )
 
 
+def create_wordform_lookup_tables():
+    time_query(
+        reason="create daily_wordforms",
+        queries=[
+            """
+                DROP TABLE IF EXISTS daily_wordforms;
+            """,
+            """
+                SELECT 
+                    time, 
+                    w.wordform, 
+                    SUM(abs_freq) as abs_freq 
+                INTO 
+                    daily_wordforms 
+                FROM 
+                    daily_counts 
+                LEFT JOIN 
+                    words w ON w.id = word_id 
+                GROUP BY 
+                    w.wordform, 
+                    time;
+            """,
+            """
+                CREATE INDEX idx_daily_wordforms_time_wordform_inc_abs_freq ON daily_wordforms (time, wordform) INCLUDE (abs_freq);
+            """,
+        ],
+    )
+
+    time_query(
+        reason="create total_wordforms",
+        queries=[
+            """
+                DROP TABLE IF EXISTS total_wordforms;
+            """,
+            """
+                SELECT 
+                    wordform, 
+                    SUM(abs_freq) as abs_freq 
+                INTO total_wordforms
+                FROM daily_wordforms
+                GROUP BY 
+                    wordform;
+            """,
+            """
+                ALTER TABLE total_wordforms
+                ADD COLUMN rel_freq FLOAT;
+            """,
+            """
+                CREATE INDEX idx_total_wordforms_wordform_inc_abs_freq ON total_wordforms (wordform) INCLUDE (abs_freq);
+            """,
+            """
+                UPDATE total_wordforms 
+                SET rel_freq = abs_freq / (SELECT SUM(abs_freq) 
+                FROM total_wordforms);
+            """,
+        ],
+    )
+
+
 if __name__ == "__main__":
     create_lookup_tables()
     print("Done!")

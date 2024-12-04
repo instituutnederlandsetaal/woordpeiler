@@ -68,4 +68,6 @@ class DataSeries:
 class TrendItem:
     keyness: Decimal | float
     poshead: str
+    lemma: str
+    pos: str
     wordform: str
