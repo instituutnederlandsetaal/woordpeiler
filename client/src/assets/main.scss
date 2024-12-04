@@ -95,9 +95,7 @@ main {
 //   }
 // }
 
-.newWord {
-  width: 100%;
-}
+
 
 .advancedSearch>div {
   display: flex;
@@ -121,6 +119,8 @@ main {
   flex: 1;
   display: flex;
   padding: 1rem;
+  flex-direction: column;
+  padding-left: 0;
 
   /* max-height: 400px;
   max-width: 800px;
@@ -150,8 +150,6 @@ canvas {
   align-items: center;
 }
 
-
-
 .panelHeader {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -165,11 +163,6 @@ canvas {
   align-items: center;
   width: 100%;
   height: 100%;
-}
-
-.graph {
-  display: flex;
-  flex-direction: column;
 }
 
 .tooltip a {
@@ -198,64 +191,4 @@ div.invalid {
 p.invalid {
   color: red;
   margin-bottom: 0.5rem;
-}
-
-@media screen and (max-width: 1200px) {
-  body {
-    overflow: auto;
-    height: fit-content;
-  }
-
-  main {
-    flex-direction: column;
-    justify-content: flex-end;
-
-    flex-flow: column-reverse;
-    min-height: auto;
-  }
-
-  .graph {
-    max-height: 500px;
-    min-height: 500px;
-  }
-
-  .search {
-    width: 100%;
-    flex-direction: row;
-  }
-
-  .searchOptions {
-    width: 500px;
-    height: fit-content;
-  }
-
-}
-
-@media screen and (max-width: 800px) {
-  body {
-    overflow: auto;
-    height: fit-content;
-  }
-
-  main {
-    flex-direction: column;
-    justify-content: flex-end;
-    // reverse
-    flex-flow: column-reverse;
-    min-height: auto;
-  }
-
-  .search {
-    width: 100%;
-    flex-flow: column-reverse;
-  }
-
-  .searchOptions {
-    width: 100%;
-  }
-
-  .graph {
-    max-height: 400px;
-    min-height: 400px;
-  }
 }

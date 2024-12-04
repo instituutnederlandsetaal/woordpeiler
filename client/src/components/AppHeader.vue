@@ -6,7 +6,7 @@
             </a>
             <div class="logo-text">
                 <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
-                    / instituut voor de Nederlandse&nbsp;taal&nbsp;/
+                    /&nbsp;instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal&nbsp;/
                 </a>
                 <!-- <h2>/instituut voor de Nederlandse taal/</h2> -->
                 <a href="/">
