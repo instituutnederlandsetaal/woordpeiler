@@ -43,6 +43,11 @@
                 </template>
 
                 <div class="formSplit">
+                    <label>Splits op lemma en woordsoort</label>
+                    <Checkbox v-model="trendSettings.enriched" binary />
+                </div>
+
+                <div class="formSplit">
                     <label>Trendsoort</label>
                     <SelectButton v-model="trendSettings.trendType" :options="trendTypeOptions" optionValue="value"
                         optionLabel="label" />
@@ -73,6 +78,8 @@ import AccordionContent from "primevue/accordioncontent"
 import Button from "primevue/button"
 import SelectButton from "primevue/selectbutton"
 import DatePicker from "primevue/datepicker"
+import Checkbox from 'primevue/checkbox';
+// Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 
 // Stores
@@ -148,5 +155,9 @@ onMounted(() => {
 .week {
     flex: 1;
     margin-left: 6rem;
+}
+
+.formSplit {
+    margin-bottom: 0.1rem;
 }
 </style>

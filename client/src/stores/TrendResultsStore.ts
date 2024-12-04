@@ -13,7 +13,7 @@ import { toTimestamp } from "@/ts/date"
 export const useTrendResultsStore = defineStore('TrendResults', () => {
     // Fields
     const { trendSettings } = storeToRefs(useTrendSettingsStore())
-    const trendResults = ref<TrendResult[]>([])
+    const trendResults = ref<TrendResult[]>(null)
     const trendsLoading = ref(false)
     // Methods
     function getTrends() {
@@ -25,6 +25,7 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
             modifier: trendSettings.value.modifier,
             start_date: toTimestamp(selectedPeriod.start),
             end_date: toTimestamp(selectedPeriod.end),
+            enriched: trendSettings.value.enriched,
         }
 
         TrendAPI.getTrends(trendRequest)

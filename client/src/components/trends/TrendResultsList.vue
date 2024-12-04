@@ -1,7 +1,7 @@
 <template>
     <Panel header="Trendresultaten" class="trendlist">
 
-        <div class="formSplit">
+        <div class="formSplit" v-if="trendResults[0].poshead">
             <label>Uitsluiten</label>
             <MultiSelect v-model="selectedPosHead" display="chip" :options="posHeadOptions" placeholder="Woordsoort"
                 :loading="posHeadLoading" class="posSelect" />
@@ -14,7 +14,7 @@
                 &nbsp;
                 <span> {{ option.wordform }} </span>
                 &nbsp;
-                <Chip :label="option.poshead" />
+                <Chip :label="option.poshead" v-if="option.poshead" />
             </template>
         </Listbox>
 

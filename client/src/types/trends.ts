@@ -6,6 +6,8 @@ export type TrendSettings = {
     trendType: string;
     modifier: number;
     period: string;
+    enriched: boolean;
+}
 
 export type DateRange = {
     start: Date;

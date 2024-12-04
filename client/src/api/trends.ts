@@ -8,6 +8,7 @@ export type TrendRequest = {
     modifier: number;
     start_date: number;
     end_date: number;
+    enriched: boolean;
 }
 
 export function getTrends(request: TrendRequest): Promise<TrendResponse> {

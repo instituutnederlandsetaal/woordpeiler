@@ -27,6 +27,11 @@ $theme: #62b6ff;
     --p-border-radius-xl: 0;
     --p-button-rounded-border-radius: 0;
 
+    // Checkbox
+    --p-checkbox-width: 1.65rem;
+    --p-checkbox-height: 1.65rem;
+    --p-checkbox-icon-size: 1.2rem;
+
     .p-button-rounded {
         border-radius: 0;
     }

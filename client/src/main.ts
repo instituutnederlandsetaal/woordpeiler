@@ -1,5 +1,6 @@
 import '@/assets/main.scss'
 import '@/assets/primevue.scss'
+import '@/assets/media.scss'
 import 'primeicons/primeicons.css'
 import { setAxiosBaseUrl } from './api/api';
 setAxiosBaseUrl()
