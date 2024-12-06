@@ -67,6 +67,15 @@ onMounted(() => {
     // Add Y axis
     const y = d3.scaleLinear()
     const yAxis = svg.append("g").attr("class", "y-axis")
+    // Add Y axis label (rotated 90 vertical)
+    const yAxisLabel = lastSearchSettings.value.frequencyType === "abs_freq" ? "absolute frequentie" : "frequentie per miljoen woorden"
+
+    yAxis.append("text")
+        .style("text-anchor", "middle")
+        .style("fill", 'black')
+        .attr("class", "y-axis-label")
+        .text(yAxisLabel);
+
 
     // Add a clipPath: everything out of this area won't be drawn.
     const clip = svg.append("defs").append("svg:clipPath")
@@ -290,7 +299,7 @@ onMounted(() => {
     // responsive resize
     watchEffect(() => {
         let { width, height } = resizeState.dimensions;
-        const svgMargin = { x: 15, y: 0 };
+        const svgMargin = { x: 30, y: 0 };
         width -= svgMargin.x * 2;
 
         svg.attr("width", width - svgMargin.x).attr("height", height).attr("transform", `translate(${svgMargin.x * 2}, 0)`);
@@ -300,6 +309,10 @@ onMounted(() => {
 
         y.range([height, 0]);
         yAxis.attr("transform", `translate(0, 0)`).call(d3.axisLeft(y));
+
+        // y axis label
+        yAxis.select("text")
+            .attr("transform", `translate(${-svgMargin.x * 2.2}, ${height / 2}) rotate(-90)`);
 
         const clipMargin = { x: 3, y: 10 };
         clip.attr("width", width + 2 * clipMargin.x).attr("height", height + 2 * clipMargin.y).attr("x", -clipMargin.x).attr("y", -clipMargin.y);
@@ -406,11 +419,15 @@ function constructBLFilter(d) {
 }
 
 .x-axis {
-    font-size: calc(0.5vw + 0.3rem)
+    font-size: calc(0.5vw + 0.4rem)
 }
 
 .y-axis {
-    font-size: calc(0.5vw + 0.3rem)
+    font-size: calc(0.3vw + 0.6rem)
+}
+
+.y-axis-label {
+    font-size: calc(0.5vw + 0.5rem)
 }
 
 /* Step 2: Style the tooltip */
