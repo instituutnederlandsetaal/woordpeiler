@@ -23,14 +23,22 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     // Methods
     function initTimeBucketOpts(): SelectLabel[] {
         const opts = [
-        { label: "week", value: "week" },
-        { label: "maand", value: "month" },
-        { label: "jaar", value: "year" },
-    ]
+            { label: "week", value: "week" },
+            { label: "maand", value: "month" },
+            { label: "jaar", value: "year" },
+        ]
         if (isInternal()) {
             opts.unshift({ label: "dag", value: "day" })
         }
         return opts
+    }
+    function loadSearchSettings() {
+        if (localStorage.getItem("searchSettings")) {
+            searchSettings.value = JSON.parse(localStorage.getItem("searchSettings"))
+            // convert to Date
+            searchSettings.value.startDate = new Date(searchSettings.value.startDate)
+            searchSettings.value.endDate = new Date(searchSettings.value.endDate)
+        }
     }
     function resetDates() {
         searchSettings.value.startDate = new Date('2000-01-01')
@@ -41,6 +49,6 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         // Fields
         searchSettings, frequencyTypeOptions, timeBucketOptions,
         // Methods
-        resetDates
+        loadSearchSettings, resetDates
     }
 })

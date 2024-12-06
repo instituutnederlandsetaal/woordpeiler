@@ -4,7 +4,7 @@ import { defineStore, storeToRefs } from 'pinia'
 import { useSearchSettingsStore } from '@/stores/SearchSettingsStore'
 import { useSearchItemsStore } from '@/stores/SearchItemsStore'
 // Types & API
-import { type SearchItem, type GraphItem, equalSearchItem } from "@/types/Search"
+import { type SearchItem, type GraphItem, equalSearchItem, type SearchSettings } from "@/types/Search"
 import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
@@ -16,10 +16,12 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     const { searchSettings } = storeToRefs(useSearchSettingsStore())
     const { searchItems } = storeToRefs(useSearchItemsStore())
     const isSearching = ref(false)
+    const lastSearchSettings = ref<SearchSettings>(null)
     // Methods
     function search() {
         // save current search to local storage
         localStorage.setItem("searchItems", JSON.stringify(searchItems.value))
+        lastSearchSettings.value = JSON.parse(JSON.stringify(searchSettings.value))
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")
@@ -90,7 +92,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     // Export
     return {
         // Fields
-        searchResults, isSearching,
+        searchResults, isSearching, lastSearchSettings,
         // Methods
         search
     }

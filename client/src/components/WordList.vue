@@ -77,6 +77,7 @@ import { onMounted } from "vue"
 import { storeToRefs } from 'pinia'
 // Stores
 import { useSearchItemsStore } from "@/stores/SearchItemsStore"
+import { useSearchSettingsStore } from "@/stores/SearchSettingsStore"
 import { useSearchResultsStore } from "@/stores/SearchResultsStore"
 // Components
 import InputText from "primevue/inputtext"
@@ -95,6 +96,7 @@ const searchItemsStore = useSearchItemsStore()
 const { searchItems, posOptions, sourceOptions, languageOptions } = storeToRefs(searchItemsStore)
 const { fetchOptions } = searchItemsStore
 const { search } = useSearchResultsStore()
+const { loadSearchSettings } = useSearchSettingsStore()
 
 // Lifecycle
 onMounted(() =>
@@ -112,10 +114,8 @@ onMounted(() => {
         // retrieve dataseries from cookies
         if (localStorage.getItem("searchItems")) {
             searchItems.value = JSON.parse(localStorage.getItem("searchItems"))
+            loadSearchSettings()
             search()
-        } else {
-            // A random new entry when no cookies were stored
-            searchItems.value.push({ color: randomColor(), visible: true })
         }
     }
 })

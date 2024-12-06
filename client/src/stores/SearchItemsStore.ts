@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import type { SelectLabel } from '@/types/UI'
 import { invalidSearchItem, type SearchItem } from '@/types/Search'
 import * as ListingAPI from '@/api/listing'
+import { randomColor } from '@/ts/color'
 
 /**
  * Used to manage the list of words that will be used as search items when querying frequency data.
@@ -12,7 +13,7 @@ import * as ListingAPI from '@/api/listing'
  */
 export const useSearchItemsStore = defineStore('SearchItems', () => {
     // Fields
-    const searchItems = ref<SearchItem[]>([])
+    const searchItems = ref<SearchItem[]>([{ color: randomColor(), visible: true }])
     /** Newspaper options, to be fetched */
     const sourceOptions = ref<string[]>([])
     /** Part of Speech options, to be fetched */
