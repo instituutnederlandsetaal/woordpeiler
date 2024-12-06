@@ -2,7 +2,14 @@
     <div class="graph">
         <Panel class="p-panel">
 
+            <!--icons-->
             <template #header v-if="searchResults.length > 0">
+                <Button text severity="secondary" @click="downloadBtn">
+                    <span class="pi pi-download" title="Downloaden"></span>
+                </Button>
+                <!-- <Button text severity="secondary">
+                    <span class="pi pi-share-alt" title="Delen"></span>
+                </Button> -->
                 <div class="panelHeader" style="text-align: center;">
                     <b>{{ graphTitle }}</b>
                 </div>
@@ -10,7 +17,7 @@
 
 
             <template v-if="searchResults.length > 0">
-                <D3Graph />
+                <D3Graph ref="graph" />
             </template>
             <template v-else>
                 <ProgressSpinner v-if="isSearching" />
@@ -32,10 +39,17 @@ import D3Graph from "@/components/graph/D3Graph.vue";
 import ProgressSpinner from "primevue/progressspinner";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
+// Util
+import { download } from "@/ts/saveSvg";
 
 // Stores
 const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
 
+// Fields
+const graph = ref(null);
+function downloadBtn() {
+    download(graph.value.resizeState);
+}
 
 // Computed
 const graphTitle = computed(() => {

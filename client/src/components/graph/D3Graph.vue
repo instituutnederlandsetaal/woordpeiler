@@ -1,24 +1,22 @@
 <template>
-    <div id="my_dataviz" ref="resizeRef"></div>
+    <div id="svg-container" ref="resizeRef"></div>
     <div id="tooltip"></div>
 </template>
 
 
 <script setup lang="ts">
 // Libraries
-import { onMounted, watchEffect, ref, computed } from "vue";
+import { onMounted, watchEffect, computed } from "vue";
 import { storeToRefs } from "pinia";
 import * as d3 from "d3";
 // Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
-import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, type GraphItem } from "@/types/Search";
 
 // Stores
-const { searchSettings } = storeToRefs(useSearchSettingsStore());
-const { searchResults } = storeToRefs(useSearchResultsStore());
+const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore());
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
@@ -27,6 +25,8 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
 const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
 const maxPoints = 500;
+
+defineExpose({ resizeState });
 
 function dateFormat(date: Date) {
     if (d3.timeMonth(date) < date) {
@@ -56,8 +56,8 @@ onMounted(() => {
 
 
     // append the svg object to the body of the page
-    const svg = d3.select("#my_dataviz")
-        .append("svg")
+    const svg = d3.select("#svg-container")
+        .append("svg").attr("id", "svg-graph")
         .append("g")
 
     // Add X axis --> it is a date format
