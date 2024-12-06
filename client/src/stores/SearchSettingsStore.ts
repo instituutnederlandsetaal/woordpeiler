@@ -32,6 +32,15 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         }
         return opts
     }
+    function resetDates() {
+        searchSettings.value.startDate = new Date('2000-01-01')
+        searchSettings.value.endDate = new Date()
+    }
     // Export
-    return { searchSettings, frequencyTypeOptions, timeBucketOptions }
+    return {
+        // Fields
+        searchSettings, frequencyTypeOptions, timeBucketOptions,
+        // Methods
+        resetDates
+    }
 })

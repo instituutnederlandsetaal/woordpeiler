@@ -9,7 +9,12 @@
                         <SelectButton v-model="searchSettings.frequencyType" :options="frequencyTypeOptions"
                             optionValue="value" optionLabel="label" />
                     </div>
-                    <label>Periode</label>
+                    <div>
+                        <label>Periode</label>
+                        <Button severity="secondary" text label="Resetten" class="reset" @click="resetDates">
+                            <span class="pi pi-refresh"></span> 2000 &ndash; nu
+                        </Button>
+                    </div>
                     <div class="dateRange">
                         <DatePicker v-model="searchSettings.startDate" showIcon fluid iconDisplay="input"
                             dateFormat="dd-M-yy" />
@@ -31,11 +36,12 @@
 </template>
 
 <script setup lang="ts">
-// Libraries & Stores
+// Libraries
+import { storeToRefs } from "pinia"
+// Stores
 import { useSearchSettingsStore } from "@/stores/SearchSettingsStore"
 import { useSearchResultsStore } from "@/stores/SearchResultsStore"
 import { useSearchItemsStore } from "@/stores/SearchItemsStore"
-import { storeToRefs } from "pinia"
 // Components
 import Accordion from "primevue/accordion"
 import AccordionPanel from "primevue/accordionpanel"
@@ -47,10 +53,26 @@ import SelectButton from "primevue/selectbutton"
 import DatePicker from "primevue/datepicker"
 
 // Stores
-const { searchSettings, frequencyTypeOptions, timeBucketOptions } = useSearchSettingsStore()
+const searchSettingsStore = useSearchSettingsStore()
+const { frequencyTypeOptions, timeBucketOptions, resetDates } = searchSettingsStore
+const { searchSettings } = storeToRefs(searchSettingsStore)
 const { isValid } = storeToRefs(useSearchItemsStore())
 const { search } = useSearchResultsStore()
 </script>
+
+<style scoped lang="scss">
+.reset {
+    display: inline;
+    width: fit-content;
+    line-height: 0;
+    font-size: .9rem;
+    margin: 0;
+    padding-left: .3rem;
+
+    span {
+        font-size: inherit;
+    }
+}
 
 .modifierInput {
     flex: 0 1 80px;
