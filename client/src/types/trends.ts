@@ -7,6 +7,7 @@ export type TrendSettings = {
     modifier: number;
     period: string;
     enriched: boolean;
+    language?: string;
 }
 
 export type DateRange = {

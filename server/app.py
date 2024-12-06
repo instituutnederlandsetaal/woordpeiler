@@ -60,12 +60,15 @@ async def get_trends(
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
     enriched: bool = True,
+    language: Optional[str] = None,
     exclude: Annotated[Optional[list[str]], Query()] = None,
 ) -> list[Any]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             return (
-                await TrendsQuery(trend_type, modifier, start_date, end_date, enriched)
+                await TrendsQuery(
+                    trend_type, modifier, start_date, end_date, enriched, language
+                )
                 .build(cur)
                 .execute_fetchall()
             )

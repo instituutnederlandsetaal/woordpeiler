@@ -22,7 +22,9 @@ class TrendsQuery(QueryBuilder):
     date_filter: Composable
     modifier: Literal
     trend_type: TrendType
-    enriched: bool = True
+    enriched: bool
+    abs_freq = Identifier
+    counts_table: Identifier
 
     def __init__(
         self,
@@ -31,6 +33,7 @@ class TrendsQuery(QueryBuilder):
         start_date: Optional[int] = None,
         end_date: Optional[int] = None,
         enriched: bool = True,
+        language: Optional[str] = None,
     ) -> None:
         self.enriched = enriched
         self.modifier = Literal(modifier)
@@ -38,12 +41,20 @@ class TrendsQuery(QueryBuilder):
         self.date_filter = QueryBuilder.get_date_filter(
             Identifier("counts", "time"), start_date, end_date
         )
-        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date)
+        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date, language)
+        self.abs_freq = (
+            Identifier("abs_freq")
+            if language is None
+            else Identifier(f"abs_freq_{language.lower()}")
+        )
 
     @staticmethod
     def get_counts_table(
-        start_date: Optional[int], end_date: Optional[int]
+        start_date: Optional[int], end_date: Optional[int], language: Optional[str]
     ) -> Identifier:
+        if language:
+            return Identifier("combined_counts")
+
         start = datetime.fromtimestamp(start_date)
         end = datetime.fromtimestamp(end_date)
         # yearly checks
@@ -83,7 +94,7 @@ class TrendsQuery(QueryBuilder):
             WITH tc AS (
                 SELECT
                     word_id,
-                    SUM(abs_freq) as abs_freq
+                    SUM({abs_freq}) as abs_freq
                 FROM {counts_table} counts
                 {date_filter}
                 GROUP BY word_id
@@ -115,6 +126,7 @@ class TrendsQuery(QueryBuilder):
             LEFT JOIN words w ON w.id = f.word_id;
             """
         ).format(
+            abs_freq=self.abs_freq,
             date_filter=self.date_filter,
             modifier=self.modifier,
             counts_table=self.counts_table,
@@ -198,7 +210,7 @@ class TrendsQuery(QueryBuilder):
             WITH tc AS (
                 SELECT
                     word_id,
-                    SUM(abs_freq) / SUM(SUM(abs_freq)) OVER () as rel_freq
+                    SUM({abs_freq}) / SUM(SUM({abs_freq})) OVER () as rel_freq
                 FROM {counts_table} counts
                 {date_filter}
                 GROUP BY word_id
@@ -222,6 +234,7 @@ class TrendsQuery(QueryBuilder):
             LEFT JOIN words w ON w.id = k.word_id;
             """
         ).format(
+            abs_freq=self.abs_freq,
             date_filter=self.date_filter,
             modifier=self.modifier,
             counts_table=self.counts_table,

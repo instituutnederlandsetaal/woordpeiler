@@ -26,6 +26,7 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
             start_date: toTimestamp(selectedPeriod.start),
             end_date: toTimestamp(selectedPeriod.end),
             enriched: trendSettings.value.enriched,
+            language: trendSettings.value.language
         }
 
         TrendAPI.getTrends(trendRequest)

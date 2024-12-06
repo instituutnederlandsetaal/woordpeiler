@@ -5,6 +5,12 @@
             <AccordionContent class="advancedSearch">
 
                 <div class="formSplit">
+                    <label for="variant">Taalvariëteit</label>
+                    <Select id="variant" v-model="trendSettings.language" :options="languageOptions" showClear
+                        optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
+                </div>
+
+                <div class="formSplit">
                     <label>Periode</label>
                     <SelectButton v-model="trendSettings.period" :options="periodOptions" optionValue="value"
                         optionLabel="label" />
@@ -70,6 +76,7 @@
 import { computed, onMounted, ref, watch } from "vue"
 import { useTrendSettingsStore } from "@/stores/TrendSettingsStore"
 import { useTrendResultsStore } from "@/stores/TrendResultsStore"
+import { useSearchItemsStore } from "@/stores/SearchItemsStore"
 // Primevue
 import Accordion from "primevue/accordion"
 import AccordionPanel from "primevue/accordionpanel"
@@ -79,10 +86,12 @@ import Button from "primevue/button"
 import SelectButton from "primevue/selectbutton"
 import DatePicker from "primevue/datepicker"
 import Checkbox from 'primevue/checkbox';
+import Select from 'primevue/select';
 // Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 
 // Stores
+const { languageOptions } = useSearchItemsStore()
 const { trendSettings, trendTypeOptions, modifierOptions, periodOptions } = useTrendSettingsStore()
 const { getTrends } = useTrendResultsStore()
 

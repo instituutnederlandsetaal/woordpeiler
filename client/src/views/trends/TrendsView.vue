@@ -8,7 +8,7 @@
             <p>Probeer een andere zoekopdracht.</p>
         </Panel>
 
-        <SearchOptionsView v-if="searchItems.length != 0" />
+        <SearchOptionsView v-if="trendResults?.length != 0" />
     </div>
     <D3Graph />
 </template>

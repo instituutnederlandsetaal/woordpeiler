@@ -52,14 +52,33 @@ def create_daily_monthly_yearly_total_counts():
             """,
             """
                 SELECT 
-                    time, 
-                    word_id, 
-                    SUM(frequency) as abs_freq 
-                INTO daily_counts
-                FROM frequency_tmp
-                GROUP BY 
-                    time, 
-                    word_id;
+                    total.time, 
+                    total.word_id, 
+                    total.abs_freq AS abs_freq,
+                    COALESCE(an.abs_freq, 0) AS abs_freq_an,
+                    COALESCE(bn.abs_freq, 0) AS abs_freq_bn,
+                    COALESCE(nn.abs_freq, 0) AS abs_freq_nn,
+                    COALESCE(sn.abs_freq, 0) AS abs_freq_sn
+                INTO 
+                    daily_counts
+                FROM 
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp GROUP BY time, word_id) total
+                LEFT JOIN 
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'AN') GROUP BY time, word_id) an
+                ON 
+                    total.time = an.time AND total.word_id = an.word_id
+                LEFT JOIN 
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'BN') GROUP BY time, word_id) bn
+                ON 
+                    total.time = bn.time AND total.word_id = bn.word_id
+                LEFT JOIN 
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'NN') GROUP BY time, word_id) nn
+                ON 
+                    total.time = nn.time AND total.word_id = nn.word_id
+                LEFT JOIN 
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'SN') GROUP BY time, word_id) sn
+                ON 
+                    total.time = sn.time AND total.word_id = sn.word_id;
             """,
             """
                 CREATE INDEX idx_daily_counts_time_word_id_INC_abs_freq ON daily_counts (time, word_id) INCLUDE (abs_freq);
