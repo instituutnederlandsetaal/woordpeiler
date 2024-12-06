@@ -26,7 +26,16 @@ export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
 }
 
 export function displayName(i: SearchItem): string {
-    return `${i.wordform || ""} ${i.lemma || ""} ${i.pos || ""} ${i.newspaper || ""} ${i.language || ""}`.trim()
+    let attrs = {
+        wordform: i.wordform,
+        lemma: i.lemma,
+        pos: i.pos,
+        newspaper: i.newspaper,
+        language: i.language
+    }
+    const cleanedAttrs: String[] = Object.values(attrs).map(v => v?.trim()).filter(v => v != undefined).filter(v => v != "")
+    const nDash = "–"
+    return cleanedAttrs.join(nDash)
 }
 
 export function invalidInputText(text?: string): boolean {
