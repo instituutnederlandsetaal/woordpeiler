@@ -379,12 +379,12 @@ function constructBLPatt(d) {
     return `[${patt}]`
 }
 
-function constructBLFilter(d) {
+function constructBLFilter(d: GraphItem) {
     const filters = {
         medium: "newspaper",
         witnessYear_from: d3.timeFormat("%Y")(d.x),
     }
-    const timeBucket = searchSettings.value.timeBucketType;
+    const timeBucket = lastSearchSettings.value.timeBucketType;
 
     if (timeBucket != "year") {
         filters["witnessMonth_from"] = parseInt(d3.timeFormat("%m")(d.x))
@@ -394,11 +394,19 @@ function constructBLFilter(d) {
         filters["titleLevel2"] = `"${d.searchItem.newspaper}"`
     }
 
+    if (d.searchItem.language) {
+        filters["languageVariant"] = `"${d.searchItem.language}"`
+    }
+
     return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
 }
 </script>
 
 <style lang="scss">
+#svg-container {
+    user-select: none;
+}
+
 .legend-square {
     width: 12px;
     height: 12px;
