@@ -6,6 +6,14 @@ body {
   background-color: #f8f8f8;
 }
 
+html,
+body,
+#app {
+  width: 100vw;
+
+  overflow-x: hidden;
+}
+
 #app {
   display: flex;
   flex-direction: column;
@@ -21,30 +29,17 @@ main {
   flex: 1;
   display: flex;
   min-height: 0;
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .search {
   width: 430px;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
   min-height: 0;
-  gap: 1em;
-  justify-content: space-between;
+  gap: 1rem;
 }
-
-
-// .wordlist .p-listbox {
-//   flex: 1;
-//   min-height: 0;
-
-//   .p-listbox-list-container {
-//     height: 100% !important;
-//     max-height: none !important;
-//   }
-// }
-
-
 
 .advancedSearch>div {
   display: flex;
@@ -64,33 +59,9 @@ main {
   display: flex;
 }
 
-.graph {
-  flex: 1;
-  display: flex;
-  padding: 1rem;
-  flex-direction: column;
-  padding-left: 0;
-
-  /* max-height: 400px;
-  max-width: 800px;
-  height: 400px;
-  width: 800px; */
-  >.p-panel {
-    padding: 2rem;
-
-  }
-}
-
 .p-panel {
   border: 1px solid #e2e8f0;
   background: white;
-}
-
-
-.graph>div,
-canvas {
-  width: 100%;
-  height: 100%;
 }
 
 .formSplit {
@@ -107,31 +78,12 @@ canvas {
   flex: 1 1 0;
 }
 
-.emptyGraph {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-
 .tooltip a {
   color: white;
 }
 
 .tooltip a:visited {
   color: white;
-}
-
-svg,
-#my_dataviz {
-  /* important for responsiveness */
-  display: block;
-  fill: none;
-  stroke: none;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
 }
 
 div.invalid {

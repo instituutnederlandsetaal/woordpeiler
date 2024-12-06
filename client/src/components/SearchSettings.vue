@@ -17,9 +17,9 @@
                             dateFormat="dd-M-yy" />
                     </div>
                     <label>Gemiddeld over</label>
-                    <div class="timeBucket">
-                        <InputNumber v-model="searchSettings.timeBucketSize" inputId="withoutgrouping"
-                            :useGrouping="false" fluid />
+                    <div class="formSplit">
+                        <input type="number" class="modifierInput p-inputtext" min="0"
+                            v-model="searchSettings.timeBucketSize" />
                         <SelectButton v-model="searchSettings.timeBucketType" :options="timeBucketOptions"
                             optionValue="value" optionLabel="label" />
                     </div>
@@ -45,10 +45,15 @@ import Panel from "primevue/panel"
 import Button from "primevue/button"
 import SelectButton from "primevue/selectbutton"
 import DatePicker from "primevue/datepicker"
-import InputNumber from "primevue/inputnumber"
 
 // Stores
 const { searchSettings, frequencyTypeOptions, timeBucketOptions } = useSearchSettingsStore()
 const { isValid } = storeToRefs(useSearchItemsStore())
 const { search } = useSearchResultsStore()
 </script>
+
+.modifierInput {
+    flex: 0 1 80px;
+    min-width: 0;
+}
+</style>
