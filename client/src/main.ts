@@ -12,6 +12,7 @@ import Aura from '@primevue/themes/aura';
 
 import App from './App.vue'
 import router from './router'
+import { isInternal } from '@/ts/internal';
 
 // create app
 const app = createApp(App)
@@ -40,11 +41,7 @@ app.use(createPinia())
 app.use(router)
 
 // global config
-app.config.globalProperties.$internal = ["localhost", ".ivdnt.loc"].some((url) => window.location.hostname.includes(url)) // check if we are on a local environment
-// url parameter to force external mode
-if (window.location.search.includes("extern")) {
-    app.config.globalProperties.$internal = false
-}
+app.config.globalProperties.$internal = isInternal()
 
 // launch app
 app.mount('#app')
