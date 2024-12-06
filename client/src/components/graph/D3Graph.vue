@@ -14,7 +14,7 @@ import { useSearchResultsStore } from "@/stores/SearchResultsStore";
 import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
-import { GraphItem } from "@/types/Search";
+import { displayName, type GraphItem } from "@/types/Search";
 
 // Stores
 const { searchSettings } = storeToRefs(useSearchSettingsStore());
@@ -69,9 +69,9 @@ onMounted(() => {
     const brushEl = svg.append("g")
 
     // Add the legend
-    // const legend = svg.append("g")
-    //     .attr("class", "legend")
-    //     .attr("transform", `translate(20, -10)`);
+    const legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", `translate(10, 0)`);
 
 
     // Set up the line generator
@@ -109,33 +109,24 @@ onMounted(() => {
         });
 
         // Legend
-        // sampledData.forEach((series, i) => {
-        //     const legendItem = legend.append("g")
-        //         .attr("class", "legend-item")
-        //         .attr("transform", `translate(${i * 100}, 0)`)
-        //         .on("click", function () {
-        //             // Toggle visibility of the corresponding line and dots
-        //             const line = svg.selectAll(`g[data-name='${series.uuid}']`);
-        //             const currentlyVisible = line.style("display") !== "none";
-        //             line.style("display", currentlyVisible ? "none" : null);
-        //             // Toggle strikethrough style
-        //             d3.select(this).select("text").classed("hidden-line", currentlyVisible);
-
-        //         });
-        //     legendItem.append("rect")
-        //         .attr("class", "legend-square")
-        //         .attr("x", 0)
-        //         .attr("y", -8)
-        //         .attr("width", 12)
-        //         .attr("height", 12)
-        //         .style("fill", "#" + series.searchItem.color);
-        //     legendItem.append("text")
-        //         .text(series.searchItem.wordform)
-        //         .style("fill", 'black')
-        //         .style("font-size", 15)
-        //         .attr("x", 20)
-        //         .attr("y", 3)
-        // });
+        sampledData.forEach((series, i) => {
+            const legendItem = legend.append("g")
+                .attr("class", "legend-item")
+                .attr("transform", `translate(0, ${i * 20})`)
+            legendItem.append("rect")
+                .attr("class", "legend-square")
+                .attr("x", 0)
+                .attr("y", -8)
+                .attr("width", 12)
+                .attr("height", 12)
+                .style("fill", "#" + series.searchItem.color);
+            legendItem.append("text")
+                .text(displayName(series.searchItem))
+                .style("fill", 'black')
+                .style("font-size", 15)
+                .attr("x", 20)
+                .attr("y", 3)
+        });
 
         // draw the lines
         sampledData.forEach(series => {
@@ -392,17 +383,12 @@ function constructBLFilter(d) {
     margin-right: 5px;
 }
 
-.legend-item {
-    cursor: pointer;
-}
-
 .hidden-line {
     text-decoration: line-through;
 }
 
-.legend-text {
-    font-size: 12px;
-    color: black;
+.legend-item {
+    user-select: none;
 }
 
 .overlay {
