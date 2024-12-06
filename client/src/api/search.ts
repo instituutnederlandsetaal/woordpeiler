@@ -1,4 +1,5 @@
 import axios, { type AxiosResponse } from "axios"
+import { cleanParams } from "@/api/api"
 
 export type SearchRequest = {
     id?: number;
@@ -23,5 +24,5 @@ export type SearchResult = {
 export type SearchResponse = AxiosResponse<SearchResult[]>
 
 export function getSearch(request: SearchRequest): Promise<SearchResponse> {
-    return axios.get("/word_frequency", { params: request })
+    return axios.get("/word_frequency", { params: cleanParams(request) })
 }
