@@ -1,28 +1,63 @@
 <template>
     <div class="graph">
-        <div class="p-panel">
+        <Panel class="p-panel">
+
+            <template #header v-if="searchResults.length > 0">
+                <div class="panelHeader" style="text-align: center;">
+                    <b>{{ graphTitle }}</b>
+                </div>
+            </template>
+
+
             <template v-if="searchResults.length > 0">
                 <D3Graph />
             </template>
-            <div v-else class="emptyGraph">
+            <template v-else>
                 <ProgressSpinner v-if="isSearching" />
-                <p v-else>Zoek een woord</p>
-            </div>
-        </div>
+                <div v-else>Zoek een woord</div>
+            </template>
+        </Panel>
     </div>
 </template>
 
 <script setup lang="ts">
-// Libraries & Stores
+// Libraries
+import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
+// Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
 // Components
 import D3Graph from "@/components/graph/D3Graph.vue";
 // Primevue
 import ProgressSpinner from "primevue/progressspinner";
+import Panel from "primevue/panel";
+import Button from "primevue/button";
 
 // Stores
-const { searchResults, isSearching } = storeToRefs(useSearchResultsStore());
+const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
+
+
+// Computed
+const graphTitle = computed(() => {
+    if (!lastSearchSettings.value) return "";
+
+    const freqType = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute" : "Relatieve";
+    const timeBucketSize = lastSearchSettings.value.timeBucketSize;
+    const timeBucketType = lastSearchSettings.value.timeBucketType;
+    let timeBucketStr;
+    if (timeBucketType == "month") {
+        timeBucketStr = timeBucketSize > 1 ? "maanden" : "maand";
+    } else if (timeBucketType == "year") {
+        timeBucketStr = timeBucketSize > 1 ? "jaren" : "jaar";
+    } else if (timeBucketType == "week") {
+        timeBucketStr = timeBucketSize > 1 ? "weken" : "week";
+    } else {
+        timeBucketStr = timeBucketSize > 1 ? "dagen" : "dag";
+    }
+    const timeBucket = timeBucketSize > 1 ? `${timeBucketSize} ${timeBucketStr}` : timeBucketStr;
+
+    return `${freqType} woordfrequentie per ${timeBucket}`;
+});
 </script>
 
 <style scoped lang="scss">
