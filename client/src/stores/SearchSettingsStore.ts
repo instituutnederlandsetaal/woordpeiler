@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 // Types & API
 import type { SearchSettings } from "@/types/Search"
 import type { SelectLabel } from '@/types/UI'
+import { isInternal } from '@/ts/internal'
 
 export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     // Fields
@@ -18,12 +19,19 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         { label: "relatief", value: "rel_freq" },
         { label: "absoluut", value: "abs_freq" },
     ]
-    const timeBucketOptions: SelectLabel[] = [
-        { label: "dag", value: "day" },
+    const timeBucketOptions: SelectLabel[] = initTimeBucketOpts()
+    // Methods
+    function initTimeBucketOpts(): SelectLabel[] {
+        const opts = [
         { label: "week", value: "week" },
         { label: "maand", value: "month" },
         { label: "jaar", value: "year" },
     ]
+        if (isInternal()) {
+            opts.unshift({ label: "dag", value: "day" })
+        }
+        return opts
+    }
     // Export
     return { searchSettings, frequencyTypeOptions, timeBucketOptions }
 })
