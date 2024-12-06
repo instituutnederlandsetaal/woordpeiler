@@ -99,16 +99,10 @@ class ExecutableQuery[T]:
         self.verbose = verbose
 
     async def execute(self) -> BaseCursor:
-        start = datetime.now()
         if type(self.cursor) is AsyncCursor:
             await self.cursor.execute(self.query)
         else:
             self.cursor.execute(self.query)
-        end = datetime.now()
-
-        if self.verbose:
-            print(self.query.as_string(self.cursor))
-            print(f"Query took {end - start}")
 
         return self.cursor
 
