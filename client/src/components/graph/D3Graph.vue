@@ -28,6 +28,16 @@ const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
 const maxPoints = 500;
 
+function dateFormat(date: Date) {
+    if (d3.timeMonth(date) < date) {
+        return d3.timeFormat('%e %b')(date);
+    } else if (d3.timeYear(date) < date) {
+        return d3.timeFormat('%b ’%y')(date);
+    } else {
+        return d3.timeFormat('%Y')(date);
+    }
+}
+
 onMounted(() => {
     // Define the Dutch locale
     const dutchLocale = {
@@ -243,7 +253,7 @@ onMounted(() => {
         }
 
         // Update axis and line position
-        xAxis.transition().duration(animationDuration).call(d3.axisBottom(x))
+        xAxis.transition().duration(animationDuration).call(d3.axisBottom(x).tickFormat(dateFormat))
 
         // // Sample the data to maxPoints
         // const startX = x.domain()[0];
@@ -286,7 +296,7 @@ onMounted(() => {
         svg.attr("width", width - svgMargin.x).attr("height", height).attr("transform", `translate(${svgMargin.x * 2}, 0)`);
 
         x.range([0, width]);
-        xAxis.attr("transform", `translate(0, ${height})`).call(d3.axisBottom(x));
+        xAxis.attr("transform", `translate(0, ${height})`).call(d3.axisBottom(x).tickFormat(dateFormat));
 
         y.range([height, 0]);
         yAxis.attr("transform", `translate(0, 0)`).call(d3.axisLeft(y));
