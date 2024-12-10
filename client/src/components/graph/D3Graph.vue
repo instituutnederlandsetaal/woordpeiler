@@ -11,12 +11,14 @@ import { storeToRefs } from "pinia";
 import * as d3 from "d3";
 // Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
+import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, type GraphItem } from "@/types/Search";
 
 // Stores
 const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore());
+const { searchSettings } = storeToRefs(useSearchSettingsStore());
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
@@ -67,14 +69,12 @@ onMounted(() => {
     // Add Y axis
     const y = d3.scaleLinear()
     const yAxis = svg.append("g").attr("class", "y-axis")
-    // Add Y axis label (rotated 90 vertical)
-    const yAxisLabel = lastSearchSettings.value.frequencyType === "abs_freq" ? "absolute frequentie" : "frequentie per miljoen woorden"
+
 
     yAxis.append("text")
         .style("text-anchor", "middle")
         .style("fill", 'black')
         .attr("class", "y-axis-label")
-        .text(yAxisLabel);
 
 
     // Add a clipPath: everything out of this area won't be drawn.
@@ -100,12 +100,16 @@ onMounted(() => {
 
     // data
     watchEffect(() => {
+        // Add Y axis label (rotated 90 vertical)
+        const yAxisLabel = lastSearchSettings.value.frequencyType === "abs_freq" ? "absolute frequentie" : "frequentie per miljoen woorden"
+        yAxis.select("text").text(yAxisLabel);
+
         // clear the svg
         svg.selectAll(".line-group").remove();
         svg.selectAll(".legend-item").remove();
 
         // Sample the data to maxPoints
-        const flat = visible.value.flatMap(d => d.data);
+        const flat = visible.value.flatMap(d => d.data[lastSearchSettings.value.frequencyType]);
         // const zoomLevel = x.domain()[1] - x.domain()[0];
         // const totalPoints = flat.length;
         // const sampleRate = Math.max(1, Math.floor(totalPoints / maxPoints));
@@ -151,10 +155,10 @@ onMounted(() => {
         sampledData.forEach(series => {
             svg.select(`.line-group[data-name='${series.uuid}']`)
                 .selectAll('.line')
-                .data([series])
+                .data([series.data[lastSearchSettings.value.frequencyType]])
                 .enter().append("path")
                 .attr("class", "line")
-                .attr("d", d => lineGen(d.data))
+                .attr("d", d => lineGen(d))
                 .attr("fill", "none")
                 .attr("stroke", "#" + series.searchItem.color)
                 .attr("stroke-width", 2)
@@ -165,13 +169,16 @@ onMounted(() => {
         // Draw the dots
         sampledData.forEach(series => {
             // link data
-            series.data.forEach(d => {
+            series.data.abs_freq.forEach(d => {
+                d.searchItem = series.searchItem;
+            });
+            series.data.rel_freq.forEach(d => {
                 d.searchItem = series.searchItem;
             });
 
             const dot = svg.select(`.line-group[data-name='${series.uuid}']`)
                 .selectAll('.dot')
-                .data(series.data)
+                .data(series.data[lastSearchSettings.value.frequencyType])
                 .enter().append("g")
                 .attr("class", `dot`)
                 .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
@@ -248,7 +255,7 @@ onMounted(() => {
         if (!extent) {
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-            x.domain(d3.extent(visible.value.flatMap(d => d.data), d => d.x))
+            x.domain(d3.extent(visible.value.flatMap(d => d.data[lastSearchSettings.value.frequencyType]), d => d.x))
         } else {
             // A selection was made
             // remove the grey brush area
@@ -279,12 +286,12 @@ onMounted(() => {
         visible.value.forEach(series => {
             svg.select(`.line-group[data-name='${series.uuid}']`)
                 .selectAll('.line')
-                .data([series])
+                .data([series.data[lastSearchSettings.value.frequencyType]])
                 .transition().duration(animationDuration)
-                .attr("d", d => lineGen(d.data))
+                .attr("d", d => lineGen(d))
             svg.select(`.line-group[data-name='${series.uuid}']`)
                 .selectAll('.dot')
-                .data(series.data)
+                .data(series.data[lastSearchSettings.value.frequencyType])
                 .transition().duration(animationDuration)
                 .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
         })
@@ -319,7 +326,7 @@ onMounted(() => {
         brush.extent([[0, 0], [width, height]]).on("end", brushChart)
         brushEl.call(brush);
         // lines
-        svg.selectAll(".line").attr("d", d => lineGen(d.data));
+        svg.selectAll(".line").attr("d", d => lineGen(d));
         // dots
         svg.selectAll(".dot")
             .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
@@ -391,8 +398,8 @@ function constructBLFilter(d: GraphItem) {
         filters["witnessMonth_from"] = parseInt(d3.timeFormat("%m")(d.x))
     }
 
-    if (d.searchItem.newspaper) {
-        filters["titleLevel2"] = `"${d.searchItem.newspaper}"`
+    if (d.searchItem.source) {
+        filters["titleLevel2"] = `"${d.searchItem.source}"`
     }
 
     if (d.searchItem.language) {

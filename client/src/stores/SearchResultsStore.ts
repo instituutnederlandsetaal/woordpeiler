@@ -4,7 +4,7 @@ import { defineStore, storeToRefs } from 'pinia'
 import { useSearchSettingsStore } from '@/stores/SearchSettingsStore'
 import { useSearchItemsStore } from '@/stores/SearchItemsStore'
 // Types & API
-import { type SearchItem, type GraphItem, equalSearchItem, type SearchSettings } from "@/types/Search"
+import { type SearchItem, type GraphItem, equalSearchItem, type SearchSettings, equalSearchSettings } from "@/types/Search"
 import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
@@ -14,26 +14,26 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     // Fields
     const searchResults = ref<GraphItem[]>([])
     const { searchSettings } = storeToRefs(useSearchSettingsStore())
-    const { searchItems } = storeToRefs(useSearchItemsStore())
+    const { validSearchItems, languageOptions } = storeToRefs(useSearchItemsStore())
     const isSearching = ref(false)
     const lastSearchSettings = ref<SearchSettings>(null)
     // Methods
     function search() {
         // save current search to local storage
-        localStorage.setItem("searchItems", JSON.stringify(searchItems.value))
+        localStorage.setItem("searchItems", JSON.stringify(validSearchItems.value))
         lastSearchSettings.value = JSON.parse(JSON.stringify(searchSettings.value))
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")
-        if (JSON.stringify(oldSearchSettings) !== JSON.stringify(searchSettings.value)) {
+        if (!equalSearchSettings(oldSearchSettings, searchSettings.value)) {
             searchResults.value = []
             localStorage.setItem("searchSettings", JSON.stringify(searchSettings.value))
         }
 
         // remove irrelevant search results
-        searchResults.value = searchResults.value.filter((i) => searchItems.value.some((j) => equalSearchItem(i.searchItem, j)))
+        searchResults.value = searchResults.value.filter((i) => validSearchItems.value.some((j) => equalSearchItem(i.searchItem, j)))
         // newly added search items
-        const toBeSearched = searchItems.value.filter((i: SearchItem) => !searchResults.value.map((x) => x.searchItem).some((j) => equalSearchItem(i, j)))
+        const toBeSearched = validSearchItems.value.filter((i: SearchItem) => !searchResults.value.map((x) => x.searchItem).some((j) => equalSearchItem(i, j)))
         // search for each search item
         toBeSearched.forEach((ds) => getFrequency(ds))
         // only loading screen if we're searching
@@ -49,7 +49,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             lemma: item.lemma?.trim()?.toLowerCase(),
             // fixed values
             pos: item.pos,
-            source: item.newspaper,
+            source: item.source,
             language: item.language,
             period_length: searchSettings.value.timeBucketSize,
             period_type: searchSettings.value.timeBucketType,
@@ -64,9 +64,10 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
                 const dataset: GraphItem = {
                     searchItem: JSON.parse(JSON.stringify(item)),
                     uuid: uuidv4(),
-                    data: response.data.map((d) => {
-                        return { x: d.time * 1000, y: parseFloat(d[searchSettings.value.frequencyType]) }
-                    }),
+                    data: {
+                        abs_freq: response.data.map((i) => ({ x: i.time * 1000, y: parseFloat(i.abs_freq) })),
+                        rel_freq: response.data.map((i) => ({ x: i.time * 1000, y: parseFloat(i.rel_freq) }))
+                    }
                 }
                 searchResults.value.push(dataset)
             })
@@ -77,11 +78,11 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     }
     // Lifecycle
     /** ensure that color and visibility updates to search items also update the result items */
-    watch(() => searchItems.value, () => {
+    watch(() => validSearchItems.value, () => {
         // for each search item, try to find the corresponding search result (using equalSearchItem())
         searchResults.value.forEach((result) => {
             // find the corresponding search item
-            const searchItem = searchItems.value.find((item) => equalSearchItem(item, result.searchItem))
+            const searchItem = validSearchItems.value.find((item) => equalSearchItem(item, result.searchItem))
             // if found, update the color and visibility
             if (searchItem) {
                 result.searchItem.color = searchItem.color
