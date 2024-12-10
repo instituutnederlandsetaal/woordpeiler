@@ -1,7 +1,7 @@
 <template>
     <div class="search">
         <WordListView />
-        <SearchOptions />
+        <SearchOptions :languageSplit="$internal" />
     </div>
 
     <D3Graph />

@@ -14,6 +14,7 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         startDate: new Date('2000-01-01'),
         endDate: new Date(), // now
         frequencyType: "rel_freq",
+        languageSplit: false,
     })
     const frequencyTypeOptions: SelectLabel[] = [
         { label: "relatief", value: "rel_freq" },

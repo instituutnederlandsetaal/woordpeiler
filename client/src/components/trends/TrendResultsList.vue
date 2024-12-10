@@ -28,6 +28,7 @@
 // Libraries & Stores
 import { ref, computed, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
+// Stores
 import { useTrendResultsStore } from '@/stores/TrendResultsStore';
 import { useSearchResultsStore } from '@/stores/SearchResultsStore';
 import { useSearchItemsStore } from '@/stores/SearchItemsStore';

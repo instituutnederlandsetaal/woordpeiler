@@ -4,9 +4,12 @@ export type SearchSettings = {
     startDate: Date;
     endDate: Date;
     frequencyType: string;
+    languageSplit: boolean;
+}
 
 export function equalSearchSettings(a: SearchSettings, b: SearchSettings): boolean {
-    return a.timeBucketType == b.timeBucketType &&
+    return a.languageSplit == b.languageSplit &&
+        a.timeBucketType == b.timeBucketType &&
         a.timeBucketSize == b.timeBucketSize &&
         new Date(a.startDate).toISOString() == new Date(b.startDate).toISOString() &&
         new Date(a.endDate).toISOString() == new Date(b.endDate).toISOString()

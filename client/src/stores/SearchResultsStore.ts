@@ -35,7 +35,21 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         // newly added search items
         const toBeSearched = validSearchItems.value.filter((i: SearchItem) => !searchResults.value.map((x) => x.searchItem).some((j) => equalSearchItem(i, j)))
         // search for each search item
-        toBeSearched.forEach((ds) => getFrequency(ds))
+        toBeSearched.forEach((ds) => {
+            if (searchSettings.value.languageSplit && !ds.language) {
+                // split by language
+                languageOptions.value.forEach((lang) => {
+                    getFrequency({ ...ds, language: lang.value, color: lang.color })
+                })
+                // also add the original search item
+                // time out to add it last
+                // setTimeout(() => {
+                //     getFrequency(ds)
+                // }, 100)
+            } else { // only one search
+                getFrequency(ds)
+            }
+        })
         // only loading screen if we're searching
         if (toBeSearched.length > 0) {
             isSearching.value = true

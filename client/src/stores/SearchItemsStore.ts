@@ -20,10 +20,10 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     /** Part of Speech options, to be fetched */
     const posOptions = ref([])
     const languageOptions = ref<SelectLabel[]>([
-        { label: "Antilliaans-Nederlands", value: "AN" },
-        { label: "Belgisch-Nederlands", value: "BN" },
-        { label: "Nederlands-Nederlands", value: "NN" },
-        { label: "Surinaams-Nederlands", value: "SN" },
+        { label: "Antilliaans-Nederlands", value: "AN", color: "00AAFF" },
+        { label: "Belgisch-Nederlands", value: "BN", color: "FF0000" },
+        { label: "Nederlands-Nederlands", value: "NN", color: "FFA500" },
+        { label: "Surinaams-Nederlands", value: "SN", color: "009900" },
     ])
     // computed
     const isValid = computed<Boolean>(() => {
