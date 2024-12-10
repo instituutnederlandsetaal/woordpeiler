@@ -1,5 +1,5 @@
 <template>
-    <ScrollPanel class="wordlist">
+    <div class="wordlist">
         <Panel toggleable v-for="searchItem in searchItems" :key="searchItem"
             :class="{ 'invalid': invalidSearchItem(searchItem) }">
 
@@ -69,7 +69,7 @@
             @click="() => searchItems.push({ color: randomColor(), visible: true })">
             <span class="pi pi-plus"></span>
         </Button>
-    </ScrollPanel>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -85,7 +85,6 @@ import InputText from "primevue/inputtext"
 import ColorPicker from "primevue/colorpicker"
 import Panel from "primevue/panel"
 import Button from "primevue/button"
-import ScrollPanel from "primevue/scrollpanel"
 import Select from "primevue/select"
 import CascadeSelect from 'primevue/cascadeselect'
 // Util
@@ -126,13 +125,11 @@ onMounted(() => {
 .wordlist {
     flex: 1;
     min-height: 0;
-    overflow: auto;
-
-    :deep(.p-scrollpanel-content) {
+    overflow-y: auto;
         display: flex;
         flex-direction: column;
+    padding-bottom: 1rem;
         gap: 1rem;
-    }
 
     .newWord {
         width: 100%;
