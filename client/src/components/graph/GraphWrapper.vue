@@ -7,7 +7,7 @@
                 <Button text severity="secondary" @click="downloadBtn">
                     <span class="pi pi-download" title="Downloaden"></span>
                 </Button>
-                <Button text severity="secondary" @click="webShareAPI" v-if="shareAPIExists">
+                <Button text severity="secondary" @click="webShareAPI" v-if="canShare">
                     <span class="pi pi-share-alt" title="Delen"></span>
                 </Button>
                 <div class="panelHeader" style="text-align: center;">
@@ -58,7 +58,7 @@ function downloadBtn() {
 function webShareAPI() {
     share(graph.value.resizeState);
 }
-const shareAPIExists = navigator.share !== undefined;
+const canShare = navigator.share != undefined;
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));

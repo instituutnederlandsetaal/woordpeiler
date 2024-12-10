@@ -58,6 +58,11 @@
                     <b>Downloaden:</b>
                     klik op <span class="pi pi-download"></span> om de grafiek als afbeelding te downloaden.
                 </li>
+                <li v-if="canShare">
+                    <b>Delen:</b>
+                    klik op <span class="pi pi-share-alt"></span> om de grafiek te delen via de interface van Android /
+                    iOS.
+                </li>
             </ul>
         </section>
 
@@ -65,11 +70,26 @@
             <h2>Zoekinstellingen</h2>
             <ul>
                 <li>
+                    <b>Frequentie:</b>
+                    kies tussen <i>absolute frequentie</i> (het totaal aantal voorkomens) of
+                    <i>relatieve frequentie</i> (het aantal voorkomens per 1 miljoen woorden).
+                </li>
+                <li>
                     <b>Periode:</b>
-                    klik op <span class="pi pi-calendar"></span> om de periode van de zoekopdracht aan te passen.
+                    kies een zoekperiode in de tijd.
+                    De knop <span class="pi pi-refresh"></span> zet de periode terug op <i>2000 &ndash; nu</i>.
+                </li>
+                <li>
+                    <b>Tijdsinterval:</b>
+                    de interval waarover de frequentie wordt berekend.
+                    Bijvoorbeeld: <i>per 1 jaar</i>, <i>per 2 maanden</i> of <i>per 3 weken</i>.
                 </li>
             </ul>
         </section>
+
+                    </li>
+                </ul>
+            </section>
 
     </Panel>
 </template>
@@ -77,6 +97,8 @@
 <script setup lang="ts">
 import Panel from 'primevue/panel';
 import ColorPicker from 'primevue/colorpicker';
+
+const canShare = navigator.share != undefined;
 </script>
 
 <style scoped lang="scss">
