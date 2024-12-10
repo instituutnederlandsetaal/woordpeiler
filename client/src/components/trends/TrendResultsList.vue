@@ -10,7 +10,10 @@
         <Listbox class="p-panel" multiple metaKeySelection v-model="selectedTrend" filter :options="filteredTrends"
             optionLabel="wordform">
             <template #option="{ option }">
-                <Badge :value="formatNumber(option.keyness)" severity="secondary" />
+                <!-- index -->
+                <span class="index" title="Rangnummer">{{ trendResults.indexOf(option) + 1 }}.</span>
+                &nbsp;
+                <Badge :value="formatNumber(option.keyness)" severity="secondary" title="Absolute frequentie" />
                 &nbsp;
                 <span> {{ option.wordform }} </span>
                 &nbsp;
@@ -108,5 +111,9 @@ watch(selectedTrend, () => {
 
 .formSplit {
     gap: 1rem;
+}
+
+.index {
+    font-size: smaller;
 }
 </style>
