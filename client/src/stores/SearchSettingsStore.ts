@@ -1,5 +1,5 @@
 // Libraries & Stores
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 // Types & API
 import type { SearchSettings } from "@/types/Search"
@@ -44,6 +44,15 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         searchSettings.value.startDate = new Date('2000-01-01')
         searchSettings.value.endDate = new Date()
     }
+    // Lifecycle
+    watch(() => ({ ...searchSettings.value }), (newValue, oldValue) => {
+        const entries = Object.values(newValue)
+        if (entries.some(entry => entry == null || entry == undefined)) {
+            setTimeout(() => {
+                searchSettings.value = oldValue
+            }, 0)
+        }
+    })
     // Export
     return {
         // Fields

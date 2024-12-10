@@ -72,8 +72,10 @@
 </template>
 
 <script setup lang="ts">
-// Libraries & Stores
-import { computed, onMounted, ref, watch } from "vue"
+// Libraries
+import { computed, onMounted, ref } from "vue"
+import { storeToRefs } from "pinia"
+// Stores
 import { useTrendSettingsStore } from "@/stores/TrendSettingsStore"
 import { useTrendResultsStore } from "@/stores/TrendResultsStore"
 import { useSearchItemsStore } from "@/stores/SearchItemsStore"
@@ -91,8 +93,13 @@ import Select from 'primevue/select';
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 
 // Stores
+// search items store
 const { languageOptions } = useSearchItemsStore()
-const { trendSettings, trendTypeOptions, modifierOptions, periodOptions } = useTrendSettingsStore()
+// trend settings store
+const trendSettingsStore = useTrendSettingsStore()
+const { trendTypeOptions, modifierOptions, periodOptions } = trendSettingsStore
+const { trendSettings } = storeToRefs(trendSettingsStore)
+// trend results store
 const { getTrends } = useTrendResultsStore()
 
 // Fields
@@ -101,7 +108,7 @@ const week = ref<Date[]>([])
 
 // Computed
 const modifierLabel = computed(() => {
-    return modifierOptions[trendSettings.trendType]
+    return modifierOptions[trendSettings.value.trendType]
 })
 
 // Methods
@@ -110,11 +117,11 @@ function closeTab() {
 }
 
 function setYearEndDate() {
-    trendSettings.year.end = toLastDayOfYear(trendSettings.year.start)
+    trendSettings.value.year.end = toLastDayOfYear(trendSettings.value.year.start)
 }
 
 function setMonthEndDate() {
-    trendSettings.month.end = toLastDayOfMonth(trendSettings.month.start)
+    trendSettings.value.month.end = toLastDayOfMonth(trendSettings.value.month.start)
 }
 
 function setWeekCorrectly() {
@@ -124,27 +131,10 @@ function setWeekCorrectly() {
     week.value[1] = new Date(week.value[0])
     week.value[1].setDate(week.value[1].getDate() - week.value[1].getDay() + 6)
     // set in settings
-    trendSettings.week.start = week.value[0]
-    trendSettings.week.end = week.value[1]
+    trendSettings.value.week.start = week.value[0]
+    trendSettings.value.week.end = week.value[1]
 }
 // Lifecycle
-// watch old and new value of period
-watch(() => trendSettings.period, (newValue, oldValue) => {
-    if (newValue == null) {
-        // reset to old
-        setTimeout(() => {
-            trendSettings.period = oldValue
-        }, 0)
-    }
-})
-// same for trendType
-watch(() => trendSettings.trendType, (newValue, oldValue) => {
-    if (newValue == null) {
-        setTimeout(() => {
-            trendSettings.trendType = oldValue
-        }, 0)
-    }
-})
 onMounted(() => {
     // set initial week
     const oneWeekAgo = new Date()

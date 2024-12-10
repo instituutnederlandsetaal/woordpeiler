@@ -3,7 +3,7 @@ import { getNewYearsDay, getNewYearsEve, toFirstDayOfMonth, toLastDayOfMonth } f
 import type { TrendSettings } from "@/types/trends"
 import type { SelectLabel } from "@/types/UI"
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 
 export const useTrendSettingsStore = defineStore('TrendSettings', () => {
     // Fields
@@ -31,6 +31,15 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
         { label: "jaar", value: "year" },
         { label: "anders", value: "other" },
     ]
+    // Lifecycle
+    watch(() => ({ ...trendSettings.value }), (newValue, oldValue) => {
+        const entries = Object.values(newValue)
+        if (entries.some(entry => entry == null || entry == undefined)) {
+            setTimeout(() => {
+                trendSettings.value = oldValue
+            }, 0)
+        }
+    })
     // Export
     return { trendSettings, trendTypeOptions, modifierOptions, periodOptions }
 })
