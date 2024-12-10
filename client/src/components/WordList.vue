@@ -31,6 +31,9 @@
             <p class="invalid" v-if="invalidInputText(searchItem.lemma)">
                 Zoeken op woordgroepen is niet mogelijk.
             </p>
+            <p class="invalid" v-if="searchItem.language && searchItem.source">Kies óf een <b>krant</b> óf een
+                <b>taalvariëteit</b>.
+            </p>
 
             <div class="formSplit">
                 <label for="word">Woord</label><br />
@@ -49,19 +52,23 @@
                         :options="posOptions" optionGroupLabel="label" optionGroupChildren="items" showClear
                         placeholder="Woordsoort" />
 
+
                 </div>
                 <div class="formSplit">
-                    <label for="newspaper">Krant</label>
-                    <Select id="newspaper" v-model="searchItem.newspaper" :options="sourceOptions" showClear
-                        placeholder="Krant" :loading="!sourceOptions.length" />
+                    <label for="source">Krant</label>
+                    <Select id="source" v-model="searchItem.source" :options="sourceOptions" showClear
+                        placeholder="Krant" :loading="!sourceOptions.length"
+                        :invalid="searchItem.language && searchItem.source" />
                 </div>
             </template>
 
             <div class="formSplit">
                 <label for="variant">Taalvariëteit</label>
                 <Select id="variant" v-model="searchItem.language" :options="languageOptions" showClear
-                    optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
+                    optionLabel="label" optionValue="value" placeholder="Taalvariëteit"
+                    :invalid="searchItem.language && searchItem.source" />
             </div>
+
 
         </Panel>
         <Button style="border: 2px dashed #ccc; background: #eee; min-height: 40px" class="newWord" severity="secondary"

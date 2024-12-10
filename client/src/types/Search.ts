@@ -10,7 +10,7 @@ export interface SearchItem {
     wordform?: string
     pos?: string
     lemma?: string
-    newspaper?: string
+    source?: string
     language?: string
     color?: string
     visible?: boolean
@@ -18,19 +18,19 @@ export interface SearchItem {
 }
 
 export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
-    return a.wordform === b.wordform &&
-        a.pos === b.pos &&
-        a.lemma === b.lemma &&
-        a.newspaper === b.newspaper &&
-        a.language === b.language;
+    return a.wordform == b.wordform &&
+        a.pos == b.pos &&
+        a.lemma == b.lemma &&
+        a.source == b.source &&
+        a.language == b.language;
 }
 
 export function displayName(i: SearchItem): string {
     let attrs = {
         wordform: i.wordform,
-        lemma: i.lemma,
+        lemma: i.lemma ? `‘${i.lemma}’` : undefined,
         pos: i.pos,
-        newspaper: i.newspaper,
+        source: i.source,
         language: i.language
     }
     const cleanedAttrs: String[] = Object.values(attrs).map(v => v?.trim()).filter(v => v != undefined).filter(v => v != "")
@@ -43,7 +43,20 @@ export function invalidInputText(text?: string): boolean {
 }
 
 export function invalidSearchItem(item: SearchItem): boolean {
-    return displayName(item).trim() == "" || invalidInputText(item.lemma)
+    if (displayName(item) == "") {
+        // An empty item is invalid
+        return true
+    } else { // not empty
+        // no spaces in lemma
+        if (invalidInputText(item.lemma)) {
+            return true // invalid
+        }
+        // language and source can't be both defined
+        if (item.language && item.source) {
+            return true // invalid
+        }
+    }
+    return false // not invalid
 }
 
 export type TimeSeries = {

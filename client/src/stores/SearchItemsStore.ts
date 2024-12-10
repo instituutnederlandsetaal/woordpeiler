@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 // Types & API
 import type { SelectLabel } from '@/types/UI'
-import { invalidSearchItem, type SearchItem } from '@/types/Search'
+import { displayName, invalidSearchItem, type SearchItem } from '@/types/Search'
 import * as ListingAPI from '@/api/listing'
 import { randomColor } from '@/ts/color'
 
@@ -14,7 +14,8 @@ import { randomColor } from '@/ts/color'
 export const useSearchItemsStore = defineStore('SearchItems', () => {
     // Fields
     const searchItems = ref<SearchItem[]>([{ color: randomColor(), visible: true }])
-    /** Newspaper options, to be fetched */
+    const validSearchItems = computed<SearchItem[]>(() => searchItems.value.filter((i) => !invalidSearchItem(i)))
+    /** Source options, to be fetched */
     const sourceOptions = ref<string[]>([])
     /** Part of Speech options, to be fetched */
     const posOptions = ref([])
@@ -30,11 +31,19 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
         if (searchItems.value.length === 0) {
             return false
         }
-        // Check if every item has at least one field filled in
+        // single empty item
+        if (searchItems.value.length == 1) {
+            return displayName(searchItems.value[0]) != ""
+        }
+        // Check every term
         for (const i of searchItems.value) {
+            if (displayName(i) == "") {
+                // If it is completely empty, that's fine.
+            } else {
             if (invalidSearchItem(i)) {
                 return false
             }
+        }
         }
         return true
     })
@@ -77,7 +86,7 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     // Export
     return {
         // Fields
-        searchItems, sourceOptions, languageOptions, posOptions, isValid,
+        searchItems, sourceOptions, languageOptions, posOptions, isValid, validSearchItems,
         // Methods
         fetchOptions
     }

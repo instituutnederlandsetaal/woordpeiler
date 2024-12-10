@@ -8,7 +8,7 @@
             <p>Probeer een andere zoekopdracht.</p>
         </Panel>
 
-        <SearchOptionsView v-if="trendResults?.length != 0" />
+        <SearchOptionsView v-if="isValid" languageSplit />
     </div>
     <D3Graph />
 </template>
@@ -29,7 +29,7 @@ import TrendResultsList from "@/components/trends/TrendResultsList.vue"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore());
-const { searchItems } = storeToRefs(useSearchItemsStore());
+const { isValid } = storeToRefs(useSearchItemsStore());
 
 </script>
 
