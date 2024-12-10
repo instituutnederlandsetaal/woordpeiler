@@ -17,7 +17,11 @@
 
 
             <template v-if="searchResults.length > 0">
-                <D3Graph ref="graph" />
+                <div v-if="visible.length == 0">
+                    Alle woorden zijn verborgen. <br />
+                    Toon woorden door op <span class="pi pi-eye-slash"></span> te klikken.
+                </div>
+                <D3Graph v-else ref="graph" />
             </template>
             <template v-else>
                 <ProgressSpinner v-if="isSearching" />
@@ -33,6 +37,7 @@ import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 // Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
+import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Components
 import D3Graph from "@/components/graph/D3Graph.vue";
 // Primevue
@@ -56,6 +61,7 @@ function webShareAPI() {
 const shareAPIExists = navigator.share !== undefined;
 
 // Computed
+const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
 const graphTitle = computed(() => {
     if (!lastSearchSettings.value) return "";
 
