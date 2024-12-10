@@ -337,10 +337,11 @@ function truncateRound(value: number, decimals) {
 }
 
 function tooltipHtml(d) {
+    const name = displayName(d.searchItem).split("–")[0];
     const date = d3.timeFormat("%Y-%m-%d")(d.x);
     const value = truncateRound(d.y, 2).toLocaleString();
     const href = constructBlLink(d);
-    return `${date}<br><b>${value}</b><br/><a target='_blank' href='${href}'>Zoeken in CHN</a>`
+    return `<b>${name}</b><br>${date}<br><b>${value}</b><br/><a target='_blank' href='${href}'>Zoeken in CHN</a>`
 }
 
 /** Construct a BlackLab link for the wordform*/
