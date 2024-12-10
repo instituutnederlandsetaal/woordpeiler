@@ -23,6 +23,9 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         localStorage.setItem("searchItems", JSON.stringify(validSearchItems.value))
         lastSearchSettings.value = JSON.parse(JSON.stringify(searchSettings.value))
 
+        // set them as url params
+        setSearchParamsInUrl(validSearchItems, searchSettings)
+
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")
         if (!equalSearchSettings(oldSearchSettings, searchSettings.value)) {
@@ -89,6 +92,26 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
                 isSearching.value = false
                 item.loading = false
             })
+    }
+    function searchItemPropToUrlStr(items: SearchItem[], prop: string): string | undefined {
+        const split = ","
+        const itemStrs: string[] | undefined = items.map((i) => i[prop] || "")
+        return itemStrs.every((i) => i == "") ? undefined : itemStrs.map(encodeURIComponent).join(split)
+    }
+
+    function setSearchParamsInUrl() {
+        const paramsObj = {
+            w: searchItemPropToUrlStr(validSearchItems.value, 'wordform'),
+            l: searchItemPropToUrlStr(validSearchItems.value, 'lemma'),
+            p: searchItemPropToUrlStr(validSearchItems.value, 'pos'),
+            s: searchItemPropToUrlStr(validSearchItems.value, 'source'),
+            v: searchItemPropToUrlStr(validSearchItems.value, 'language'),
+            c: searchItemPropToUrlStr(validSearchItems.value, 'color'),
+        }
+        const paramsStr = Object.entries(paramsObj)
+            .filter(([key, value]) => value != undefined)
+            .map(([key, value]) => `${key}=${value}`).join('&')
+        window.history.pushState({}, '', `${window.location.pathname}?${paramsStr}`)
     }
     // Lifecycle
     /** ensure that color and visibility updates to search items also update the result items */

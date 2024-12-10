@@ -24,7 +24,7 @@
                 <li>
                     <b>In- en uitklappen:</b>
                     klik op <span class="pi pi-plus"></span> of <span class="pi pi-minus"></span> om een zoekterm in de
-                    lijst te in of uit te klappen.
+                    lijst te in- of uit te klappen.
                 </li>
                 <li>
                     <b>Verwijderen:</b>

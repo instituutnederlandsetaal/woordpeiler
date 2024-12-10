@@ -40,10 +40,10 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
             if (displayName(i) == "") {
                 // If it is completely empty, that's fine.
             } else {
-            if (invalidSearchItem(i)) {
-                return false
+                if (invalidSearchItem(i)) {
+                    return false
+                }
             }
-        }
         }
         return true
     })
@@ -83,11 +83,39 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
 
         })
     }
+    function readURLParams() {
+        const split = ","
+
+        const urlParams = new URLSearchParams(window.location.search)
+        const words = urlParams.get('w')
+        const lemmas = urlParams.get('l')
+        const pos = urlParams.get('p')
+        const source = urlParams.get('s')
+        const language = urlParams.get('v')
+        const color = urlParams.get('c')
+        const range = [...Array(Math.max(words?.split(split).length || 0, lemmas?.split(split).length || 0, pos?.split(split).length || 0, source?.split(split).length || 0, language?.split(split).length || 0)).keys()]
+
+        try {
+            searchItems.value = range.map((i) => {
+                return {
+                    wordform: words?.split(split)[i] || undefined,
+                    lemma: lemmas?.split(split)[i] || undefined,
+                    pos: pos?.split(split)[i] || undefined,
+                    source: source?.split(split)[i] || undefined,
+                    language: language?.split(split)[i].toUpperCase() || undefined,
+                    color: color?.split(split)[i] || randomColor(),
+                    visible: true
+                }
+            })
+        } catch (e) {
+            searchItems.value = [{ color: randomColor(), visible: true }]
+        }
+    }
     // Export
     return {
         // Fields
         searchItems, sourceOptions, languageOptions, posOptions, isValid, validSearchItems,
         // Methods
-        fetchOptions
+        fetchOptions, readURLParams
     }
 })

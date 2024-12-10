@@ -101,7 +101,7 @@ import { randomColor } from "@/ts/color"
 // Store
 const searchItemsStore = useSearchItemsStore()
 const { searchItems, posOptions, sourceOptions, languageOptions } = storeToRefs(searchItemsStore)
-const { fetchOptions } = searchItemsStore
+const { fetchOptions, readURLParams } = searchItemsStore
 const { search } = useSearchResultsStore()
 const { loadSearchSettings } = useSearchSettingsStore()
 
@@ -112,10 +112,8 @@ onMounted(() =>
 
 onMounted(() => {
     // read wordform url parameter
-    const urlParams = new URLSearchParams(window.location.search)
-    const wordform = urlParams.get("wordform")
-    if (wordform) {
-        searchItems.value.push({ wordform: wordform, color: randomColor() })
+    if (new URLSearchParams(window.location.search).size > 0) {
+        readURLParams()
         search()
     } else {
         // retrieve dataseries from cookies
@@ -133,10 +131,10 @@ onMounted(() => {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-        display: flex;
-        flex-direction: column;
+    display: flex;
+    flex-direction: column;
     padding-bottom: 1rem;
-        gap: 1rem;
+    gap: 1rem;
 
     .newWord {
         width: 100%;
