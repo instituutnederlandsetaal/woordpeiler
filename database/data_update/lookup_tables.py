@@ -167,13 +167,17 @@ def create_wordform_lookup_tables():
             """,
             """
                 SELECT 
-                    time, 
-                    w.wordform, 
-                    SUM(abs_freq) as abs_freq 
+                    time,
+                    w.wordform,
+                    SUM(abs_freq) AS abs_freq,
+                    SUM(abs_freq_an) AS abs_freq_an,
+                    SUM(abs_freq_bn) AS abs_freq_bn,
+                    SUM(abs_freq_nn) AS abs_freq_nn,
+                    SUM(abs_freq_sn) AS abs_freq_sn
                 INTO 
-                    daily_wordforms 
+                    daily_wordforms
                 FROM 
-                    daily_counts 
+                    daily_counts
                 LEFT JOIN 
                     words w ON w.id = word_id 
                 GROUP BY 
@@ -181,7 +185,7 @@ def create_wordform_lookup_tables():
                     time;
             """,
             """
-                CREATE INDEX idx_daily_wordforms_time_wordform_inc_abs_freq ON daily_wordforms (time, wordform) INCLUDE (abs_freq);
+                CREATE INDEX ON daily_wordforms (time, wordform) INCLUDE (abs_freq, abs_freq_an, abs_freq_bn, abs_freq_nn, abs_freq_sn);
             """,
         ],
     )
@@ -195,23 +199,38 @@ def create_wordform_lookup_tables():
             """
                 SELECT 
                     wordform, 
-                    SUM(abs_freq) as abs_freq 
-                INTO total_wordforms
-                FROM daily_wordforms
-                GROUP BY 
+                    SUM(abs_freq) as abs_freq,
+                    SUM(abs_freq_an) as abs_freq_an,
+                    SUM(abs_freq_bn) as abs_freq_bn,
+                    SUM(abs_freq_nn) as abs_freq_nn,
+                    SUM(abs_freq_sn) as abs_freq_sn
+                INTO 
+                    total_wordforms
+                FROM 
+                    daily_wordforms
+                GROUP BY
                     wordform;
             """,
             """
                 ALTER TABLE total_wordforms
-                ADD COLUMN rel_freq FLOAT;
+                ADD COLUMN rel_freq FLOAT,
+                ADD COLUMN rel_freq_an FLOAT,
+                ADD COLUMN rel_freq_bn FLOAT,
+                ADD COLUMN rel_freq_nn FLOAT,
+                ADD COLUMN rel_freq_sn FLOAT;
             """,
             """
-                CREATE INDEX idx_total_wordforms_wordform_inc_abs_freq ON total_wordforms (wordform) INCLUDE (abs_freq);
+                UPDATE
+                    total_wordforms 
+                SET 
+                    rel_freq = abs_freq / (SELECT SUM(abs_freq) FROM total_wordforms),
+                    rel_freq_an = abs_freq_an / (SELECT SUM(abs_freq_an) FROM total_wordforms),
+                    rel_freq_bn = abs_freq_bn / (SELECT SUM(abs_freq_bn) FROM total_wordforms),
+                    rel_freq_nn = abs_freq_nn / (SELECT SUM(abs_freq_nn) FROM total_wordforms),
+                    rel_freq_sn = abs_freq_sn / (SELECT SUM(abs_freq_sn) FROM total_wordforms);
             """,
             """
-                UPDATE total_wordforms 
-                SET rel_freq = abs_freq / (SELECT SUM(abs_freq) 
-                FROM total_wordforms);
+                CREATE INDEX ON total_wordforms (wordform) INCLUDE (abs_freq, rel_freq, abs_freq_an, rel_freq_an, abs_freq_bn, rel_freq_bn, abs_freq_nn, rel_freq_nn, abs_freq_sn, rel_freq_sn);
             """,
         ],
     )

@@ -179,7 +179,7 @@ class TrendsQuery(QueryBuilder):
             WITH tc AS (
                 SELECT
                     wordform,
-                    SUM(abs_freq) / SUM(SUM(abs_freq)) OVER () as rel_freq
+                    SUM({abs_freq}) / SUM(SUM({abs_freq})) OVER () as rel_freq
                 FROM daily_wordforms counts
                 {date_filter}
                 GROUP BY wordform
@@ -187,7 +187,7 @@ class TrendsQuery(QueryBuilder):
             keyness AS (
                 SELECT
                     tc.wordform,
-                    ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.rel_freq * 1e6) as keyness
+                    ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
                 FROM tc
                 LEFT JOIN total_wordforms rc ON tc.wordform = rc.wordform
                 ORDER BY keyness DESC
@@ -198,6 +198,8 @@ class TrendsQuery(QueryBuilder):
                 keyness
             FROM keyness k
         """).format(
+            abs_freq=self.abs_freq,
+            rel_freq=self.rel_freq,
             date_filter=self.date_filter,
             modifier=self.modifier,
         )
@@ -210,7 +212,7 @@ class TrendsQuery(QueryBuilder):
             WITH tc AS (
                 SELECT
                     wordform,
-                    SUM(abs_freq) as abs_freq
+                    SUM({abs_freq}) as abs_freq
                 FROM daily_wordforms counts
                 {date_filter}
                 GROUP BY wordform
@@ -219,7 +221,7 @@ class TrendsQuery(QueryBuilder):
                 SELECT
                     tc.wordform,
                     tc.abs_freq AS tc_abs_freq,
-                    rc.abs_freq - tc.abs_freq AS keyness
+                    rc.{abs_freq} - tc.abs_freq AS keyness
                 FROM tc
                 LEFT JOIN total_wordforms rc ON tc.wordform = rc.wordform
             ),
@@ -237,6 +239,7 @@ class TrendsQuery(QueryBuilder):
                 tc_abs_freq AS keyness
             FROM filter f
         """).format(
+            abs_freq=self.abs_freq,
             date_filter=self.date_filter,
             modifier=self.modifier,
         )
