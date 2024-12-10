@@ -34,13 +34,14 @@
 
             <div class="formSplit">
                 <label for="word">Woord</label><br />
-                <InputText id="word" v-model="searchItem.wordform" />
+                <InputText id="word" v-model="searchItem.wordform" @keyup.enter="search" />
             </div>
 
             <template v-if="$internal">
                 <div class="formSplit">
                     <label for="lemma">Lemma</label>
-                    <InputText :invalid="invalidInputText(searchItem.lemma)" id=" lemma" v-model="searchItem.lemma" />
+                    <InputText :invalid="invalidInputText(searchItem.lemma)" id=" lemma" v-model="searchItem.lemma"
+                        @keyup.enter="search" />
                 </div>
                 <div class="formSplit">
                     <label for="pos">Woordsoort</label>
