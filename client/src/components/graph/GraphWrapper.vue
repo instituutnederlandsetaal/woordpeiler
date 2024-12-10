@@ -7,9 +7,9 @@
                 <Button text severity="secondary" @click="downloadBtn">
                     <span class="pi pi-download" title="Downloaden"></span>
                 </Button>
-                <!-- <Button text severity="secondary">
+                <Button text severity="secondary" @click="webShareAPI" v-if="shareAPIExists">
                     <span class="pi pi-share-alt" title="Delen"></span>
-                </Button> -->
+                </Button>
                 <div class="panelHeader" style="text-align: center;">
                     <b>{{ graphTitle }}</b>
                 </div>
@@ -40,7 +40,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
 // Util
-import { download } from "@/ts/saveSvg";
+import { download, share } from "@/ts/saveSvg";
 
 // Stores
 const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
@@ -50,6 +50,10 @@ const graph = ref(null);
 function downloadBtn() {
     download(graph.value.resizeState);
 }
+function webShareAPI() {
+    share(graph.value.resizeState);
+}
+const shareAPIExists = navigator.share !== undefined;
 
 // Computed
 const graphTitle = computed(() => {

@@ -10,6 +10,19 @@ export function download(resizeState) {
     }
 }
 
+export function share(resizeState) {
+    var svgString = getSVGString(d3.select("#svg-graph").node());
+    let { width, height } = resizeState.dimensions;
+    svgString2Image(svgString, width + 20, height + 20, 'png', save); // passes Blob and filesize String to the callback
+
+    function save(dataBlob, filesize) {
+        const file = new File([dataBlob], 'corpustrends.png', { type: 'image/png' });
+        navigator.share({
+            files: [file]
+        });
+    }
+}
+
 function getSVGString(svgNode) {
     svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
     var cssStyleText = getCSSStyles(svgNode);
