@@ -15,6 +15,7 @@ import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, type GraphItem } from "@/types/Search";
+import { isInternal } from "@/ts/internal";
 
 // Stores
 const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore());
@@ -361,7 +362,9 @@ function constructBlLink(d): string {
         groupDisplayMode: "relative hits",
         group: "field:titleLevel2:i"
     }
-    const base = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-intern/search/hits"
+    const internalBase = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-intern/search/hits"
+    const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
+    const base = isInternal() ? internalBase : externalBase;
 
     return `${base}?${new URLSearchParams(params).toString()}`
 }
@@ -383,7 +386,8 @@ function constructBLPatt(d) {
     Object.keys(pattTerms).forEach(
         (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key]
     )
-    const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=l"${value}"`).join("&")
+    const literal = isInternal() ? "l" : ""
+    const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
     return `[${patt}]`
 }
 
