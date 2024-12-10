@@ -87,9 +87,20 @@
             </ul>
         </section>
 
+        <template v-if="$internal">
+            <section>
+                <h2>Trendinstellingen</h2>
+                <h3>Trendsoort</h3>
+                <ul>
+                    <li>
+                        <b>absolute frequentie:</b>
+                    </li>
+                    <li>
+                        <b>keyness:</b>
                     </li>
                 </ul>
             </section>
+        </template>
 
     </Panel>
 </template>
