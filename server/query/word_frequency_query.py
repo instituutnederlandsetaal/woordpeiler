@@ -37,6 +37,10 @@ class WordFrequencyQuery(QueryBuilder):
             Identifier("cs", "time"), start_date, end_date
         )
         self.time_bucket = WordFrequencyQuery.get_time_bucket(bucket_type, bucket_size)
+        if language is None:
+            self.size = Identifier("size")
+        else:
+            self.size = Identifier(f"size_{language.lower()}")
 
     @staticmethod
     def get_time_bucket(bucket_type: str, bucket_size: int) -> Literal:
@@ -102,8 +106,9 @@ class WordFrequencyQuery(QueryBuilder):
             SELECT 
                 time_bucket({time_bucket},cs.time) as time, 
                 SUM(COALESCE(frequency, 0)) as abs_freq, 
-                SUM(cs.size) as size, 
-                SUM(COALESCE(frequency, 0))/SUM(cs.size) as rel_freq 
+                SUM(cs.{size}) as size, 
+                -- SUM(COALESCE(frequency, 0))/SUM(cs.{size}) as rel_freq -- note: division by zero is possible. To fix this:
+                CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) END as rel_freq
             FROM corpus_size cs 
                 LEFT JOIN filter f 
                     ON cs.time = f.time 
@@ -114,10 +119,10 @@ class WordFrequencyQuery(QueryBuilder):
                 time_bucket({time_bucket},cs.time);
         """
         ).format(
+            size=self.size,
             source_filter=self.source_filter,
             date_filter=self.date_filter,
             word_filter=self.word_filter,
             time_bucket=self.time_bucket,
         )
-
         return ExecutableQuery(cursor, query)

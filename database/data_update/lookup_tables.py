@@ -3,43 +3,17 @@
 from database.insert.sql import (
     create_corpus_size,
 )
-from database.data_update.query import execute_query, time_query, analyze
+from database.data_update.query import time_query, analyze
 
 
 def create_lookup_tables():
     # update corpus size
     time_query(
         reason="Updating corpus size",
-        queries=["DROP TABLE corpus_size", create_corpus_size],
+        queries=["DROP TABLE IF EXISTS corpus_size", create_corpus_size],
     )
-
-    # Next, we're going to construct the counts tables from the frequencies table
-    # but because grouping on hypertables is slow
-    # first copy frequencies to a temp table
-    copy_freq_to_tmp_table()
-    # temporarily disable bitmapscan (seems to be faster)
-    execute_query(["SET enable_bitmapscan = off"])
     create_daily_monthly_yearly_total_counts()
-    execute_query(["SET enable_bitmapscan = on"])
-    execute_query(["DROP TABLE frequency_tmp"])  # drop temp table
-
     analyze()
-
-
-def copy_freq_to_tmp_table():
-    time_query(
-        reason="copy frequencies to temp table",
-        queries=[
-            """
-                CREATE TABLE frequency_tmp AS
-                SELECT time, word_id, source_id, frequency
-                FROM frequencies;
-            """,
-            """
-                CREATE INDEX idx_TMP_time_word_id_INC_frequency ON frequency_tmp(time, word_id) INCLUDE (frequency);
-            """,
-        ],
-    )
 
 
 def create_daily_monthly_yearly_total_counts():
@@ -81,7 +55,7 @@ def create_daily_monthly_yearly_total_counts():
                     total.time = sn.time AND total.word_id = sn.word_id;
             """,
             """
-                CREATE INDEX idx_daily_counts_time_word_id_INC_abs_freq ON daily_counts (time, word_id) INCLUDE (abs_freq);
+                CREATE INDEX ON daily_counts (time, word_id) INCLUDE (abs_freq, abs_freq_an, abs_freq_bn, abs_freq_nn, abs_freq_sn);
             """,
         ],
     )
@@ -96,7 +70,11 @@ def create_daily_monthly_yearly_total_counts():
                 SELECT 
                     time_bucket('1 month', time) AS time,
                     word_id, 
-                    SUM(abs_freq) as abs_freq 
+                    SUM(abs_freq) as abs_freq,
+                    SUM(abs_freq_an) as abs_freq_an,
+                    SUM(abs_freq_bn) as abs_freq_bn,
+                    SUM(abs_freq_nn) as abs_freq_nn,
+                    SUM(abs_freq_sn) as abs_freq_sn
                 INTO monthly_counts
                 FROM daily_counts
                 GROUP BY 
@@ -104,7 +82,7 @@ def create_daily_monthly_yearly_total_counts():
                     word_id;
             """,
             """
-                CREATE INDEX idx_monthly_counts_time_word_id_INC_abs_freq ON monthly_counts (time, word_id) INCLUDE (abs_freq);
+                CREATE INDEX ON monthly_counts (time, word_id) INCLUDE (abs_freq, abs_freq_an, abs_freq_bn, abs_freq_nn, abs_freq_sn);
             """,
         ],
     )
@@ -119,7 +97,11 @@ def create_daily_monthly_yearly_total_counts():
                 SELECT 
                     time_bucket('1 year', time) AS time,
                     word_id, 
-                    SUM(abs_freq) as abs_freq 
+                    SUM(abs_freq) as abs_freq,
+                    SUM(abs_freq_an) as abs_freq_an,
+                    SUM(abs_freq_bn) as abs_freq_bn,
+                    SUM(abs_freq_nn) as abs_freq_nn,
+                    SUM(abs_freq_sn) as abs_freq_sn
                 INTO yearly_counts
                 FROM monthly_counts
                 GROUP BY 
@@ -127,7 +109,7 @@ def create_daily_monthly_yearly_total_counts():
                     word_id;
             """,
             """
-                CREATE INDEX idx_yearly_counts_time_word_id_INC_abs_freq ON yearly_counts (time, word_id) INCLUDE (abs_freq);
+                CREATE INDEX ON yearly_counts (time, word_id) INCLUDE (abs_freq, abs_freq_an, abs_freq_bn, abs_freq_nn, abs_freq_sn);
             """,
         ],
     )
@@ -141,7 +123,11 @@ def create_daily_monthly_yearly_total_counts():
             """
                 SELECT 
                     word_id, 
-                    SUM(abs_freq) as abs_freq 
+                    SUM(abs_freq) as abs_freq,
+                    SUM(abs_freq_an) as abs_freq_an,
+                    SUM(abs_freq_bn) as abs_freq_bn,
+                    SUM(abs_freq_nn) as abs_freq_nn,
+                    SUM(abs_freq_sn) as abs_freq_sn
                 INTO total_counts
                 FROM yearly_counts
                 GROUP BY 
@@ -149,12 +135,24 @@ def create_daily_monthly_yearly_total_counts():
             """,
             """
                 ALTER TABLE total_counts
-                ADD COLUMN rel_freq FLOAT;
+                ADD COLUMN rel_freq FLOAT,
+                ADD COLUMN rel_freq_an FLOAT,
+                ADD COLUMN rel_freq_bn FLOAT,
+                ADD COLUMN rel_freq_nn FLOAT,
+                ADD COLUMN rel_freq_sn FLOAT;
             """,
             """
-                UPDATE total_counts 
-                SET rel_freq = abs_freq / (SELECT SUM(abs_freq) 
-                FROM total_counts);
+                UPDATE
+                    total_counts 
+                SET 
+                    rel_freq = abs_freq / (SELECT SUM(abs_freq) FROM total_counts),
+                    rel_freq_an = abs_freq_an / (SELECT SUM(abs_freq_an) FROM total_counts),
+                    rel_freq_bn = abs_freq_bn / (SELECT SUM(abs_freq_bn) FROM total_counts),
+                    rel_freq_nn = abs_freq_nn / (SELECT SUM(abs_freq_nn) FROM total_counts),
+                    rel_freq_sn = abs_freq_sn / (SELECT SUM(abs_freq_sn) FROM total_counts);
+            """,
+            """
+                CREATE INDEX ON total_counts (word_id) INCLUDE (abs_freq, rel_freq, abs_freq_an, rel_freq_an, abs_freq_bn, rel_freq_bn, abs_freq_nn, rel_freq_nn, abs_freq_sn, rel_freq_sn);	
             """,
         ],
     )

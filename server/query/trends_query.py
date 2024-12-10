@@ -1,8 +1,8 @@
 # standard
 import calendar
+from ctypes.wintypes import LANGID
 from datetime import datetime
 from enum import Enum
-from itertools import count
 from typing import Optional
 
 # third party
@@ -41,20 +41,19 @@ class TrendsQuery(QueryBuilder):
         self.date_filter = QueryBuilder.get_date_filter(
             Identifier("counts", "time"), start_date, end_date
         )
-        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date, language)
-        self.abs_freq = (
-            Identifier("abs_freq")
-            if language is None
-            else Identifier(f"abs_freq_{language.lower()}")
-        )
+        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date)
+
+        if language is None:
+            self.abs_freq = Identifier("abs_freq")
+            self.rel_freq = Identifier("rel_freq")
+        else:
+            self.abs_freq = Identifier(f"abs_freq_{language.lower()}")
+            self.rel_freq = Identifier(f"rel_freq_{language.lower()}")
 
     @staticmethod
     def get_counts_table(
-        start_date: Optional[int], end_date: Optional[int], language: Optional[str]
+        start_date: Optional[int], end_date: Optional[int]
     ) -> Identifier:
-        if language:
-            return Identifier("combined_counts")
-
         start = datetime.fromtimestamp(start_date)
         end = datetime.fromtimestamp(end_date)
         # yearly checks
@@ -88,6 +87,45 @@ class TrendsQuery(QueryBuilder):
             else:
                 raise ValueError(f"Invalid trend type: {self.trend_type}")
 
+    def build_keyness_trends(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
+        query = SQL(
+            """
+            WITH tc AS (
+                SELECT
+                    word_id,
+                    SUM({abs_freq}) / SUM(SUM({abs_freq})) OVER () as rel_freq
+                FROM {counts_table} counts
+                {date_filter}
+                GROUP BY word_id
+            ),
+            keyness AS (
+                SELECT
+                    tc.word_id,
+                    ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
+                FROM tc
+                LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
+                ORDER BY keyness DESC
+                LIMIT 1000
+            )
+            SELECT
+                w.wordform,
+                w.poshead,
+                w.pos,
+                w.lemma,
+                keyness
+            FROM keyness k
+            LEFT JOIN words w ON w.id = k.word_id;
+            """
+        ).format(
+            abs_freq=self.abs_freq,
+            rel_freq=self.rel_freq,
+            date_filter=self.date_filter,
+            modifier=self.modifier,
+            counts_table=self.counts_table,
+        )
+
+        return ExecutableQuery(cursor, query)
+
     def build_absolute_trends(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
         query = SQL(
             """
@@ -103,7 +141,7 @@ class TrendsQuery(QueryBuilder):
                 SELECT
                     tc.word_id,
                     tc.abs_freq AS tc_abs_freq,
-                    rc.abs_freq - tc.abs_freq AS keyness
+                    rc.{abs_freq} - tc.abs_freq AS keyness
                 FROM tc
                 LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
             ),
@@ -202,42 +240,4 @@ class TrendsQuery(QueryBuilder):
             date_filter=self.date_filter,
             modifier=self.modifier,
         )
-        return ExecutableQuery(cursor, query)
-
-    def build_keyness_trends(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
-        query = SQL(
-            """
-            WITH tc AS (
-                SELECT
-                    word_id,
-                    SUM({abs_freq}) / SUM(SUM({abs_freq})) OVER () as rel_freq
-                FROM {counts_table} counts
-                {date_filter}
-                GROUP BY word_id
-            ),
-            keyness AS (
-                SELECT
-                    tc.word_id,
-                    ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.rel_freq * 1e6) as keyness
-                FROM tc
-                LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
-                ORDER BY keyness DESC
-                LIMIT 1000
-            )
-            SELECT
-                w.wordform,
-                w.poshead,
-                w.pos,
-                w.lemma,
-                keyness
-            FROM keyness k
-            LEFT JOIN words w ON w.id = k.word_id;
-            """
-        ).format(
-            abs_freq=self.abs_freq,
-            date_filter=self.date_filter,
-            modifier=self.modifier,
-            counts_table=self.counts_table,
-        )
-
         return ExecutableQuery(cursor, query)

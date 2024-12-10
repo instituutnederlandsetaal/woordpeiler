@@ -37,10 +37,33 @@ copy_select_tmp_data_to_word_freqs = """
 """
 
 create_corpus_size = """
-    SELECT time, SUM(frequency) AS size
-    INTO corpus_size
-    FROM frequencies
-    GROUP BY time
+    SELECT 
+        total.time, 
+        total.size AS size,
+        COALESCE(an.size, 0) AS size_an,
+        COALESCE(bn.size, 0) AS size_bn,
+        COALESCE(nn.size, 0) AS size_nn,
+        COALESCE(sn.size, 0) AS size_sn
+    INTO 
+        corpus_size_tmp
+    FROM
+        (SELECT time, SUM(frequency) AS size FROM frequencies GROUP BY time) total
+    LEFT JOIN
+        (SELECT time, SUM(frequency) AS size FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'AN') GROUP BY time) an
+    ON
+        total.time = an.time
+    LEFT JOIN
+        (SELECT time, SUM(frequency) AS size FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'BN') GROUP BY time) bn
+    ON
+        total.time = bn.time
+    LEFT JOIN
+        (SELECT time, SUM(frequency) AS size FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'NN') GROUP BY time) nn
+    ON
+        total.time = nn.time
+    LEFT JOIN
+        (SELECT time, SUM(frequency) AS size FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'SN') GROUP BY time) sn
+    ON
+        total.time = sn.time;
 """
 
 constraint_words = """
