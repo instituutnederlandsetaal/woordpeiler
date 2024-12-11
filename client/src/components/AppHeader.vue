@@ -1,49 +1,97 @@
 <template>
-    <header role="banner">
+    <header role="banner" :style="style.header">
         <div class="logo">
-            <a href="/">
-                <img src="/corpustrends-logo.svg" alt="logo" />
-            </a>
-            <div class="logo-text">
-                <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
-                    /&nbsp;instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal&nbsp;/
-                </a>
-                <!-- <h2>/instituut voor de Nederlandse taal/</h2> -->
-                <a href="/">
-                    <h1>corpustrends</h1>
-                </a>
+            <RouterLink to="/">
+                <img src="/corpustrends-logo.svg" alt="logo" :style="style.logoImg" />
+            </RouterLink>
+            <div class="logo-text" :style="style.logoText">
+                <h2 :style="style.logoText?.h2">
+                    <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
+                        /&nbsp;instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal&nbsp;/
+                    </a>
+                </h2>
+                <h1 :style="style.logoText?.h1">
+                    <RouterLink to="/">
+                        woordpeiler
+                    </RouterLink>
+                </h1>
             </div>
         </div>
         <nav>
             <template v-if="$internal">
-                <a href="/">grafiek</a>
-                <a href="/trends">trends</a>
+                <RouterLink to="/trends">trends</RouterLink>
             </template>
-            <a href="/uitleg">uitleg</a>
+            <RouterLink to="/grafiek">grafiek</RouterLink>
+            <RouterLink to="/uitleg">uitleg</RouterLink>
         </nav>
+
     </header>
+    <footer v-if="isWide">
+        <InputGroup>
+            <InputText v-model="word" placeholder="zoeken" @keyup.enter="search" />
+            <Button severity="secondary" @click="search">
+                <span class="pi pi-search"></span>
+            </Button>
+        </InputGroup>
+    </footer>
 </template>
+
+<script setup lang="ts">
+// Libraries
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+// PrimeVue
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import InputGroup from 'primevue/inputgroup';
+
+// Fields
+const word = ref();
+const route = useRoute();
+const router = useRouter();
+const compactStyle = {
+    // Currently no overrides
+};
+const wideStyle = {
+    header: {
+        minHeight: '123px',
+        border: '0',
+    },
+    logoImg: {
+        minWidth: '120px',
+    },
+    logoText: {
+        alignSelf: 'center',
+        h1: {
+            fontSize: '3rem',
+        },
+        h2: {
+            fontSize: '1.1rem',
+        },
+    }
+};
+
+// Computed
+const isWide = computed(() => route.path == "/");
+// Apparently we can't directly use isWide. Some weird thing with timing perhaps?
+const style = computed(() => route.path == "/" ? wideStyle : compactStyle);
+
+// Methods
+function search() {
+    router.push({ path: '/grafiek', query: { w: word.value } });
+}
+</script>
+
 
 <style scoped lang="scss">
 header {
     font-family: Schoolboek;
-    height: 100px;
-    border-bottom: 0.4rem solid #4488ee;
+    min-height: 80px;
+    border-bottom: 9px solid #48e;
     display: flex;
     justify-content: space-between;
     background-color: white;
     box-shadow: 0px 4px 5px 1px #ccc;
-
-    h1 {
-        font-weight: 400;
-        font-size: 2.5rem;
-        margin-top: -0.5rem;
-    }
-
-    h2 {
-        font-weight: 400;
-        font-size: 1rem;
-    }
 
     a {
         color: inherit;
@@ -56,8 +104,24 @@ header {
         align-items: center;
 
         img {
-            min-width: 100px;
-            margin: 0 0.5rem;
+            min-width: 72px;
+            margin: 0 1rem;
+        }
+    }
+
+    .logo-text {
+        align-self: flex-start;
+
+        h1 {
+            font-weight: 400;
+            font-size: 2rem;
+        }
+
+        h2 {
+            font-weight: 400;
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+            margin-bottom: -0.2rem;
         }
     }
 
@@ -65,13 +129,49 @@ header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding-right: 1rem;
 
         a {
             margin: 0 1rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
 
             &:hover {
                 text-decoration: underline;
+            }
+        }
+    }
+}
+
+footer {
+    background-color: #48e;
+    width: 100%;
+    min-height: 77px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 5px 1px #ccc;
+
+
+    :deep(.p-inputgroup) {
+        width: 300px;
+
+        .p-inputtext {
+            font-size: 1.1rem;
+            border: 0;
+        }
+
+        .p-button {
+            border: 0;
+            padding: 0 1.8rem;
+            background-color: #ddd;
+
+            &:hover,
+            &:active {
+                background-color: #ccc;
+            }
+
+            span {
+                font-size: 1.2rem;
             }
         }
     }
