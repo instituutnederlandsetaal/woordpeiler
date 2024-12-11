@@ -1,4 +1,5 @@
 // Libraries & Stores
+import { useRouter } from 'vue-router'
 import { ref, watch } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
 import { useSearchSettingsStore } from '@/stores/SearchSettingsStore'
@@ -12,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const useSearchResultsStore = defineStore('SearchResults', () => {
     // Fields
+    const router = useRouter()
     const searchResults = ref<GraphItem[]>([])
     const { searchSettings } = storeToRefs(useSearchSettingsStore())
     const { validSearchItems, languageOptions } = storeToRefs(useSearchItemsStore())
@@ -111,7 +113,9 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         const paramsStr = Object.entries(paramsObj)
             .filter(([key, value]) => value != undefined)
             .map(([key, value]) => `${key}=${value}`).join('&')
-        window.history.pushState({}, '', `${window.location.pathname}?${paramsStr}`)
+
+        // router without history
+        router.replace({ query: { ...router.currentRoute.value.query, ...paramsObj } })
     }
     // Lifecycle
     /** ensure that color and visibility updates to search items also update the result items */
