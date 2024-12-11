@@ -1,5 +1,7 @@
 # standard
+from math import trunc
 from typing import Annotated, Any, Optional
+import base64
 
 # third party
 from psycopg.rows import class_row, dict_row
@@ -72,6 +74,57 @@ async def get_trends(
                 .build(cur)
                 .execute_fetchall()
             )
+
+
+@app.get("/svg")
+async def get_svg(
+    request: Request,
+    id: Optional[int] = None,
+    wordform: Optional[str] = None,
+    lemma: Optional[str] = None,
+    pos: Optional[str] = None,
+    source: Optional[str] = None,
+    language: Optional[str] = None,
+    period_type: str = "year",
+    period_length: int = 1,
+    start_date: Optional[int] = None,
+    end_date: Optional[int] = None,
+) -> str:
+    # get the word as a regular WordFrequencyQuery
+    data = await get_freq(
+        request,
+        id,
+        wordform,
+        lemma,
+        pos,
+        source,
+        language,
+        period_type,
+        period_length,
+        start_date,
+        end_date,
+    )
+    # create a <svg> and <polyline> element
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 100 100">'
+    svg += f'<polyline points="'
+
+    # normalize the data between 0 and 100
+    max_freq = max([d.rel_freq for d in data])
+    max_time = max([d.time for d in data])
+    min_time = min([d.time for d in data])
+    for d in data:
+        d.rel_freq = d.rel_freq / max_freq * 100
+        d.time = (d.time - min_time) / (max_time - min_time) * 100
+
+    for d in data:
+        # convert 12.66666 to 12.66
+        trunc_freq = trunc(d.rel_freq * 100) / 100
+        trunc_time = trunc(d.time * 100) / 100
+        svg += f"{trunc_time},{100-trunc_freq} "
+    svg += f'" fill="none" stroke="black" stroke-width="0.5" />'
+    svg += f"</svg>"
+    svg_base64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
+    return svg_base64
 
 
 @app.get("/math")

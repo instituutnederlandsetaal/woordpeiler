@@ -15,8 +15,6 @@ from server.config.connection import get_reader_conn_str
 
 logger = logging.getLogger("uvicorn")
 logging.getLogger("uvicorn.access").disabled = True
-logging.getLogger("uvicorn.error").disabled = True
-logging.getLogger("fastapi").disabled = True
 
 
 class FastAPI(FastAPI):
