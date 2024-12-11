@@ -18,6 +18,6 @@ export function randomColor(): string {
   // saturation between 0.25 and 0.75
   const saturation = Math.random() * 0.5 + 0.25
   // lightness between 0.25 and 0.75
-  const lightness = Math.random() * 0.5 + 0.25
+  const lightness = Math.random() * 0.45 + 0.2
   return hsl2rgb(hue, saturation, lightness)
 }

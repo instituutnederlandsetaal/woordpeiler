@@ -9,8 +9,8 @@ import { isInternal } from '@/ts/internal'
 export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     // Fields
     const searchSettings = ref<SearchSettings>({
-        timeBucketType: "year",
-        timeBucketSize: 1,
+        timeBucketType: "month",
+        timeBucketSize: 3,
         startDate: new Date('2000-01-01'),
         endDate: new Date(), // now
         frequencyType: "rel_freq",
