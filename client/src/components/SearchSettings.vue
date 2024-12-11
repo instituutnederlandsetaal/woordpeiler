@@ -3,7 +3,7 @@
         <Accordion>
             <AccordionPanel value="0">
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
-                <AccordionContent class="advancedSearch">
+                <AccordionContent class="settings">
 
                     <div class="formSplit" v-if="props.languageSplit">
                         <label>Splits automatisch op taalvariëteit</label>
@@ -79,6 +79,18 @@ const props = defineProps({
 </script>
 
 <style scoped lang="scss">
+.searchOptions :deep(.p-panel-header) {
+    display: none !important;
+}
+
+.search-btn {
+    width: 100%;
+}
+
+.dateRange {
+    display: flex;
+}
+
 .reset {
     display: inline;
     width: fit-content;

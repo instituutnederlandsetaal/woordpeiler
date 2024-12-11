@@ -16,7 +16,7 @@
         min-height: 500px;
     }
 
-    .search {
+    aside {
         width: 100%;
         flex-direction: row;
     }
@@ -25,25 +25,14 @@
         width: 400px;
         height: fit-content;
     }
-
 }
 
 @media screen and (max-width: 800px) {
-    body {
-        overflow: auto;
-        height: fit-content;
-    }
-
     main {
-        flex-direction: column;
-        justify-content: flex-end;
-        // reverse
-        flex-flow: column-reverse;
-        min-height: auto;
         padding-bottom: 8rem;
     }
 
-    .search {
+    aside {
         width: 100%;
         flex-flow: column-reverse;
     }

@@ -1,16 +1,18 @@
 <template>
-    <div class="search">
-        <TrendSettings />
+    <main>
+        <aside>
+            <TrendSettings />
 
-        <TrendResultsList v-if="trendResults?.length > 0" />
-        <Skeleton class="trendlist" v-else-if="trendsLoading" />
-        <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
-            <p>Probeer een andere zoekopdracht.</p>
-        </Panel>
+            <TrendResultsList v-if="trendResults?.length > 0" />
+            <Skeleton class="trendlist" v-else-if="trendsLoading" />
+            <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
+                <p>Probeer een andere zoekopdracht.</p>
+            </Panel>
 
-        <SearchOptionsView v-if="isValid" languageSplit />
-    </div>
-    <D3Graph />
+            <SearchOptionsView v-if="isValid" languageSplit />
+        </aside>
+        <D3Graph />
+    </main>
 </template>
 
 <script setup lang="ts">
@@ -53,12 +55,16 @@ const { isValid } = storeToRefs(useSearchItemsStore());
             display: flex;
             flex-direction: column;
 
+            .formSplit {
+                margin-bottom: 0.5rem;
+            }
+
             .p-listbox {
                 flex: 1;
                 min-height: 0;
                 display: flex;
                 flex-direction: column;
-                margin-top: 0.5rem;
+                overflow: hidden;
 
                 .p-listbox-list-container {
                     flex: 1;

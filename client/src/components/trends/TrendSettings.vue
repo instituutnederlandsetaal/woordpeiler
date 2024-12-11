@@ -2,7 +2,7 @@
     <Accordion :value="tabOpen" class="p-panel" ref="trendAccordion">
         <AccordionPanel value="0">
             <AccordionHeader>Trendinstellingen</AccordionHeader>
-            <AccordionContent class="advancedSearch">
+            <AccordionContent class="settings">
 
                 <div class="formSplit">
                     <label for="variant">Taalvariëteit</label>
@@ -158,5 +158,9 @@ onMounted(() => {
 
 .formSplit {
     margin-bottom: 0.1rem;
+}
+
+.search-btn {
+    width: 100%;
 }
 </style>

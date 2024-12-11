@@ -43,7 +43,7 @@
             <template v-if="$internal">
                 <div class="formSplit">
                     <label for="lemma">Lemma</label>
-                    <InputText :invalid="invalidInputText(searchItem.lemma)" id=" lemma" v-model="searchItem.lemma"
+                    <InputText :invalid="invalidInputText(searchItem.lemma)" id="lemma" v-model="searchItem.lemma"
                         @keyup.enter="search" />
                 </div>
                 <div class="formSplit">

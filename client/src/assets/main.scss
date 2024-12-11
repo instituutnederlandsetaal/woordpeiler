@@ -10,7 +10,6 @@ html,
 body,
 #app {
   width: 100vw;
-
   overflow-x: hidden;
 }
 
@@ -21,10 +20,6 @@ body,
   height: 100vh;
 }
 
-.searchOptions .p-panel-header {
-  display: none !important;
-}
-
 main {
   flex: 1;
   display: flex;
@@ -33,7 +28,7 @@ main {
   padding: 1rem;
 }
 
-.search {
+aside {
   width: 430px;
   display: flex;
   flex-direction: column;
@@ -41,28 +36,17 @@ main {
   gap: 1rem;
 }
 
-.advancedSearch>div {
+.settings>div {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-}
-
-.search-btn {
-  width: 100%;
-}
-
-.dateRange {
-  display: flex;
-}
-
-.timeBucket {
-  display: flex;
 }
 
 .p-panel {
   border: 1px solid #e2e8f0;
   background: white;
 }
+
 
 .formSplit {
   display: flex;
@@ -76,14 +60,6 @@ main {
   white-space: nowrap;
   text-align: left;
   flex: 1 1 0;
-}
-
-.tooltip a {
-  color: white;
-}
-
-.tooltip a:visited {
-  color: white;
 }
 
 div.invalid {

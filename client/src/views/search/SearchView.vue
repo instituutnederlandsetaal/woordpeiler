@@ -1,10 +1,12 @@
 <template>
-    <div class="search">
-        <WordListView />
-        <SearchOptions :languageSplit="$internal" />
-    </div>
+    <main>
+        <aside>
+            <WordListView />
+            <SearchOptions :languageSplit="$internal" />
+        </aside>
 
-    <D3Graph />
+        <D3Graph />
+    </main>
 </template>
 
 <script setup lang="ts">

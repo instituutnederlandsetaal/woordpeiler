@@ -1,8 +1,6 @@
 <template>
   <AppHeader />
-  <main>
-    <RouterView />
-  </main>
+  <RouterView />
 
   <Dialog :visible @update:visible="visible = false; errors = []" modal header="Error">
     <ul>
