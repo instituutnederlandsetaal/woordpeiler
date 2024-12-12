@@ -2,12 +2,12 @@
   <AppHeader />
   <RouterView />
 
-  <Dialog :visible @update:visible="visible = false; errors = []" modal header="Error">
+  <Dialog :visible @update:visible="visible = false; errors = []" modal header="Foutmelding" class="errorDialog">
     <ul>
       <li v-for="error in errors" :key="errors.indexOf(error)">{{ error }}</li>
     </ul>
-    <br />
-    <p>Probeer het later opnieuw...</p>
+    <p>Blijft dit probleem zich voordoen? </p>
+    <p>Neem contact op met <a href="mailto:servicedesk@ivdnt.org">servicedesk@ivdnt.org</a>.</p>
   </Dialog>
 
 </template>
@@ -42,3 +42,9 @@ onMounted(() => {
   errorStore.setupErrorHandler()
 });
 </script>
+
+<style scoped lang="scss">
+ul {
+  margin-bottom: 0.5rem;
+}
+</style>
