@@ -13,17 +13,25 @@ import { type Spotlight } from "@/types/spotlight";
 
 const data = ref<Spotlight[]>([
     {
-        title: "fatbikes",
+        title: "trump",
         color: "#FF8000",
-        start_date: "2023-01-01",
+        start_date: "2000-01-01",
+        period_type: "month",
+        period_length: 1,
+        interval: '1m'
+    },
+    {
+        title: "krim",
+        color: "#9977FF",
+        start_date: "2013-01-01",
         period_type: "week",
         period_length: 2,
     },
     {
-        title: "corona",
+        title: "trump",
         color: "#FFF064",
-        start_date: "2020-01-01",
-        period_type: "week",
+        start_date: "2014-01-01",
+        period_type: "month",
     },
     {
         title: "europapa",
@@ -117,11 +125,13 @@ body {
     height: fit-content;
 
     section {
-        width: 400px;
-        max-width: 100%;
+        // height
         height: calc(300px + 3vw);
         max-height: 400px;
-
+        // width
+        width: 400px;
+        flex-grow: 1;
+        max-width: 500px;
     }
 }
 </style>

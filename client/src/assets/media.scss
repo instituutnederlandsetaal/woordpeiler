@@ -37,6 +37,10 @@
         flex-flow: column-reverse;
     }
 
+    nav {
+        display: none !important;
+    }
+
     .searchOptions {
         position: absolute;
         bottom: 0;
