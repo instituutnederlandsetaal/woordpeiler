@@ -1,5 +1,5 @@
 <template>
-    <section :style="{ backgroundColor: spotlight.color }" @click="search(spotlight.title, spotlight.color)">
+    <section :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
         <header>
             <h2>
                 {{ spotlight.title }}
@@ -35,8 +35,15 @@ const router = useRouter()
 const svgBlob = ref()
 
 // Methods
-function search(word: string, color: string) {
-    router.push({ path: '/grafiek', query: { w: word } });
+function search(spotlight: Spotlight) {
+    const params = {
+        w: spotlight.title,
+        pt: spotlight.period_type,
+        ps: spotlight.period_length,
+        start: toTimestamp(new Date(spotlight.start_date)),
+        end: spotlight.end_date == undefined ? undefined : toTimestamp(new Date(spotlight.end_date)),
+    }
+    router.push({ path: '/grafiek', query: params });
 }
 
 // Lifecycle
@@ -45,14 +52,13 @@ onMounted(() => {
     const request: API.SearchRequest = {
         wordform: spotlight.title,
         start_date: toTimestamp(new Date(spotlight.start_date)),
-        period_type: spotlight.period_type || 'week',
-        period_length: 1,
+        period_type: spotlight.period_type || 'month',
+        period_length: spotlight.period_length || 3,
     }
 
     API.getSVG(request)
         .then((response) => {
             const blob = response.data
-            console.log(blob)
             svgBlob.value = `data:image/svg+xml;base64,${blob}`
         })
 })
@@ -91,6 +97,9 @@ section {
         font-size: 2rem;
         font-weight: 400;
         padding-bottom: 0.5rem;
+    }
+
+    * {
         transition: all 0.15s linear;
     }
 }

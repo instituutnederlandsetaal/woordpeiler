@@ -13,49 +13,89 @@ import { type Spotlight } from "@/types/spotlight";
 
 const data = ref<Spotlight[]>([
     {
-        title: "europapa",
-        color: "#359FF0",
-        start_date: "2024-01-01"
-    },
-    {
-        title: "graaiflatie",
-        color: "#BD795D",
-        start_date: "2023-01-01"
+        title: "fatbikes",
+        color: "#FF8000",
+        start_date: "2023-01-01",
+        period_type: "week",
+        period_length: 2,
     },
     {
         title: "corona",
         color: "#FFF064",
-        start_date: "2020-01-01"
+        start_date: "2020-01-01",
+        period_type: "week",
+    },
+    {
+        title: "europapa",
+        color: "#359FF0",
+        start_date: "2024-01-01",
+        period_type: "week",
+        period_length: 1,
+    },
+    {
+        title: "graaiflatie",
+        color: "#BD795D",
+        start_date: "2023-01-01",
+        period_type: "week",
+        period_length: 1,
     },
     {
         title: "smartphone",
         color: "#89C24B",
         start_date: "2006-01-01",
         period_type: "month",
-    },
-    {
-        title: "tsunami",
-        color: "#FF8000",
-        start_date: "2000-01-01",
-        period_type: "month",
+        period_length: 3,
     },
     {
         title: "tiktok",
         color: "#E8503D",
         start_date: "2018-01-01",
         period_type: "month",
+        period_length: 1,
+
     },
     {
         title: "knuffelcontact",
         color: "#359FF0",
         start_date: "2020-01-01",
         period_type: "week",
+        period_length: 1,
+
     },
     {
-        title: "omtzigt",
-        color: "#BD795D",
+        title: "vapen",
+        color: "#FF8000",
+        start_date: "2018-01-01",
+        period_type: "week",
+        period_length: 3,
+    },
+    {
+        title: "knaldrang",
+        color: "#FFF064",
         start_date: "2020-01-01",
         period_type: "week",
+        period_length: 2,
+    },
+    {
+        title: "menstruatieproducten",
+        color: "#E8503D",
+        start_date: "2018-01-01",
+        period_type: "month",
+        period_length: 1,
+    },
+    {
+        title: "klimaatspijbelaars",
+        color: "#89C24B",
+        start_date: "2018-01-01",
+        period_type: "month",
+        period_length: 1,
+    },
+    {
+        title: "stikstofcrisis",
+        color: "#BD795D",
+        start_date: "2018-01-01",
+        period_type: "month",
+        period_length: 1,
     }
 ])
 </script>

@@ -17,7 +17,7 @@
                 </h1>
             </div>
         </div>
-        <nav>
+        <nav v-if="!isWide">
             <template v-if="$internal">
                 <RouterLink to="/trends">trends</RouterLink>
             </template>
@@ -44,6 +44,8 @@ import { useRoute, useRouter } from 'vue-router';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import InputGroup from 'primevue/inputgroup';
+// Util
+import { toTimestamp } from '@/ts/date';
 
 // Fields
 const word = ref();
@@ -78,7 +80,7 @@ const style = computed(() => route.path == "/" ? wideStyle : compactStyle);
 
 // Methods
 function search() {
-    router.push({ path: '/grafiek', query: { w: word.value } });
+    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('2000-01-01')), pt: 'month', ps: 3 } });
 }
 </script>
 
