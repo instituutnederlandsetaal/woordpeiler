@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { saveAs } from 'file-saver';
 
 export function download(resizeState) {
     var svgString = getSVGString(d3.select("#svg-graph").node());
