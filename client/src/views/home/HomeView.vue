@@ -13,25 +13,17 @@ import { type Spotlight } from "@/types/spotlight";
 
 const data = ref<Spotlight[]>([
     {
-        title: "trump",
+        title: "fatbikes",
         color: "#FF8000",
-        start_date: "2000-01-01",
-        period_type: "month",
-        period_length: 1,
-        interval: '1m'
-    },
-    {
-        title: "krim",
-        color: "#9977FF",
-        start_date: "2013-01-01",
+        start_date: "2023-01-01",
         period_type: "week",
         period_length: 2,
     },
     {
-        title: "trump",
+        title: "corona",
         color: "#FFF064",
-        start_date: "2014-01-01",
-        period_type: "month",
+        start_date: "2020-01-01",
+        period_type: "week",
     },
     {
         title: "europapa",
