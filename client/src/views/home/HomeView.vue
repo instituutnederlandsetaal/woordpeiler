@@ -119,7 +119,9 @@ body {
     section {
         width: 400px;
         max-width: 100%;
-        height: 350px;
+        height: calc(300px + 3vw);
+        max-height: 400px;
+
     }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <header role="banner">
+    <header role="banner" :style="headerStyle">
         <div class="logo">
             <RouterLink to="/">
                 <img src="/corpustrends-logo.svg" alt="logo" />
@@ -54,6 +54,7 @@ const router = useRouter();
 
 // Computed
 const isHomePage = computed(() => route.path == "/");
+const headerStyle = computed(() => isHomePage.value ? { boxShadow: 'none' } : {});
 
 // Methods
 function search() {
@@ -71,6 +72,7 @@ header {
     justify-content: space-between;
     background-color: white;
     box-shadow: 0px 4px 5px 1px #ccc;
+    z-index: 1;
 
     a {
         color: inherit;
@@ -124,15 +126,17 @@ header {
 footer {
     background-color: #48e;
     width: 100%;
-    min-height: 77px;
+    min-height: 68px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
+    padding-top: 8.5px;
     box-shadow: 0px 4px 5px 1px #ccc;
 
 
     :deep(.p-inputgroup) {
         width: 300px;
+        height: 42px;
 
         .p-inputtext {
             font-size: 1.1rem;

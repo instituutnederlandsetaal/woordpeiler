@@ -7,7 +7,7 @@
         </header>
         <p>sinds {{ spotlight.start_date.split("-")[0] }}</p>
         <div>
-            <img :src="svgBlob" />
+            <img v-if="svgBlob" :src="svgBlob" />
         </div>
     </section>
 </template>
