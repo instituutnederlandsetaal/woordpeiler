@@ -93,10 +93,15 @@ section {
     }
 
     h2 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         display: inline-block;
+        min-width: 0;
         font-size: 2rem;
         font-weight: 400;
         padding-bottom: 0.5rem;
+        width: 100%;
     }
 
     * {

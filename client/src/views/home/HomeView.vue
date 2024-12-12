@@ -116,10 +116,9 @@ body {
     padding-bottom: 1rem;
     height: fit-content;
 
-
-
     section {
         width: 400px;
+        max-width: 100%;
         height: 350px;
     }
 }
