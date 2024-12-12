@@ -26,7 +26,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         lastSearchSettings.value = JSON.parse(JSON.stringify(searchSettings.value))
 
         // set them as url params
-        setSearchParamsInUrl(validSearchItems, searchSettings)
+        setSearchParamsInUrl()
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")
@@ -109,6 +109,10 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             s: searchItemPropToUrlStr(validSearchItems.value, 'source'),
             v: searchItemPropToUrlStr(validSearchItems.value, 'language'),
             c: searchItemPropToUrlStr(validSearchItems.value, 'color'),
+            pt: searchSettings.value.timeBucketType,
+            ps: searchSettings.value.timeBucketSize,
+            start: toTimestamp(searchSettings.value.startDate),
+            end: toTimestamp(searchSettings.value.endDate),
         }
         const paramsStr = Object.entries(paramsObj)
             .filter(([key, value]) => value != undefined)

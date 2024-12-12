@@ -103,7 +103,8 @@ const searchItemsStore = useSearchItemsStore()
 const { searchItems, posOptions, sourceOptions, languageOptions } = storeToRefs(searchItemsStore)
 const { fetchOptions, readURLParams } = searchItemsStore
 const { search } = useSearchResultsStore()
-const { loadSearchSettings } = useSearchSettingsStore()
+const searchSettingsStore = useSearchSettingsStore()
+const { loadSearchSettings } = searchSettingsStore
 
 // Lifecycle
 onMounted(() =>
@@ -114,6 +115,7 @@ onMounted(() => {
     // read wordform url parameter
     if (new URLSearchParams(window.location.search).size > 0) {
         readURLParams()
+        searchSettingsStore.readUrlParams()
         search()
     } else {
         // retrieve dataseries from cookies
