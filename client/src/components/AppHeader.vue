@@ -1,23 +1,23 @@
 <template>
-    <header role="banner" :style="style.header">
+    <header role="banner">
         <div class="logo">
             <RouterLink to="/">
-                <img src="/corpustrends-logo.svg" alt="logo" :style="style.logoImg" />
+                <img src="/corpustrends-logo.svg" alt="logo" />
             </RouterLink>
-            <div class="logo-text" :style="style.logoText">
-                <h2 :style="style.logoText?.h2">
+            <div class="logo-text">
+                <h2>
                     <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
                         /&nbsp;instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal&nbsp;/
                     </a>
                 </h2>
-                <h1 :style="style.logoText?.h1">
+                <h1>
                     <RouterLink to="/">
                         woordpeiler
                     </RouterLink>
                 </h1>
             </div>
         </div>
-        <nav v-if="!isWide">
+        <nav>
             <template v-if="$internal">
                 <RouterLink to="/trends">trends</RouterLink>
             </template>
@@ -26,7 +26,7 @@
         </nav>
 
     </header>
-    <footer v-if="isWide">
+    <footer v-if="isHomePage">
         <InputGroup>
             <InputText v-model="word" placeholder="zoeken" @keyup.enter="search" />
             <Button severity="secondary" @click="search">
@@ -51,32 +51,9 @@ import { toTimestamp } from '@/ts/date';
 const word = ref();
 const route = useRoute();
 const router = useRouter();
-const compactStyle = {
-    // Currently no overrides
-};
-const wideStyle = {
-    header: {
-        minHeight: '123px',
-        border: '0',
-    },
-    logoImg: {
-        minWidth: '120px',
-    },
-    logoText: {
-        alignSelf: 'center',
-        h1: {
-            fontSize: '3rem',
-        },
-        h2: {
-            fontSize: '1.1rem',
-        },
-    }
-};
 
 // Computed
-const isWide = computed(() => route.path == "/");
-// Apparently we can't directly use isWide. Some weird thing with timing perhaps?
-const style = computed(() => route.path == "/" ? wideStyle : compactStyle);
+const isHomePage = computed(() => route.path == "/");
 
 // Methods
 function search() {
