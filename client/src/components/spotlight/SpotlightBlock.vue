@@ -2,7 +2,7 @@
     <section :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
         <header>
             <h2>
-                {{ spotlight.title }}
+                {{ spotlight.word }}
             </h2>
         </header>
         <p>sinds {{ spotlight.start_date.split("-")[0] }}</p>
@@ -37,7 +37,7 @@ const svgBlob = ref()
 // Methods
 function search(spotlight: Spotlight) {
     const params = {
-        w: spotlight.title,
+        w: spotlight.word,
         pt: spotlight.period_type,
         ps: spotlight.period_length,
         start: toTimestamp(new Date(spotlight.start_date)),
@@ -50,10 +50,10 @@ function search(spotlight: Spotlight) {
 onMounted(() => {
     const spotlight = props.spotlight
     const request: API.SearchRequest = {
-        wordform: spotlight.title,
+        wordform: spotlight.word,
         start_date: toTimestamp(new Date(spotlight.start_date)),
-        period_type: spotlight.period_type || 'month',
-        period_length: spotlight.period_length || 3,
+        period_type: spotlight.period_type,
+        period_length: spotlight.period_length,
     }
 
     API.getSVG(request)

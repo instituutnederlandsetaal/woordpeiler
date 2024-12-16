@@ -1,7 +1,7 @@
 <template>
     <main>
         <div class="wrapper">
-            <SpotlightBlock v-for="spotlight in data" :key="spotlight.title" :spotlight />
+            <SpotlightBlock v-for="spotlight in data" :key="spotlight.word" :spotlight />
         </div>
     </main>
 </template>
@@ -13,41 +13,42 @@ import { type Spotlight } from "@/types/spotlight";
 
 const data = ref<Spotlight[]>([
     {
-        title: "fatbikes",
+        word: "fatbikes",
         color: "#FF8000",
         start_date: "2023-01-01",
         period_type: "week",
         period_length: 2,
     },
     {
-        title: "corona",
+        word: "corona",
         color: "#FFF064",
         start_date: "2020-01-01",
         period_type: "week",
+        period_length: 3,
     },
     {
-        title: "europapa",
+        word: "europapa",
         color: "#359FF0",
         start_date: "2024-01-01",
         period_type: "week",
         period_length: 1,
     },
     {
-        title: "graaiflatie",
+        word: "graaiflatie",
         color: "#BD795D",
         start_date: "2023-01-01",
         period_type: "week",
         period_length: 1,
     },
     {
-        title: "smartphone",
+        word: "smartphone",
         color: "#89C24B",
         start_date: "2006-01-01",
         period_type: "month",
         period_length: 3,
     },
     {
-        title: "tiktok",
+        word: "tiktok",
         color: "#E8503D",
         start_date: "2018-01-01",
         period_type: "month",
@@ -55,7 +56,7 @@ const data = ref<Spotlight[]>([
 
     },
     {
-        title: "knuffelcontact",
+        word: "knuffelcontact",
         color: "#359FF0",
         start_date: "2020-01-01",
         period_type: "week",
@@ -63,35 +64,35 @@ const data = ref<Spotlight[]>([
 
     },
     {
-        title: "vapen",
+        word: "vapen",
         color: "#FF8000",
         start_date: "2018-01-01",
         period_type: "week",
         period_length: 3,
     },
     {
-        title: "knaldrang",
+        word: "knaldrang",
         color: "#FFF064",
         start_date: "2020-01-01",
         period_type: "week",
         period_length: 2,
     },
     {
-        title: "menstruatieproducten",
+        word: "menstruatieproducten",
         color: "#E8503D",
         start_date: "2018-01-01",
         period_type: "month",
         period_length: 1,
     },
     {
-        title: "klimaatspijbelaars",
+        word: "klimaatspijbelaars",
         color: "#89C24B",
         start_date: "2018-01-01",
         period_type: "month",
         period_length: 1,
     },
     {
-        title: "stikstofcrisis",
+        word: "stikstofcrisis",
         color: "#BD795D",
         start_date: "2018-01-01",
         period_type: "month",
