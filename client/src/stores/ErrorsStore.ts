@@ -10,7 +10,8 @@ export const useErrorsStore = defineStore('Errors', () => {
         axios.interceptors.response.use(
             response => response,
             error => {
-                errors.value.push(error.message)
+                const msg = `${error.config.url.slice(1)}: ${error.message}`
+                errors.value.push(msg)
                 return Promise.reject(error)
             }
         )
