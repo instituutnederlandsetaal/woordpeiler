@@ -33,7 +33,9 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
     ]
     // Lifecycle
     watch(() => ({ ...trendSettings.value }), (newValue, oldValue) => {
-        const entries = Object.values(newValue)
+        const copy = { ...newValue }
+        delete copy.language // langauge is allowed to be null
+        const entries = Object.values(copy)
         if (entries.some(entry => entry == null || entry == undefined)) {
             setTimeout(() => {
                 trendSettings.value = oldValue
