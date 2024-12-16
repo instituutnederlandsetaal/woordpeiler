@@ -1,135 +1,103 @@
-const getOrCreateTooltip = (chart) => {
-    let tooltipEl = chart.canvas.parentNode.querySelector('div');
+import * as d3 from "d3";
+import { displayName, type GraphItem, type SearchItem, type SearchSettings } from "@/types/Search";
+import { isInternal } from "@/ts/internal";
 
-    if (!tooltipEl) {
-        tooltipEl = document.createElement('div');
-        tooltipEl.style.background = 'rgba(0, 0, 0, 0.7)';
-        tooltipEl.style.borderRadius = '3px';
-        tooltipEl.style.color = 'white';
-        tooltipEl.style.opacity = 1;
-        tooltipEl.style.pointerEvents = 'all !important';
-        tooltipEl.style.position = 'absolute';
-        tooltipEl.style.transform = 'translate(-50%, 0)';
-        tooltipEl.style.transition = 'all .1s ease';
 
-        tooltipEl.className = 'tooltip';
 
-        const table = document.createElement('table');
-        table.style.margin = '0px';
+export function tooltipHtml(point: GraphItem, settings: SearchSettings): string {
+    const name = displayName(point.searchItem).split("–")[0];
+    const date = d3.timeFormat("%Y-%m-%d")(point.x);
+    const value = truncateRound(point.y, 2).toLocaleString();
+    const href = constructBlLink(point, settings);
+    const a = containsMath(name) ? '' : `<a target='_blank' href='${href}'>Zoeken in CHN</a>`
 
-        tooltipEl.appendChild(table);
-        chart.canvas.parentNode.appendChild(tooltipEl);
+    return `<b>${name}</b><br>${date}<br><b>${value}</b><br/>${a}`
+}
+
+// round e.g. 1.4999 to 1.49 at decimals=2
+function truncateRound(value: number, decimals: number) {
+    const scaledFloat = value * Math.pow(10, decimals)
+    const integerPart = Math.floor(scaledFloat)
+    const truncated = integerPart / Math.pow(10, decimals)
+    return truncated
+}
+
+function containsMath(s: string) {
+    return s.includes("/") || s.includes("+")
+}
+
+/** Construct a BlackLab link for the wordform*/
+function constructBlLink(point: GraphItem, settings: SearchSettings): string {
+    const params = {
+        patt: constructBLPatt(point.searchItem),
+        filter: constructBLFilter(point, settings),
+        interface: JSON.stringify({ form: "search", patternMode: "expert" }),
+        groupDisplayMode: "relative hits",
+        group: "field:titleLevel2:i"
+    }
+    const internalBase = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-intern/search/hits"
+    const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
+    const base = isInternal() ? internalBase : externalBase;
+
+    return `${base}?${new URLSearchParams(params).toString()}`
+}
+
+function constructBLPatt(item: SearchItem) {
+    const pattTerms = {
+        lemma: item.lemma,
+        word: item.wordform,
+    }
+    // Add pos separately because only one can be present
+    if (item.pos?.includes("(")) {
+        pattTerms["pos_full"] = item.pos
+    }
+    else {
+        pattTerms["pos"] = item.pos
     }
 
-    return tooltipEl;
-};
+    // Remove falsy values, and blank strings (could be tabs and spaces)
+    Object.keys(pattTerms).forEach(
+        (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key]
+    )
+    const literal = isInternal() ? "l" : ""
+    const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
+    return `[${patt}]`
+}
 
-export const externalTooltipHandler = (context) => {
-    // Tooltip Element
-    const { chart, tooltip } = context;
-    const tooltipEl = getOrCreateTooltip(chart);
+function constructBLFilter(point: GraphItem, settings: SearchSettings) {
+    const filters = {
+        medium: "newspaper",
+    }
+    const bucketType = settings.timeBucketType;
+    const bucketSize = settings.timeBucketSize;
+    const year: number = parseInt(d3.timeFormat("%Y")(point.x))
+    const month: number = parseInt(d3.timeFormat("%m")(point.x))
+    const day: number = parseInt(d3.timeFormat("%d")(point.x))
 
-    // if (!tooltipEl) {
-    //     tooltipEl = document.createElement('div');
-    //     tooltipEl.id = 'chartjs-tooltip';
-    //     tooltipEl.innerHTML = `<table></table>`;
-    //     document.body.appendChild(tooltipEl);
-
-    //     // tooltipEl.addEventListener('mouseleave', () => {
-    //     //     tooltipEl.style.opacity = 0;
-    //     // });
-    //     tooltipEl.addEventListener('mouseenter', () => {
-    //         tooltipEl.style.opacity = 1;
-    //     });
-    // }
-    tooltipEl.addEventListener('mouseout', () => {
-        tooltipEl.style.opacity = 0
-    })
-
-    tooltipEl.addEventListener('mouseover', () => {
-
-        tooltipEl.style.opacity = 0.7
-    })
-
-    // Hide if no tooltip
-    // if (tooltip.opacity === 0) {
-    //     tooltipEl.style.opacity = 0;
-    //     return;
-    // }
-
-    // Set Text
-    if (tooltip.body) {
-        const titleLines = tooltip.title || [];
-        const bodyLines = tooltip.body.map(b => b.lines);
-
-        const tableHead = document.createElement('thead');
-        let aTitle = null
-        titleLines.forEach(title => {
-            aTitle = title
-            const tr = document.createElement('tr');
-            tr.style.borderWidth = 0;
-
-            const th = document.createElement('th');
-            th.style.borderWidth = 0;
-            const text = document.createTextNode(title);
-
-            th.appendChild(text);
-            tr.appendChild(th);
-            tableHead.appendChild(tr);
-        });
-
-        const tableBody = document.createElement('tbody');
-        bodyLines.forEach((body, i) => {
-            const colors = tooltip.labelColors[i];
-
-            const span = document.createElement('span');
-            span.style.background = colors.backgroundColor;
-            span.style.borderColor = colors.borderColor;
-            span.style.borderWidth = '2px';
-            span.style.marginRight = '10px';
-            span.style.height = '10px';
-            span.style.width = '10px';
-            span.style.display = 'inline-block';
-
-            const tr = document.createElement('tr');
-            tr.style.backgroundColor = 'inherit';
-            tr.style.borderWidth = 0;
-
-            const td = document.createElement('td');
-            td.style.borderWidth = 0;
-
-            const link = document.createElement("a")
-            const word = body.toString().split(":")[0]
-            const dateSplit = aTitle.split("-")
-            const date = dateSplit[2] + dateSplit[1] + dateSplit[0]
-            link.href = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits?patt=" + encodeURIComponent(`[word="${word}"]`) + "&filter=" + encodeURIComponent(`medium:newspaper AND witnessYear_from:${dateSplit[2]} AND witnessMonth_from:${dateSplit[1]} AND witnessDay_from:${dateSplit[0]}`)
-            link.target = "_blank"
-            link.innerHTML = body
-
-            td.appendChild(span);
-            td.appendChild(link);
-            tr.appendChild(td);
-            tableBody.appendChild(tr);
-        });
-
-        const tableRoot = tooltipEl.querySelector('table');
-
-        // Remove old children
-        while (tableRoot.firstChild) {
-            tableRoot.firstChild.remove();
-        }
-
-        // Add new children
-        tableRoot.appendChild(tableHead);
-        tableRoot.appendChild(tableBody);
+    if (bucketType == "year") {
+        // for a bucket size of 2 this results in 2020-2021. 2021 is inclusive.
+        const yearFilter = `[${year} TO ${year + bucketSize - 1}]`
+        filters["witnessYear_from"] = yearFilter
+        filters["witnessYear_to"] = yearFilter
+    }
+    if (bucketType == "month") { // month or week
+        filters["witnessYear_from"] = year
+        const monthFilter = `[${month} TO ${month + bucketSize - 1}]`
+        filters["witnessMonth_from"] = monthFilter
+        filters["witnessMonth_to"] = monthFilter
+    } else if (bucketType == "day") {
+        filters["witnessYear_from"] = year
+        filters["witnessMonth_from"] = month
+        filters["witnessDay_from"] = day
     }
 
-    const { offsetLeft: positionX, offsetTop: positionY } = chart.canvas;
+    if (point.searchItem.source) {
+        filters["titleLevel2"] = `"${point.searchItem.source}"`
+    }
 
-    // Display, position, and set s+tyles for font
-    tooltipEl.style.opacity = 1;
-    tooltipEl.style.left = positionX + tooltip.caretX + 'px';
-    tooltipEl.style.top = positionY + tooltip.caretY + 'px';
-    tooltipEl.style.font = tooltip.options.bodyFont.string;
-    tooltipEl.style.padding = tooltip.options.padding + 'px ' + tooltip.options.padding + 'px';
-};
+    if (point.searchItem.language) {
+        filters["languageVariant"] = `"${point.searchItem.language}"`
+    }
+
+    return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
+}

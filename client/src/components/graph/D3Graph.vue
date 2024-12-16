@@ -11,15 +11,13 @@ import { storeToRefs } from "pinia";
 import * as d3 from "d3";
 // Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
-import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, type GraphItem } from "@/types/Search";
-import { isInternal } from "@/ts/internal";
+import { tooltipHtml } from "@/ts/tooltip";
 
 // Stores
 const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore());
-const { searchSettings } = storeToRefs(useSearchSettingsStore());
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
@@ -27,7 +25,7 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
-const maxPoints = 500;
+const maxPoints = 100;
 
 defineExpose({ resizeState });
 
@@ -115,6 +113,13 @@ onMounted(() => {
         // const totalPoints = flat.length;
         // const sampleRate = Math.max(1, Math.floor(totalPoints / maxPoints));
         const sampledData = visible.value
+        // .map(series => ({
+        //     ...series,
+        //     data: {
+        //         abs_freq: flat.filter((_, index) => index % sampleRate === 0),
+        //         rel_freq: flat.filter((_, index) => index % sampleRate === 0)
+        //     }
+        // }));
 
         // first update the axes
         x.domain(d3.extent(flat, d => d.x));
@@ -169,6 +174,7 @@ onMounted(() => {
 
         // Draw the dots
         sampledData.forEach(series => {
+            if (lastSearchSettings.value.timeBucketType == "day") return
             // link data
             series.data.abs_freq.forEach(d => {
                 d.searchItem = series.searchItem;
@@ -202,7 +208,7 @@ onMounted(() => {
             .on("mouseover", function (event, d) {
                 if (tooltipVisible) return;
                 tooltip.style("visibility", "visible");
-                tooltip.html(tooltipHtml(d))
+                tooltip.html(tooltipHtml(d, lastSearchSettings.value));
             })
             .on("mousemove", function (event, d) {
                 if (tooltipVisible) return;
@@ -334,90 +340,6 @@ onMounted(() => {
     });
 
 });
-
-
-// round e.g. 1.4999 to 1.49 at decimals=2
-function truncateRound(value: number, decimals) {
-    const scaledFloat = value * Math.pow(10, decimals)
-    const integerPart = Math.floor(scaledFloat)
-    const truncated = integerPart / Math.pow(10, decimals)
-    return truncated
-}
-
-function tooltipHtml(d) {
-    const name = displayName(d.searchItem).split("–")[0];
-    const date = d3.timeFormat("%Y-%m-%d")(d.x);
-    const value = truncateRound(d.y, 2).toLocaleString();
-    const href = constructBlLink(d);
-    const a = containsMath(name) ? '' : `<a target='_blank' href='${href}'>Zoeken in CHN</a>`
-
-    return `<b>${name}</b><br>${date}<br><b>${value}</b><br/>${a}`
-}
-
-function containsMath(s: string) {
-    return s.includes("/") || s.includes("+")
-}
-
-/** Construct a BlackLab link for the wordform*/
-function constructBlLink(d): string {
-
-    const params = {
-        patt: constructBLPatt(d.searchItem),
-        filter: constructBLFilter(d),
-        interface: JSON.stringify({ form: "search", patternMode: "expert" }),
-        groupDisplayMode: "relative hits",
-        group: "field:titleLevel2:i"
-    }
-    const internalBase = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-intern/search/hits"
-    const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
-    const base = isInternal() ? internalBase : externalBase;
-
-    return `${base}?${new URLSearchParams(params).toString()}`
-}
-
-function constructBLPatt(d) {
-    const pattTerms = {
-        lemma: d.lemma,
-        word: d.wordform,
-    }
-    // Add pos separately because only one can be present
-    if (d.pos?.includes("(")) {
-        pattTerms["pos_full"] = d.pos
-    }
-    else {
-        pattTerms["pos"] = d.pos
-    }
-
-    // Remove falsy values, and blank strings (could be tabs and spaces)
-    Object.keys(pattTerms).forEach(
-        (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key]
-    )
-    const literal = isInternal() ? "l" : ""
-    const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
-    return `[${patt}]`
-}
-
-function constructBLFilter(d: GraphItem) {
-    const filters = {
-        medium: "newspaper",
-        witnessYear_from: d3.timeFormat("%Y")(d.x),
-    }
-    const timeBucket = lastSearchSettings.value.timeBucketType;
-
-    if (timeBucket != "year") {
-        filters["witnessMonth_from"] = parseInt(d3.timeFormat("%m")(d.x))
-    }
-
-    if (d.searchItem.source) {
-        filters["titleLevel2"] = `"${d.searchItem.source}"`
-    }
-
-    if (d.searchItem.language) {
-        filters["languageVariant"] = `"${d.searchItem.language}"`
-    }
-
-    return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
-}
 </script>
 
 <style lang="scss">
