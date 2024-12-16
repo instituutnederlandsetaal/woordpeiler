@@ -10,7 +10,7 @@
                         <Checkbox v-model="searchSettings.languageSplit" binary />
                     </div>
 
-                    <div class="formSplit">
+                    <div class="formSplit" v-if="$internal">
                         <label>Frequentie</label>
                         <SelectButton v-model="searchSettings.frequencyType" :options="frequencyTypeOptions"
                             optionValue="value" optionLabel="label" />

@@ -6,6 +6,7 @@ import type { SelectLabel } from '@/types/UI'
 import { displayName, invalidSearchItem, type SearchItem } from '@/types/Search'
 import * as ListingAPI from '@/api/listing'
 import { randomColor } from '@/ts/color'
+import { isInternal } from '@/ts/internal'
 
 /**
  * Used to manage the list of words that will be used as search items when querying frequency data.
@@ -50,6 +51,8 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     // Methods
     /** Fetch all unique sources and parts of speech */
     async function fetchOptions() {
+        if (!isInternal()) return
+
         ListingAPI.getListing("sources", "source")
             .then((response) => {
                 sourceOptions.value = response.data
