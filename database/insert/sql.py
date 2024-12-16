@@ -45,7 +45,7 @@ create_corpus_size = """
         COALESCE(nn.size, 0) AS size_nn,
         COALESCE(sn.size, 0) AS size_sn
     INTO 
-        corpus_size_tmp
+        corpus_size
     FROM
         (SELECT time, SUM(frequency) AS size FROM frequencies GROUP BY time) total
     LEFT JOIN

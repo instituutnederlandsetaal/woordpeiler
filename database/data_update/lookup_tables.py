@@ -13,6 +13,7 @@ def create_lookup_tables():
         queries=["DROP TABLE IF EXISTS corpus_size", create_corpus_size],
     )
     create_daily_monthly_yearly_total_counts()
+    create_wordform_lookup_tables()
     analyze()
 
 
