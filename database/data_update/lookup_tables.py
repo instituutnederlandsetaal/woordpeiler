@@ -36,21 +36,21 @@ def create_daily_monthly_yearly_total_counts():
                 INTO 
                     daily_counts
                 FROM 
-                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp GROUP BY time, word_id) total
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequencies GROUP BY time, word_id) total
                 LEFT JOIN 
-                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'AN') GROUP BY time, word_id) an
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'AN') GROUP BY time, word_id) an
                 ON 
                     total.time = an.time AND total.word_id = an.word_id
                 LEFT JOIN 
-                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'BN') GROUP BY time, word_id) bn
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'BN') GROUP BY time, word_id) bn
                 ON 
                     total.time = bn.time AND total.word_id = bn.word_id
                 LEFT JOIN 
-                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'NN') GROUP BY time, word_id) nn
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'NN') GROUP BY time, word_id) nn
                 ON 
                     total.time = nn.time AND total.word_id = nn.word_id
                 LEFT JOIN 
-                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequency_tmp WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'SN') GROUP BY time, word_id) sn
+                    (SELECT time, word_id, SUM(frequency) AS abs_freq FROM frequencies WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'SN') GROUP BY time, word_id) sn
                 ON 
                     total.time = sn.time AND total.word_id = sn.word_id;
             """,
