@@ -12,8 +12,7 @@
 
 `python3 -m database.data_update.lookup_tables` will:
 - construct table `corpus_size`
-- create a copy of table `frequencies` as `frequency_tmp`. The former is a hypertable and rather slow to work with. The latter is a regular table and suitable for grouping operations
-- create `daily_counts`, `monthly_counts`, `yearly_counts` and `total_counts` from `frequency_tmp`
+- create `daily_counts`, `monthly_counts`, `yearly_counts` and `total_counts` from `frequencies`
 - drop `frequency_tmp`
 
 `python3 -m database.data_update` will:

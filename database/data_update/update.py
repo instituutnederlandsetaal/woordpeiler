@@ -5,7 +5,7 @@ from database.insert.sql import (
     constraint_words,
     constraint_sources,
 )
-from database.data_update.query import execute_query, time_query, analyze
+from database.util.query import execute_query, time_query, analyze
 from database.data_update.lookup_tables import create_lookup_tables
 
 
@@ -13,7 +13,7 @@ def update_table():
     # add unique constraints
     try:
         time_query(
-            reason="Adding unique contraints",
+            msg="Adding unique contraints",
             queries=[constraint_words, constraint_sources],
         )
     except:
@@ -21,13 +21,13 @@ def update_table():
 
     # add new words and new sources found in data update
     time_query(
-        reason="Inserting into words and sources",
+        msg="Inserting into words and sources",
         queries=[copy_select_tmp_words_to_words, copy_select_tmp_sources_to_sources],
     )
 
     # add new frequencies found in data update
     time_query(
-        reason="Inserting into frequency",
+        msg="Inserting into frequency",
         queries=[
             """
                 INSERT INTO frequencies (time, word_id, source_id, frequency)

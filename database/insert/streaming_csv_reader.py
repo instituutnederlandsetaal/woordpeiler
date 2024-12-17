@@ -18,7 +18,7 @@ class StreamingCSVReader:
         self.chunk_size: int = chunk_size
 
     def __pos_to_pos_head(self, pos: str) -> str:
-        return pos.split("(")[0]
+        return " ".join([i.split("(")[0] for i in pos.split(" ")])
 
     def __iter__(self) -> Iterator[list[CSVRow]]:
         with gzip.open(self.path, mode="rt", encoding="utf-8") as file:

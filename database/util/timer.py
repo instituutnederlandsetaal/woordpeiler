@@ -4,13 +4,16 @@ from contextlib import ContextDecorator
 
 # https://stackoverflow.com/a/70778563
 class timer(ContextDecorator):
-    def __init__(self, msg):
+    msg: str
+
+    def __init__(self, msg: str):
         self.msg = msg
 
     def __enter__(self):
+        print(f"-- {self.msg}", flush=True)
         self.time = perf_counter()
         return self
 
     def __exit__(self, type, value, traceback):
         elapsed = perf_counter() - self.time
-        print(f"{self.msg} took {elapsed:.3f} seconds", flush=True)
+        print(f"\t-- took {elapsed:.3f} seconds", flush=True)

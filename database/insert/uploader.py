@@ -10,9 +10,6 @@ from psycopg import Connection, Cursor
 # local
 from database.insert.streaming_csv_reader import StreamingCSVReader
 from database.insert.datatypes import CSVRow
-from database.insert.sql import (
-    create_table_data_tmp,
-)
 
 
 class Uploader:
@@ -43,7 +40,7 @@ class Uploader:
             self.cursor.close()
 
     def __create_tmp_tables(self):
-        self.cursor.execute(create_table_data_tmp)
+        pass  # override in child class
 
     def __clean_data(self, rows: list[CSVRow]) -> list[CSVRow]:
         # only valid dates
@@ -55,7 +52,7 @@ class Uploader:
     def insert_rows(self, rows: list[CSVRow]):
         rows = self.__clean_data(rows)
         with self.cursor.copy(
-            "COPY data_tmp (wordform, lemma, pos, poshead, time, frequency, source, language) FROM STDIN"
+            "COPY frequencies (wordform, lemma, pos, poshead, time, frequency, source, language) FROM STDIN"
         ) as copy:
             for r in rows:
                 copy.write_row(

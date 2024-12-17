@@ -9,7 +9,7 @@ import sys
 import psycopg
 
 # local
-from database.connection import get_reader_conn_str
+from database.util.connection import get_reader_conn_str
 from database.tests.query.word_test import WordTest
 
 

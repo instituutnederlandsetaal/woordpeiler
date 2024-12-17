@@ -2,25 +2,34 @@
 # local
 from database.insert.sql import (
     create_corpus_size,
+    create_posses,
+    create_posheads,
+    create_days_per_source,
 )
-from database.data_update.query import time_query, analyze
+from database.util.query import time_query, analyze_vacuum
 
 
 def create_lookup_tables():
     # update corpus size
     time_query(
-        reason="Updating corpus size",
-        queries=["DROP TABLE IF EXISTS corpus_size", create_corpus_size],
+        msg="Updating corpus size, posses, posheads, days_per_source",
+        queries=[
+            "DROP TABLE IF EXISTS corpus_size, posses, posheads, days_per_source",
+            create_corpus_size,
+            create_posses,
+            create_posheads,
+            create_days_per_source,
+        ],
     )
     create_daily_monthly_yearly_total_counts()
     create_wordform_lookup_tables()
-    analyze()
+    analyze_vacuum()
 
 
 def create_daily_monthly_yearly_total_counts():
     # construct daily_counts from all frequencies
     time_query(
-        reason="create daily_counts",
+        msg="create daily_counts",
         queries=[
             """
                 DROP TABLE IF EXISTS daily_counts;
@@ -62,7 +71,7 @@ def create_daily_monthly_yearly_total_counts():
     )
     # construct monthly_counts from daily_counts
     time_query(
-        reason="create monthly_counts",
+        msg="create monthly_counts",
         queries=[
             """
                 DROP TABLE IF EXISTS monthly_counts;
@@ -89,7 +98,7 @@ def create_daily_monthly_yearly_total_counts():
     )
     # construct yearly_counts from monthly_counts
     time_query(
-        reason="create yearly_counts",
+        msg="create yearly_counts",
         queries=[
             """
                 DROP TABLE IF EXISTS yearly_counts;
@@ -116,7 +125,7 @@ def create_daily_monthly_yearly_total_counts():
     )
     # create total_counts from yearly_counts
     time_query(
-        reason="create total_counts",
+        msg="create total_counts",
         queries=[
             """
                 DROP TABLE IF EXISTS total_counts;
@@ -147,10 +156,10 @@ def create_daily_monthly_yearly_total_counts():
                     total_counts 
                 SET 
                     rel_freq = abs_freq / (SELECT SUM(abs_freq) FROM total_counts),
-                    rel_freq_an = abs_freq_an / (SELECT SUM(abs_freq_an) FROM total_counts),
-                    rel_freq_bn = abs_freq_bn / (SELECT SUM(abs_freq_bn) FROM total_counts),
-                    rel_freq_nn = abs_freq_nn / (SELECT SUM(abs_freq_nn) FROM total_counts),
-                    rel_freq_sn = abs_freq_sn / (SELECT SUM(abs_freq_sn) FROM total_counts);
+                    rel_freq_an = abs_freq_an / NULLIF((SELECT SUM(abs_freq_an) FROM total_counts), 0),
+                    rel_freq_bn = abs_freq_bn / NULLIF((SELECT SUM(abs_freq_bn) FROM total_counts), 0),
+                    rel_freq_nn = abs_freq_nn / NULLIF((SELECT SUM(abs_freq_nn) FROM total_counts), 0),
+                    rel_freq_sn = abs_freq_sn / NULLIF((SELECT SUM(abs_freq_sn) FROM total_counts), 0);
             """,
             """
                 CREATE INDEX ON total_counts (word_id) INCLUDE (abs_freq, rel_freq, abs_freq_an, rel_freq_an, abs_freq_bn, rel_freq_bn, abs_freq_nn, rel_freq_nn, abs_freq_sn, rel_freq_sn);	
@@ -161,7 +170,7 @@ def create_daily_monthly_yearly_total_counts():
 
 def create_wordform_lookup_tables():
     time_query(
-        reason="create daily_wordforms",
+        msg="create daily_wordforms",
         queries=[
             """
                 DROP TABLE IF EXISTS daily_wordforms;
@@ -192,7 +201,7 @@ def create_wordform_lookup_tables():
     )
 
     time_query(
-        reason="create total_wordforms",
+        msg="create total_wordforms",
         queries=[
             """
                 DROP TABLE IF EXISTS total_wordforms;
@@ -225,10 +234,10 @@ def create_wordform_lookup_tables():
                     total_wordforms 
                 SET 
                     rel_freq = abs_freq / (SELECT SUM(abs_freq) FROM total_wordforms),
-                    rel_freq_an = abs_freq_an / (SELECT SUM(abs_freq_an) FROM total_wordforms),
-                    rel_freq_bn = abs_freq_bn / (SELECT SUM(abs_freq_bn) FROM total_wordforms),
-                    rel_freq_nn = abs_freq_nn / (SELECT SUM(abs_freq_nn) FROM total_wordforms),
-                    rel_freq_sn = abs_freq_sn / (SELECT SUM(abs_freq_sn) FROM total_wordforms);
+                    rel_freq_an = abs_freq_an / NULLIF((SELECT SUM(abs_freq_an) FROM total_wordforms),0),
+                    rel_freq_bn = abs_freq_bn / NULLIF((SELECT SUM(abs_freq_bn) FROM total_wordforms),0),
+                    rel_freq_nn = abs_freq_nn / NULLIF((SELECT SUM(abs_freq_nn) FROM total_wordforms),0),
+                    rel_freq_sn = abs_freq_sn / NULLIF((SELECT SUM(abs_freq_sn) FROM total_wordforms),0);
             """,
             """
                 CREATE INDEX ON total_wordforms (wordform) INCLUDE (abs_freq, rel_freq, abs_freq_an, rel_freq_an, abs_freq_bn, rel_freq_bn, abs_freq_nn, rel_freq_nn, abs_freq_sn, rel_freq_sn);

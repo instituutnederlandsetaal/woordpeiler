@@ -11,7 +11,7 @@ import traceback
 import psycopg
 
 # local
-from database.connection import get_writer_conn_str
+from database.util.connection import get_writer_conn_str
 from database.util.timer import timer
 from database.data_update.csv_uploader import CsvUploader
 from database.insert.sql import create_table_data_tmp

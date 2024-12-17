@@ -25,17 +25,6 @@ copy_select_tmp_sources_to_sources = """
     ON CONFLICT (source, language) DO NOTHING;
 """
 
-# note that we need to grab the word_id from the words table
-copy_select_tmp_data_to_word_freqs = """
-    INSERT INTO frequencies (time, word_id, source_id, frequency)
-    SELECT time, words.id, sources.id, frequency
-    FROM data_tmp
-    JOIN words ON words.hash_value = md5(data_tmp.wordform || data_tmp.lemma || data_tmp.pos)
-    JOIN sources ON sources.source = data_tmp.source AND sources.language = data_tmp.language
-    ON CONFLICT (time, word_id, source_id)
-    DO UPDATE SET frequency = frequencies.frequency + EXCLUDED.frequency;
-"""
-
 create_corpus_size = """
     SELECT 
         total.time, 
@@ -66,13 +55,14 @@ create_corpus_size = """
         total.time = sn.time;
 """
 
-constraint_words = """
-    ALTER TABLE words
-    ADD CONSTRAINT wordform_lemma_pos_unique
-    UNIQUE (wordform, lemma, pos, poshead);
+create_posheads = """
+    SELECT poshead INTO posheads FROM words GROUP BY poshead;
 """
-constraint_sources = """
-    ALTER TABLE sources
-    ADD CONSTRAINT source_language_unique
-    UNIQUE (source, language);
+
+create_posses = """
+    SELECT pos INTO posses FROM words GROUP BY pos;
+"""
+
+create_days_per_source = """
+    SELECT source_id, COUNT(DISTINCT time) INTO days_per_source FROM frequencies GROUP BY source_id;
 """

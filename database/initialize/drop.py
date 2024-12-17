@@ -1,30 +1,30 @@
-from psycopg import Connection, Cursor
+# standard
+import os
 
+# third party
+from dotenv import load_dotenv
+
+# local
 from database.util.util import ask_confirmation
+from database.util.query import execute_query
+
+load_dotenv()
 
 
-def drop_all(conn: Connection) -> None:
+def drop_all() -> None:
+    if os.getenv("POSTGRES_HOST") != "localhost":
+        print("Only permitted to drop localhost.")
+        exit()
+
     print("Dropping database.")
     if ask_confirmation():
-        with conn.cursor() as cursor:
-            __drop_tables(cursor)
-            __drop_lookup_tables(cursor)
-            __drop_indexes(cursor)
-        conn.commit()
+        execute_query(
+            [
+                "DROP TABLE IF EXISTS frequencies, words, sources CASCADE",
+                "DROP TABLE IF EXISTS days_per_source, corpus_size, posheads, posses CASCADE",
+            ]
+        )
 
 
-def __drop_tables(cursor: Cursor) -> None:
-    # hypertable needs to be dropped separately
-    cursor.execute("DROP TABLE IF EXISTS frequencies CASCADE")
-    # drop the rest
-    cursor.execute("DROP TABLE IF EXISTS words, sources CASCADE")
-
-
-def __drop_lookup_tables(cursor: Cursor) -> None:
-    cursor.execute("DROP TABLE IF EXISTS corpus_size, posheads, posses CASCADE")
-
-
-def __drop_indexes(cursor: Cursor) -> None:
-    cursor.execute(
-        "DROP INDEX IF EXISTS idx_time, idx_wordform, idx_word_id, idx_time_word_id CASCADE"
-    )
+if __name__ == "__main__":
+    drop_all()
