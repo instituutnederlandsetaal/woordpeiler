@@ -82,7 +82,7 @@ FROM
 def create_table_frequencies(folder: str):
     execute_query([create_table])
     # populate frequencies
-    all_files = os.listdir(folder)[:5]
+    all_files = os.listdir(folder)
     for file in tqdm(all_files, file=sys.stdout):
         path = os.path.join(folder, file)
         print(f"Uploading {path}")
