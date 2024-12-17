@@ -1,21 +1,27 @@
 services:
 
     database:
-        image: timescale/timescaledb:latest-pg16
+        image: timescale/timescaledb:2.17.2-pg17
         restart: unless-stopped
         shm_size: 2gb
         environment:
+            - POSTGRES_DB=${POSTGRES_DB}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - POSTGRES_DB=woordwacht
+            - READER_USER=${READER_USER}
             - READER_PASSWORD=${READER_PASSWORD}
         ports:
             - '${POSTGRES_PORT}:5432'
         volumes:
-            - woordwacht_database:/var/lib/postgresql/data
+            - database:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
         command: "-c 'config_file=/etc/postgres/postgresql.conf'"
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
+            interval: 3s
+            timeout: 5s
+            retries: 5
 
     server:
         image: instituutnederlandsetaal/corpustrends-server:${VERSION_LABEL}
@@ -41,5 +47,5 @@ services:
             - '80:8080'
 
 volumes:
-    woordwacht_database:
-        external: true
+    database:
+        name: ${POSTGRES_DB}
