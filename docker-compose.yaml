@@ -26,12 +26,13 @@ services:
     server:
         image: instituutnederlandsetaal/corpustrends-server:${VERSION_LABEL}
         environment:
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_HOST=database
+            - POSTGRES_PORT=${POSTGRES_PORT}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - READER_PASSWORD=${READER_PASSWORD}
             - READER_USER=${READER_USER}
-            - POSTGRES_HOST=${POSTGRES_HOST}
-            - POSTGRES_PORT=${POSTGRES_PORT}
+            - READER_PASSWORD=${READER_PASSWORD}
         build:
             context: server
         restart: unless-stopped
