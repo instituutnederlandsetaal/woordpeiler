@@ -42,7 +42,7 @@ add_indices = """
     CREATE INDEX IF NOT EXISTS words_pos ON words (pos) INCLUDE (id);
     CREATE INDEX IF NOT EXISTS words_poshead ON words (poshead) INCLUDE (id);
     -- regex
-    CREATE INDEX IF NOT EXISTS words_wordform_regex ON words (wordform text_pattern_ops) WITH (fillfactor = 100) INCLUDE (id); 
+    CREATE INDEX IF NOT EXISTS words_wordform_regex ON words (wordform text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100); 
 """
 
 
