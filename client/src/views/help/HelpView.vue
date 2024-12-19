@@ -2,6 +2,43 @@
     <main>
         <Panel class="helpPanel">
             <section>
+                <h2>Over Woordpeiler</h2>
+                <p>
+
+                </p>
+                <h3>Bronmateriaal</h3>
+                <p>
+                    De gegevens in <i>Woordpeiler</i> komen uit het krantenmateriaal van het
+                    <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/">
+                        Corpus Hedendaags Nederlands
+                    </a>.
+                </p>
+                <h4>Samenstelling</h4>
+                <ul>
+                    <li>
+                        <i>Antilliaans-Nederlands:</i>
+                        Antilliaans Dagblad, Amigoe, Aruba.nu, Bonaire.nu, Curacao.nu, Paradise FM 103.1.
+                    </li>
+                    <li>
+                        <i>Belgisch-Nederlands:</i>
+                        De Morgen, De Standaard, Gazet van Antwerpen, Het Belang van Limburg, Het Laatste Nieuws,
+                        Het Nieuwsblad, Wablieft, WAI-NOT Krant.
+                    </li>
+                    <li>
+                        <i>Nederlands-Nederlands:</i>
+                        ANP, Algemeen Dagblad, Dordrechts Dagblad, Elsevier, De Groene Amsterdammer, de Volkskrant,
+                        HP/De Tijd, Het Parool, Meppeler Courant, NRC, Start!-krant, Trouw, Vrij Nederland.
+                    </li>
+                    <li>
+                        <i>Surinaams-Nederlands:</i>
+                        De Ware Tijd, Starnieuws.
+                    </li>
+                </ul>
+                <p>
+                </p>
+            </section>
+
+            <section>
                 <h2>Basiszoeken</h2>
                 <ul>
                     <li>
@@ -46,6 +83,7 @@
                     </li>
                 </ul>
             </section>
+
             <section>
                 <h2>Grafiek</h2>
                 <ul>
@@ -73,7 +111,7 @@
             <section>
                 <h2>Zoekinstellingen</h2>
                 <ul>
-                    <li>
+                    <li v-if="$internal">
                         <b>Frequentie:</b>
                         kies tussen <i>absolute frequentie</i> (het totaal aantal voorkomens) of
                         <i>relatieve frequentie</i> (het aantal voorkomens per 1 miljoen woorden).
@@ -84,27 +122,29 @@
                         De knop <span class="pi pi-refresh"></span> zet de periode terug op <i>2000 &ndash; nu</i>.
                     </li>
                     <li>
-                        <b>Tijdsinterval:</b>
+                        <b>Interval:</b>
                         de interval waarover de frequentie wordt berekend.
                         Bijvoorbeeld: <i>per 1 jaar</i>, <i>per 2 maanden</i> of <i>per 3 weken</i>.
+                    </li>
+                    <li>
+                        <b>Splits op taalvariëteit:</b>
+                        vink dit aan om automatisch op alle taalvariëteiten te splitsen.
                     </li>
                 </ul>
             </section>
 
-            <template v-if="$internal">
-                <section>
-                    <h2>Trendinstellingen</h2>
-                    <h3>Trendsoort</h3>
-                    <ul>
-                        <li>
-                            <b>absolute frequentie:</b>
-                        </li>
-                        <li>
-                            <b>keyness:</b>
-                        </li>
-                    </ul>
-                </section>
-            </template>
+            <section v-if="$internal">
+                <h2>Trendinstellingen</h2>
+                <h3>Trendsoort</h3>
+                <ul>
+                    <li>
+                        <b>absolute frequentie:</b>
+                    </li>
+                    <li>
+                        <b>keyness:</b>
+                    </li>
+                </ul>
+            </section>
 
         </Panel>
     </main>
@@ -120,13 +160,15 @@ const canShare = navigator.share != undefined;
 <style scoped lang="scss">
 .helpPanel {
     width: 100%;
+    height: 100%;
 
     :deep(.p-panel-header) {
-        padding: 0.7rem !important;
+        padding: 0.7rem;
     }
 
     :deep(.p-panel-content) {
-        padding: 0 2rem !important;
+        padding: 0 2rem;
+        padding-bottom: 3rem !important;
     }
 
     section {
