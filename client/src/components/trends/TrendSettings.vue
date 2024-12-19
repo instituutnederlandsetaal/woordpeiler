@@ -113,7 +113,7 @@ const modifierLabel = computed(() => {
 
 // Methods
 function closeTab() {
-    tabOpen.value = parseInt(tabOpen.value) + 1
+    tabOpen.value = "-1"
 }
 
 function setYearEndDate() {

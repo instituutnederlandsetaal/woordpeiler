@@ -1,6 +1,6 @@
 <template>
     <Panel class="searchOptions">
-        <Accordion>
+        <Accordion :value="tabOpen">
             <AccordionPanel value="0">
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="settings">
@@ -30,9 +30,9 @@
                             dateFormat="dd-M-yy" />
                     </div>
 
-                    <label>Gemiddeld over</label>
+                    <label>Interval</label>
                     <div class="formSplit">
-                        <input type="number" class="modifierInput p-inputtext" min="0"
+                        <input type="number" class="modifierInput p-inputtext" min="1"
                             v-model="searchSettings.timeBucketSize" />
                         <SelectButton v-model="searchSettings.timeBucketType" :options="timeBucketOptions"
                             optionValue="value" optionLabel="label" />
@@ -42,7 +42,7 @@
             </AccordionPanel>
         </Accordion>
 
-        <Button class="search-btn" label="Zoeken" @click="search" :disabled="!isValid" />
+        <Button class="search-btn" label="Zoeken" @click="() => { closeTab(); search(); }" :disabled="!isValid" />
 
     </Panel>
 </template>
@@ -50,6 +50,7 @@
 <script setup lang="ts">
 // Libraries
 import { storeToRefs } from "pinia"
+import { ref } from "vue"
 // Stores
 import { useSearchSettingsStore } from "@/stores/SearchSettingsStore"
 import { useSearchResultsStore } from "@/stores/SearchResultsStore"
@@ -76,6 +77,13 @@ const { search } = useSearchResultsStore()
 const props = defineProps({
     languageSplit: Boolean
 })
+// Fields
+const tabOpen = ref()
+
+// Methods
+function closeTab() {
+    tabOpen.value = "-1"
+}
 </script>
 
 <style scoped lang="scss">

@@ -21,6 +21,9 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     const lastSearchSettings = ref<SearchSettings>(null)
     // Methods
     function search() {
+        // Scroll to top of page
+        document.getElementById("app").scrollTo({ top: 0, behavior: "smooth" })
+
         // save current search to local storage
         localStorage.setItem("searchItems", JSON.stringify(validSearchItems.value))
         lastSearchSettings.value = JSON.parse(JSON.stringify(searchSettings.value))
