@@ -2,9 +2,8 @@
     <main>
         <aside>
             <WordListView />
-            <SearchOptions :languageSplit="$internal" />
+            <SearchSettings />
         </aside>
-
         <D3Graph />
     </main>
 </template>
@@ -13,5 +12,5 @@
 // Components
 import D3Graph from "@/components/graph/GraphWrapper.vue"
 import WordListView from "@/components/WordList.vue"
-import SearchOptions from "@/components/SearchSettings.vue"
+import SearchSettings from "@/components/SearchSettings.vue"
 </script>

@@ -9,7 +9,7 @@
                 <p>Probeer een andere zoekopdracht.</p>
             </Panel>
 
-            <SearchOptionsView v-if="isValid" languageSplit />
+            <SearchSettings v-if="isValid" />
         </aside>
         <D3Graph />
     </main>
@@ -24,7 +24,7 @@ import { useSearchItemsStore } from "@/stores/SearchItemsStore"
 import Skeleton from "primevue/skeleton"
 import Panel from "primevue/panel"
 // Components
-import SearchOptionsView from "@/components/SearchSettings.vue"
+import SearchSettings from "@/components/SearchSettings.vue"
 import TrendSettings from "@/components/trends/TrendSettings.vue"
 import D3Graph from "@/components/graph/GraphWrapper.vue"
 import TrendResultsList from "@/components/trends/TrendResultsList.vue"

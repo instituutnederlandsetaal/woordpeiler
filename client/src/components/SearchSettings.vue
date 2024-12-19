@@ -5,7 +5,7 @@
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="settings">
 
-                    <div class="formSplit" v-if="props.languageSplit">
+                    <div class="formSplit">
                         <label>Splits automatisch op taalvariëteit</label>
                         <Checkbox v-model="searchSettings.languageSplit" binary />
                     </div>
@@ -73,10 +73,6 @@ const { searchSettings } = storeToRefs(searchSettingsStore)
 const { isValid } = storeToRefs(useSearchItemsStore())
 const { search } = useSearchResultsStore()
 
-// Props
-const props = defineProps({
-    languageSplit: Boolean
-})
 // Fields
 const tabOpen = ref()
 
