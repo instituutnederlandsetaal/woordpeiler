@@ -9,9 +9,8 @@ class RowNames(int, Enum):
     pos = 2
     date = 3
     source = 4
-    medium = 5
-    language = 6
-    frequency = 7
+    language = 5
+    frequency = 6
 
 
 @dataclass
@@ -22,6 +21,5 @@ class CSVRow:
     poshead: str
     date: str
     source: str
-    medium: str
     language: str
     frequency: int

@@ -48,7 +48,6 @@ class CsvUploader(Uploader):
                         poshead=pos_head,
                         date=date,
                         source=row["document: titleLevel2"],
-                        medium="newspaper",
                         language=row["document: languageVariant"],
                         frequency=row["count"],
                     )

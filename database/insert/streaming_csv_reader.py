@@ -35,7 +35,6 @@ class StreamingCSVReader:
                             poshead=self.__pos_to_pos_head(pos),
                             date=row[RowNames.date],
                             source=row[RowNames.source],
-                            medium=row[RowNames.medium],
                             language=row[RowNames.language],
                             frequency=int(row[RowNames.frequency]),
                         )

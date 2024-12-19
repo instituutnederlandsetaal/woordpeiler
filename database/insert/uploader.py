@@ -45,8 +45,6 @@ class Uploader:
     def __clean_data(self, rows: list[CSVRow]) -> list[CSVRow]:
         # only valid dates
         rows = [row for row in rows if re.match(r"^\d{8}$", row.date)]
-        # only valid sources
-        rows = [row for row in rows if row.medium == "newspaper"]
         return rows
 
     def insert_rows(self, rows: list[CSVRow]):
