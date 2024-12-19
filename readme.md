@@ -5,17 +5,17 @@ Time-based trends of words using the newspaper part of Corpus Hedendaags Nederla
 Create a `.env` with:
 ```sh
 # db config
-POSTGRES_DB=[fill in] # woordpeiler
-POSTGRES_HOST=[fill in] # localhost
+POSTGRES_DB=woordpeiler
+POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 # user with write access
-POSTGRES_USER=[fill in] # postgres
+POSTGRES_USER=postgres
 POSTGRES_PASSWORD=[fill in]
 # user with read access
-READER_USER=[fill in] # reader
+READER_USER=reader
 READER_PASSWORD=[fill in]
 # docker image tag
-VERSION_LABEL=[fill in] # dev
+VERSION_LABEL=dev
 ```
 
 # How to develop
