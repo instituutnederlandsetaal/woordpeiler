@@ -31,7 +31,19 @@ add_unique_constraint = """
         CONSTRAINT unique_wordform_lemma_pos UNIQUE (wordform, lemma, pos);
 """
 
-add_index = "CREATE INDEX IF NOT EXISTS words_wordform_lemma_pos ON words (wordform, lemma, pos);"
+add_indices = """
+    -- wordform first
+    CREATE INDEX IF NOT EXISTS words_wordform_lemma_pos ON words (wordform, lemma, pos) INCLUDE (id);
+    CREATE INDEX IF NOT EXISTS words_wordform_lemma_poshead ON words (wordform, lemma, poshead) INCLUDE (id);
+    -- lemma first
+    CREATE INDEX IF NOT EXISTS words_lemma_pos ON words (lemma, pos) INCLUDE (id);
+    CREATE INDEX IF NOT EXISTS words_lemma_poshead ON words (lemma, poshead) INCLUDE (id);
+    -- pos & poshead
+    CREATE INDEX IF NOT EXISTS words_pos ON words (pos) INCLUDE (id);
+    CREATE INDEX IF NOT EXISTS words_poshead ON words (poshead) INCLUDE (id);
+    -- regex
+    CREATE INDEX IF NOT EXISTS words_wordform_regex ON words (wordform text_pattern_ops) WITH (fillfactor = 100) INCLUDE (id); 
+"""
 
 
 def create_table_words():
@@ -41,7 +53,7 @@ def create_table_words():
             create_table,
             add_primary_key,
             add_unique_constraint,
-            add_index,
+            add_indices,
         ],
     )
     analyze_vacuum()

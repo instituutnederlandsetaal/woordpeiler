@@ -116,12 +116,10 @@ def add_frequencies_indices():
     time_query(
         msg="Creating indexes for frequencies",
         queries=[
-            "CREATE INDEX IF NOT EXISTS frequencies_word_id ON frequencies (word_id);"
-            "CREATE INDEX IF NOT EXISTS frequencies_source_id ON frequencies (source_id);"
-            "CREATE INDEX IF NOT EXISTS frequencies_time_word_id ON frequencies (time, word_id);"
+            "CREATE INDEX IF NOT EXISTS frequencies_time_word_id_source_id ON frequencies (time, word_id, source_id) INCLUDE (frequency);"
             "CREATE INDEX IF NOT EXISTS frequencies_time_source_id ON frequencies (time, source_id);"
-            "CREATE INDEX IF NOT EXISTS frequencies_time_word_id_source_id ON frequencies (time, word_id, source_id);"
             "CREATE INDEX IF NOT EXISTS frequencies_word_id_source_id ON frequencies (word_id, source_id);"
+            "CREATE INDEX IF NOT EXISTS frequencies_source_id ON frequencies (source_id);"
         ],
     )
     analyze_vacuum()

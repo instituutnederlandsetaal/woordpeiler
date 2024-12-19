@@ -28,9 +28,8 @@ add_unique_constraint = """
 """
 
 add_indices = """
-    CREATE INDEX IF NOT EXISTS sources_source ON sources (source);
-    CREATE INDEX IF NOT EXISTS sources_language ON sources (language);
-    CREATE INDEX IF NOT EXISTS sources_source_language ON sources (source, language);
+    CREATE INDEX IF NOT EXISTS sources_source ON sources (source) INCLUDE (id);
+    CREATE INDEX IF NOT EXISTS sources_language ON sources (language) INCLUDE (id);
 """
 
 
