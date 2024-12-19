@@ -160,7 +160,8 @@ const canShare = navigator.share != undefined;
 <style scoped lang="scss">
 .helpPanel {
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    height: fit-content;
 
     :deep(.p-panel-header) {
         padding: 0.7rem;
@@ -174,6 +175,7 @@ const canShare = navigator.share != undefined;
     section {
         margin-bottom: 1rem;
     }
+
 }
 
 .dummySearchSettings {
