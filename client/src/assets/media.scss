@@ -27,9 +27,40 @@
     }
 }
 
+@media screen and (max-width: 1000px) {
+    main .wrapper section {
+        width: 350px !important;
+    }
+}
+
 @media screen and (max-width: 800px) {
     main {
-        padding-bottom: 8rem;
+        padding: 0;
+
+        .wrapper {
+            padding: 1rem;
+            width: 100%;
+            overflow-x: hidden;
+        }
+    }
+
+    header {
+        .logo img {
+            min-width: 50px !important;
+            margin: 0.5rem !important;
+        }
+
+        .logo-text {
+            h1 {
+                font-size: 1.5rem !important;
+            }
+
+            h2 {
+                font-size: 0.7rem !important;
+            }
+
+            align-self: center !important;
+        }
     }
 
     aside {
@@ -38,17 +69,19 @@
     }
 
     nav {
-        display: none !important;
+        a {
+            font-size: 1rem !important;
+        }
+
+        flex: 1;
+        padding: 0.5rem;
+        gap: 0.5rem !important;
+        justify-content: end !important;
+        flex-wrap: wrap;
     }
 
     .searchOptions {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100vw;
-        padding: 0;
-        margin: 0;
-        z-index: 1;
+        width: 100%;
     }
 
     .graph {
@@ -56,8 +89,13 @@
         min-height: 400px;
     }
 
-    .wrapper {
-        width: 100%;
-        overflow-x: hidden;
+    main .helpPanel {
+        .p-panel-header {
+            padding: 0.3rem !important;
+        }
+
+        .p-panel-content {
+            padding: 0 1rem !important;
+        }
     }
 }

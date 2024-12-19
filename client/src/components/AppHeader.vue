@@ -111,9 +111,9 @@ header {
         justify-content: space-between;
         align-items: center;
         padding-right: 1rem;
+        gap: 1rem;
 
         a {
-            margin: 0 1rem;
             font-size: 1.1rem;
 
             &:hover {

@@ -135,7 +135,7 @@ onMounted(() => {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    padding-bottom: 1rem;
+    padding-bottom: 3rem;
     gap: 1rem;
 
     .newWord {

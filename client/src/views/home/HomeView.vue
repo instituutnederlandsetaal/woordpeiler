@@ -119,12 +119,14 @@ body {
 
     section {
         // height
-        height: calc(300px + 3vw);
+        height: calc(250px + 10vw);
         max-height: 400px;
         // width
         width: 400px;
         flex-grow: 1;
         max-width: 500px;
+        // Without this, boxes with long text will grow to max-width, even if the screen is smaller
+        overflow: hidden;
     }
 }
 </style>
