@@ -61,8 +61,13 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         // only show loading screen and send to plausible if we're searching
         if (toBeSearched.length > 0) {
             isSearching.value = true
-            window.plausible('grafiek', { props: new URLSearchParams(window.location.search) })
+            plausibleEvent()
         }
+    }
+    function plausibleEvent() {
+        const params = new URLSearchParams(window.location.search);
+        const props = Object.fromEntries(params.entries());
+        window.plausible('grafiek', { props })
     }
     function getFrequency(item: SearchItem) {
         // construct search request, partly from unsanitized user input
