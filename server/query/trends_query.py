@@ -20,6 +20,7 @@ class TrendType(Enum):
 
 class TrendsQuery(QueryBuilder):
     date_filter: Composable
+    end_date: Literal
     modifier: Literal
     trend_type: TrendType
     enriched: bool
@@ -41,6 +42,7 @@ class TrendsQuery(QueryBuilder):
         self.date_filter = QueryBuilder.get_date_filter(
             Identifier("counts", "time"), start_date, end_date
         )
+        self.end_date = Literal(datetime.fromtimestamp(end_date).strftime("%Y%m%d"))
         self.counts_table = TrendsQuery.get_counts_table(start_date, end_date)
 
         if language is None:
@@ -217,13 +219,22 @@ class TrendsQuery(QueryBuilder):
                 {date_filter}
                 GROUP BY wordform
             ),
+            after_tc AS (
+                SELECT
+                    wordform,
+                    SUM({abs_freq}) as abs_freq
+                FROM daily_wordforms counts
+                WHERE counts.time > {end_date}
+                GROUP BY wordform
+            ),
             keyness AS (
                 SELECT
                     tc.wordform,
                     tc.abs_freq AS tc_abs_freq,
-                    rc.{abs_freq} - tc.abs_freq AS keyness
+                    rc.{abs_freq} - COALESCE(ac.abs_freq,0) - tc.abs_freq AS keyness
                 FROM tc
                 LEFT JOIN total_wordforms rc ON tc.wordform = rc.wordform
+                LEFT JOIN after_tc ac ON tc.wordform = ac.wordform
             ),
             filter AS (
                 SELECT
@@ -242,5 +253,6 @@ class TrendsQuery(QueryBuilder):
             abs_freq=self.abs_freq,
             date_filter=self.date_filter,
             modifier=self.modifier,
+            end_date=self.end_date,
         )
         return ExecutableQuery(cursor, query)
