@@ -58,9 +58,10 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
                 getFrequency(ds)
             }
         })
-        // only loading screen if we're searching
+        // only show loading screen and send to plausible if we're searching
         if (toBeSearched.length > 0) {
             isSearching.value = true
+            window.plausible('grafiek', { props: new URLSearchParams(window.location.search) })
         }
     }
     function getFrequency(item: SearchItem) {
