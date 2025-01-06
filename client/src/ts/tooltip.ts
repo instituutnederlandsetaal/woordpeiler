@@ -59,9 +59,17 @@ function constructBLPatt(item: SearchItem) {
     Object.keys(pattTerms).forEach(
         (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key]
     )
-    const literal = isInternal() ? "l" : ""
+    const isRegex = item.wordform?.includes("*") || item.wordform?.includes("?")
+    if (isRegex) {
+        pattTerms["word"] = toBLRegex(item.wordform)
+    }
+    const literal = (isInternal() && !isRegex) ? "l" : ""
     const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
     return `[${patt}]`
+}
+
+function toBLRegex(s: string): string {
+    return s.replace(/\*/g, ".*").replace(/\?/g, ".")
 }
 
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
