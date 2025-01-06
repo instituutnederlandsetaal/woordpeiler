@@ -6,9 +6,9 @@ from locust import HttpUser, between, task
 import json
 
 
-class AwesomeUser(HttpUser):
+class RandomUser(HttpUser):
     host = "http://localhost:8000/"
-    wait_time = between(5, 10)
+    wait_time = between(2, 4)
     word_list = []
 
     def on_start(self):
@@ -17,15 +17,15 @@ class AwesomeUser(HttpUser):
 
     @task
     def search(self):
-        self.client.request_name = "/word_frequency?lemma=[lemma]"
-        self.client.get("word_frequency?wordform=" + random.choice(self.word_list))
+        url = "word_frequency?wordform="
+        self.client.request_name = f"{url}[lemma]"
 
-        # with self.client.get(
-        #     "word_frequency?lemma=" + random.choice(self.word_list), catch_response=True
-        # ) as response:
-        #     # parse json
-        #     data = json.loads(response.text)
-        #     if len(data) == 42:
-        #         response.success()
-        #     else:
-        #         response.failure("incorrect number of results")
+        with self.client.get(
+            url + random.choice(self.word_list), catch_response=True
+        ) as response:
+            data = json.loads(response.text)
+            num_of_years = 42  # valid for 2024. This is just a simple check.
+            if len(data) >= num_of_years:  # more years is ok.
+                response.success()
+            else:
+                response.failure(f"incorrect number of results: {len(data)}")
