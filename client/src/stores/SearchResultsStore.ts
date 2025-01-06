@@ -65,9 +65,17 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         }
     }
     function plausibleEvent() {
-        const params = new URLSearchParams(window.location.search);
-        const props = Object.fromEntries(params.entries());
-        window.plausible('grafiek', { props })
+        validSearchItems.value.forEach((i) => {
+            const props: Record<string, string | undefined> = { "word": i.wordform }
+            // if a language is set, add it to the props
+            if (i.language) {
+                props[`${i.language}-word`] = i.wordform
+            } else if (searchSettings.value.languageSplit) {
+                props["ALL-LANG-word"] = i.wordform
+            }
+            console.log(props)
+            window.plausible('grafiek', { props })
+        })
     }
     function getFrequency(item: SearchItem) {
         // construct search request, partly from unsanitized user input
