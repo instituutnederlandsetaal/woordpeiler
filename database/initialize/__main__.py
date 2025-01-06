@@ -3,7 +3,6 @@ import sys
 
 
 # local
-from database.util.query import execute_query, time_query, analyze_vacuum
 from database.data_update.lookup_tables import create_lookup_tables
 from database.initialize.table_sources import create_table_sources
 from database.initialize.table_words import create_table_words
@@ -30,7 +29,7 @@ def initialize():
     # undouble
     undouble_frequencies()
 
-    # indexes for frequencies
+    # indices for frequencies
     add_frequencies_indices()
 
     # lookup tables

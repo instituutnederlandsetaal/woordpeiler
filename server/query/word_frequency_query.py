@@ -107,7 +107,6 @@ class WordFrequencyQuery(QueryBuilder):
                 time_bucket({time_bucket},cs.time) as time, 
                 SUM(COALESCE(frequency, 0)) as abs_freq, 
                 SUM(cs.{size}) as size, 
-                -- SUM(COALESCE(frequency, 0))/SUM(cs.{size}) as rel_freq -- note: division by zero is possible. To fix this:
                 CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) END as rel_freq
             FROM corpus_size cs 
                 LEFT JOIN filter f 

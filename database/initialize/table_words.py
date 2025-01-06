@@ -33,16 +33,14 @@ add_unique_constraint = """
 
 add_indices = """
     -- wordform first
-    CREATE INDEX IF NOT EXISTS words_wordform_lemma_pos ON words (wordform, lemma, pos) INCLUDE (id);
-    CREATE INDEX IF NOT EXISTS words_wordform_lemma_poshead ON words (wordform, lemma, poshead) INCLUDE (id);
+    CREATE INDEX IF NOT EXISTS words_wordform_lemma_pos ON words (wordform text_pattern_ops, lemma, pos) INCLUDE (id) WITH (fillfactor = 100);
+    CREATE INDEX IF NOT EXISTS words_wordform_lemma_poshead ON words (wordform text_pattern_ops, lemma, poshead) INCLUDE (id) WITH (fillfactor = 100);
     -- lemma first
     CREATE INDEX IF NOT EXISTS words_lemma_pos ON words (lemma, pos) INCLUDE (id);
     CREATE INDEX IF NOT EXISTS words_lemma_poshead ON words (lemma, poshead) INCLUDE (id);
     -- pos & poshead
     CREATE INDEX IF NOT EXISTS words_pos ON words (pos) INCLUDE (id);
     CREATE INDEX IF NOT EXISTS words_poshead ON words (poshead) INCLUDE (id);
-    -- regex
-    CREATE INDEX IF NOT EXISTS words_wordform_regex ON words (wordform text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100); 
 """
 
 

@@ -78,6 +78,11 @@ FROM
     temp_frequencies;
 """
 
+add_indices = """
+    CREATE INDEX IF NOT EXISTS frequencies_word_id_source_id ON frequencies (word_id, source_id) INCLUDE (time, frequency);
+    CREATE INDEX IF NOT EXISTS frequencies_source_id ON frequencies (source_id) INCLUDE (time, frequency);
+"""
+
 
 def create_table_frequencies(folder: str):
     execute_query([create_table])
@@ -114,12 +119,7 @@ def undouble_frequencies():
 
 def add_frequencies_indices():
     time_query(
-        msg="Creating indexes for frequencies",
-        queries=[
-            "CREATE INDEX IF NOT EXISTS frequencies_time_word_id_source_id ON frequencies (time, word_id, source_id) INCLUDE (frequency);"
-            "CREATE INDEX IF NOT EXISTS frequencies_time_source_id ON frequencies (time, source_id);"
-            "CREATE INDEX IF NOT EXISTS frequencies_word_id_source_id ON frequencies (word_id, source_id);"
-            "CREATE INDEX IF NOT EXISTS frequencies_source_id ON frequencies (source_id);"
-        ],
+        msg="Creating indices for frequencies",
+        queries=[add_indices],
     )
     analyze_vacuum()
