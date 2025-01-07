@@ -72,10 +72,6 @@ class WordFrequencyQuery(QueryBuilder):
         pos: Optional[str],
         poshead: Optional[str],
     ) -> Composable:
-        # replace * with % for LIKE queries
-        wordform = wordform.replace("*", "%") if wordform is not None else None
-        lemma = lemma.replace("*", "%") if lemma is not None else None
-
         # word filter
         # example: WHERE wordform = 'zwitser' AND lemma = 'zwitser' AND poshead = 'nou-c'
         word_filter = QueryBuilder.where_and(

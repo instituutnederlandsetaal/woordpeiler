@@ -37,9 +37,10 @@ class QueryBuilder:
     @staticmethod
     def where(column: Enum, value: Optional[str]) -> Composable:
         if value is not None:
-            if "%" in value:
+            if "*" in value or "?" in value:
+                escaped = value.replace("*", "%").replace("?", "_")
                 return SQL("{column} LIKE {value}").format(
-                    column=Identifier(column.value), value=Literal(value)
+                    column=Identifier(column.value), value=Literal(escaped)
                 )
             else:
                 return SQL("{column} = {value}").format(
