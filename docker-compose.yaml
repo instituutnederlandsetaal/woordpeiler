@@ -23,6 +23,29 @@ services:
             timeout: 5s
             retries: 5
 
+    databuilder:
+        image: timescale/timescaledb:2.17.2-pg17
+        restart: unless-stopped
+        shm_size: 2gb
+        environment:
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - READER_USER=${READER_USER}
+            - READER_PASSWORD=${READER_PASSWORD}
+        ports:
+            - '127.0.0.1:${DATABUILDER_PORT}:5432'
+        volumes:
+            - databuilder:/var/lib/postgresql/data
+            - ./database/init_db:/docker-entrypoint-initdb.d/
+            - ./database/postgresql.conf:/etc/postgres/postgresql.conf
+        command: "-c 'config_file=/etc/postgres/postgresql.conf'"
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
+            interval: 3s
+            timeout: 5s
+            retries: 5
+
     server:
         image: instituutnederlandsetaal/corpustrends-server:${VERSION_LABEL}
         environment:
@@ -49,4 +72,6 @@ services:
 
 volumes:
     database:
-        name: ${POSTGRES_DB}
+        name: ${DATABASE_VOLUME}
+    databuilder:
+        name: ${DATABUILDER_VOLUME}

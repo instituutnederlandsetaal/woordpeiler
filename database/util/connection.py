@@ -28,5 +28,5 @@ def get_conn_str():
     return f"""
     dbname={os.getenv('POSTGRES_DB')}
     host={host}
-    port={os.getenv('POSTGRES_PORT')}
+    port={os.getenv('DATABUILDER_PORT')}
     """

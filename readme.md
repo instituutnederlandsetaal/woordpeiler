@@ -14,6 +14,11 @@ POSTGRES_PASSWORD=[fill in]
 # user with read access
 READER_USER=reader
 READER_PASSWORD=[fill in]
+# docker volume names
+DATABASE_VOLUME="woordpeiler-[date]"
+DATABUILDER_VOLUME="woordpeiler-[date]"
+# databuilder also needs a port other than POSTGRES_PORT
+DATABUILDER_PORT=5433
 # docker image tag
 VERSION_LABEL=dev
 ```
