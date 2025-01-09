@@ -28,7 +28,7 @@
     </header>
     <footer v-if="isHomePage">
         <InputGroup>
-            <InputText v-model="word" placeholder="zoeken" @keyup.enter="search" />
+            <InputText v-model="word" placeholder="zoeken" @keyup.enter="search" autofocus />
             <Button severity="secondary" @click="search">
                 <span class="pi pi-search"></span>
             </Button>
