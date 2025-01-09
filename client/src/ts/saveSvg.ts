@@ -7,7 +7,7 @@ export function download(resizeState) {
     svgString2Image(svgString, width + 20, height + 20, 'png', save); // passes Blob and filesize String to the callback
 
     function save(dataBlob, filesize) {
-        saveAs(dataBlob, 'corpustrends.png'); // FileSaver.js function
+        saveAs(dataBlob, 'woordpeiler.png'); // FileSaver.js function
     }
 }
 
@@ -17,7 +17,7 @@ export function share(resizeState) {
     svgString2Image(svgString, width + 20, height + 20, 'png', save); // passes Blob and filesize String to the callback
 
     function save(dataBlob, filesize) {
-        const file = new File([dataBlob], 'corpustrends.png', { type: 'image/png' });
+        const file = new File([dataBlob], 'woordpeiler.png', { type: 'image/png' });
         navigator.share({
             files: [file]
         });
@@ -120,7 +120,7 @@ function svgString2Image(svgString, width, height, format, callback) {
                 marginTop: number;
             }
 
-            const title: CanvasText = { text: "corpustrends.ivdnt.org", fontSize: 20, color: "black", marginTop: 40 }
+            const title: CanvasText = { text: "woordpeiler.ivdnt.org", fontSize: 20, color: "black", marginTop: 40 }
             const subtitle: CanvasText = { text: "/instituut voor de Nederlandse taal/", fontSize: 15, color: "black", marginTop: 20 }
             const marginRight = 10;
 
@@ -136,8 +136,6 @@ function svgString2Image(svgString, width, height, format, callback) {
             var filesize = Math.round(blob.length / 1024) + ' KB';
             if (callback) callback(blob, filesize);
         });
-
-
     };
     image.src = imgsrc;
 }

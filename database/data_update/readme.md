@@ -1,4 +1,4 @@
-# CorpusTrends Data Update
+# Woordpeiler Data Update
 
 `python3 -m database.data_update.insert [YYYYMMDD] [data_dir]` will:
 - create a table `data_tmp` if it doesn't exist

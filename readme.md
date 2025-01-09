@@ -1,4 +1,4 @@
-# Corpustrends
+# woordpeiler
 Time-based trends of words using the newspaper part of Corpus Hedendaags Nederlands.
 
 # Project environment variables

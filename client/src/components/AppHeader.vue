@@ -2,7 +2,7 @@
     <header role="banner" :style="headerStyle">
         <div class="logo">
             <RouterLink to="/">
-                <img src="/corpustrends-logo.svg" alt="logo" />
+                <img src="/woordpeiler-logo.svg" alt="logo" />
             </RouterLink>
             <div class="logo-text">
                 <h2>
