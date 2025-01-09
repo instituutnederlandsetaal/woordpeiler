@@ -35,7 +35,7 @@
 
 @media screen and (max-width: 800px) {
     main {
-        padding: 0;
+        padding: 0 0.3rem;
 
         .wrapper {
             padding: 1rem;
@@ -85,8 +85,8 @@
     }
 
     .graph {
-        max-height: 400px;
-        min-height: 400px;
+        max-height: 350px;
+        min-height: 350px;
     }
 
     main .helpPanel {
