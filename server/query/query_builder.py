@@ -101,6 +101,7 @@ class ExecutableQuery[T]:
 
     async def execute(self) -> BaseCursor:
         if type(self.cursor) is AsyncCursor:
+            print(self.query.as_string(self.cursor))
             await self.cursor.execute(self.query)
         else:
             self.cursor.execute(self.query)
