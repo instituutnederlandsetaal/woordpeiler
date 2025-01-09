@@ -52,7 +52,7 @@ class ListingQuery(QueryBuilder):
             return SQL("SELECT * FROM posses")
         elif table == "sources" and column == "source":
             return SQL(
-                "SELECT source FROM sources JOIN days_per_source ON source_id = id WHERE count > 1;"
+                "SELECT source FROM sources JOIN days_per_source ON source_id = id WHERE count > 1 ORDER BY source;"
             )
         else:
             return SQL("SELECT DISTINCT {column} FROM {table}").format(
