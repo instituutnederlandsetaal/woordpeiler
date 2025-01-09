@@ -186,7 +186,7 @@ async def get_freq(
             pos = None
 
     # ensure at least one parameter is provided
-    if not any([id, wordform, lemma, pos, poshead, source]):
+    if not any([id, wordform, lemma, pos, poshead, source, language]):
         raise HTTPException(
             status_code=400, detail="At least one parameter is required"
         )

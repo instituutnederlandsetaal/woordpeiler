@@ -23,6 +23,7 @@ def create_lookup_tables():
     )
     create_daily_monthly_yearly_total_counts()
     create_wordform_lookup_tables()
+    create_source_frequency_table()
     analyze_vacuum()
 
 
@@ -241,6 +242,33 @@ def create_wordform_lookup_tables():
             """,
             """
                 CREATE INDEX ON total_wordforms (wordform) INCLUDE (abs_freq, rel_freq, abs_freq_an, rel_freq_an, abs_freq_bn, rel_freq_bn, abs_freq_nn, rel_freq_nn, abs_freq_sn, rel_freq_sn);
+            """,
+        ],
+    )
+
+
+def create_source_frequency_table():
+    time_query(
+        "create source_frequencies",
+        [
+            """
+                DROP TABLE IF EXISTS source_frequencies;
+            """,
+            """
+                SELECT
+                    time,
+                    source_id,
+                    SUM(frequency) AS frequency
+                INTO
+                    source_frequencies
+                FROM
+                    frequencies
+                GROUP BY
+                    source_id,
+                    time;
+            """,
+            """
+                CREATE INDEX IF NOT EXISTS source_frequencies_source_id ON source_frequencies (source_id, time) INCLUDE (frequency);
             """,
         ],
     )

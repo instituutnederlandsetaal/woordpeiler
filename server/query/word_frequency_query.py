@@ -42,6 +42,22 @@ class WordFrequencyQuery(QueryBuilder):
         else:
             self.size = Identifier(f"size_{language.lower()}")
 
+        self.freq_table = WordFrequencyQuery.get_freq_table(
+            any([id, wordform, lemma, pos, poshead]), self.word_filter
+        )
+
+    @staticmethod
+    def get_freq_table(has_word_filter: bool, word_filter: Composable) -> Composable:
+        if has_word_filter:
+            # get from regular frequencies table
+            return SQL("""
+                (SELECT id FROM words {word_filter}) 
+                LEFT JOIN frequencies ON word_id = id
+            """).format(word_filter=word_filter)
+        else:
+            # get from source_frequencies table
+            return SQL("source_frequencies")
+
     @staticmethod
     def get_time_bucket(bucket_type: str, bucket_size: int) -> Literal:
         bucket_type = PeriodType(bucket_type)
@@ -55,11 +71,11 @@ class WordFrequencyQuery(QueryBuilder):
         source_filter = SQL("")  # default
         if source is not None:
             source_filter = SQL(
-                "AND source_id = ANY (SELECT s.id FROM sources s WHERE source = {source})"
+                "WHERE source_id = ANY (SELECT s.id FROM sources s WHERE source = {source})"
             ).format(source=Literal(source))
         elif language is not None:
             source_filter = SQL(
-                "AND source_id = ANY (SELECT s.id FROM sources s WHERE language = {language})"
+                "WHERE source_id = ANY (SELECT s.id FROM sources s WHERE language = {language})"
             ).format(language=Literal(language))
 
         return source_filter
@@ -93,11 +109,14 @@ class WordFrequencyQuery(QueryBuilder):
         query = SQL(
             """
             WITH filter AS (
-                SELECT time, SUM(frequency) as frequency 
-                    FROM (SELECT id FROM words {word_filter})
-                        LEFT JOIN frequencies ON word_id = id 
-                        {source_filter}
-                    GROUP BY time
+                SELECT 
+                    time, 
+                    SUM(frequency) as frequency
+                FROM
+                    {freq_table}
+                    {source_filter}
+                GROUP BY
+                    time
             ) 
             SELECT 
                 time_bucket({time_bucket},cs.time) as time, 
@@ -115,9 +134,9 @@ class WordFrequencyQuery(QueryBuilder):
         """
         ).format(
             size=self.size,
+            freq_table=self.freq_table,
             source_filter=self.source_filter,
             date_filter=self.date_filter,
-            word_filter=self.word_filter,
             time_bucket=self.time_bucket,
         )
         return ExecutableQuery(cursor, query)
