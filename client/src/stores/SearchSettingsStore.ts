@@ -51,10 +51,12 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         const timeBucketSize = params.get('ps')
         const startDate = params.get('start')
         const endDate = params.get('end')
+        const frequencyType = params.get('f')
         if (timeBucketType) searchSettings.value.timeBucketType = timeBucketType
         if (timeBucketSize) searchSettings.value.timeBucketSize = parseInt(timeBucketSize)
         if (startDate) searchSettings.value.startDate = new Date(parseInt(startDate) * 1000)
         if (endDate) searchSettings.value.endDate = new Date(parseInt(endDate) * 1000)
+        if (frequencyType) searchSettings.value.frequencyType = frequencyType
     }
     // Lifecycle
     watch(() => ({ ...searchSettings.value }), (newValue, oldValue) => {

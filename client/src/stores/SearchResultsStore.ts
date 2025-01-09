@@ -73,7 +73,6 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             } else if (searchSettings.value.languageSplit) {
                 props["ALL-LANG-word"] = i.wordform
             }
-            console.log(props)
             window.plausible('grafiek', { props })
         })
     }
@@ -128,6 +127,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             c: searchItemPropToUrlStr(validSearchItems.value, 'color'),
             pt: searchSettings.value.timeBucketType,
             ps: searchSettings.value.timeBucketSize,
+            f: searchSettings.value.frequencyType,
             start: toTimestamp(searchSettings.value.startDate),
             end: toTimestamp(searchSettings.value.endDate),
         }
