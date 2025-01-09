@@ -1,6 +1,6 @@
 <template>
     <Panel class="searchOptions">
-        <Accordion :value="tabOpen">
+        <Accordion :value="tab">
             <AccordionPanel value="0">
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="settings">
@@ -42,7 +42,7 @@
             </AccordionPanel>
         </Accordion>
 
-        <Button class="search-btn" label="Zoeken" @click="() => { closeTab(); search(); }" :disabled="!isValid" />
+        <Button class="search-btn" label="Zoeken" @click="() => { tab += 1; search(); }" :disabled="!isValid" />
 
     </Panel>
 </template>
@@ -74,12 +74,8 @@ const { isValid } = storeToRefs(useSearchItemsStore())
 const { search } = useSearchResultsStore()
 
 // Fields
-const tabOpen = ref()
+const tab = ref()
 
-// Methods
-function closeTab() {
-    tabOpen.value = "-1"
-}
 </script>
 
 <style scoped lang="scss">

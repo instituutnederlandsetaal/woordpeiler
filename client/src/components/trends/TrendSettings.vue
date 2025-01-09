@@ -1,5 +1,5 @@
 <template>
-    <Accordion :value="tabOpen" class="p-panel" ref="trendAccordion">
+    <Accordion :value="tab" class="p-panel" ref="trendAccordion">
         <AccordionPanel value="0">
             <AccordionHeader>Trendinstellingen</AccordionHeader>
             <AccordionContent class="settings">
@@ -64,7 +64,7 @@
                     <input type="number" class="modifierInput p-inputtext" v-model="trendSettings.modifier" min="0" />
                 </div>
 
-                <Button class="search-btn" label="Berekenen" @click="() => { closeTab(); getTrends(); }" />
+                <Button class="search-btn" label="Berekenen" @click="() => { tab += 1; getTrends() }" />
 
             </AccordionContent>
         </AccordionPanel>
@@ -103,7 +103,7 @@ const { trendSettings } = storeToRefs(trendSettingsStore)
 const { getTrends } = useTrendResultsStore()
 
 // Fields
-const tabOpen = ref("0")
+const tab = ref("0")
 const week = ref<Date[]>([])
 
 // Computed
@@ -112,10 +112,6 @@ const modifierLabel = computed(() => {
 })
 
 // Methods
-function closeTab() {
-    tabOpen.value = "-1"
-}
-
 function setYearEndDate() {
     trendSettings.value.year.end = toLastDayOfYear(trendSettings.value.year.start)
 }
