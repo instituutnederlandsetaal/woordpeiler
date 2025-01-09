@@ -7,7 +7,8 @@ import { isInternal } from "@/ts/internal";
 export function tooltipHtml(point: GraphItem, settings: SearchSettings): string {
     const name = displayName(point.searchItem).split("–")[0];
     const date = d3.timeFormat("%Y-%m-%d")(point.x);
-    const value = truncateRound(point.y, 2).toLocaleString();
+    const abs_or_rel = settings.frequencyType == "abs_freq" ? "voorkomens" : "/ mln. woorden";
+    const value = `${truncateRound(point.y, 2).toLocaleString()} <small>${abs_or_rel}</small>`;
     const href = constructBlLink(point, settings);
     const a = containsMath(name) ? '' : `<a target='_blank' href='${href}'>Zoeken in CHN</a>`
 
