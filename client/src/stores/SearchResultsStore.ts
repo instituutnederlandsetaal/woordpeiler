@@ -114,7 +114,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     function searchItemPropToUrlStr(items: SearchItem[], prop: string): string | undefined {
         const split = ","
         const itemStrs: string[] | undefined = items.map((i) => i[prop] || "")
-        return itemStrs.every((i) => i == "") ? undefined : itemStrs.map(encodeURIComponent).join(split)
+        return itemStrs.every((i) => i == "") ? undefined : itemStrs.join(split)
     }
 
     function setSearchParamsInUrl() {
