@@ -188,7 +188,7 @@ onMounted(() => {
             legendItem.append("text")
                 .text(displayName(series.searchItem))
                 .style("fill", 'black')
-                .style("font-size", 15)
+                .style("font-size", "calc(0.4vw + 0.6rem)")
                 .attr("x", 20)
                 .attr("y", 3)
         });
@@ -363,7 +363,6 @@ onMounted(() => {
         const { width: divWidth, height: divHeight } = resizeState.dimensions;
         const margin = { top: 10, right: 10, bottom: 10, left: 0, titleBottom: 15, yAxisTitleRight: 10, legendLeft: 10 };
         // This div contains the svg. Fill it up.
-        console.log("resize", divWidth, divHeight)
         svg.attr("width", divWidth).attr("height", divHeight)
 
         // title
