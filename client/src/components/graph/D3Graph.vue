@@ -3,7 +3,6 @@
     <div id="tooltip"></div>
 </template>
 
-
 <script setup lang="ts">
 // Libraries
 import { onMounted, watchEffect, computed } from "vue";
@@ -21,6 +20,26 @@ const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore(
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
+const graphTitle = computed(() => {
+    if (!lastSearchSettings.value) return "";
+
+    const freqType = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute" : "Relatieve";
+    const timeBucketSize = lastSearchSettings.value.timeBucketSize;
+    const timeBucketType = lastSearchSettings.value.timeBucketType;
+    let timeBucketStr;
+    if (timeBucketType == "month") {
+        timeBucketStr = timeBucketSize > 1 ? "maanden" : "maand";
+    } else if (timeBucketType == "year") {
+        timeBucketStr = timeBucketSize > 1 ? "jaren" : "jaar";
+    } else if (timeBucketType == "week") {
+        timeBucketStr = timeBucketSize > 1 ? "weken" : "week";
+    } else {
+        timeBucketStr = timeBucketSize > 1 ? "dagen" : "dag";
+    }
+    const timeBucket = timeBucketSize > 1 ? `${timeBucketSize} ${timeBucketStr}` : timeBucketStr;
+
+    return `${freqType} woordfrequentie per ${timeBucket}`;
+});
 
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
@@ -55,25 +74,36 @@ onMounted(() => {
     // Set up the Dutch locale in D3
     d3.timeFormatDefaultLocale(dutchLocale);
 
-
     // append the svg object to the body of the page
     const svg = d3.select("#svg-container")
-        .append("svg").attr("id", "svg-graph")
-        .append("g")
+        .append("svg")
+        .attr("id", "svg-graph")
+        .style("font-family", "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif")
 
     // Add X axis --> it is a date format
     const x = d3.scaleTime()
     const xAxis = svg.append("g").attr("class", "x-axis")
+        .style("font-size", "calc(0.5vw + 0.4rem)")
 
     // Add Y axis
     const y = d3.scaleLinear()
     const yAxis = svg.append("g").attr("class", "y-axis")
+        .style("font-size", "calc(0.5vw + 0.4rem)")
 
-
-    yAxis.append("text")
+    // y axis label
+    svg.append("text")
         .style("text-anchor", "middle")
         .style("fill", 'black')
         .attr("class", "y-axis-label")
+        .style("font-size", "calc(0.5vw + 0.5rem)")
+
+    // title
+    svg.append("text")
+        .attr("class", "title")
+        .attr("text-anchor", "middle")
+        .style("fill", "black")
+        .style("font-weight", "bold")
+        .style("font-size", "calc(0.5vw + 0.6rem)")
 
 
     // Add a clipPath: everything out of this area won't be drawn.
@@ -85,11 +115,16 @@ onMounted(() => {
     // Add brushing
     const brush = d3.brushX()
     const brushEl = svg.append("g")
+    const graph = svg.append("g")
+        .attr("class", "graph")
 
     // Add the legend
     const legend = svg.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(10, 0)`);
+    // legend
+    //     .append("rect")
+    //     .attr("class", "legend-background")
+    //     .style("fill", "rgba(0,0,0,0.5)")
 
 
     // Set up the line generator
@@ -100,8 +135,9 @@ onMounted(() => {
     // data
     watchEffect(() => {
         // Add Y axis label (rotated 90 vertical)
-        const yAxisLabel = lastSearchSettings.value.frequencyType === "abs_freq" ? "absolute frequentie" : "frequentie per miljoen woorden"
-        yAxis.select("text").text(yAxisLabel);
+        const yAxisLabel = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute frequentie" : "Frequentie per miljoen woorden"
+        svg.select(".y-axis-label").text(yAxisLabel);
+        svg.select(".title").text(graphTitle.value);
 
         // clear the svg
         svg.selectAll(".line-group").remove();
@@ -131,7 +167,7 @@ onMounted(() => {
 
         // add empty g for each dataseries and data-label it
         sampledData.forEach(series => {
-            svg.append("g")
+            graph.append("g")
                 .attr("data-name", series.uuid)
                 .attr("clip-path", "url(#clip)")
                 .attr("class", "line-group");
@@ -194,7 +230,7 @@ onMounted(() => {
                 .attr("fill", "#" + series.searchItem.color)
             dot.append("circle")
                 .attr("class", "hit-area")
-                .attr("r", 15)
+                .attr("r", 25)
                 .attr("fill", "transparent")
 
         });
@@ -204,6 +240,33 @@ onMounted(() => {
         let tooltipVisible = false;
         let left, top;
 
+        function showTooltip(event, d) {
+            if (tooltipVisible) return;
+            let tooltipWidth = tooltip.node().offsetWidth;
+            let tooltipHeight = tooltip.node().offsetHeight;
+            let targetRect = event.target.getBoundingClientRect();
+            let center = {
+                x: targetRect.left + targetRect.width / 2,
+                y: targetRect.top + targetRect.height / 2
+            }
+            let margin = 10;
+
+            left = center.x - tooltipWidth / 2;
+            top = center.y - tooltipHeight - margin;
+
+            // if tooltip is going out of the window, then move it inside
+            if (left + tooltipWidth > window.innerWidth) {
+                left = window.innerWidth - tooltipWidth;
+            }
+            if (top < 0) {
+                top = event.pageY + 10; // below the cursor
+            }
+
+            tooltip
+                .style("left", left + "px")
+                .style("top", top + "px");
+        }
+
         svg.selectAll(".hit-area")
             .on("mouseover", function (event, d) {
                 if (tooltipVisible) return;
@@ -211,35 +274,16 @@ onMounted(() => {
                 tooltip.html(tooltipHtml(d, lastSearchSettings.value));
             })
             .on("mousemove", function (event, d) {
-                if (tooltipVisible) return;
-                let tooltipWidth = tooltip.node().offsetWidth;
-                let tooltipHeight = tooltip.node().offsetHeight;
-                let targetRect = event.target.getBoundingClientRect();
-                let center = {
-                    x: targetRect.left + targetRect.width / 2,
-                    y: targetRect.top + targetRect.height / 2
-                }
-                let margin = 10;
-
-                left = center.x - tooltipWidth / 2;
-                top = center.y - tooltipHeight - margin;
-
-                // if tooltip is going out of the window, then move it inside
-                if (left + tooltipWidth > window.innerWidth) {
-                    left = window.innerWidth - tooltipWidth;
-                }
-                if (top < 0) {
-                    top = event.pageY + 10; // below the cursor
-                }
-
-                tooltip
-                    .style("left", left + "px")
-                    .style("top", top + "px");
+                showTooltip(event, d);
             })
             .on("mouseout", function (d) {
                 if (tooltipVisible) return;
                 tooltip.style("visibility", "hidden");
             })
+            .on("click", function (event, d) {
+                showTooltip(event, d);
+            });
+
 
 
         tooltip.on("mouseout", function (d) {
@@ -312,28 +356,75 @@ onMounted(() => {
 
     // responsive resize
     watchEffect(() => {
-        let { width, height } = resizeState.dimensions;
-        const svgMargin = { x: 30, y: 0 };
-        width -= svgMargin.x * 2;
+        // trigger reactivity. Needed as different dataseries have different y axis label sizes.
+        visible.value;
 
-        svg.attr("width", width - svgMargin.x).attr("height", height).attr("transform", `translate(${svgMargin.x * 2}, 0)`);
+        // Get the dimensions of the resizeRef div
+        const { width: divWidth, height: divHeight } = resizeState.dimensions;
+        const margin = { top: 10, right: 10, bottom: 10, left: 0, titleBottom: 15, yAxisTitleRight: 10, legendLeft: 10 };
+        // This div contains the svg. Fill it up.
+        console.log("resize", divWidth, divHeight)
+        svg.attr("width", divWidth).attr("height", divHeight)
 
-        x.range([0, width]);
-        xAxis.attr("transform", `translate(0, ${height})`).call(d3.axisBottom(x).tickFormat(dateFormat));
+        // title
+        const titleY = svg.select(".title").node().getBBox().height + margin.top;
+        const titleHeight = titleY + margin.titleBottom;
+        svg.select(".title").attr("transform", `translate(${divWidth / 2}, ${titleY})`);
 
-        y.range([height, 0]);
-        yAxis.attr("transform", `translate(0, 0)`).call(d3.axisLeft(y));
+        // y axis title
+        const yAxisTitleX = svg.select(".y-axis-label").node().getBBox().height + margin.left
+        const yAxisTitleWidth = yAxisTitleX + margin.yAxisTitleRight;
+        // compensate for the fact that the y axis label is rendered on the left outside of the main chart <g>
+        svg.select(".y-axis-label").attr("transform", `translate(${yAxisTitleX}, ${divHeight / 2}) rotate(-90)`);
 
-        // y axis label
-        yAxis.select("text")
-            .attr("transform", `translate(${-svgMargin.x * 2.2}, ${height / 2}) rotate(-90)`);
+        // Set the y axis
+        const xAxisHeight = xAxis.node().getBBox().height + margin.bottom;
+        const yAxisHeight = divHeight - titleHeight - xAxisHeight;
+        y.range([yAxisHeight, 0]);
+        yAxis.call(d3.axisLeft(y))
+        // The y axis, when rendered, has a certain width. divWidth - yAxisSize will be the width of the chart (and x axis).
+        const yAxisWidth = yAxis.node().getBBox().width + yAxisTitleWidth;
+        // compensate for the fact that the y axis is rendered on the left outside of the main chart <g>
+        yAxis.attr("transform", `translate(${yAxisWidth}, ${titleHeight})`);
 
-        const clipMargin = { x: 3, y: 10 };
-        clip.attr("width", width + 2 * clipMargin.x).attr("height", height + 2 * clipMargin.y).attr("x", -clipMargin.x).attr("y", -clipMargin.y);
-        brush.extent([[0, 0], [width, height]]).on("end", brushChart)
+        // legend
+        legend.attr("transform", `translate(${yAxisWidth + margin.legendLeft}, ${titleHeight})`);
+        // const legendBox = legend.node().getBBox()
+        // svg.select(".legend-background")
+        //     .attr("width", legendBox.width + 4)
+        //     .attr("height", legendBox.height + 4)
+        //     .attr("x", legendBox.x - 2)
+        //     .attr("y", legendBox.y - 2);
+
+
+        const xAxisWidth = divWidth - yAxisWidth - margin.right;
+
+        x.range([0, xAxisWidth]);
+        xAxis
+            .attr("transform", `translate(${yAxisWidth}, ${divHeight - xAxisHeight})`)
+            .call(d3.axisBottom(x).tickFormat(dateFormat))
+
+        const graphRect = {
+            width: xAxisWidth,
+            height: yAxisHeight,
+            x: yAxisWidth,
+            y: titleHeight
+        }
+        const clipOverflow = { x: 2, y: 10 }
+
+        graph.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`);
+
+        clip
+            .attr("width", graphRect.width + 2 * clipOverflow.x)
+            .attr("height", graphRect.height + 2 * clipOverflow.y)
+            .attr("x", -clipOverflow.x)
+            .attr("y", -clipOverflow.y);
+
+        brushEl.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`);
+        brush.extent([[0, 0], [graphRect.width, graphRect.height]]).on("end", brushChart)
         brushEl.call(brush);
         // lines
-        svg.selectAll(".line").attr("d", d => lineGen(d));
+        svg.selectAll(".line").attr("d", d => lineGen(d))
         // dots
         svg.selectAll(".dot")
             .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
@@ -366,19 +457,6 @@ onMounted(() => {
     cursor: crosshair;
 }
 
-.x-axis {
-    font-size: calc(0.5vw + 0.4rem)
-}
-
-.y-axis {
-    font-size: calc(0.3vw + 0.6rem)
-}
-
-.y-axis-label {
-    font-size: calc(0.5vw + 0.5rem)
-}
-
-/* Step 2: Style the tooltip */
 #tooltip {
     position: absolute;
     background-color: white;
