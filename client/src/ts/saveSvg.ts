@@ -1,10 +1,13 @@
 import * as d3 from "d3";
 import { saveAs } from 'file-saver';
 
+// Space for title and subtitle
+const titleMargin = 18
+
 export function download(resizeState) {
     var svgString = getSVGString(d3.select("#svg-graph").node());
     let { width, height } = resizeState.dimensions;
-    svgString2Image(svgString, width + 20, height + 20, 'png', save); // passes Blob and filesize String to the callback
+    svgString2Image(svgString, width, height + titleMargin, 'png', save); // passes Blob and filesize String to the callback
 
     function save(dataBlob, filesize) {
         saveAs(dataBlob, 'woordpeiler.png'); // FileSaver.js function
@@ -12,6 +15,19 @@ export function download(resizeState) {
 }
 
 export function share(resizeState) {
+    const dummyFile = new File([new Blob([], { type: 'text/png' })], 'woordpeiler.png', { type: 'image/png' })
+    // can we share a image/png?
+    if (!navigator.canShare || !navigator.canShare({ files: [dummyFile] })) {
+        // fallback to url share
+        const url = window.location.href;
+        navigator.share({
+            title: "Woordpeiler",
+            text: `Bekijk deze grafiek van Woordpeiler op ${url}`,
+            // url: url
+        });
+    }
+
+    // share the image
     var svgString = getSVGString(d3.select("#svg-graph").node());
     let { width, height } = resizeState.dimensions;
     svgString2Image(svgString, width + 20, height + 20, 'png', save); // passes Blob and filesize String to the callback
@@ -26,8 +42,8 @@ export function share(resizeState) {
 
 function getSVGString(svgNode) {
     svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-    var cssStyleText = getCSSStyles(svgNode);
-    appendCSS(cssStyleText, svgNode);
+    // var cssStyleText = getCSSStyles(svgNode);
+    // appendCSS(cssStyleText, svgNode);
 
     var serializer = new XMLSerializer();
     var svgString = serializer.serializeToString(svgNode);
@@ -110,25 +126,47 @@ function svgString2Image(svgString, width, height, format, callback) {
     var image = new Image();
     image.onload = function () {
         context.clearRect(0, 0, width, height);
-        context.drawImage(image, 0, 0, width, height);
+        // White background, otherwise it's transparent
+        context.fillStyle = "white";
+        context.fillRect(0, 0, width, height);
+        context.drawImage(image, 0, 0, width, height - titleMargin);
 
         { // Add watermark
             type CanvasText = {
                 text: string;
+                align: string;
+                baseline: string;
                 fontSize: number;
                 color: string;
-                marginTop: number;
+                x: number;
+                y: number;
             }
 
-            const title: CanvasText = { text: "woordpeiler.ivdnt.org", fontSize: 20, color: "black", marginTop: 40 }
-            const subtitle: CanvasText = { text: "/instituut voor de Nederlandse taal/", fontSize: 15, color: "black", marginTop: 20 }
-            const marginRight = 10;
+            const title: CanvasText = {
+                text: "woordpeiler.ivdnt.org",
+                align: "left",
+                baseline: "bottom",
+                fontSize: titleMargin - 4,
+                color: "black",
+                x: 5,
+                y: height,
+            }
+            const subtitle: CanvasText = {
+                text: "/instituut voor de Nederlandse taal/",
+                align: "right",
+                baseline: "bottom",
+                fontSize: titleMargin - 4,
+                color: "black",
+                x: width - 5,
+                y: height,
+            }
 
-            for (const { text, fontSize, color, marginTop } of [title, subtitle]) {
-                context.textAlign = "right";
-                context.font = `${fontSize}px Arial`;
+            for (const { text, align, baseline, fontSize, color, x, y } of [title, subtitle]) {
+                context.textAlign = align;
+                context.textBaseline = baseline;
+                context.font = `calc(0.5vw + 0.6rem) 'Helvetica Neue', Helvetica, Arial, sans-serif`;
                 context.fillStyle = color;
-                context.fillText(text, width - marginRight, marginTop);
+                context.fillText(text, x, y);
             }
         }
 

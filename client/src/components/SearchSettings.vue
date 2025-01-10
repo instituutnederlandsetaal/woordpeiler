@@ -42,7 +42,8 @@
             </AccordionPanel>
         </Accordion>
 
-        <Button class="search-btn" label="Zoeken" @click="() => { tab += 1; search(); }" :disabled="!isValid" />
+        <Button class="search-btn" title="Zoeken" label="Zoeken" @click="() => { tab += 1; search(); }"
+            :disabled="!isValid" />
 
     </Panel>
 </template>
