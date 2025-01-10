@@ -2,12 +2,16 @@ import * as d3 from "d3";
 import { saveAs } from 'file-saver';
 
 // Space for title and subtitle
-const titleMargin = 18
+const titleMargin = 30
 
 export function download(resizeState) {
-    var svgString = getSVGString(d3.select("#svg-graph").node());
-    let { width, height } = resizeState.dimensions;
-    svgString2Image(svgString, width, height + titleMargin, 'png', save); // passes Blob and filesize String to the callback
+    const { width, height } = resizeState.dimensions;
+    // scale so width is 1920 and height in proportion
+    const scale = 1920 / width;
+    const imgwidth = width * scale;
+    const imgheight = height * scale;
+    var svgString = getSVGString(d3.select("#svg-graph").node(), imgwidth, imgheight, width, height);
+    svgString2Image(svgString, imgwidth, imgheight, 'png', save); // passes Blob and filesize String to the callback
 
     function save(dataBlob, filesize) {
         saveAs(dataBlob, 'woordpeiler.png'); // FileSaver.js function
@@ -40,75 +44,13 @@ export function share(resizeState) {
     }
 }
 
-function getSVGString(svgNode) {
-    svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-    // var cssStyleText = getCSSStyles(svgNode);
-    // appendCSS(cssStyleText, svgNode);
-
-    var serializer = new XMLSerializer();
-    var svgString = serializer.serializeToString(svgNode);
-    svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
-    svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+function getSVGString(svgNode, width, height, w, h) {
+    var svgString = new XMLSerializer().serializeToString(svgNode);
+    const ratio = w / width;
+    // scaling
+    svgString = svgString.replace(/<svg[^>]*>/, `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="font-size:${ratio}rem !important">`);
 
     return svgString;
-
-    function getCSSStyles(parentElement) {
-        var selectorTextArr = [];
-
-        // Add Parent element Id and Classes to the list
-        selectorTextArr.push('#' + parentElement.id);
-        for (var c = 0; c < parentElement.classList.length; c++)
-            if (!contains('.' + parentElement.classList[c], selectorTextArr))
-                selectorTextArr.push('.' + parentElement.classList[c]);
-
-        // Add Children element Ids and Classes to the list
-        var nodes = parentElement.getElementsByTagName("*");
-        for (var i = 0; i < nodes.length; i++) {
-            var id = nodes[i].id;
-            if (!contains('#' + id, selectorTextArr))
-                selectorTextArr.push('#' + id);
-
-            var classes = nodes[i].classList;
-            for (var c = 0; c < classes.length; c++)
-                if (!contains('.' + classes[c], selectorTextArr))
-                    selectorTextArr.push('.' + classes[c]);
-        }
-
-        // Extract CSS Rules
-        var extractedCSSText = "";
-        for (var i = 0; i < document.styleSheets.length; i++) {
-            var s = document.styleSheets[i];
-
-            try {
-                if (!s.cssRules) continue;
-            } catch (e) {
-                if (e.name !== 'SecurityError') throw e; // for Firefox
-                continue;
-            }
-
-            var cssRules = s.cssRules;
-            for (var r = 0; r < cssRules.length; r++) {
-                if (contains(cssRules[r].selectorText, selectorTextArr))
-                    extractedCSSText += cssRules[r].cssText;
-            }
-        }
-
-
-        return extractedCSSText;
-
-        function contains(str, arr) {
-            return arr.indexOf(str) === -1 ? false : true;
-        }
-
-    }
-
-    function appendCSS(cssText, element) {
-        var styleElement = document.createElement("style");
-        styleElement.setAttribute("type", "text/css");
-        styleElement.innerHTML = cssText;
-        var refNode = element.hasChildNodes() ? element.children[0] : null;
-        element.insertBefore(styleElement, refNode);
-    }
 }
 
 
@@ -164,7 +106,7 @@ function svgString2Image(svgString, width, height, format, callback) {
             for (const { text, align, baseline, fontSize, color, x, y } of [title, subtitle]) {
                 context.textAlign = align;
                 context.textBaseline = baseline;
-                context.font = `calc(0.5vw + 0.6rem) 'Helvetica Neue', Helvetica, Arial, sans-serif`;
+                context.font = `30px 'Helvetica Neue', Helvetica, Arial, sans-serif`;
                 context.fillStyle = color;
                 context.fillText(text, x, y);
             }
