@@ -71,3 +71,16 @@ p.invalid {
   color: red;
   margin-bottom: 0.5rem;
 }
+
+// Because #overlayMenu is a direct child of body
+// and therefore lives above the AppHeader component
+// it needs to be styled here.
+#overlayMenu {
+  font-size: 1.1rem;
+  min-width: min-content;
+
+  * {
+    font-size: inherit;
+    min-width: inherit;
+  }
+}

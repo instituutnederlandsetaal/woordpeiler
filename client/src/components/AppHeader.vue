@@ -17,13 +17,22 @@
                 </h1>
             </div>
         </div>
+
+
+
         <nav>
+            <!-- regular links -->
             <template v-if="$internal">
                 <RouterLink to="/trends">trends</RouterLink>
             </template>
             <RouterLink to="/grafiek">grafiek</RouterLink>
             <RouterLink to="/help">help</RouterLink>
             <RouterLink to="/over">over</RouterLink>
+
+            <!-- hamburger menu -->
+            <Button text severity="secondary" type="button" icon="pi pi-bars" @click="(event) => { menu.toggle(event) }"
+                aria-haspopup="true" aria-controls="overlayMenu" id="hamburger" />
+            <Menu ref="menu" id="overlayMenu" :model="menuItems" :popup="true" />
         </nav>
 
     </header>
@@ -45,17 +54,57 @@ import { useRoute, useRouter } from 'vue-router';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import InputGroup from 'primevue/inputgroup';
+import Menu from 'primevue/menu';
 // Util
 import { toTimestamp } from '@/ts/date';
+import { isInternal } from '@/ts/internal';
 
 // Fields
 const word = ref();
 const route = useRoute();
 const router = useRouter();
+const menu = ref();
 
 // Computed
 const isHomePage = computed(() => route.path == "/");
 const headerStyle = computed(() => isHomePage.value ? { boxShadow: 'none' } : {});
+const menuItems = computed(() => {
+    let items = [
+        {
+            label: 'grafiek',
+            icon: 'pi pi-chart-line',
+            command: () => {
+                router.push('/grafiek');
+            }
+        },
+        {
+            label: 'help',
+            icon: 'pi pi-question',
+            command: () => {
+                router.push('/help');
+            }
+        },
+        {
+            label: 'over',
+            icon: 'pi pi-info',
+            command: () => {
+                router.push('/over');
+            }
+        },
+    ]
+
+    if (isInternal()) {
+        items.unshift({
+            label: 'trends',
+            icon: 'pi pi-sort-amount-up',
+            command: () => {
+                router.push('/trends');
+            }
+        },);
+    }
+
+    return items;
+});
 
 // Methods
 function search() {
@@ -121,7 +170,15 @@ header {
                 text-decoration: underline;
             }
         }
+
+        :deep(button#hamburger) span {
+            font-size: 1.5rem;
+        }
     }
+}
+
+#hamburger {
+    display: none;
 }
 
 footer {

@@ -35,13 +35,18 @@
 
 @media screen and (max-width: 800px) {
     main {
-        padding: 0 0.3rem;
+        padding: 0.3rem;
+        gap: 0.3rem;
 
         .wrapper {
             padding: 1rem;
             width: 100%;
             overflow-x: hidden;
         }
+    }
+
+    aside {
+        gap: 0.3rem;
     }
 
     header {
@@ -75,7 +80,6 @@
 
         flex: 1;
         padding: 0.5rem;
-        gap: 0.5rem !important;
         justify-content: end !important;
         flex-wrap: wrap;
     }
@@ -98,4 +102,19 @@
             padding: 0 1rem !important;
         }
     }
+}
+
+@media screen and (max-width: 500px) {
+
+    // switch to hamburger menu
+    nav {
+        a {
+            display: none;
+        }
+
+        #hamburger {
+            display: inherit !important;
+        }
+    }
+
 }
