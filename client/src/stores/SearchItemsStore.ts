@@ -99,17 +99,19 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
         const range = [...Array(Math.max(words?.split(split).length || 0, lemmas?.split(split).length || 0, pos?.split(split).length || 0, source?.split(split).length || 0, language?.split(split).length || 0)).keys()]
 
         try {
-            searchItems.value = range.map((i) => {
-                return {
-                    wordform: words?.split(split)[i] || undefined,
-                    lemma: lemmas?.split(split)[i] || undefined,
-                    pos: pos?.split(split)[i] || undefined,
-                    source: source?.split(split)[i] || undefined,
-                    language: language?.split(split)[i].toUpperCase() || undefined,
-                    color: color?.split(split)[i] || randomColor(),
-                    visible: true
-                }
-            })
+            if (range.length > 0) {
+                searchItems.value = range.map((i) => {
+                    return {
+                        wordform: words?.split(split)[i] || undefined,
+                        lemma: lemmas?.split(split)[i] || undefined,
+                        pos: pos?.split(split)[i] || undefined,
+                        source: source?.split(split)[i] || undefined,
+                        language: language?.split(split)[i].toUpperCase() || undefined,
+                        color: color?.split(split)[i] || randomColor(),
+                        visible: true
+                    }
+                })
+            }
         } catch (e) {
             searchItems.value = [{ color: randomColor(), visible: true }]
         }
