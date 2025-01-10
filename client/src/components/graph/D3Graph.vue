@@ -281,7 +281,11 @@ onMounted(() => {
                 tooltip.style("visibility", "hidden");
             })
             .on("click", function (event, d) {
-                showTooltip(event, d);
+                // Needs to be on a timeout to prevent the same click from clicking on the link. (weird...)
+                setTimeout(() => {
+                    showTooltip(event, d);
+                }, 10);
+
             });
 
 
