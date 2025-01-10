@@ -22,7 +22,8 @@
                 <RouterLink to="/trends">trends</RouterLink>
             </template>
             <RouterLink to="/grafiek">grafiek</RouterLink>
-            <RouterLink to="/uitleg">uitleg</RouterLink>
+            <RouterLink to="/help">help</RouterLink>
+            <RouterLink to="/over">over</RouterLink>
         </nav>
 
     </header>
