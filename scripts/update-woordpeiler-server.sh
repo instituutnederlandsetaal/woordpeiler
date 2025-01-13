@@ -31,7 +31,7 @@ ssh $SERVER "
 	echo "DATABUILDER_VOLUME=woordpeiler-$DATE" >> .env.databuilder && \
 	
 	# start up psql container
-	docker compose --env-file=.env.databuilder up databuilder -d && \
+	docker compose --env-file=.env.databuilder up databuilder -d --wait && \
 	
 	# execute databuilder script: inserts $DEST tsv data into the psql databuilder container
 	source database/venv/bin/activate && \
