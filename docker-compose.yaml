@@ -34,7 +34,7 @@ services:
             - READER_USER=${READER_USER}
             - READER_PASSWORD=${READER_PASSWORD}
         ports:
-            - '127.0.0.1:${DATABUILDER_PORT}:5432'
+            - '${DATABUILDER_PORT}:5432'
         volumes:
             - databuilder:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
