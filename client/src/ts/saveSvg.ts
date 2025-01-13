@@ -84,29 +84,30 @@ function svgString2Image(svgString, width, height, format, callback) {
                 y: number;
             }
 
-            const title: CanvasText = {
-                text: "woordpeiler.ivdnt.org",
-                align: "left",
+            const baseText: CanvasText = {
                 baseline: "bottom",
-                fontSize: titleMargin - 4,
+                fontSize: (height / 1080) * 2.2, // 2.2rem at 1080p
                 color: "black",
-                x: 5,
                 y: height,
             }
+
+            const title: CanvasText = {
+                ...baseText,
+                text: "woordpeiler.ivdnt.org",
+                align: "left",
+                x: 5,
+            }
             const subtitle: CanvasText = {
+                ...baseText,
                 text: "/instituut voor de Nederlandse taal/",
                 align: "right",
-                baseline: "bottom",
-                fontSize: titleMargin - 4,
-                color: "black",
                 x: width - 5,
-                y: height,
             }
 
             for (const { text, align, baseline, fontSize, color, x, y } of [title, subtitle]) {
                 context.textAlign = align;
                 context.textBaseline = baseline;
-                context.font = `26px 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif`;
+                context.font = `${fontSize}rem 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif`;
                 context.fillStyle = color;
                 context.fillText(text, x, y);
             }
