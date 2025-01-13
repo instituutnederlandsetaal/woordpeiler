@@ -42,7 +42,7 @@ ssh $SERVER "
 	docker compose down databuilder && \
 	
 	# switch around volumes and up it
-	cat .env > .env.databuilder && \ # base settings
+	cat .env > .env.database && \ # base settings
 	echo "DATABASE_VOLUME=woordpeiler-$DATE" > .env.database && \
 	docker compose --env-file=.env.database up database -d
 "
