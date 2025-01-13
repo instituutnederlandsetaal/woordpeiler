@@ -6,6 +6,8 @@ import logging
 
 # third party
 from fastapi import FastAPI, Request, Response
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
 from psycopg_pool import AsyncConnectionPool
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.logging import ColourizedFormatter
@@ -40,6 +42,9 @@ async def lifespan(app: FastAPI):
     await app.async_pool.open()
     await app.async_pool.wait()
     logger.info("Connection pool opened")
+
+    FastAPICache.init(InMemoryBackend(), expire=60)
+    
     yield
     await app.async_pool.close()
 

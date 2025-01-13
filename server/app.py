@@ -6,6 +6,7 @@ import base64
 # third party
 from psycopg.rows import class_row, dict_row
 from fastapi import Request, HTTPException, Query
+from fastapi_cache.decorator import cache
 import uvicorn
 
 # local
@@ -48,6 +49,7 @@ async def get_columns(request: Request, table: str):
 
 
 @app.get("/ls/{table}/{column}")
+@cache(expire=3600)
 async def get_rows(request: Request, table: str, column: str):
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
@@ -75,8 +77,8 @@ async def get_trends(
                 .execute_fetchall()
             )
 
-
 @app.get("/svg")
+@cache(expire=3600)
 async def get_svg(
     request: Request,
     id: Optional[int] = None,
@@ -150,8 +152,8 @@ async def get_math(
                 end_date,
             ).execute(cur)
 
-
 @app.get("/word_frequency")
+@cache(expire=60)
 async def get_freq(
     request: Request,
     id: Optional[int] = None,
