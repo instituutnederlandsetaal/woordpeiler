@@ -12,8 +12,8 @@
     }
 
     .graph {
-        max-height: 500px;
-        min-height: 500px;
+        max-height: 500px !important;
+        min-height: 500px !important;
     }
 
     aside {
@@ -89,8 +89,8 @@
     }
 
     .graph {
-        max-height: 350px;
-        min-height: 350px;
+        max-height: 320px !important;
+        min-height: 320px !important;
     }
 
     main .helpPanel {

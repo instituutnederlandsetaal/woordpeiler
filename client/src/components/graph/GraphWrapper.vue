@@ -63,16 +63,18 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
 <style scoped lang="scss">
 .graph {
     flex: 1;
+    min-height: inherit;
 
     :deep(.p-panel) {
-        height: 100%;
+        min-height: inherit;
+        max-height: inherit;
+        display: flex;
 
         .p-panel-header {
             padding: 0;
             height: 0;
             justify-content: flex-start;
-            position: static;
-            background-color: yellow;
+            position: absolute;
 
             button {
                 z-index: 1;
@@ -81,18 +83,28 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
         }
 
         .p-panel-content-container {
-            height: 100%;
+            flex: 1;
+            display: flex;
+            min-height: inherit;
+            max-height: inherit;
 
             .p-panel-content {
+                min-height: inherit;
+                max-height: inherit;
+                flex: 1;
+
+
                 padding: 0;
-                height: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
 
                 #svg-container,
                 #svg-graph {
-                    height: 100%;
+                    min-height: inherit;
+                    max-height: inherit;
+
+
                     width: 100%;
                 }
 
