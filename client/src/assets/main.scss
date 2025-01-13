@@ -9,7 +9,6 @@ body {
 html,
 body,
 #app {
-  width: 100vw;
   overflow-x: hidden;
 }
 
@@ -17,13 +16,13 @@ body,
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 main {
   flex: 1;
   display: flex;
-  min-height: 0;
+  min-height: 100%;
   gap: 1rem;
   padding: 1rem;
 }

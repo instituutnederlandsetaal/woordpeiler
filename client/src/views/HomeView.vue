@@ -67,8 +67,8 @@ const data = ref<Spotlight[]>([
         word: "vapen",
         color: "#FF8000",
         start_date: "2018-01-01",
-        period_type: "week",
-        period_length: 3,
+        period_type: "month",
+        period_length: 1,
     },
     {
         word: "knaldrang",
