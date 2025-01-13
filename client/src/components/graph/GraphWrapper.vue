@@ -62,13 +62,34 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
 
 <style scoped lang="scss">
 .graph {
-    flex: 1;
-    min-height: inherit;
+    flex: 1 1 0;
 
     :deep(.p-panel) {
-        min-height: inherit;
-        max-height: inherit;
-        display: flex;
+        max-height: 100%;
+        height: 100%;
+
+        .p-panel-content-container {
+            max-height: 100%;
+            height: 100%;
+
+            .p-panel-content {
+                max-height: 100%;
+                height: 100%;
+                padding: 0;
+
+                // Center spinner and help text
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+
+                #svg-container {
+                    flex: 1;
+                    max-height: 100%;
+                    height: 100%;
+                }
+            }
+        }
 
         .p-panel-header {
             padding: 0;
@@ -79,38 +100,6 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
             button {
                 z-index: 1;
                 margin-top: 34px;
-            }
-        }
-
-        .p-panel-content-container {
-            flex: 1;
-            display: flex;
-            min-height: inherit;
-            max-height: inherit;
-
-            .p-panel-content {
-                min-height: inherit;
-                max-height: inherit;
-                flex: 1;
-
-
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                #svg-container,
-                #svg-graph {
-                    min-height: inherit;
-                    max-height: inherit;
-
-
-                    width: 100%;
-                }
-
-                #svg-graph {
-                    position: relative;
-                }
             }
         }
     }

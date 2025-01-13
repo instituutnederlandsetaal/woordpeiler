@@ -6,8 +6,8 @@ const titleMargin = 30
 
 export function download(resizeState) {
     const { width, height } = resizeState.dimensions;
-    // scale so width is 1920 and height in proportion
-    const scale = 1920 / width;
+    // scale so width is constant and height in proportion
+    const scale = 1400 / width;
     const imgwidth = width * scale;
     const imgheight = height * scale;
     var svgString = getSVGString(d3.select("#svg-graph").node(), imgwidth, imgheight, width, height);
@@ -48,7 +48,7 @@ function getSVGString(svgNode, width, height, w, h) {
     var svgString = new XMLSerializer().serializeToString(svgNode);
     const ratio = w / width;
     // scaling
-    svgString = svgString.replace(/<svg[^>]*>/, `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="font-size:${ratio}rem !important">`);
+    svgString = svgString.replace(/<svg[^>]*>/, `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="font-size:${ratio}rem !important;font-family:'Helvetica Neue', 'Helvetica', 'Arial', sans-serif !important;">`);
 
     return svgString;
 }
@@ -106,7 +106,7 @@ function svgString2Image(svgString, width, height, format, callback) {
             for (const { text, align, baseline, fontSize, color, x, y } of [title, subtitle]) {
                 context.textAlign = align;
                 context.textBaseline = baseline;
-                context.font = `30px 'Helvetica Neue', Helvetica, Arial, sans-serif`;
+                context.font = `26px 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif`;
                 context.fillStyle = color;
                 context.fillText(text, x, y);
             }

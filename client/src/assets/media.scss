@@ -9,8 +9,11 @@
         justify-content: flex-end;
         flex-flow: column-reverse;
         min-height: auto;
+        flex: 1;
+        overflow-y: auto;
     }
 
+    #svg-graph,
     .graph {
         max-height: 500px !important;
         min-height: 500px !important;
@@ -88,6 +91,7 @@
         width: 100%;
     }
 
+    #svg-graph,
     .graph {
         max-height: 320px !important;
         min-height: 320px !important;

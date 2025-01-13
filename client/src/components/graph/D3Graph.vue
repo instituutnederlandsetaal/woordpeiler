@@ -188,7 +188,7 @@ onMounted(() => {
             legendItem.append("text")
                 .text(displayName(series.searchItem))
                 .style("fill", 'black')
-                .style("font-size", "calc(0.4vw + 0.6rem)")
+                .style("font-size", "calc(0.5vw + 0.6rem)")
                 .attr("x", 20)
                 .attr("y", 3)
         });
