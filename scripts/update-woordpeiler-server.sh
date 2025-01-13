@@ -35,7 +35,7 @@ ssh $SERVER "
 	
 	# execute databuilder script: inserts $DEST tsv data into the psql databuilder container
 	source database/venv/bin/activate && \
-	python -m database.data_update $DEST && \
+	python -m database.initialize $DEST && \
 	
 	# script finished. Database is ready to use in production
 	# down databuilder
@@ -43,6 +43,6 @@ ssh $SERVER "
 	
 	# switch around volumes and up it
 	cat .env > .env.database && \ # base settings
-	echo "DATABASE_VOLUME=woordpeiler-$DATE" > .env.database && \
+	echo "DATABASE_VOLUME=woordpeiler-$DATE" >> .env.database && \
 	docker compose --env-file=.env.database up database -d
 "
