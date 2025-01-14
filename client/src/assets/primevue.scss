@@ -32,6 +32,13 @@ $theme: #62b6ff;
     --p-checkbox-height: 1.65rem;
     --p-checkbox-icon-size: 1.2rem;
 
+    // SelectButton
+    --p-togglebutton-padding: 0.5rem 0.8rem;
+
+    // Accordion
+    --p-accordion-content-padding: 0 0 1rem 0;
+    --p-accordion-header-padding: 1rem 0 1rem 0;
+
     .p-button-rounded {
         border-radius: 0;
     }
