@@ -1,104 +1,30 @@
 <template>
     <main>
         <div class="wrapper">
-            <SpotlightBlock v-for="spotlight in data" :key="spotlight.word" :spotlight />
+            <SpotlightBlock v-for="spotlight in items" :key="spotlight.word" :spotlight />
         </div>
     </main>
 </template>
 
 <script setup lang="ts">
+// Libraries
+import { storeToRefs } from "pinia"
+// Stores
+import { useSpotlightStore } from "@/stores/SpotlightStore"
+// Components
 import SpotlightBlock from "@/components/spotlight/SpotlightBlock.vue"
-import { ref } from "vue";
-import { type Spotlight } from "@/types/spotlight";
+import { onMounted } from "vue"
 
-const data = ref<Spotlight[]>([
-    {
-        word: "fatbikes",
-        color: "#FF8000",
-        start_date: "2023-01-01",
-        period_type: "week",
-        period_length: 2,
-    },
-    {
-        word: "corona",
-        color: "#FFF064",
-        start_date: "2020-01-01",
-        period_type: "week",
-        period_length: 3,
-    },
-    {
-        word: "europapa",
-        color: "#359FF0",
-        start_date: "2024-01-01",
-        period_type: "week",
-        period_length: 1,
-    },
-    {
-        word: "graaiflatie",
-        color: "#BD795D",
-        start_date: "2023-01-01",
-        period_type: "week",
-        period_length: 1,
-    },
-    {
-        word: "smartphone",
-        color: "#89C24B",
-        start_date: "2006-01-01",
-        period_type: "month",
-        period_length: 3,
-    },
-    {
-        word: "tiktok",
-        color: "#E8503D",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
+// Stores
+const spotlightStore = useSpotlightStore()
+const { items } = storeToRefs(spotlightStore)
+const { fetchSpotlights } = spotlightStore
 
-    },
-    {
-        word: "knuffelcontact",
-        color: "#359FF0",
-        start_date: "2020-01-01",
-        period_type: "week",
-        period_length: 1,
+// Lifecycle
+onMounted(() => {
+    fetchSpotlights()
+})
 
-    },
-    {
-        word: "vapen",
-        color: "#FF8000",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
-    },
-    {
-        word: "knaldrang",
-        color: "#FFF064",
-        start_date: "2020-01-01",
-        period_type: "week",
-        period_length: 2,
-    },
-    {
-        word: "menstruatieproducten",
-        color: "#E8503D",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
-    },
-    {
-        word: "klimaatspijbelaars",
-        color: "#89C24B",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
-    },
-    {
-        word: "stikstofcrisis",
-        color: "#BD795D",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
-    }
-])
 </script>
 
 <style scoped lang="scss">
