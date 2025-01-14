@@ -22,7 +22,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     // Methods
     function search() {
         // Scroll to top of page
-        document.getElementById("app").scrollTo({ top: 0, behavior: "smooth" })
+        window.scrollTo({ top: 0 }) // behavior: "smooth" not supported in firefox under certain conditions, like when switching views
 
         // save current search to local storage
         localStorage.setItem("searchItems", JSON.stringify(validSearchItems.value))
