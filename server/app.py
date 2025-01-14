@@ -34,26 +34,28 @@ def health():
     return app.async_pool.get_stats()
 
 
-@app.get("/ls/")
-async def get_tables(request: Request):
-    async with request.app.async_pool.connection() as conn:
-        async with conn.cursor() as cur:
-            return await ListingQuery().build(cur).execute_fetchall()
-
-
-@app.get("/ls/{table}")
-async def get_columns(request: Request, table: str):
-    async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery(table).build(cur).execute_fetchall()
-
-
-@app.get("/ls/{table}/{column}")
+@app.get("/sources")
 @cache(expire=3600)
-async def get_rows(request: Request, table: str, column: str):
+async def get_sources(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery(table, column).build(cur).execute_fetchall()
+            return await ListingQuery("sources", "source").build(cur).execute_fetchall()
+
+
+@app.get("/posses")
+@cache(expire=3600)
+async def get_posses(request: Request) -> list[str]:
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
+            return await ListingQuery("words", "pos").build(cur).execute_fetchall()
+
+
+@app.get("/posheads")
+@cache(expire=3600)
+async def get_posheads(request: Request) -> list[str]:
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
+            return await ListingQuery("words", "poshead").build(cur).execute_fetchall()
 
 
 @app.get("/trends")

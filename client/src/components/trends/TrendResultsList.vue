@@ -68,7 +68,7 @@ function formatNumber(num: number): number {
 
 function getPosHeadOptions() {
     posHeadLoading.value = true
-    ListingAPI.getListing("words", "poshead")
+    ListingAPI.getPosheads()
         .then((response) => {
             posHeadOptions.value = response.data;
         })

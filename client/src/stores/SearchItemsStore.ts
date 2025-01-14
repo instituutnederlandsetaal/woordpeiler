@@ -53,19 +53,19 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     async function fetchOptions() {
         if (!isInternal()) return
 
-        ListingAPI.getListing("sources", "source")
+        ListingAPI.getSources()
             .then((response) => {
                 sourceOptions.value = response.data
             })
 
         let posses: string[] = []
-        await ListingAPI.getListing("words", "pos")
+        await ListingAPI.getPosses()
             .then((response) => {
                 posses = response.data
             })
 
         let posHeads: string[] = []
-        await ListingAPI.getListing("words", "poshead")
+        await ListingAPI.getPosheads()
             .then((response) => {
                 posHeads = response.data
             })
