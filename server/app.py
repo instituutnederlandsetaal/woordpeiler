@@ -4,10 +4,11 @@ from typing import Annotated, Any, Optional
 import base64
 
 # third party
-from psycopg.rows import class_row, dict_row
+from psycopg.rows import dict_row
 from fastapi import Request, HTTPException, Query
 from fastapi_cache.decorator import cache
 import uvicorn
+from unidecode import unidecode
 
 # local
 from server.query.arithmetical_query import ArithmeticalQuery
@@ -19,7 +20,7 @@ from server.util.dataseries_row_factory import (
     DataSeriesRowFactory,
     SingleValueRowFactory,
 )
-from server.util.datatypes import DataSeries, TrendItem
+from server.util.datatypes import DataSeries
 
 app: FastAPI = create_app_with_config()
 
@@ -79,6 +80,7 @@ async def get_trends(
                 .execute_fetchall()
             )
 
+
 @app.get("/svg")
 @cache(expire=3600)
 async def get_svg(
@@ -124,7 +126,7 @@ async def get_svg(
         # convert 12.66666 to 12.66
         trunc_freq = trunc(d.rel_freq * 100) / 100
         trunc_time = trunc(d.time * 100) / 100
-        svg += f"{trunc_time},{100-trunc_freq} "
+        svg += f"{trunc_time},{100 - trunc_freq} "
     svg += f'" fill="none" stroke="black" stroke-width="0.5" />'
     svg += f"</svg>"
     svg_base64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
@@ -154,6 +156,7 @@ async def get_math(
                 end_date,
             ).execute(cur)
 
+
 @app.get("/word_frequency")
 @cache(expire=60)
 async def get_freq(
@@ -174,6 +177,14 @@ async def get_freq(
         raise HTTPException(
             status_code=403, detail="Permission denied: source filter is not allowed"
         )
+
+    # unicode normalization
+    if wordform is not None:
+        wordform = unidecode(wordform)
+
+    if lemma is not None:
+        lemma = unidecode(lemma)
+
     # send to math
     if wordform and ("+" in wordform or "/" in wordform):
         return await get_math(
