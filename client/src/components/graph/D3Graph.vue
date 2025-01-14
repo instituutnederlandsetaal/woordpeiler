@@ -210,7 +210,8 @@ onMounted(() => {
 
         // Draw the dots
         sampledData.forEach(series => {
-            if (lastSearchSettings.value.timeBucketType == "day") return
+            // don't draw dots for day and week
+            if (["day", "week"].includes(lastSearchSettings.value.timeBucketType)) return
             // link data
             series.data.abs_freq.forEach(d => {
                 d.searchItem = series.searchItem;

@@ -33,7 +33,6 @@ import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 // Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
-import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Components
 import D3Graph from "@/components/graph/D3Graph.vue";
 // Primevue
@@ -44,7 +43,7 @@ import Button from "primevue/button";
 import { download, share } from "@/ts/saveSvg";
 
 // Stores
-const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
+const { searchResults, isSearching } = storeToRefs(useSearchResultsStore());
 
 // Fields
 const graph = ref(null);
