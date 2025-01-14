@@ -53,6 +53,11 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     async function fetchOptions() {
         if (!isInternal()) return
 
+        // Dont keep refetching
+        if (sourceOptions.value.length > 0 && posOptions.value.length > 0) {
+            return
+        }
+
         ListingAPI.getSources()
             .then((response) => {
                 sourceOptions.value = response.data

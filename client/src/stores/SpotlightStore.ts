@@ -14,6 +14,11 @@ export const useSpotlightStore = defineStore('Spotlights', () => {
     const items = ref<Spotlight[]>()
     // Methods
     function fetchSpotlights() {
+        // Dont keep refetching
+        if (items.value) {
+            return
+        }
+
         SpotlightAPI.getSpotlights().then((response) => {
             items.value = response.data
         }).catch(() => {
