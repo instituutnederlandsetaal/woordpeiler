@@ -7,20 +7,37 @@ Create a `.env` with:
 # db config
 POSTGRES_DB=woordpeiler
 POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-# user with write access
+POSTGRES_PORT=127.0.0.1:5432 # local ip forces docker not to expose to outside
+# databuilder also needs a port other than POSTGRES_PORT
+DATABUILDER_PORT=127.0.0.1:5433 # local ip forces docker not to expose to outside
+# user with write access, used by databuilder
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=[fill in]
-# user with read access
+# user with read access, used by server
 READER_USER=reader
 READER_PASSWORD=[fill in]
-# docker volume names
-DATABASE_VOLUME="woordpeiler-[date]"
-DATABUILDER_VOLUME="woordpeiler-[date]"
-# databuilder also needs a port other than POSTGRES_PORT
-DATABUILDER_PORT=5433
-# docker image tag
+# docker image tag for server and client docker container
 VERSION_LABEL=dev
+```
+
+Because we want to rotate the database docker volume every week, we use separate .env files the database and databuilder that can be editted programatically.
+We create them by `cat`'ing the .env and appending a DATABUILDER_VOLUME or DATABASE_VOLUME variable with the correct volume name, pointing to that week's data.
+For development you could do the same once and update them only when needed. So:
+
+.env.databuilder:
+```sh
+# [copy over everything from .env]
+
+# docker volume name
+DATABUILDER_VOLUME="woordpeiler-[YYYY-MM-DD]"
+```
+
+.env.databuilder:
+```sh
+# [copy over everything from .env]
+
+# docker volume name
+DATABASE_VOLUME="woordpeiler-[YYYY-MM-DD]"
 ```
 
 # How to develop
@@ -38,9 +55,12 @@ First install python. See `server/Dockerfile` for the version
 `cd ./server`, `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, `fastapi dev`, go to `http://localhost:8000`. Go to `http://localhost:8000/docs` for the docs.
 
 ## Database
-First install docker (for the actual database, it will be a volume) and python (for all kinds of insertion scripts). We use the same python version as the server.
-Fill in the `.env`! Docker compose will need it.
-`docker compose up database -d`
+First install docker (the database will be a psql container + docker volume) and python (for all kinds of insertion scripts). We use the same python version as the server.
+Fill in `.env`, `.env.databuilder`, and `.env.database`!
+
+`cd ./database`, `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, 
+
+Next, see `database/readme.md`.
 
 # How to unit & load test
 

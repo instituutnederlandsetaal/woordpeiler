@@ -9,11 +9,14 @@
         justify-content: flex-end;
         flex-flow: column-reverse;
         min-height: auto;
+        flex: 1;
+        overflow-y: auto;
     }
 
+    #svg-graph,
     .graph {
-        max-height: 500px;
-        min-height: 500px;
+        max-height: 500px !important;
+        min-height: 500px !important;
     }
 
     aside {
@@ -39,7 +42,7 @@
         gap: 0.3rem;
 
         .wrapper {
-            padding: 1rem;
+            padding: 0.7rem;
             width: 100%;
             overflow-x: hidden;
         }
@@ -47,6 +50,10 @@
 
     aside {
         gap: 0.3rem;
+
+        div.wordlist {
+            padding-bottom: 6rem !important;
+        }
     }
 
     header {
@@ -88,9 +95,10 @@
         width: 100%;
     }
 
+    #svg-graph,
     .graph {
-        max-height: 350px;
-        min-height: 350px;
+        max-height: 320px !important;
+        min-height: 320px !important;
     }
 
     main .helpPanel {

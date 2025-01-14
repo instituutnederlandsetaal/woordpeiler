@@ -4,9 +4,11 @@ from typing import Annotated, Any, Optional
 import base64
 
 # third party
-from psycopg.rows import class_row, dict_row
+from psycopg.rows import dict_row
 from fastapi import Request, HTTPException, Query
+from fastapi_cache.decorator import cache
 import uvicorn
+from unidecode import unidecode
 
 # local
 from server.query.arithmetical_query import ArithmeticalQuery
@@ -18,7 +20,7 @@ from server.util.dataseries_row_factory import (
     DataSeriesRowFactory,
     SingleValueRowFactory,
 )
-from server.util.datatypes import DataSeries, TrendItem
+from server.util.datatypes import DataSeries
 
 app: FastAPI = create_app_with_config()
 
@@ -33,25 +35,28 @@ def health():
     return app.async_pool.get_stats()
 
 
-@app.get("/ls/")
-async def get_tables(request: Request):
-    async with request.app.async_pool.connection() as conn:
-        async with conn.cursor() as cur:
-            return await ListingQuery().build(cur).execute_fetchall()
-
-
-@app.get("/ls/{table}")
-async def get_columns(request: Request, table: str):
+@app.get("/sources")
+@cache(expire=3600)
+async def get_sources(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery(table).build(cur).execute_fetchall()
+            return await ListingQuery("sources", "source").build(cur).execute_fetchall()
 
 
-@app.get("/ls/{table}/{column}")
-async def get_rows(request: Request, table: str, column: str):
+@app.get("/posses")
+@cache(expire=3600)
+async def get_posses(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery(table, column).build(cur).execute_fetchall()
+            return await ListingQuery("words", "pos").build(cur).execute_fetchall()
+
+
+@app.get("/posheads")
+@cache(expire=3600)
+async def get_posheads(request: Request) -> list[str]:
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
+            return await ListingQuery("words", "poshead").build(cur).execute_fetchall()
 
 
 @app.get("/trends")
@@ -77,6 +82,7 @@ async def get_trends(
 
 
 @app.get("/svg")
+@cache(expire=3600)
 async def get_svg(
     request: Request,
     id: Optional[int] = None,
@@ -120,7 +126,7 @@ async def get_svg(
         # convert 12.66666 to 12.66
         trunc_freq = trunc(d.rel_freq * 100) / 100
         trunc_time = trunc(d.time * 100) / 100
-        svg += f"{trunc_time},{100-trunc_freq} "
+        svg += f"{trunc_time},{100 - trunc_freq} "
     svg += f'" fill="none" stroke="black" stroke-width="0.5" />'
     svg += f"</svg>"
     svg_base64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
@@ -152,6 +158,7 @@ async def get_math(
 
 
 @app.get("/word_frequency")
+@cache(expire=60)
 async def get_freq(
     request: Request,
     id: Optional[int] = None,
@@ -165,6 +172,19 @@ async def get_freq(
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
 ) -> list[DataSeries]:
+    # permission check
+    if source is not None and not request.app.internal:
+        raise HTTPException(
+            status_code=403, detail="Permission denied: source filter is not allowed"
+        )
+
+    # unicode normalization
+    if wordform is not None:
+        wordform = unidecode(wordform)
+
+    if lemma is not None:
+        lemma = unidecode(lemma)
+
     # send to math
     if wordform and ("+" in wordform or "/" in wordform):
         return await get_math(

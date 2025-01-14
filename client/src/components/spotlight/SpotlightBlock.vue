@@ -2,7 +2,7 @@
     <section :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
         <header>
             <h2>
-                {{ spotlight.word }}
+                {{ spotlight.word.toLowerCase().trim() }}
             </h2>
         </header>
         <p>sinds {{ spotlight.start_date.split("-")[0] }}</p>
@@ -50,7 +50,7 @@ function search(spotlight: Spotlight) {
 onMounted(() => {
     const spotlight = props.spotlight
     const request: API.SearchRequest = {
-        wordform: spotlight.word,
+        wordform: spotlight.word.toLowerCase().trim(),
         start_date: toTimestamp(new Date(spotlight.start_date)),
         period_type: spotlight.period_type,
         period_length: spotlight.period_length,

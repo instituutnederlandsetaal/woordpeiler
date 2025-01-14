@@ -2,11 +2,10 @@
 from typing import Optional
 
 # third party
-from psycopg import AsyncCursor
 from psycopg.sql import Literal, SQL, Composable, Identifier
 
 # local
-from server.query.query_builder import ExecutableQuery, QueryBuilder
+from server.query.query_builder import ExecutableQuery, QueryBuilder, BaseCursor
 
 
 class ListingQuery(QueryBuilder):
@@ -21,7 +20,7 @@ class ListingQuery(QueryBuilder):
         self.table = table
         self.column = column
 
-    def build(self, cursor: AsyncCursor) -> ExecutableQuery:
+    def build(self, cursor: BaseCursor) -> ExecutableQuery[str]:
         if self.table is not None and self.column is not None:
             query = self.rows(self.table, self.column)
         elif self.table is not None:

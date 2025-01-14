@@ -62,43 +62,44 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
 
 <style scoped lang="scss">
 .graph {
-    flex: 1;
+    flex: 1 1 0;
 
     :deep(.p-panel) {
+        max-height: 100%;
         height: 100%;
+
+        .p-panel-content-container {
+            max-height: 100%;
+            height: 100%;
+
+            .p-panel-content {
+                max-height: 100%;
+                height: 100%;
+                padding: 0;
+
+                // Center spinner and help text
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+
+                #svg-container {
+                    flex: 1;
+                    max-height: 100%;
+                    height: 100%;
+                }
+            }
+        }
 
         .p-panel-header {
             padding: 0;
             height: 0;
             justify-content: flex-start;
-            position: static;
-            background-color: yellow;
+            position: absolute;
 
             button {
                 z-index: 1;
                 margin-top: 34px;
-            }
-        }
-
-        .p-panel-content-container {
-            height: 100%;
-
-            .p-panel-content {
-                padding: 0;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                #svg-container,
-                #svg-graph {
-                    height: 100%;
-                    width: 100%;
-                }
-
-                #svg-graph {
-                    position: relative;
-                }
             }
         }
     }
