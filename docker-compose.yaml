@@ -50,7 +50,7 @@ services:
         image: instituutnederlandsetaal/corpustrends-server:${VERSION_LABEL}
         environment:
             - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_HOST=database
+            - POSTGRES_HOST=${POSTGRES_HOST}
             - POSTGRES_PORT=${POSTGRES_PORT}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -59,16 +59,23 @@ services:
         build:
             context: server
         restart: unless-stopped
-        ports:
-            - '8000:8000'
 
     client:
         image: instituutnederlandsetaal/corpustrends-client:${VERSION_LABEL}
         build:
             context: client
         restart: unless-stopped
+
+    proxy:
+        image: nginx:1.27.2-alpine3.20
+        volumes:
+            - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - client
+            - server
         ports:
-            - '80:8080'
+            - "80:80"
+        restart: unless-stopped
 
 volumes:
     database:
