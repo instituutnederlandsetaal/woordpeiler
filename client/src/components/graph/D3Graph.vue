@@ -285,7 +285,7 @@ onMounted(() => {
                 // Needs to be on a timeout to prevent the same click from clicking on the link. (weird...)
                 setTimeout(() => {
                     showTooltip(event, d);
-                }, 100);
+                }, 400);
 
             });
 
