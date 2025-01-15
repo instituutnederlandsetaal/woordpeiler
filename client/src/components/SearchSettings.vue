@@ -5,16 +5,15 @@
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="settings">
 
-                    <div class="formSplit">
-                        <label>Splits automatisch op taalvariëteit</label>
-                        <Checkbox v-model="searchSettings.languageSplit" binary />
-                    </div>
+
 
                     <div class="formSplit">
                         <label>Frequentie</label>
                         <SelectButton v-model="searchSettings.frequencyType" :options="frequencyTypeOptions"
                             optionValue="value" optionLabel="label" />
                     </div>
+
+
 
                     <div>
                         <label>Periode</label>
@@ -36,6 +35,11 @@
                             v-model="searchSettings.timeBucketSize" />
                         <SelectButton v-model="searchSettings.timeBucketType" :options="timeBucketOptions"
                             optionValue="value" optionLabel="label" />
+                    </div>
+
+                    <div class="formSplit" style="margin: 0.2rem 0 -0.2rem 0;">
+                        <label>Splits automatisch op taalvariëteit</label>
+                        <Checkbox v-model="searchSettings.languageSplit" binary />
                     </div>
 
                 </AccordionContent>
