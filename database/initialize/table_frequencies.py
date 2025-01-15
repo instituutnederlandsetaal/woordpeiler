@@ -44,12 +44,18 @@ fill_word_ids = """
     WHERE f.wordform = w.wordform AND f.lemma = w.lemma AND f.pos = w.pos;
 """
 
-drop_word_and_source_columns = """
+drop_word_columns = """
     ALTER TABLE frequencies
     DROP COLUMN wordform,
     DROP COLUMN lemma,
     DROP COLUMN pos,
     DROP COLUMN poshead,
+    DROP COLUMN source,
+    DROP COLUMN language;
+"""
+
+drop_source_columns = """
+    ALTER TABLE frequencies
     DROP COLUMN source,
     DROP COLUMN language;
 """
@@ -93,20 +99,29 @@ def create_table_frequencies(folder: str):
         print(f"Uploading {path}")
         with psycopg.connect(get_writer_conn_str()) as conn:
             Uploader(conn, path)
-    analyze_vacuum()
 
 
 def add_source_and_word_id_columns():
     time_query(
-        msg="Adding columns source_id and word_id to frequencies",
-        queries=[
-            add_id_columns,
-            fill_source_ids,
-            fill_word_ids,
-            drop_word_and_source_columns,
-        ],
+        msg="Adding id column",
+        queries=[add_id_columns],
     )
-    analyze_vacuum()
+    time_query(
+        msg="Filling source ids",
+        queries=[fill_source_ids],
+    )
+    time_query(
+        msg="Dropping source columns",
+        queries=[drop_source_columns],
+    )
+    time_query(
+        msg="Filling word ids",
+        queries=[fill_word_ids],
+    )
+    time_query(
+        msg="Dropping word columns",
+        queries=[drop_word_columns],
+    )
 
 
 def undouble_frequencies():
@@ -114,7 +129,6 @@ def undouble_frequencies():
         msg="Undoubling frequencies",
         queries=[undouble],
     )
-    analyze_vacuum()
 
 
 def add_frequencies_indices():
@@ -122,4 +136,3 @@ def add_frequencies_indices():
         msg="Creating indices for frequencies",
         queries=[add_indices],
     )
-    analyze_vacuum()

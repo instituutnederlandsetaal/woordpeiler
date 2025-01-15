@@ -54,4 +54,3 @@ def create_table_words():
             add_indices,
         ],
     )
-    analyze_vacuum()
