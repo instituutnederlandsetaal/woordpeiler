@@ -173,7 +173,7 @@ async def get_freq(
     end_date: Optional[int] = None,
 ) -> list[DataSeries]:
     # permission check
-    if source is not None and not request.app.internal:
+    if any([source, lemma, pos, id]) and not request.app.internal:
         raise HTTPException(
             status_code=403, detail="Permission denied: source filter is not allowed"
         )
