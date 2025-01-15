@@ -122,10 +122,13 @@ def create_app_with_config() -> FastAPI:
         if response.status_code < 300:
             logger.info(f"{status_str} in {process_time_str}s: {url}")
         else:
-            response_body = [section async for section in response.body_iterator]
-            response.body_iterator = iterate_in_threadpool(iter(response_body))
-            response_json_str = response_body[0].decode()
-            response_json = json.loads(response_json_str)
+            try:
+                response_body = [section async for section in response.body_iterator]
+                response.body_iterator = iterate_in_threadpool(iter(response_body))
+                response_json_str = response_body[0].decode()
+                response_json = json.loads(response_json_str)
+            except Exception as _:
+                response_json = {"detail": "Failed to parse detail"}
 
             log_str = (
                 f"{status_str} in {process_time_str}s: {response_json['detail']}: {url}"
