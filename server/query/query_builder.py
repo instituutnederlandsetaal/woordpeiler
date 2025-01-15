@@ -1,12 +1,17 @@
 # standard
 from enum import Enum
-from token import OP
+from sys import intern
+import os
 from typing import Optional, Any
 from datetime import datetime
 
 # third party
+from dotenv import load_dotenv
 from psycopg import AsyncCursor, Cursor
 from psycopg.sql import Composable, Identifier, Literal, SQL, Composed
+
+load_dotenv()
+internal = os.getenv("INTERNAL", "false").lower() == "true"
 
 type BaseCursor = Cursor | AsyncCursor
 type Query = SQL | Composed
@@ -37,7 +42,9 @@ class QueryBuilder:
     @staticmethod
     def where(column: Enum, value: Optional[str]) -> Composable:
         if value is not None:
-            if "*" in value or "?" in value:
+            if (
+                "*" in value or "?" in value
+            ) and internal:  # only allow regex internally
                 escaped = value.replace("*", "%").replace("?", "_")
                 return SQL("{column} LIKE {value}").format(
                     column=Identifier(column.value), value=Literal(escaped)
