@@ -34,7 +34,7 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
         }
         // single empty item
         if (searchItems.value.length == 1) {
-            return displayName(searchItems.value[0]) != ""
+            return !invalidSearchItem(searchItems.value[0])
         }
         // Check every term
         for (const i of searchItems.value) {

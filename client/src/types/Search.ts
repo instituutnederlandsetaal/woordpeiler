@@ -56,8 +56,8 @@ export function invalidSearchItem(item: SearchItem): boolean {
         // An empty item is invalid
         return true
     } else { // not empty
-        // no spaces in lemma
-        if (invalidInputText(item.lemma)) {
+        // no spaces in wordform or lemma
+        if (invalidInputText(item.lemma) || invalidInputText(item.wordform)) {
             return true // invalid
         }
         // language and source can't be both defined
