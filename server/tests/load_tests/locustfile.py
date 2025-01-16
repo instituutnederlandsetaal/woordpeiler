@@ -8,7 +8,7 @@ import json
 
 class RandomUser(HttpUser):
     host = "http://localhost:8000/"
-    wait_time = between(2, 4)
+    wait_time = between(0.1, 0.2)
     word_list = []
 
     def on_start(self):
