@@ -85,6 +85,7 @@ FROM
 add_indices = """
     CREATE INDEX IF NOT EXISTS frequencies_word_id_source_id ON frequencies (word_id, source_id) INCLUDE (time, frequency);
     CREATE INDEX IF NOT EXISTS frequencies_source_id ON frequencies (source_id) INCLUDE (time, frequency);
+    CREATE INDEX IF NOT EXISTS ON frequencies_time (time) INCLUDE (frequency); -- needed for calculating corpus_size quickly
 """
 
 
