@@ -11,6 +11,9 @@ export function share(resizeState, words: GraphItem[]) {
     } else {
         shareLink(word)
     }
+
+    // register plausible event
+    window.plausible("share")
 }
 
 function canShareFiles(): boolean {

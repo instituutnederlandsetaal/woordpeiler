@@ -11,4 +11,7 @@ export function download(resizeState, words: GraphItem[]) {
     function callback(dataBlob, filesize) {
         saveAs(dataBlob, fileName) // FileSaver.js function
     }
+
+    // register plausible event
+    window.plausible("download")
 }
