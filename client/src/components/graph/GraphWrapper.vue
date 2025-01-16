@@ -7,7 +7,7 @@
                 <Button text severity="secondary" @click="downloadBtn">
                     <span class="pi pi-download" title="Downloaden"></span>
                 </Button>
-                <Button text severity="secondary" @click="webShareAPI" v-if="canShare">
+                <Button text severity="secondary" @click="shareBtn" v-if="canShare">
                     <span class="pi pi-share-alt" title="Delen"></span>
                 </Button>
             </template>
@@ -40,23 +40,26 @@ import ProgressSpinner from "primevue/progressspinner";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
 // Util
-import { download, share } from "@/ts/saveSvg";
+import { share } from "@/ts/svg/share";
+import { download } from "@/ts/svg/download";
 
 // Stores
 const { searchResults, isSearching } = storeToRefs(useSearchResultsStore());
 
 // Fields
 const graph = ref(null);
-function downloadBtn() {
-    download(graph.value.resizeState);
-}
-function webShareAPI() {
-    share(graph.value.resizeState);
-}
 const canShare = navigator.share != undefined;
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
+
+// Methods
+function downloadBtn() {
+    download(graph.value.resizeState, searchResults.value);
+}
+function shareBtn() {
+    share(graph.value.resizeState, searchResults.value);
+}
 </script>
 
 <style scoped lang="scss">
