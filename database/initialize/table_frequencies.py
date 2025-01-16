@@ -98,6 +98,7 @@ def create_table_frequencies(folder: str):
         print(f"Uploading {path}")
         with psycopg.connect(get_writer_conn_str()) as conn:
             Uploader(conn, path)
+    analyze_vacuum()
 
 
 def add_source_and_word_id_columns():
@@ -121,6 +122,7 @@ def add_source_and_word_id_columns():
         msg="Dropping word columns",
         queries=[drop_word_columns],
     )
+    analyze_vacuum()
 
 
 def undouble_frequencies():
@@ -128,6 +130,7 @@ def undouble_frequencies():
         msg="Undoubling frequencies",
         queries=[undouble],
     )
+    analyze_vacuum()
 
 
 def add_frequencies_indices():
@@ -135,3 +138,4 @@ def add_frequencies_indices():
         msg="Creating indices for frequencies",
         queries=[add_indices],
     )
+    analyze_vacuum()

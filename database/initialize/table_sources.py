@@ -43,3 +43,4 @@ def create_table_sources():
             add_indices,
         ],
     )
+    analyze_vacuum()
