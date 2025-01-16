@@ -49,9 +49,7 @@ drop_word_columns = """
     DROP COLUMN wordform,
     DROP COLUMN lemma,
     DROP COLUMN pos,
-    DROP COLUMN poshead,
-    DROP COLUMN source,
-    DROP COLUMN language;
+    DROP COLUMN poshead;
 """
 
 drop_source_columns = """
