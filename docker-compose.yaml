@@ -50,7 +50,7 @@ services:
         image: instituutnederlandsetaal/woordpeiler-server:${VERSION_LABEL}
         environment:
             - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_HOST=database # Always refer to the database container
             - POSTGRES_PORT=${POSTGRES_PORT}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
