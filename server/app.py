@@ -133,7 +133,6 @@ async def get_svg(
     return svg_base64
 
 
-@app.get("/math")
 async def get_math(
     request: Request,
     formula: str,
