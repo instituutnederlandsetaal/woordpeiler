@@ -66,12 +66,14 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     }
     function plausibleEvent() {
         validSearchItems.value.forEach((i) => {
-            const props: Record<string, string | undefined> = { "word": i.wordform }
+            const wordLower = i.wordform?.toLowerCase()
+
+            const props: Record<string, string | undefined> = { "word": wordLower }
             // if a language is set, add it to the props
             if (i.language) {
-                props[`${i.language}-word`] = i.wordform
+                props[`${i.language}-word`] = wordLower
             } else if (searchSettings.value.languageSplit) {
-                props["ALL-LANG-word"] = i.wordform
+                props["ALL-LANG-word"] = wordLower
             }
             window.plausible('grafiek', { props })
         })
