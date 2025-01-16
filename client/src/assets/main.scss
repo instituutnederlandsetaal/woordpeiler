@@ -83,3 +83,44 @@ p.invalid {
     min-width: inherit;
   }
 }
+
+// help & about
+.textPanel {
+  width: 100%;
+  min-height: 100%;
+  height: fit-content;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 400;
+  }
+
+  .p-panel-header {
+    padding: 0.7rem;
+  }
+
+  .p-panel-content {
+    padding: 0 2rem;
+    padding-bottom: 3rem !important;
+  }
+
+  section {
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+
+    b {
+      margin-right: 0.25rem;
+    }
+  }
+
+}

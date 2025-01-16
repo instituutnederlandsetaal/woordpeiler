@@ -1,6 +1,6 @@
 <template>
     <main>
-        <Panel class="helpPanel">
+        <Panel class="textPanel">
             <section>
                 <h2>Over Woordpeiler</h2>
                 <p>
@@ -49,26 +49,6 @@ const canShare = navigator.share != undefined;
 </script>
 
 <style scoped lang="scss">
-.helpPanel {
-    width: 100%;
-    min-height: 100%;
-    height: fit-content;
-
-    :deep(.p-panel-header) {
-        padding: 0.7rem;
-    }
-
-    :deep(.p-panel-content) {
-        padding: 0 2rem;
-        padding-bottom: 3rem !important;
-    }
-
-    section {
-        margin-bottom: 1rem;
-    }
-
-}
-
 .dummySearchSettings {
     max-width: 500px;
 }
@@ -85,19 +65,6 @@ span.pi,
 
     span {
         font-size: 0.8rem;
-    }
-}
-
-ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-li {
-    margin-bottom: 0.4rem;
-
-    b {
-        margin-right: 0.25rem;
     }
 }
 </style>
