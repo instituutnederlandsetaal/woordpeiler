@@ -44,7 +44,7 @@ import { share } from "@/ts/svg/share";
 import { download } from "@/ts/svg/download";
 
 // Stores
-const { searchResults, isSearching } = storeToRefs(useSearchResultsStore());
+const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
 
 // Fields
 const graph = ref(null);
@@ -55,10 +55,10 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.se
 
 // Methods
 function downloadBtn() {
-    download(graph.value.resizeState, searchResults.value);
+    download(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
 }
 function shareBtn() {
-    share(graph.value.resizeState, searchResults.value);
+    share(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
 }
 </script>
 

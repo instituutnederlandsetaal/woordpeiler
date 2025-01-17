@@ -10,6 +10,7 @@ import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
 import { v4 as uuidv4 } from 'uuid';
+import { plausibleWordsEvent } from '@/ts/plausible'
 
 export const useSearchResultsStore = defineStore('SearchResults', () => {
     // Fields
@@ -61,22 +62,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         // only show loading screen and send to plausible if we're searching
         if (toBeSearched.length > 0) {
             isSearching.value = true
-            plausibleEvent()
+            plausibleWordsEvent("grafiek", searchSettings.value, validSearchItems.value)
         }
-    }
-    function plausibleEvent() {
-        validSearchItems.value.forEach((i) => {
-            const wordLower = i.wordform?.toLowerCase()
-
-            const props: Record<string, string | undefined> = { "word": wordLower }
-            // if a language is set, add it to the props
-            if (i.language) {
-                props[`${i.language}-word`] = wordLower
-            } else if (searchSettings.value.languageSplit) {
-                props["ALL-LANG-word"] = wordLower
-            }
-            window.plausible('grafiek', { props })
-        })
     }
     function getFrequency(item: SearchItem) {
         // construct search request, partly from unsanitized user input

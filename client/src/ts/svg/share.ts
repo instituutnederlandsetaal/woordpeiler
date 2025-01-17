@@ -1,8 +1,9 @@
-import { displayName, type GraphItem } from "@/types/Search"
+import { displayName, type GraphItem, type SearchSettings } from "@/types/Search"
 import { svgString2Image } from "@/ts/svg/conversion"
 import { getFileName } from "@/ts/svg/filename"
+import { plausibleWordsEvent } from '@/ts/plausible'
 
-export function share(resizeState, words: GraphItem[]) {
+export function share(resizeState, words: GraphItem[], searchSettings: SearchSettings) {
     // choose first truthy display name or null
     const word: string | null = words.map((i) => displayName(i.searchItem)).find((i) => i) || null
 
@@ -13,7 +14,8 @@ export function share(resizeState, words: GraphItem[]) {
     }
 
     // register plausible event
-    window.plausible("share")
+    const searchItems = words.map((i) => i.searchItem)
+    plausibleWordsEvent("share", searchSettings, searchItems)
 }
 
 function canShareFiles(): boolean {
