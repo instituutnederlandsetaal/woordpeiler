@@ -103,22 +103,25 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     const month: number = parseInt(d3.timeFormat("%m")(point.x))
     const day: number = parseInt(d3.timeFormat("%d")(point.x))
 
+    const start = d3.timeFormat("%Y%m%d")(point.x)
+    let end;
+    // end depends on the bucket type and size.
     if (bucketType == "year") {
-        // for a bucket size of 2 this results in 2020-2021. 2021 is inclusive.
-        const yearFilter = `[${year} TO ${year + bucketSize - 1}]`
-        filters["witnessYear_from"] = yearFilter
-        filters["witnessYear_to"] = yearFilter
-    }
-    if (bucketType == "month") { // month or week
-        filters["witnessYear_from"] = year
-        const monthFilter = `[${month} TO ${month + bucketSize - 1}]`
-        filters["witnessMonth_from"] = monthFilter
-        filters["witnessMonth_to"] = monthFilter
+        // end is the last day of the year
+        end = d3.timeFormat("%Y%m%d")(new Date(year + bucketSize - 1, 11, 31))
+    } else if (bucketType == "month") {
+        // end is the last day of the month
+        end = d3.timeFormat("%Y%m%d")(new Date(year, month + bucketSize - 1, 0))
+    } else if (bucketType == "week") {
+        // weekEnd is 6 days later, inclusive. Not 7 days later, because that is the start of the next data point.
+        const offset = bucketSize * 7 - 1
+        end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
     } else if (bucketType == "day") {
-        filters["witnessYear_from"] = year
-        filters["witnessMonth_from"] = month
-        filters["witnessDay_from"] = day
+        // end is the last day of the period defined by the bucket size
+        const offset = bucketSize - 1;
+        end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset));
     }
+    filters["witnessDate_from"] = `[${start} TO ${end}]`
 
     if (point.searchItem.source) {
         filters["titleLevel2"] = `"${point.searchItem.source}"`

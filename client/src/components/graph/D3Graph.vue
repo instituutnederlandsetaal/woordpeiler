@@ -44,7 +44,7 @@ const graphTitle = computed(() => {
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
-const maxPoints = 100;
+const maxPoints = 500;
 
 defineExpose({ resizeState });
 
@@ -210,8 +210,7 @@ onMounted(() => {
 
         // Draw the dots
         sampledData.forEach(series => {
-            // don't draw dots for day and week
-            if (["day", "week"].includes(lastSearchSettings.value.timeBucketType)) return
+            if (lastSearchSettings.value.timeBucketType == "day" && series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return;
             // link data
             series.data.abs_freq.forEach(d => {
                 d.searchItem = series.searchItem;
