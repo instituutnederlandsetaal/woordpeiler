@@ -9,8 +9,6 @@ from datetime import datetime
 
 # third party
 from fastapi import FastAPI, Request, Response
-from fastapi_cache import FastAPICache
-from fastapi_cache.backends.inmemory import InMemoryBackend
 from psycopg_pool import AsyncConnectionPool
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.logging import ColourizedFormatter
@@ -58,9 +56,6 @@ async def lifespan(app: FastAPI):
     await app.async_pool.open()
     await app.async_pool.wait()
     logger.info("Connection pool opened")
-
-    # Cache
-    FastAPICache.init(InMemoryBackend(), expire=60)
 
     # internal or external?
     app.internal = os.getenv("INTERNAL", "false").lower() == "true"

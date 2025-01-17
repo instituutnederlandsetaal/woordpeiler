@@ -6,7 +6,6 @@ import base64
 # third party
 from psycopg.rows import dict_row
 from fastapi import Request, HTTPException, Query
-from fastapi_cache.decorator import cache
 import uvicorn
 from unidecode import unidecode
 
@@ -36,7 +35,6 @@ def health():
 
 
 @app.get("/sources")
-@cache(expire=3600)
 async def get_sources(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
@@ -44,7 +42,6 @@ async def get_sources(request: Request) -> list[str]:
 
 
 @app.get("/posses")
-@cache(expire=3600)
 async def get_posses(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
@@ -52,7 +49,6 @@ async def get_posses(request: Request) -> list[str]:
 
 
 @app.get("/posheads")
-@cache(expire=3600)
 async def get_posheads(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
@@ -82,7 +78,6 @@ async def get_trends(
 
 
 @app.get("/svg")
-@cache(expire=3600)
 async def get_svg(
     request: Request,
     id: Optional[int] = None,
@@ -157,7 +152,6 @@ async def get_math(
 
 
 @app.get("/word_frequency")
-@cache(expire=60)
 async def get_freq(
     request: Request,
     id: Optional[int] = None,
