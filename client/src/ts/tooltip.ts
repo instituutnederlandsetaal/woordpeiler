@@ -6,13 +6,33 @@ import { isInternal } from "@/ts/internal";
 
 export function tooltipHtml(point: GraphItem, settings: SearchSettings): string {
     const name = displayName(point.searchItem).split("–")[0];
+    let language_or_source;
+    if (point.searchItem.language) {
+        const langMap = {
+            "AN": "Antilliaans-Nederlands",
+            "BN": "Belgisch-Nederlands",
+            "NN": "Nederlands-Nederlands",
+            "SN": "Surinaams-Nederlands",
+        }
+        language_or_source = langMap[point.searchItem.language]
+    } else if (point.searchItem.source) {
+        language_or_source = point.searchItem.source
+    }
+    let source;
+    if (language_or_source) {
+        source = `<br><small>${language_or_source}</small>`
+    } else {
+        source = ""
+    }
+
+
     const date = d3.timeFormat("%Y-%m-%d")(point.x);
     const abs_or_rel = settings.frequencyType == "abs_freq" ? "voorkomens" : "/ mln. woorden";
     const value = `${truncateRound(point.y, 2).toLocaleString()} <small>${abs_or_rel}</small>`;
     const href = constructBlLink(point, settings);
     const a = containsMath(name) ? '' : `<a target='_blank' href='${href}'>Zoeken in CHN</a>`
 
-    return `<b>${name}</b><br>${date}<br><b>${value}</b><br/>${a}`
+    return `<b>${name}</b>${source}<br>${date}<br><b>${value}</b><br/>${a}`
 }
 
 // round e.g. 1.4999 to 1.49 at decimals=2
