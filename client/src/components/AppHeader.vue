@@ -192,26 +192,25 @@ header {
 footer {
     background-color: #48e;
     width: 100%;
-    // min-height: 110px;
-    margin-top: -0.2rem;
     padding-bottom: 1rem;
     display: flex;
     justify-content: start;
     align-items: center;
     box-shadow: 0px 4px 5px 1px #ccc;
     flex-direction: column;
-    gap: 0.3rem;
 
     h2 {
         font-family: Schoolboek;
         font-weight: 400;
         font-size: 1.5rem;
         color: white;
+        padding: 5px 0 14px 0;
     }
 
     :deep(.p-inputgroup) {
-        width: 300px;
+        width: 90%;
         height: 42px;
+        max-width: 400px;
 
         .p-inputtext {
             font-size: 1.1rem;
