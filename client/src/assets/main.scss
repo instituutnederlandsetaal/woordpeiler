@@ -90,6 +90,10 @@ p.invalid {
   min-height: 100%;
   height: fit-content;
 
+  p {
+    margin-bottom: 0.5rem;
+  }
+
   h1,
   h2,
   h3,
