@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 // Libraries
-import { onMounted, watchEffect, computed } from "vue";
+import { onMounted, watchEffect, computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import * as d3 from "d3";
 // Stores
@@ -41,12 +41,14 @@ const graphTitle = computed(() => {
     return `${freqType} woordfrequentie per ${timeBucket}`;
 });
 
+const zoomedIn = ref(false);
+
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
 const maxPoints = 500;
 
-defineExpose({ resizeState });
+defineExpose({ resizeState, resetZoom, zoomedIn });
 
 function dateFormat(date: Date) {
     if (d3.timeMonth(date) < date) {
@@ -121,10 +123,6 @@ onMounted(() => {
     // Add the legend
     const legend = svg.append("g")
         .attr("class", "legend")
-    // legend
-    //     .append("rect")
-    //     .attr("class", "legend-background")
-    //     .style("fill", "rgba(0,0,0,0.5)")
 
 
     // Set up the line generator
@@ -159,7 +157,7 @@ onMounted(() => {
 
         // first update the axes
         x.domain(d3.extent(flat, d => d.x));
-        xAxis.call(d3.axisBottom(x));
+        xAxis.call(d3.axisBottom(x).ticks(10));
         // y domain from 0 to max value
         y.domain([0, d3.max(flat, d => d.y)]);
         yAxis.call(d3.axisLeft(y));
@@ -310,10 +308,13 @@ onMounted(() => {
         // What are the selected boundaries?
         const extent = event.selection
 
+
+
         if (!extent) {
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
             x.domain(d3.extent(visible.value.flatMap(d => d.data[lastSearchSettings.value.frequencyType]), d => d.x))
+            zoomedIn.value = false;
         } else {
             // A selection was made
             // remove the grey brush area
@@ -321,13 +322,18 @@ onMounted(() => {
 
             // if the extent is really small, do nothing
             if (extent[0] + 20 > extent[1]) return // safely return, grey brush area is removed above
+            // if the extent zooms in further than a week, do nothing
+            const zoomLevel = x.domain()[1] - x.domain()[0];
+            const maxZoom = 7 * 24 * 60 * 60 * 1000;
+            if (zoomLevel < maxZoom) return
 
             // otherwise, update the x domain
             x.domain([x.invert(extent[0]), x.invert(extent[1])])
+            zoomedIn.value = true;
         }
 
         // Update axis and line position
-        xAxis.transition().duration(animationDuration).call(d3.axisBottom(x).tickFormat(dateFormat))
+        xAxis.transition().duration(animationDuration).call(d3.axisBottom(x).tickFormat(dateFormat).ticks(10))
 
         // // Sample the data to maxPoints
         // const startX = x.domain()[0];
@@ -395,20 +401,13 @@ onMounted(() => {
 
         // legend
         legend.attr("transform", `translate(${yAxisWidth + margin.legendLeft}, ${titleHeight})`);
-        // const legendBox = legend.node().getBBox()
-        // svg.select(".legend-background")
-        //     .attr("width", legendBox.width + 4)
-        //     .attr("height", legendBox.height + 4)
-        //     .attr("x", legendBox.x - 2)
-        //     .attr("y", legendBox.y - 2);
-
 
         const xAxisWidth = divWidth - yAxisWidth - margin.right;
 
         x.range([0, xAxisWidth]);
         xAxis
             .attr("transform", `translate(${yAxisWidth}, ${divHeight - xAxisHeight})`)
-            .call(d3.axisBottom(x).tickFormat(dateFormat))
+            .call(d3.axisBottom(x).tickFormat(dateFormat).ticks(10));
 
         const graphRect = {
             width: xAxisWidth,
@@ -437,6 +436,18 @@ onMounted(() => {
     });
 
 });
+
+// methods for external use
+function resetZoom() {
+    // fake double click
+    const event = new MouseEvent("dblclick", {
+        bubbles: true,
+        cancelable: true,
+        view: window
+    });
+    document.getElementById("svg-graph").dispatchEvent(event);
+    document.getElementById("svg-graph").dispatchEvent(event);
+}
 </script>
 
 <style lang="scss">

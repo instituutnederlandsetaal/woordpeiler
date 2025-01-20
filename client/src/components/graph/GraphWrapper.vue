@@ -10,6 +10,9 @@
                 <Button text severity="secondary" @click="shareBtn" v-if="canShare">
                     <span class="pi pi-share-alt" title="Delen"></span>
                 </Button>
+                <Button text severity="secondary" @click="resetZoom" v-if="zoomedIn">
+                    <span class="pi pi-search-minus" title="Uitzoomen"></span>
+                </Button>
             </template>
 
             <template v-if="searchResults.length > 0">
@@ -52,6 +55,7 @@ const canShare = navigator.share != undefined;
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
+const zoomedIn = computed(() => graph.value?.zoomedIn);
 
 // Methods
 function downloadBtn() {
@@ -59,6 +63,10 @@ function downloadBtn() {
 }
 function shareBtn() {
     share(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
+}
+
+function resetZoom() {
+    graph.value.resetZoom();
 }
 </script>
 
