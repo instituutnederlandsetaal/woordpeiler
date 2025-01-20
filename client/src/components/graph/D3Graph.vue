@@ -244,24 +244,27 @@ onMounted(() => {
             if (tooltipVisible) return;
             let tooltipWidth = tooltip.node().offsetWidth;
             let tooltipHeight = tooltip.node().offsetHeight;
-            let targetRect = event.target.getBoundingClientRect();
-            let center = {
-                x: targetRect.left + targetRect.width / 2,
-                y: targetRect.top + targetRect.height / 2
+            // The dot selected by the mouse
+            let dotRect = event.target.getBoundingClientRect();
+            dotRect.center = {
+                x: dotRect.left + dotRect.width / 2,
+                y: dotRect.top + dotRect.height / 2 + window.scrollY
             }
             let margin = 10;
 
-            left = center.x - tooltipWidth / 2;
-            top = center.y - tooltipHeight - margin;
+            left = dotRect.center.x - tooltipWidth / 2;
+            top = dotRect.center.y - tooltipHeight - margin;
 
             // if tooltip is going out of the window, then move it inside
             if (left + tooltipWidth > window.innerWidth) {
-                left = window.innerWidth - tooltipWidth;
+                left = window.innerWidth - tooltipWidth; // right align to screen edge
             }
-            if (top < 0) {
+            if (left < window.scrollX) {
+                left = window.scrollX; // left align to screen edge
+            }
+            if (top < window.scrollY) {
                 top = event.pageY + 10; // below the cursor
             }
-
             tooltip
                 .style("left", left + "px")
                 .style("top", top + "px");
