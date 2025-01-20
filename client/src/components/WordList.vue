@@ -158,6 +158,7 @@ onMounted(() => {
         color: blue;
         margin-top: 0.3em;
         margin-bottom: -0.5rem;
+        font-size: 0.9rem;
     }
 }
 
