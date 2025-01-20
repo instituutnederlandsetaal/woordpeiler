@@ -67,6 +67,10 @@
                                     om een nieuwe zoekterm toe te voegen aan de grafiek.
                                 </li>
                             </ul>
+
+                            <div class="image">
+                                <img src="@/assets/img/zoekterm.png" alt="Zoekterm" style="max-width: 400px;" />
+                            </div>
                         </section>
 
                         <section>
@@ -105,6 +109,11 @@
                                 </li>
 
                             </ul>
+
+                            <div class="image">
+                                <img src="@/assets/img/zoekinstellingen.png" alt="Zoekinstellingen"
+                                    style="max-width: 700px;" />
+                            </div>
                         </section>
 
                         <section>
@@ -181,6 +190,15 @@ const canShare = navigator.share != undefined;
 </script>
 
 <style scoped lang="scss">
+.image {
+    display: flex;
+    justify-content: center;
+
+    img {
+        width: 100%;
+    }
+}
+
 main {
     height: fit-content;
     flex: 1;
