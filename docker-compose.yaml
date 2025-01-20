@@ -67,7 +67,7 @@ services:
         restart: unless-stopped
 
     proxy:
-        image: nginx:1.27.2-alpine3.20
+        image: nginx:1.27.3-alpine3.20
         volumes:
             - ./proxy/nginx.conf:/etc/nginx/nginx.conf
         depends_on:
