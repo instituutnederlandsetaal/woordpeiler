@@ -89,6 +89,7 @@ p.invalid {
   width: 100%;
   min-height: 100%;
   height: fit-content;
+  flex: 1;
 
   p {
     margin-bottom: 0.5rem;
@@ -102,13 +103,21 @@ p.invalid {
   }
 
   .p-panel-header {
-    padding: 0.7rem;
+    padding: 0.4rem;
   }
 
-  .p-panel-content {
-    padding: 0 2rem;
-    padding-bottom: 3rem !important;
+  .p-panel-content-container,
+  .p-tabpanels {
+    display: flex !important;
+    justify-content: center !important;
+
+    .p-panel-content,
+    .p-tabpanel {
+      max-width: 1000px !important;
+      padding-bottom: 3rem !important;
+    }
   }
+
 
   section {
     margin-bottom: 1rem;
