@@ -66,6 +66,9 @@ async def get_trends(
     language: Optional[str] = None,
     exclude: Annotated[Optional[list[str]], Query()] = None,
 ) -> list[Any]:
+    if not request.app.internal:
+        return HTTPException(status_code=403, detail="Permission denied")
+
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             return (
@@ -167,9 +170,7 @@ async def get_freq(
 ) -> list[DataSeries]:
     # permission check
     if any([source, lemma, pos, id]) and not request.app.internal:
-        raise HTTPException(
-            status_code=403, detail="Permission denied: source filter is not allowed"
-        )
+        raise HTTPException(status_code=403, detail="Permission denied")
 
     # unicode normalization
     if wordform is not None:
