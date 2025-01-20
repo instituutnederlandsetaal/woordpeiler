@@ -179,6 +179,10 @@ async def get_freq(
     if lemma is not None:
         lemma = unidecode(lemma)
 
+    # period_length check
+    if period_length < 1:
+        raise HTTPException(status_code=400, detail="Invalid periodLength")
+
     # send to math
     if wordform and ("+" in wordform or "/" in wordform):
         return await get_math(
