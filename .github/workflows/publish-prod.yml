@@ -22,4 +22,4 @@ jobs:
       - name: Build and push
         run: ./scripts/build-and-push-all.sh
         env:
-          VERSION_LABEL: $GITHUB_REF_NAME
+          VERSION_LABEL: ${{ github.ref_name }}
