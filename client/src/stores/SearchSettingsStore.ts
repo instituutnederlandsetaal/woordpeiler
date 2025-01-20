@@ -28,7 +28,9 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
             { label: "maand", value: "month" },
             { label: "jaar", value: "year" },
         ]
-        if (isInternal()) {
+        // For now always true, could be set back to internal
+        const showDaySetting = true // isInternal()
+        if (showDaySetting) {
             opts.unshift({ label: "dag", value: "day" })
         }
         return opts

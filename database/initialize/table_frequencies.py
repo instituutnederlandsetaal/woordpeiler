@@ -44,12 +44,16 @@ fill_word_ids = """
     WHERE f.wordform = w.wordform AND f.lemma = w.lemma AND f.pos = w.pos;
 """
 
-drop_word_and_source_columns = """
+drop_word_columns = """
     ALTER TABLE frequencies
     DROP COLUMN wordform,
     DROP COLUMN lemma,
     DROP COLUMN pos,
-    DROP COLUMN poshead,
+    DROP COLUMN poshead;
+"""
+
+drop_source_columns = """
+    ALTER TABLE frequencies
     DROP COLUMN source,
     DROP COLUMN language;
 """
@@ -81,6 +85,7 @@ FROM
 add_indices = """
     CREATE INDEX IF NOT EXISTS frequencies_word_id_source_id ON frequencies (word_id, source_id) INCLUDE (time, frequency);
     CREATE INDEX IF NOT EXISTS frequencies_source_id ON frequencies (source_id) INCLUDE (time, frequency);
+    CREATE INDEX IF NOT EXISTS frequencies_time ON frequencies (time) INCLUDE (frequency); -- needed for calculating corpus_size quickly
 """
 
 
@@ -98,13 +103,24 @@ def create_table_frequencies(folder: str):
 
 def add_source_and_word_id_columns():
     time_query(
-        msg="Adding columns source_id and word_id to frequencies",
-        queries=[
-            add_id_columns,
-            fill_source_ids,
-            fill_word_ids,
-            drop_word_and_source_columns,
-        ],
+        msg="Adding id column",
+        queries=[add_id_columns],
+    )
+    time_query(
+        msg="Filling source ids",
+        queries=[fill_source_ids],
+    )
+    time_query(
+        msg="Dropping source columns",
+        queries=[drop_source_columns],
+    )
+    time_query(
+        msg="Filling word ids",
+        queries=[fill_word_ids],
+    )
+    time_query(
+        msg="Dropping word columns",
+        queries=[drop_word_columns],
     )
     analyze_vacuum()
 

@@ -10,6 +10,7 @@ import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
 import { v4 as uuidv4 } from 'uuid';
+import { plausibleWordsEvent } from '@/ts/plausible'
 
 export const useSearchResultsStore = defineStore('SearchResults', () => {
     // Fields
@@ -44,8 +45,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         const toBeSearched = validSearchItems.value.filter((i: SearchItem) => !searchResults.value.map((x) => x.searchItem).some((j) => equalSearchItem(i, j)))
         // search for each search item
         toBeSearched.forEach((ds) => {
-            if (searchSettings.value.languageSplit && !ds.language) {
-                // split by language
+            if (searchSettings.value.languageSplit && !(ds.language || ds.source)) {
+                // split by language, but only if language or source is not set
                 languageOptions.value.forEach((lang) => {
                     getFrequency({ ...ds, language: lang.value, color: lang.color })
                 })
@@ -61,20 +62,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         // only show loading screen and send to plausible if we're searching
         if (toBeSearched.length > 0) {
             isSearching.value = true
-            plausibleEvent()
+            plausibleWordsEvent("grafiek", searchSettings.value, validSearchItems.value)
         }
-    }
-    function plausibleEvent() {
-        validSearchItems.value.forEach((i) => {
-            const props: Record<string, string | undefined> = { "word": i.wordform }
-            // if a language is set, add it to the props
-            if (i.language) {
-                props[`${i.language}-word`] = i.wordform
-            } else if (searchSettings.value.languageSplit) {
-                props["ALL-LANG-word"] = i.wordform
-            }
-            window.plausible('grafiek', { props })
-        })
     }
     function getFrequency(item: SearchItem) {
         // construct search request, partly from unsanitized user input

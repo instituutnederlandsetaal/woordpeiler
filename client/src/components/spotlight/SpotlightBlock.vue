@@ -1,5 +1,5 @@
 <template>
-    <section :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
+    <section class="spotlight" :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
         <header>
             <h2>
                 {{ spotlight.word.toLowerCase().trim() }}
@@ -102,10 +102,6 @@ section {
         font-weight: 400;
         padding-bottom: 0.5rem;
         width: 100%;
-    }
-
-    * {
-        transition: all 0.15s linear;
     }
 }
 

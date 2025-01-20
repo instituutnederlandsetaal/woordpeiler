@@ -1,7 +1,7 @@
 @use 'sass:color';
 
 
-$theme: #62b6ff;
+$theme: #48e;
 
 :root:root {
     --p-scrollpanel-bar-background: #aaa;
@@ -15,6 +15,7 @@ $theme: #62b6ff;
     --p-primary-active-color: #{color.adjust($theme, $lightness: -20%)};
     --p-primary-hover-color: #{color.adjust($theme, $lightness: -10%)};
     --p-button-primary-background: #46a9ff;
+    --p-tabs-tab-active-color: #{$theme};
 
     // Dialog
     --p-dialog-header-padding: 1rem 1rem 0.3rem 1rem;
@@ -31,6 +32,13 @@ $theme: #62b6ff;
     --p-checkbox-width: 1.65rem;
     --p-checkbox-height: 1.65rem;
     --p-checkbox-icon-size: 1.2rem;
+
+    // SelectButton
+    --p-togglebutton-padding: 0.5rem 0.8rem;
+
+    // Accordion
+    --p-accordion-content-padding: 0 0 1rem 0;
+    --p-accordion-header-padding: 1rem 0 1rem 0;
 
     .p-button-rounded {
         border-radius: 0;

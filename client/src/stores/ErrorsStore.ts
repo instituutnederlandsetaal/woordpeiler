@@ -11,7 +11,7 @@ export const useErrorsStore = defineStore('Errors', () => {
             response => response,
             error => {
                 // ignore spotlight errors
-                if (error.config.url.includes("wp-content")) {
+                if (error.config.url.includes("woordpeiler.json")) {
                     return Promise.reject(error)
                 }
 

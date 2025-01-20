@@ -1,19 +1,25 @@
 <template>
     <main>
-        <Panel class="helpPanel">
+        <Panel class="textPanel">
             <section>
-                <h2>Over Woordpeiler</h2>
+                <h2>Over de applicatie</h2>
                 <p>
-
+                    <i>Woordpeiler</i> is gemaakt door het Instituut voor de Nederlandse Taal (INT). De website maakt
+                    gebruik
+                    van de data uit het Corpus Hedendaags Nederlands (CHN), en voor onderzoekers is er vanuit
+                    <i>Woordpeiler</i> een directe koppeling naar het CHN om gedetailleerde (meta)data te kunnen
+                    bekijken.
                 </p>
-                <h3>Bronmateriaal</h3>
+            </section>
+            <section>
+                <h2>Bronmateriaal</h2>
                 <p>
                     De gegevens in <i>Woordpeiler</i> komen uit het krantenmateriaal van het
                     <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/">
                         Corpus Hedendaags Nederlands
                     </a>.
                 </p>
-                <h4>Samenstelling</h4>
+                <h3>Samenstelling</h3>
                 <ul>
                     <li>
                         <i>Antilliaans-Nederlands:</i>
@@ -21,12 +27,14 @@
                     </li>
                     <li>
                         <i>Belgisch-Nederlands:</i>
-                        De Morgen, De Standaard, Gazet van Antwerpen, Het Belang van Limburg, Het Laatste Nieuws,
+                        De Morgen, De Standaard, Gazet van Antwerpen, Het Belang van Limburg, Het Laatste
+                        Nieuws,
                         Het Nieuwsblad, Wablieft, WAI-NOT Krant.
                     </li>
                     <li>
                         <i>Nederlands-Nederlands:</i>
-                        ANP, Algemeen Dagblad, Dordrechts Dagblad, Elsevier, De Groene Amsterdammer, de Volkskrant,
+                        ANP, Algemeen Dagblad, Dordrechts Dagblad, Elsevier, De Groene Amsterdammer, de
+                        Volkskrant,
                         HP/De Tijd, Het Parool, Meppeler Courant, NRC, Start!-krant, Trouw, Vrij Nederland.
                     </li>
                     <li>
@@ -37,67 +45,35 @@
                 <p>
                 </p>
             </section>
+            <div class="logos">
+                <a href="https://www.ivdnt.org">
+                    <img src="@/assets/ivdNt-logo-3regels.svg" alt="Logo Instituut voor de Nederlandse taal"
+                        title="Instituut voor de Nederlandse taal" />
+                </a>
+            </div>
         </Panel>
     </main>
 </template>
 
 <script setup lang="ts">
 import Panel from 'primevue/panel';
-import ColorPicker from 'primevue/colorpicker';
-
-const canShare = navigator.share != undefined;
 </script>
 
 <style scoped lang="scss">
-.helpPanel {
-    width: 100%;
-    min-height: 100%;
-    height: fit-content;
+.logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
 
-    :deep(.p-panel-header) {
-        padding: 0.7rem;
-    }
+    a {
+        display: block;
+        width: 100%;
+        max-width: 200px;
 
-    :deep(.p-panel-content) {
-        padding: 0 2rem;
-        padding-bottom: 3rem !important;
-    }
-
-    section {
-        margin-bottom: 1rem;
-    }
-
-}
-
-.dummySearchSettings {
-    max-width: 500px;
-}
-
-span.pi,
-.p-colorpicker {
-    padding: 0 0.2rem;
-}
-
-.dummyNewWord {
-    border: 2px dashed #ccc;
-    background: #eee;
-    width: 60px;
-
-    span {
-        font-size: 0.8rem;
-    }
-}
-
-ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-li {
-    margin-bottom: 0.4rem;
-
-    b {
-        margin-right: 0.25rem;
+        img {
+            width: 100%;
+        }
     }
 }
 </style>

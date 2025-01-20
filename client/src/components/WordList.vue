@@ -28,7 +28,7 @@
                 </Button>
             </template>
 
-            <p class="invalid" v-if="invalidInputText(searchItem.lemma)">
+            <p class="invalid" v-if="invalidInputText(searchItem.lemma) || invalidInputText(searchItem.wordform)">
                 Zoeken op woordgroepen is niet mogelijk.
             </p>
             <p class="invalid" v-if="searchItem.language && searchItem.source">Kies óf een <b>krant</b> óf een
@@ -37,7 +37,8 @@
 
             <div class="formSplit">
                 <label for="word">Woord</label><br />
-                <InputText id="word" v-model="searchItem.wordform" @keyup.enter="search" />
+                <InputText :invalid="invalidInputText(searchItem.wordform)" id="word" v-model="searchItem.wordform"
+                    @keyup.enter="search" />
             </div>
 
             <template v-if="$internal">
@@ -69,6 +70,10 @@
                     :invalid="searchItem.language && searchItem.source" />
             </div>
 
+            <a class="searchCHN" :href="constructSearchLink(searchItem, searchSettingsStore.searchSettings)"
+                target="_blank" v-if="searchItem.wordform && !invalidSearchItem(searchItem)">
+                Zoeken in CHN (2000 &ndash; nu)
+            </a>
 
         </Panel>
         <Button style="border: 2px dashed #ccc; background: #eee; min-height: 40px" class="newWord" severity="secondary"
@@ -97,6 +102,7 @@ import CascadeSelect from 'primevue/cascadeselect'
 // Util
 import { displayName, invalidSearchItem, invalidInputText } from "@/types/Search"
 import { randomColor } from "@/ts/color"
+import { constructSearchLink } from "@/ts/blacklab/blacklab"
 
 // Store
 const searchItemsStore = useSearchItemsStore()
@@ -145,6 +151,14 @@ onMounted(() => {
         &:active {
             background: #e0e0e0 !important;
         }
+    }
+
+    .searchCHN {
+        display: block;
+        color: blue;
+        margin-top: 0.3em;
+        margin-bottom: -0.5rem;
+        font-size: 0.9rem;
     }
 }
 

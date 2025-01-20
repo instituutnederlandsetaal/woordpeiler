@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "npm"
+    directory: "/client"
+    target-branch: "development"
+    schedule:
+      interval: "monthly"
+      
+  - package-ecosystem: "pip"
+    directory: "/database"
+    target-branch: "development"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "pip"
+    directory: "/server"
+    target-branch: "development"
+    schedule:
+      interval: "monthly"
+      
+  - package-ecosystem: "docker"
+    target-branch: "development"
+    directories:
+      - "/server"
+      - "/client"
+      - "/proxy"
+    schedule:
+      interval: "monthly"
+      

@@ -34,7 +34,7 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
         }
         // single empty item
         if (searchItems.value.length == 1) {
-            return displayName(searchItems.value[0]) != ""
+            return !invalidSearchItem(searchItems.value[0])
         }
         // Check every term
         for (const i of searchItems.value) {
@@ -52,6 +52,11 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     /** Fetch all unique sources and parts of speech */
     async function fetchOptions() {
         if (!isInternal()) return
+
+        // Dont keep refetching
+        if (sourceOptions.value.length > 0 && posOptions.value.length > 0) {
+            return
+        }
 
         ListingAPI.getSources()
             .then((response) => {

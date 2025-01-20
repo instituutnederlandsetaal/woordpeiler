@@ -21,10 +21,9 @@ def create_lookup_tables():
             create_days_per_source,
         ],
     )
+    create_source_frequency_table()
     create_daily_monthly_yearly_total_counts()
     create_wordform_lookup_tables()
-    create_source_frequency_table()
-    analyze_vacuum()
 
 
 def create_daily_monthly_yearly_total_counts():
@@ -167,6 +166,7 @@ def create_daily_monthly_yearly_total_counts():
             """,
         ],
     )
+    analyze_vacuum()
 
 
 def create_wordform_lookup_tables():
@@ -245,6 +245,7 @@ def create_wordform_lookup_tables():
             """,
         ],
     )
+    analyze_vacuum()
 
 
 def create_source_frequency_table():
@@ -272,6 +273,7 @@ def create_source_frequency_table():
             """,
         ],
     )
+    analyze_vacuum()
 
 
 if __name__ == "__main__":

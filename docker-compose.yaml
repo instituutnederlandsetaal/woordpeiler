@@ -50,7 +50,7 @@ services:
         image: instituutnederlandsetaal/woordpeiler-server:${VERSION_LABEL}
         environment:
             - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_HOST=database # Always refer to the database container
             - POSTGRES_PORT=${POSTGRES_PORT}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -67,9 +67,9 @@ services:
         restart: unless-stopped
 
     proxy:
-        image: nginx:1.27.2-alpine3.20
+        image: nginx:1.27.3-alpine3.20
         volumes:
-            - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./proxy/nginx.conf:/etc/nginx/nginx.conf
         depends_on:
             - client
             - server

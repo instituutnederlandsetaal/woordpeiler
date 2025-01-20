@@ -83,3 +83,57 @@ p.invalid {
     min-width: inherit;
   }
 }
+
+// help & about
+.textPanel {
+  width: 100%;
+  min-height: 100%;
+  height: fit-content;
+  flex: 1;
+
+  p {
+    margin-bottom: 0.5rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 400;
+  }
+
+  .p-panel-header {
+    padding: 0.4rem;
+  }
+
+  .p-panel-content-container,
+  .p-tabpanels {
+    display: flex !important;
+    justify-content: center !important;
+
+    .p-panel-content,
+    .p-tabpanel {
+      max-width: 1000px !important;
+      padding-bottom: 3rem !important;
+    }
+  }
+
+
+  section {
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  li {
+    margin-bottom: 0.4rem;
+
+    b {
+      margin-right: 0.25rem;
+    }
+  }
+
+}

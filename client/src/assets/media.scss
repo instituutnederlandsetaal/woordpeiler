@@ -1,9 +1,4 @@
 @media screen and (max-width: 1200px) {
-    body {
-        overflow: auto;
-        height: fit-content;
-    }
-
     main {
         flex-direction: column;
         justify-content: flex-end;
@@ -122,6 +117,50 @@
 
         #hamburger {
             display: inherit !important;
+        }
+    }
+
+    footer h2 {
+        font-size: 1.2rem !important;
+    }
+
+    main div.wrapper section.spotlight header h2 {
+        font-size: 1.5rem !important;
+        padding-bottom: 0.3rem;
+    }
+
+    .textPanel {
+        font-size: 0.8rem;
+
+        .p-panel-header {
+            padding: 0.3rem 0;
+        }
+
+        .p-panel-content {
+            padding: 0 1rem !important;
+        }
+    }
+
+    .graph {
+        margin-top: 30px;
+
+        .p-panel {
+
+            .p-panel-header {
+                box-sizing: border-box !important;
+                background-color: white;
+                height: 30px !important;
+                margin-top: -30px;
+                position: static;
+                border: 1px solid #e2e8f0;
+                border-bottom: none;
+                margin-left: -1px !important;
+
+                .p-button {
+                    height: 100%;
+                    margin: 0 !important;
+                }
+            }
         }
     }
 

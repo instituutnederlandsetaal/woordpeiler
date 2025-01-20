@@ -28,17 +28,19 @@
             <RouterLink to="/grafiek">grafiek</RouterLink>
             <RouterLink to="/help">help</RouterLink>
             <RouterLink to="/over">over</RouterLink>
+            <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/" target="_blank">chn</a>
 
             <!-- hamburger menu -->
             <Button text severity="secondary" type="button" icon="pi pi-bars" @click="(event) => { menu.toggle(event) }"
-                aria-haspopup="true" aria-controls="overlayMenu" id="hamburger" />
+                aria-haspopup="true" aria-controls="overlayMenu" id="hamburger" title="Menu" />
             <Menu ref="menu" id="overlayMenu" :model="menuItems" :popup="true" />
         </nav>
 
     </header>
     <footer v-if="isHomePage">
+        <h2>woordtrends van 2000 tot nu</h2>
         <InputGroup>
-            <InputText v-model="word" placeholder="zoeken" @keyup.enter="search" autofocus />
+            <InputText v-model="word" placeholder="zoeken" @keyup.enter="search" />
             <Button severity="secondary" @click="search">
                 <span class="pi pi-search"></span>
             </Button>
@@ -91,6 +93,12 @@ const menuItems = computed(() => {
                 router.push('/over');
             }
         },
+        {
+            label: 'chn',
+            icon: 'pi pi-database',
+            url: 'https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/',
+            target: '_blank'
+        }
     ]
 
     if (isInternal()) {
@@ -184,17 +192,25 @@ header {
 footer {
     background-color: #48e;
     width: 100%;
-    min-height: 68px;
+    padding-bottom: 1rem;
     display: flex;
-    justify-content: center;
-    align-items: start;
-    padding-top: 8.5px;
+    justify-content: start;
+    align-items: center;
     box-shadow: 0px 4px 5px 1px #ccc;
+    flex-direction: column;
 
+    h2 {
+        font-family: Schoolboek;
+        font-weight: 400;
+        font-size: 1.5rem;
+        color: white;
+        padding: 5px 0 14px 0;
+    }
 
     :deep(.p-inputgroup) {
-        width: 300px;
+        width: 90%;
         height: 42px;
+        max-width: 400px;
 
         .p-inputtext {
             font-size: 1.1rem;

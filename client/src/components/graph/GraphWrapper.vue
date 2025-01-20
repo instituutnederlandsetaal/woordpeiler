@@ -7,8 +7,11 @@
                 <Button text severity="secondary" @click="downloadBtn">
                     <span class="pi pi-download" title="Downloaden"></span>
                 </Button>
-                <Button text severity="secondary" @click="webShareAPI" v-if="canShare">
+                <Button text severity="secondary" @click="shareBtn" v-if="canShare">
                     <span class="pi pi-share-alt" title="Delen"></span>
+                </Button>
+                <Button text severity="secondary" @click="resetZoom" v-if="zoomedIn">
+                    <span class="pi pi-search-minus" title="Uitzoomen"></span>
                 </Button>
             </template>
 
@@ -33,7 +36,6 @@ import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 // Stores
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
-import { useSearchSettingsStore } from "@/stores/SearchSettingsStore";
 // Components
 import D3Graph from "@/components/graph/D3Graph.vue";
 // Primevue
@@ -41,23 +43,31 @@ import ProgressSpinner from "primevue/progressspinner";
 import Panel from "primevue/panel";
 import Button from "primevue/button";
 // Util
-import { download, share } from "@/ts/saveSvg";
+import { share } from "@/ts/svg/share";
+import { download } from "@/ts/svg/download";
 
 // Stores
 const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
 
 // Fields
 const graph = ref(null);
-function downloadBtn() {
-    download(graph.value.resizeState);
-}
-function webShareAPI() {
-    share(graph.value.resizeState);
-}
 const canShare = navigator.share != undefined;
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
+const zoomedIn = computed(() => graph.value?.zoomedIn);
+
+// Methods
+function downloadBtn() {
+    download(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
+}
+function shareBtn() {
+    share(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
+}
+
+function resetZoom() {
+    graph.value.resetZoom();
+}
 </script>
 
 <style scoped lang="scss">

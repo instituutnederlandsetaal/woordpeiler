@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 // Libraries
-import { onMounted, watchEffect, computed } from "vue";
+import { onMounted, watchEffect, computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import * as d3 from "d3";
 // Stores
@@ -14,6 +14,7 @@ import { useSearchResultsStore } from "@/stores/SearchResultsStore";
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, type GraphItem } from "@/types/Search";
 import { tooltipHtml } from "@/ts/tooltip";
+import { constructSearchLink } from "@/ts/blacklab/blacklab";
 
 // Stores
 const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore());
@@ -41,12 +42,14 @@ const graphTitle = computed(() => {
     return `${freqType} woordfrequentie per ${timeBucket}`;
 });
 
+const zoomedIn = ref(false);
+
 // create another ref to observe resizing, since observing SVGs doesn't work!
 const { resizeRef, resizeState } = useResizeObserver();
 const animationDuration = 500;
-const maxPoints = 100;
+const maxPoints = 500;
 
-defineExpose({ resizeState });
+defineExpose({ resizeState, resetZoom, zoomedIn });
 
 function dateFormat(date: Date) {
     if (d3.timeMonth(date) < date) {
@@ -121,10 +124,6 @@ onMounted(() => {
     // Add the legend
     const legend = svg.append("g")
         .attr("class", "legend")
-    // legend
-    //     .append("rect")
-    //     .attr("class", "legend-background")
-    //     .style("fill", "rgba(0,0,0,0.5)")
 
 
     // Set up the line generator
@@ -159,7 +158,7 @@ onMounted(() => {
 
         // first update the axes
         x.domain(d3.extent(flat, d => d.x));
-        xAxis.call(d3.axisBottom(x));
+        xAxis.call(d3.axisBottom(x).ticks(10));
         // y domain from 0 to max value
         y.domain([0, d3.max(flat, d => d.y)]);
         yAxis.call(d3.axisLeft(y));
@@ -185,7 +184,11 @@ onMounted(() => {
                 .attr("width", 12)
                 .attr("height", 12)
                 .style("fill", "#" + series.searchItem.color);
-            legendItem.append("text")
+            const chnLink = constructSearchLink(series.searchItem, lastSearchSettings.value);
+            legendItem.append("a")
+                .attr("xlink:href", chnLink)
+                .attr("target", "_blank")
+                .append("text")
                 .text(displayName(series.searchItem))
                 .style("fill", 'black')
                 .style("font-size", "calc(0.5vw + 0.6rem)")
@@ -210,7 +213,7 @@ onMounted(() => {
 
         // Draw the dots
         sampledData.forEach(series => {
-            if (lastSearchSettings.value.timeBucketType == "day") return
+            if (lastSearchSettings.value.timeBucketType == "day" && series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return;
             // link data
             series.data.abs_freq.forEach(d => {
                 d.searchItem = series.searchItem;
@@ -244,24 +247,27 @@ onMounted(() => {
             if (tooltipVisible) return;
             let tooltipWidth = tooltip.node().offsetWidth;
             let tooltipHeight = tooltip.node().offsetHeight;
-            let targetRect = event.target.getBoundingClientRect();
-            let center = {
-                x: targetRect.left + targetRect.width / 2,
-                y: targetRect.top + targetRect.height / 2
+            // The dot selected by the mouse
+            let dotRect = event.target.getBoundingClientRect();
+            dotRect.center = {
+                x: dotRect.left + dotRect.width / 2,
+                y: dotRect.top + dotRect.height / 2 + window.scrollY
             }
             let margin = 10;
 
-            left = center.x - tooltipWidth / 2;
-            top = center.y - tooltipHeight - margin;
+            left = dotRect.center.x - tooltipWidth / 2;
+            top = dotRect.center.y - tooltipHeight - margin;
 
             // if tooltip is going out of the window, then move it inside
             if (left + tooltipWidth > window.innerWidth) {
-                left = window.innerWidth - tooltipWidth;
+                left = window.innerWidth - tooltipWidth; // right align to screen edge
             }
-            if (top < 0) {
+            if (left < window.scrollX) {
+                left = window.scrollX; // left align to screen edge
+            }
+            if (top < window.scrollY) {
                 top = event.pageY + 10; // below the cursor
             }
-
             tooltip
                 .style("left", left + "px")
                 .style("top", top + "px");
@@ -284,7 +290,7 @@ onMounted(() => {
                 // Needs to be on a timeout to prevent the same click from clicking on the link. (weird...)
                 setTimeout(() => {
                     showTooltip(event, d);
-                }, 100);
+                }, 400);
 
             });
 
@@ -307,10 +313,13 @@ onMounted(() => {
         // What are the selected boundaries?
         const extent = event.selection
 
+
+
         if (!extent) {
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
             x.domain(d3.extent(visible.value.flatMap(d => d.data[lastSearchSettings.value.frequencyType]), d => d.x))
+            zoomedIn.value = false;
         } else {
             // A selection was made
             // remove the grey brush area
@@ -318,13 +327,18 @@ onMounted(() => {
 
             // if the extent is really small, do nothing
             if (extent[0] + 20 > extent[1]) return // safely return, grey brush area is removed above
+            // if the extent zooms in further than a week, do nothing
+            const zoomLevel = x.domain()[1] - x.domain()[0];
+            const maxZoom = 7 * 24 * 60 * 60 * 1000;
+            if (zoomLevel < maxZoom) return
 
             // otherwise, update the x domain
             x.domain([x.invert(extent[0]), x.invert(extent[1])])
+            zoomedIn.value = true;
         }
 
         // Update axis and line position
-        xAxis.transition().duration(animationDuration).call(d3.axisBottom(x).tickFormat(dateFormat))
+        xAxis.transition().duration(animationDuration).call(d3.axisBottom(x).tickFormat(dateFormat).ticks(10))
 
         // // Sample the data to maxPoints
         // const startX = x.domain()[0];
@@ -392,20 +406,13 @@ onMounted(() => {
 
         // legend
         legend.attr("transform", `translate(${yAxisWidth + margin.legendLeft}, ${titleHeight})`);
-        // const legendBox = legend.node().getBBox()
-        // svg.select(".legend-background")
-        //     .attr("width", legendBox.width + 4)
-        //     .attr("height", legendBox.height + 4)
-        //     .attr("x", legendBox.x - 2)
-        //     .attr("y", legendBox.y - 2);
-
 
         const xAxisWidth = divWidth - yAxisWidth - margin.right;
 
         x.range([0, xAxisWidth]);
         xAxis
             .attr("transform", `translate(${yAxisWidth}, ${divHeight - xAxisHeight})`)
-            .call(d3.axisBottom(x).tickFormat(dateFormat))
+            .call(d3.axisBottom(x).tickFormat(dateFormat).ticks(10));
 
         const graphRect = {
             width: xAxisWidth,
@@ -434,6 +441,18 @@ onMounted(() => {
     });
 
 });
+
+// methods for external use
+function resetZoom() {
+    // fake double click
+    const event = new MouseEvent("dblclick", {
+        bubbles: true,
+        cancelable: true,
+        view: window
+    });
+    document.getElementById("svg-graph").dispatchEvent(event);
+    document.getElementById("svg-graph").dispatchEvent(event);
+}
 </script>
 
 <style lang="scss">
