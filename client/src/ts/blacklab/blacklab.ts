@@ -8,8 +8,10 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     let group
     if (settings.timeBucketType == "year") {
         group = "field:grouping_year:i"
-    } else {
+    } else if (settings.timeBucketType == "month" || settings.timeBucketType == "week") {
         group = "field:grouping_year:i,field:grouping_month:i"
+    } else {
+        group = "field:grouping_year:i,field:grouping_month:i,field:grouping_day:i"
     }
 
     // optionally filter on language
