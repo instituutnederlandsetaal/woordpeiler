@@ -67,7 +67,7 @@ async def get_trends(
     exclude: Annotated[Optional[list[str]], Query()] = None,
 ) -> list[Any]:
     if not request.app.internal:
-        return HTTPException(status_code=403, detail="Permission denied")
+        raise HTTPException(status_code=403, detail="Permission denied")
 
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
