@@ -14,6 +14,7 @@ import { useSearchResultsStore } from "@/stores/SearchResultsStore";
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, type GraphItem } from "@/types/Search";
 import { tooltipHtml } from "@/ts/tooltip";
+import { constructSearchLink } from "@/ts/blacklab/blacklab";
 
 // Stores
 const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore());
@@ -183,7 +184,11 @@ onMounted(() => {
                 .attr("width", 12)
                 .attr("height", 12)
                 .style("fill", "#" + series.searchItem.color);
-            legendItem.append("text")
+            const chnLink = constructSearchLink(series.searchItem, lastSearchSettings.value);
+            legendItem.append("a")
+                .attr("xlink:href", chnLink)
+                .attr("target", "_blank")
+                .append("text")
                 .text(displayName(series.searchItem))
                 .style("fill", 'black')
                 .style("font-size", "calc(0.5vw + 0.6rem)")
