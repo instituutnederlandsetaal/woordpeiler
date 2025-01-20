@@ -141,4 +141,27 @@
         }
     }
 
+    .graph {
+        margin-top: 30px;
+
+        .p-panel {
+
+            .p-panel-header {
+                box-sizing: border-box !important;
+                background-color: white;
+                height: 30px !important;
+                margin-top: -30px;
+                position: static;
+                border: 1px solid #e2e8f0;
+                border-bottom: none;
+                margin-left: -1px !important;
+
+                .p-button {
+                    height: 100%;
+                    margin: 0 !important;
+                }
+            }
+        }
+    }
+
 }

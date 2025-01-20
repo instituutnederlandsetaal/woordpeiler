@@ -32,7 +32,7 @@
 
             <!-- hamburger menu -->
             <Button text severity="secondary" type="button" icon="pi pi-bars" @click="(event) => { menu.toggle(event) }"
-                aria-haspopup="true" aria-controls="overlayMenu" id="hamburger" />
+                aria-haspopup="true" aria-controls="overlayMenu" id="hamburger" title="Menu" />
             <Menu ref="menu" id="overlayMenu" :model="menuItems" :popup="true" />
         </nav>
 
