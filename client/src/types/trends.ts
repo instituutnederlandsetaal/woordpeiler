@@ -7,6 +7,7 @@ export type TrendSettings = {
     modifier: number;
     period: string;
     enriched: boolean;
+    ascending: boolean;
     language?: string;
 }
 

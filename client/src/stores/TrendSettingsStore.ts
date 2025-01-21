@@ -16,6 +16,7 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
         modifier: 1,
         period: "year",
         enriched: true,
+        ascending: false,
     })
     const trendTypeOptions: SelectLabel[] = [
         { label: "keyness", value: "keyness" },

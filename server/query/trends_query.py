@@ -1,6 +1,5 @@
 # standard
 import calendar
-from ctypes.wintypes import LANGID
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -24,8 +23,9 @@ class TrendsQuery(QueryBuilder):
     modifier: Literal
     trend_type: TrendType
     enriched: bool
-    abs_freq = Identifier
+    abs_freq: Identifier
     counts_table: Identifier
+    gradient: Composable
 
     def __init__(
         self,
@@ -35,6 +35,7 @@ class TrendsQuery(QueryBuilder):
         end_date: Optional[int] = None,
         enriched: bool = True,
         language: Optional[str] = None,
+        ascending_gradient: bool = False,
     ) -> None:
         self.enriched = enriched
         self.modifier = Literal(modifier)
@@ -44,6 +45,8 @@ class TrendsQuery(QueryBuilder):
         )
         self.end_date = Literal(datetime.fromtimestamp(end_date).strftime("%Y%m%d"))
         self.counts_table = TrendsQuery.get_counts_table(start_date, end_date)
+
+        self.gradient = SQL("ASC" if ascending_gradient else "DESC")
 
         if language is None:
             self.abs_freq = Identifier("abs_freq")
@@ -106,7 +109,7 @@ class TrendsQuery(QueryBuilder):
                     ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
                 FROM tc
                 LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
-                ORDER BY keyness DESC
+                ORDER BY keyness {gradient}
                 LIMIT 1000
             )
             SELECT
@@ -124,6 +127,7 @@ class TrendsQuery(QueryBuilder):
             date_filter=self.date_filter,
             modifier=self.modifier,
             counts_table=self.counts_table,
+            gradient=self.gradient,
         )
 
         return ExecutableQuery(cursor, query)
@@ -192,7 +196,7 @@ class TrendsQuery(QueryBuilder):
                     ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
                 FROM tc
                 LEFT JOIN total_wordforms rc ON tc.wordform = rc.wordform
-                ORDER BY keyness DESC
+                ORDER BY keyness {gradient}
                 LIMIT 1000
             )
             SELECT
@@ -204,6 +208,7 @@ class TrendsQuery(QueryBuilder):
             rel_freq=self.rel_freq,
             date_filter=self.date_filter,
             modifier=self.modifier,
+            gradient=self.gradient,
         )
         return ExecutableQuery(cursor, query)
 

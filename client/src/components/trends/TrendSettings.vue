@@ -66,6 +66,11 @@
                             min="0" />
                     </div>
 
+                    <div class="formSplit" v-if="trendSettings.trendType == 'keyness'">
+                        <label>Verdwijnwoorden</label>
+                        <Checkbox v-model="trendSettings.ascending" binary />
+                    </div>
+
                     <Button class="search-btn" label="Berekenen" @click="() => { tab += 1; getTrends() }" />
 
                 </AccordionContent>

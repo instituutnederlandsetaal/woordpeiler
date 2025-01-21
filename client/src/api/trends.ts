@@ -10,6 +10,7 @@ export type TrendRequest = {
     end_date: number;
     enriched: boolean;
     language?: string;
+    ascending: boolean;
 }
 
 export function getTrends(request: TrendRequest): Promise<TrendResponse> {
