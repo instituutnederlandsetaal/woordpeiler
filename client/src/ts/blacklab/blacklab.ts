@@ -2,6 +2,8 @@ import type { GraphItem, SearchSettings, SearchItem } from "@/types/Search";
 import { isInternal } from "@/ts/internal";
 import * as d3 from "d3";
 
+const titles = '("NRC" "Het Parool" "De Volkskrant" "Trouw" "Algemeen Dagblad" "Het Nieuwsblad" "De Standaard" "Het Belang van Limburg" "Gazet van Antwerpen" "Het Laatste Nieuws" "De Morgen" "Starnieuws" "Antilliaans Dagblad" "Bonaire.nu" "Bonaire.Nu")'
+const titleFilter = `titleLevel2_untokenized:${titles}`
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
@@ -15,7 +17,7 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     }
 
     // optionally filter on language
-    let filter = "medium:newspaper"
+    let filter = `medium:newspaper AND ${titleFilter}`
     if (item.language) {
         filter += ` AND languageVariant:${item.language}`
     }
@@ -86,6 +88,7 @@ function toBLRegex(s: string): string {
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     const filters = {
         medium: "newspaper",
+        titleLevel2_untokenized: titles,
     }
     const bucketType = settings.timeBucketType;
     const bucketSize = settings.timeBucketSize;
