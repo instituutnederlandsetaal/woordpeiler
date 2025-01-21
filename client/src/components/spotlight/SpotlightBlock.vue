@@ -38,8 +38,8 @@ const svgBlob = ref()
 function search(spotlight: Spotlight) {
     const params = {
         w: spotlight.word,
-        pt: spotlight.period_type,
-        ps: spotlight.period_length,
+        i: spotlight.period_type,
+        il: spotlight.period_length,
         start: toTimestamp(new Date(spotlight.start_date)),
         end: spotlight.end_date == undefined ? undefined : toTimestamp(new Date(spotlight.end_date)),
     }
