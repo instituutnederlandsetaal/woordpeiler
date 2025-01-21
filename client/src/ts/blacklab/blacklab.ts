@@ -22,7 +22,7 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
 
     const params = {
         patt: constructBLPatt(item),
-        interface: JSON.stringify({ form: "search", patternMode: "extended" }),
+        interface: JSON.stringify({ form: "search", patternMode: "expert" }),
         groupDisplayMode: "relative hits",
         group: group,
         sort: "-identity",
@@ -48,7 +48,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    const internalBase = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-intern/search/hits"
+    const internalBase = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
     const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
     return isInternal() ? internalBase : externalBase;
 }
