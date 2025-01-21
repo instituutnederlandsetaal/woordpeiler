@@ -7,17 +7,19 @@
                 :loading="posHeadLoading" class="posSelect" />
         </div>
 
-        <Listbox class="p-panel" multiple metaKeySelection v-model="selectedTrend" filter :options="filteredTrends"
-            optionLabel="wordform">
+        <Listbox multiple metaKeySelection v-model="selectedTrend" filter :options="filteredTrends"
+            filterPlaceholder="Zoeken" optionLabel="wordform" :virtualScrollerOptions="{ itemSize: 45 }"
+            listStyle="height:100%">
             <template #option="{ option }">
                 <!-- index -->
                 <span class="index" title="Rangnummer">{{ trendResults.indexOf(option) + 1 }}.</span>
-                &nbsp;
-                <Badge :value="formatNumber(option.keyness)" severity="secondary" title="Absolute frequentie" />
+
                 &nbsp;
                 <span> {{ option.wordform }} </span>
                 &nbsp;
                 <Chip :label="option.poshead" v-if="option.poshead" />
+                &nbsp;
+                <Badge :value="`${badgeName}: ${formatNumber(option.keyness)}`" severity="secondary" />
             </template>
         </Listbox>
 
@@ -45,20 +47,24 @@ import MultiSelect from "primevue/multiselect"
 import { randomColor } from '@/ts/color';
 
 // Stores
-const { trendResults } = storeToRefs(useTrendResultsStore());
+const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore());
 const { searchItems } = storeToRefs(useSearchItemsStore());
 const { search } = useSearchResultsStore();
 
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
-const selectedPosHead = ref(["punct", "res", "num"])
+const selectedPosHead = ref([])
 const posHeadOptions = ref<string[]>([])
 const posHeadLoading = ref(true)
 
 // Computed
 const filteredTrends = computed(() => {
     return trendResults.value?.filter((i) => !selectedPosHead.value.includes(i.poshead))
+})
+const badgeName = computed(() => {
+    // key for keyness, freq for frequency
+    return lastTrendSettings.value.trendType === 'keyness' ? 'key' : 'freq'
 })
 
 // Methods
@@ -116,5 +122,23 @@ watch(selectedTrend, () => {
 
 .index {
     font-size: smaller;
+}
+
+.trendlist {
+    :deep(.p-panel-content) {
+        padding: 0 !important;
+
+        .formSplit {
+            padding: 0 1rem;
+        }
+
+        .p-listbox {
+            border: none;
+
+            .p-listbox-list-container {
+                padding: 0 0 0 1rem;
+            }
+        }
+    }
 }
 </style>

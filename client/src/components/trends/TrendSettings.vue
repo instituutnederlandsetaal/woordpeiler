@@ -1,74 +1,77 @@
 <template>
-    <Accordion :value="tab" class="p-panel" ref="trendAccordion">
-        <AccordionPanel value="0">
-            <AccordionHeader>Trendinstellingen</AccordionHeader>
-            <AccordionContent class="settings">
+    <Panel class="searchOptions">
+        <Accordion :value="tab" ref="trendAccordion">
+            <AccordionPanel value="0">
+                <AccordionHeader>Trendinstellingen</AccordionHeader>
+                <AccordionContent class="settings">
 
-                <div class="formSplit">
-                    <label for="variant">Taalvariëteit</label>
-                    <Select id="variant" v-model="trendSettings.language" :options="languageOptions" showClear
-                        optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
-                </div>
-
-                <div class="formSplit">
-                    <label>Periode</label>
-                    <SelectButton v-model="trendSettings.period" :options="periodOptions" optionValue="value"
-                        optionLabel="label" />
-                </div>
-
-                <template v-if="trendSettings.period == 'other'">
                     <div class="formSplit">
-                        <DatePicker v-model="trendSettings.other.start" showIcon fluid iconDisplay="input"
-                            dateFormat="dd-M-yy" />
-                        <DatePicker v-model="trendSettings.other.end" showIcon fluid iconDisplay="input"
-                            dateFormat="dd-M-yy" />
+                        <label for="variant">Taalvariëteit</label>
+                        <Select id="variant" v-model="trendSettings.language" :options="languageOptions" showClear
+                            optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
                     </div>
-                </template>
-                <template v-else-if="trendSettings.period == 'year'">
+
                     <div class="formSplit">
-                        <label>Jaar</label>
-                        <DatePicker v-model="trendSettings.year.start" view="year" dateFormat="yy"
-                            v-on:date-select="setYearEndDate()" />
+                        <label>Periode</label>
+                        <SelectButton v-model="trendSettings.period" :options="periodOptions" optionValue="value"
+                            optionLabel="label" />
                     </div>
-                </template>
-                <template v-else-if="trendSettings.period == 'month'">
+
+                    <template v-if="trendSettings.period == 'other'">
+                        <div class="formSplit">
+                            <DatePicker v-model="trendSettings.other.start" showIcon fluid iconDisplay="input"
+                                dateFormat="dd-M-yy" />
+                            <DatePicker v-model="trendSettings.other.end" showIcon fluid iconDisplay="input"
+                                dateFormat="dd-M-yy" />
+                        </div>
+                    </template>
+                    <template v-else-if="trendSettings.period == 'year'">
+                        <div class="formSplit">
+                            <label>Jaar</label>
+                            <DatePicker v-model="trendSettings.year.start" view="year" dateFormat="yy"
+                                v-on:date-select="setYearEndDate()" />
+                        </div>
+                    </template>
+                    <template v-else-if="trendSettings.period == 'month'">
+                        <div class="formSplit">
+                            <label>Maand</label>
+                            <DatePicker v-model="trendSettings.month.start" view="month" dateFormat="MM yy"
+                                v-on:date-select="setMonthEndDate()" />
+                        </div>
+                    </template>
+                    <template v-else-if="trendSettings.period == 'week'">
+                        <div class="formSplit">
+                            <label>Week</label>
+                            <DatePicker v-model="week" view="date" dateFormat="dd M yy" selectionMode="range"
+                                class="week" selectOtherMonths showOtherMonths :manualInput="false"
+                                v-on:date-select="setWeekCorrectly()">
+                            </DatePicker>
+                        </div>
+                    </template>
+
                     <div class="formSplit">
-                        <label>Maand</label>
-                        <DatePicker v-model="trendSettings.month.start" view="month" dateFormat="MM yy"
-                            v-on:date-select="setMonthEndDate()" />
+                        <label>Verrijkt met woordsoort en lemma</label>
+                        <Checkbox v-model="trendSettings.enriched" binary />
                     </div>
-                </template>
-                <template v-else-if="trendSettings.period == 'week'">
+
                     <div class="formSplit">
-                        <label>Week</label>
-                        <DatePicker v-model="week" view="date" dateFormat="dd M yy" selectionMode="range" class="week"
-                            selectOtherMonths showOtherMonths :manualInput="false"
-                            v-on:date-select="setWeekCorrectly()">
-                        </DatePicker>
+                        <label>Trendsoort</label>
+                        <SelectButton v-model="trendSettings.trendType" :options="trendTypeOptions" optionValue="value"
+                            optionLabel="label" />
                     </div>
-                </template>
 
-                <div class="formSplit">
-                    <label>Splits op lemma en woordsoort</label>
-                    <Checkbox v-model="trendSettings.enriched" binary />
-                </div>
+                    <div class="formSplit">
+                        <label>{{ modifierLabel }}</label>
+                        <input type="number" class="modifierInput p-inputtext" v-model="trendSettings.modifier"
+                            min="0" />
+                    </div>
 
-                <div class="formSplit">
-                    <label>Trendsoort</label>
-                    <SelectButton v-model="trendSettings.trendType" :options="trendTypeOptions" optionValue="value"
-                        optionLabel="label" />
-                </div>
+                    <Button class="search-btn" label="Berekenen" @click="() => { tab += 1; getTrends() }" />
 
-                <div class="formSplit">
-                    <label>{{ modifierLabel }}</label>
-                    <input type="number" class="modifierInput p-inputtext" v-model="trendSettings.modifier" min="0" />
-                </div>
-
-                <Button class="search-btn" label="Berekenen" @click="() => { tab += 1; getTrends() }" />
-
-            </AccordionContent>
-        </AccordionPanel>
-    </Accordion>
+                </AccordionContent>
+            </AccordionPanel>
+        </Accordion>
+    </Panel>
 </template>
 
 <script setup lang="ts">
@@ -89,6 +92,7 @@ import SelectButton from "primevue/selectbutton"
 import DatePicker from "primevue/datepicker"
 import Checkbox from 'primevue/checkbox';
 import Select from 'primevue/select';
+import Panel from "primevue/panel"
 // Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 
@@ -141,6 +145,20 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+.searchOptions {
+    :deep(.p-panel-header) {
+        display: none !important;
+    }
+
+    :deep(.p-accordionpanel) {
+        border: none;
+    }
+
+    :deep(.p-panel-content) {
+        padding-bottom: 0;
+    }
+}
+
 .modifierInput {
     flex: 1 1 0;
     min-width: 0;
