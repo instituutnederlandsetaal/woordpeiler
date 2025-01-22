@@ -64,6 +64,7 @@ async def get_trends(
     end_date: Optional[int] = None,
     enriched: bool = True,
     language: Optional[str] = None,
+    ascending: bool = False,
     exclude: Annotated[Optional[list[str]], Query()] = None,
 ) -> list[Any]:
     if not request.app.internal:
@@ -73,7 +74,13 @@ async def get_trends(
         async with conn.cursor(row_factory=dict_row) as cur:
             return (
                 await TrendsQuery(
-                    trend_type, modifier, start_date, end_date, enriched, language
+                    trend_type,
+                    modifier,
+                    start_date,
+                    end_date,
+                    enriched,
+                    language,
+                    ascending,
                 )
                 .build(cur)
                 .execute_fetchall()

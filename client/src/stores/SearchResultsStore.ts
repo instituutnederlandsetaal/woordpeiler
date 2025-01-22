@@ -114,9 +114,9 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             s: searchItemPropToUrlStr(validSearchItems.value, 'source'),
             v: searchItemPropToUrlStr(validSearchItems.value, 'language'),
             c: searchItemPropToUrlStr(validSearchItems.value, 'color'),
-            pt: searchSettings.value.timeBucketType,
-            ps: searchSettings.value.timeBucketSize,
-            f: searchSettings.value.frequencyType,
+            i: searchSettings.value.timeBucketType, // i for interval
+            il: searchSettings.value.timeBucketSize, // il for interval length
+            f: searchSettings.value.frequencyType.split("_")[0], // f for frequency
             start: toTimestamp(searchSettings.value.startDate),
             end: toTimestamp(searchSettings.value.endDate),
         }

@@ -49,8 +49,8 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     }
     function readUrlParams() {
         const params = new URLSearchParams(window.location.search)
-        const timeBucketType = params.get('pt')
-        const timeBucketSize = params.get('ps')
+        const timeBucketType = params.get('i')
+        const timeBucketSize = params.get('il')
         const startDate = params.get('start')
         const endDate = params.get('end')
         const frequencyType = params.get('f')
@@ -58,7 +58,12 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         if (timeBucketSize) searchSettings.value.timeBucketSize = parseInt(timeBucketSize)
         if (startDate) searchSettings.value.startDate = new Date(parseInt(startDate) * 1000)
         if (endDate) searchSettings.value.endDate = new Date(parseInt(endDate) * 1000)
-        if (frequencyType) searchSettings.value.frequencyType = frequencyType
+
+        const freqMap = {
+            "rel": "rel_freq",
+            "abs": "abs_freq"
+        }
+        if (frequencyType) searchSettings.value.frequencyType = freqMap[frequencyType]
     }
     // Lifecycle
     watch(() => ({ ...searchSettings.value }), (newValue, oldValue) => {

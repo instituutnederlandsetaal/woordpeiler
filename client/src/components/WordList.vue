@@ -1,7 +1,7 @@
 <template>
     <div class="wordlist">
         <Panel toggleable v-for="searchItem in searchItems" :key="searchItem"
-            :class="{ 'invalid': invalidSearchItem(searchItem) }">
+            :class="{ 'invalid': invalidSearchItem(searchItem), 'hidden': !searchItem.visible }">
 
             <template #header>
                 <div>
@@ -15,6 +15,11 @@
                     <template v-if="displayName(searchItem)"> {{ displayName(searchItem) }} </template>
                     <template v-else><i>lege zoekterm</i></template>
                 </div>
+            </template>
+
+            <template #toggleicon="data">
+                <span v-if="data.collapsed" class="pi pi-chevron-down"></span>
+                <span v-else class="pi pi-chevron-up"></span>
             </template>
 
             <template #icons>
@@ -160,6 +165,10 @@ onMounted(() => {
         margin-bottom: -0.5rem;
         font-size: 0.9rem;
     }
+}
+
+.hidden {
+    filter: brightness(0.9);
 }
 
 :deep(.p-panel-header-actions)>* {

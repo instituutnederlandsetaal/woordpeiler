@@ -39,7 +39,6 @@ export function svgString2Image(resizeState, format, callback) {
         // White background, otherwise it's transparent
         context.fillStyle = "white"
         context.fillRect(0, 0, width, height)
-        context.drawImage(image, 0, 0, width, height - titleMargin)
 
         { // Add watermark
             type CanvasText = {
@@ -73,8 +72,17 @@ export function svgString2Image(resizeState, format, callback) {
                 align: "right",
                 x: width - 5,
             }
+            const largeWatermark: CanvasText = {
+                ...baseText,
+                text: "/ instituut voor de Nederlandse taal /",
+                color: "rgba(0, 0, 0, 0.1)",
+                align: "center",
+                x: (width / 2),
+                y: height / 2,
+                fontSize: (height / 1080) * 4, // 10rem at 1080p
+            }
 
-            for (const { text, align, baseline, fontSize, color, x, y } of [title, subtitle]) {
+            for (const { text, align, baseline, fontSize, color, x, y } of [title, subtitle, largeWatermark]) {
                 context.textAlign = align
                 context.textBaseline = baseline
                 context.font = `${fontSize}rem 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif`
@@ -82,6 +90,9 @@ export function svgString2Image(resizeState, format, callback) {
                 context.fillText(text, x, y)
             }
         }
+
+        // Draw image
+        context.drawImage(image, 0, 0, width, height - titleMargin)
 
         canvas.toBlob(function (blob) {
             var filesize = Math.round(blob.length / 1024) + ' KB'

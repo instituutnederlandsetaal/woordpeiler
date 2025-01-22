@@ -6,7 +6,7 @@ import { useTrendSettingsStore } from "./TrendSettingsStore"
 // API
 import * as TrendAPI from "@/api/trends"
 import type { TrendRequest } from "@/api/trends"
-import type { TrendResult } from "@/types/trends"
+import { type TrendSettings, type TrendResult } from "@/types/trends"
 // Utils
 import { toTimestamp } from "@/ts/date"
 
@@ -15,8 +15,10 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
     const { trendSettings } = storeToRefs(useTrendSettingsStore())
     const trendResults = ref<TrendResult[]>(null)
     const trendsLoading = ref(false)
+    const lastTrendSettings = ref<TrendSettings>(null)
     // Methods
     function getTrends() {
+        lastTrendSettings.value = JSON.parse(JSON.stringify(trendSettings.value)) // deep copy
         trendResults.value = []
         trendsLoading.value = true
         const selectedPeriod: DateRange = trendSettings.value[trendSettings.value.period]
@@ -26,7 +28,8 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
             start_date: toTimestamp(selectedPeriod.start),
             end_date: toTimestamp(selectedPeriod.end),
             enriched: trendSettings.value.enriched,
-            language: trendSettings.value.language
+            language: trendSettings.value.language,
+            ascending: trendSettings.value.ascending,
         }
 
         TrendAPI.getTrends(trendRequest)
@@ -40,7 +43,7 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
     // Export
     return {
         // Fields
-        trendResults, trendsLoading,
+        trendResults, trendsLoading, lastTrendSettings,
         // Methods
         getTrends
     }

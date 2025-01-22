@@ -2,7 +2,7 @@
 set -o errexit # Exit on error (set -e)
 
 # remove the previous output and run the frequency tool
-WOORDPEILER_INPUT=/vol2/blacklab-indices/chn-intern/ # should this be vol1?
+WOORDPEILER_INPUT=/vol2/blacklab-indices/chn-intern/
 WOORDPEILER_DIR=/vol1/blacklab-util/FrequencyTool/
 WOORDPEILER_OUTPUT="$WOORDPEILER_DIR/tmp/" # currently defaults to tmp/
 WOORDPEILER_CONFIG="$WOORDPEILER_DIR/unigram.yaml" # only index unigrams for now

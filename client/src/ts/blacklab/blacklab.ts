@@ -2,6 +2,8 @@ import type { GraphItem, SearchSettings, SearchItem } from "@/types/Search";
 import { isInternal } from "@/ts/internal";
 import * as d3 from "d3";
 
+const titles = '("NRC" "Het Parool" "De Volkskrant" "Trouw" "Algemeen Dagblad" "Het Nieuwsblad" "De Standaard" "Het Belang van Limburg" "Gazet van Antwerpen" "Het Laatste Nieuws" "De Morgen" "Starnieuws" "Antilliaans Dagblad" "Bonaire.nu" "Bonaire.Nu")'
+const titleFilter = `titleLevel2_untokenized:${titles}`
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
@@ -15,15 +17,15 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     }
 
     // optionally filter on language
-    let filter = "medium:newspaper"
+    let filter = `medium:newspaper`
     if (item.language) {
         filter += ` AND languageVariant:${item.language}`
     }
 
     const params = {
         patt: constructBLPatt(item),
-        interface: JSON.stringify({ form: "search", patternMode: "extended" }),
-        groupDisplayMode: "relative hits",
+        interface: JSON.stringify({ form: "search", patternMode: "expert" }),
+        groupDisplayMode: "hits",
         group: group,
         sort: "-identity",
         filter: filter,
@@ -48,7 +50,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    const internalBase = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-intern/search/hits"
+    const internalBase = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
     const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
     return isInternal() ? internalBase : externalBase;
 }

@@ -2,6 +2,12 @@ export function toTimestamp(date: Date): number {
     return Math.floor(date.getTime() / 1000)
 }
 
+export function toMidnightUTC(timestamp: number): number {
+    const d = new Date(timestamp * 1000)
+    const midnight_utc = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 1000
+    return midnight_utc
+}
+
 export function getNewYearsDay(): Date {
     const now = new Date()
     return new Date(now.getFullYear(), 0, 1)
