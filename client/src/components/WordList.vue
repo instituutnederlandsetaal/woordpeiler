@@ -1,7 +1,7 @@
 <template>
     <div class="wordlist">
         <Panel toggleable v-for="searchItem in searchItems" :key="searchItem"
-            :class="{ 'invalid': invalidSearchItem(searchItem) }">
+            :class="{ 'invalid': invalidSearchItem(searchItem), 'hidden': !searchItem.visible }">
 
             <template #header>
                 <div>
@@ -160,6 +160,10 @@ onMounted(() => {
         margin-bottom: -0.5rem;
         font-size: 0.9rem;
     }
+}
+
+.hidden {
+    filter: brightness(0.9);
 }
 
 :deep(.p-panel-header-actions)>* {
