@@ -17,7 +17,7 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     }
 
     // optionally filter on language
-    let filter = `medium:newspaper AND ${titleFilter}`
+    let filter = `medium:newspaper`
     if (item.language) {
         filter += ` AND languageVariant:${item.language}`
     }
@@ -25,7 +25,7 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     const params = {
         patt: constructBLPatt(item),
         interface: JSON.stringify({ form: "search", patternMode: "expert" }),
-        groupDisplayMode: "relative hits",
+        groupDisplayMode: "hits",
         group: group,
         sort: "-identity",
         filter: filter,
@@ -50,8 +50,8 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    const internalBase = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-intern/search/hits"
-    const externalBase = "http://svotmc10.ivdnt.loc:8080/corpus-frontend/chn-extern/search/hits"
+    const internalBase = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
+    const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
     return isInternal() ? internalBase : externalBase;
 }
 
@@ -88,7 +88,6 @@ function toBLRegex(s: string): string {
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     const filters = {
         medium: "newspaper",
-        titleLevel2_untokenized: titles,
     }
     const bucketType = settings.timeBucketType;
     const bucketSize = settings.timeBucketSize;
