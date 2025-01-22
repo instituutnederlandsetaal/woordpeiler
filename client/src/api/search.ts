@@ -1,5 +1,6 @@
 import axios, { type AxiosResponse } from "axios"
 import { cleanParams } from "@/api/api"
+import { toMidnightUTC } from "@/ts/date"
 
 export type SearchRequest = {
     id?: number;
@@ -24,6 +25,9 @@ export type SearchResult = {
 export type SearchResponse = AxiosResponse<SearchResult[]>
 
 export function getSearch(request: SearchRequest): Promise<SearchResponse> {
+    request.start_date = toMidnightUTC(request.start_date)
+    request.end_date = toMidnightUTC(request.end_date)
+
     return axios.get("/word_frequency", { params: cleanParams(request) })
 }
 
