@@ -17,6 +17,11 @@
                 </div>
             </template>
 
+            <template #toggleicon="data">
+                <span v-if="data.collapsed" class="pi pi-chevron-down"></span>
+                <span v-else class="pi pi-chevron-up"></span>
+            </template>
+
             <template #icons>
                 <span v-if="searchItem.loading">
                     <span class="pi pi-spin pi-spinner"></span>
