@@ -27,7 +27,4 @@ frequencyLists:
       - titleLevel2
       - languageVariant
     name: "unigram"
-    filter: "medium:newspaper AND (titleLevel2_untokenized:(NRC) OR titleLevel2_untokenized:(Het Parool) OR titleLevel2_untokenized:(De Volkskrant) OR titleLevel2_untokenized:(Trouw) OR titleLevel2_untokenized:(Algemeen Dagblad) OR titleLevel2_untokenized:(Het Nieuwsblad) OR titleLevel2_untokenized:(De Standaard) OR titleLevel2_untokenized:(Het Belang van Limburg) OR titleLevel2_untokenized:(Gazet van Antwerpen) OR titleLevel2_untokenized:(Het Laatste Nieuws) OR titleLevel2_untokenized:(De Morgen) OR titleLevel2_untokenized:(Starnieuws) OR titleLevel2_untokenized:(Antilliaans Dagblad) OR titleLevel2_untokenized:(Bonaire.nu) OR titleLevel2_untokenized:(Bonaire.Nu))"
-# newspaper selection was made with the following query:
-# SELECT source FROM source_frequencies JOIN sources ON source_id=id WHERE time >= '2024-01-01' GROUP BY source_id, source;
-# and manual additions for AN and SN.
+    filter: "medium:newspaper"
