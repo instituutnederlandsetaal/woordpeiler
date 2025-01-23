@@ -6,7 +6,7 @@ from database.insert.sql import (
     constraint_sources,
 )
 from database.util.query import execute_query, time_query, analyze
-from database.data_update.lookup_tables import create_lookup_tables
+from initialize.lookup_tables import create_lookup_tables
 
 
 def update_table():
