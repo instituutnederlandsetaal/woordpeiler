@@ -130,7 +130,7 @@
                             <h2>Zoekinstellingen</h2>
                             <p>
                                 Linksonder in de grafiekview vindt u de zoekinstellingen. Klik op <span
-                                    class="pi pi-chevron-down"></span> om de instellingen te openen.
+                                    class="pi pi-chevron-up"></span> om de instellingen te openen.
                             </p>
                             <ul>
                                 <li>
