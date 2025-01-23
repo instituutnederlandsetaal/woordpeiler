@@ -13,5 +13,5 @@ java -Xmx48G -cp "$WOORDPEILER_DIR/blacklab-tools.jar:lib/*" nl.inl.blacklab.too
 WOORDPEILER_DEV=corpustrends.dev.ivdnt.loc
 WOORDPEILER_PROD=svprwr01.ivdnt.loc
 WOORDPEILER_DEST=/vol1/tsv/
-rsync -avz --checksum --delete $WOORDPEILER_OUTPUT $WOORDPEILER_DEV $WOORDPEILER_DEST
-rsync -avz --checksum --delete $WOORDPEILER_OUTPUT $WOORDPEILER_PROD $WOORDPEILER_DEST
+rsync -avz --checksum --delete $WOORDPEILER_OUTPUT $WOORDPEILER_DEV:$WOORDPEILER_DEST
+rsync -avz --checksum --delete $WOORDPEILER_OUTPUT $WOORDPEILER_PROD:$WOORDPEILER_DEST
