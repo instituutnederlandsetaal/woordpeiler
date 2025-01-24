@@ -68,7 +68,7 @@ def initialize():
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python -m initialize <folder>")
+        print("Usage: python -m database.initialize <folder>")
         exit()
 
     with timer("Initializing database"):
