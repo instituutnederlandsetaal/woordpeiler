@@ -190,8 +190,8 @@ async def get_freq(
     if period_length < 1:
         raise HTTPException(status_code=400, detail="Invalid periodLength")
 
-    # send to math
-    if wordform and ("+" in wordform or "/" in wordform):
+    # send to math, but only internally
+    if wordform and ("+" in wordform or "/" in wordform) and request.app.internal:
         return await get_math(
             request,
             wordform,
