@@ -36,13 +36,17 @@ class WordFrequencyTest(QueryTest):
         """
 
     new_query = """
-            WITH filter AS (
+            WITH wordform_ids AS (
+                SELECT id FROM wordforms WHERE wordform = 'de'
+            ),
+            word_ids AS (
+                SELECT id FROM words_tmp WHERE wordform_id = ANY (SELECT id FROM wordform_ids)
+            ),
+            filter AS (
                 SELECT
                     time,
                     SUM(frequency) as frequency
-                FROM
-                    (SELECT id FROM words_tmp WHERE wordform_id = (SELECT id FROM wordforms WHERE wordform = 'de'))
-                    LEFT JOIN frequencies ON word_id = id
+                FROM frequencies WHERE word_id = ANY (SELECT id FROM word_ids)
                 GROUP BY
                     time
             )

@@ -63,6 +63,7 @@ class QueryTest:
         with self.conn.cursor() as cur:
             # discard cache
             cur.execute("DISCARD ALL;")
+            # to use this, don't forget: CREATE EXTENSION pg_buffercache;
             cur.execute("SELECT pg_buffercache_evict(bufferid) FROM pg_buffercache;")
             start_time = time.time()
             cur.execute(query)

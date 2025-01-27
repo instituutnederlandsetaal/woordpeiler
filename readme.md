@@ -18,6 +18,7 @@ READER_USER=reader
 READER_PASSWORD=[fill in]
 # docker image tag for server and client docker container
 VERSION_LABEL=dev
+INTERNAL=[true | false]
 ```
 
 Because we want to rotate the database docker volume every week, we use separate .env files the database and databuilder that can be editted programatically.
