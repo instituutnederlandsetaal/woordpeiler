@@ -14,17 +14,10 @@ create_table = """
 """
 
 add_primary_key = """
-    ALTER TABLE 
+    ALTER TABLE
         sources 
     ADD 
         COLUMN id SERIAL PRIMARY KEY;
-"""
-
-add_unique_constraint = """
-    ALTER TABLE 
-        sources
-    ADD 
-        CONSTRAINT unique_source_language UNIQUE (source, language);
 """
 
 add_indices = """
@@ -39,7 +32,6 @@ def create_table_sources():
         queries=[
             create_table,
             add_primary_key,
-            add_unique_constraint,
             add_indices,
         ],
     )
