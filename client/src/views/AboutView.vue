@@ -37,7 +37,7 @@
                 </p>
                 <p>
                     Woordpeiler (Versie 1.0.0) (Januari 2025) [Online Service].
-                    Toegankelijk gemaakt door het Instituut voor de Nederlandse taal
+                    Toegankelijk gemaakt door het Instituut voor de Nederlandse Taal
                     <a href="https://hdl.handle.net/10032/tm-a3-a3">https://hdl.handle.net/10032/tm-a3-a3</a>.
                     Geraadpleegd op [datum].
                 </p>
