@@ -46,9 +46,9 @@ class ListingQuery(QueryBuilder):
 
     def rows(self, table: str, column: str) -> Composable:
         if table == "words" and column == "poshead":
-            return SQL("SELECT * FROM posheads")
+            return SQL("SELECT poshead FROM posses")
         elif table == "words" and column == "pos":
-            return SQL("SELECT * FROM posses")
+            return SQL("SELECT pos FROM posses")
         elif table == "sources" and column == "source":
             return SQL(
                 "SELECT source FROM sources JOIN days_per_source ON source_id = id WHERE count > 1 ORDER BY source;"

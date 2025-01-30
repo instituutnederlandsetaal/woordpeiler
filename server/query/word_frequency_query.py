@@ -29,6 +29,10 @@ class WordFrequencyQuery(QueryBuilder):
         start_date: Optional[int] = None,
         end_date: Optional[int] = None,
     ) -> None:
+        self.ngram = len(wordform.strip().split(" "))
+        self.words_table = Identifier(f"words_{self.ngram}")
+        self.freq_table = Identifier(f"frequencies_{self.ngram}")
+        self.corpus_size_table = Identifier(f"corpus_size_{self.ngram}")
         self.word_filter = WordFrequencyQuery.get_word_filter(
             id, wordform, lemma, pos, poshead
         )
@@ -42,9 +46,9 @@ class WordFrequencyQuery(QueryBuilder):
         else:
             self.size = Identifier(f"size_{language.lower()}")
 
-        self.freq_table = WordFrequencyQuery.get_freq_table(
-            any([id, wordform, lemma, pos, poshead]), self.word_filter
-        )
+        # self.freq_table = WordFrequencyQuery.get_freq_table(
+        #     any([id, wordform, lemma, pos, poshead]), self.word_filter
+        # )
 
     @staticmethod
     def get_freq_table(has_word_filter: bool, word_filter: Composable) -> Composable:
@@ -88,55 +92,67 @@ class WordFrequencyQuery(QueryBuilder):
         pos: Optional[str],
         poshead: Optional[str],
     ) -> Composable:
-        # word filter
-        # example: WHERE wordform = 'zwitser' AND lemma = 'zwitser' AND poshead = 'nou-c'
-        word_filter = QueryBuilder.where_and(
-            [
-                WordColumn.ID,
-                WordColumn.WORDFORM,
-                WordColumn.LEMMA,
-                WordColumn.POS,
-                WordColumn.POSHEAD,
-            ],
-            [id, wordform, lemma, pos, poshead],
-        )
-        if any([id, wordform, lemma, pos, poshead]):
-            word_filter = SQL("WHERE {filter}").format(filter=word_filter)
+        filters: list[Composable] = []
+        for table, ids, column, values in [
+            ("wordforms", "wordform_ids", "wordform", wordform),
+            ("lemmas", "lemma_ids", "lemma", lemma),
+            ("posses", "pos_ids", "pos", pos),
+            ("posses", "pos_ids", "poshead", poshead),
+        ]:
+            if values is not None:
+                for i, value in enumerate(values.strip().split(" ")):
+                    filter = SQL(
+                        "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} = {value})"
+                    ).format(
+                        i=Literal(i + 1),
+                        ids=Identifier(ids),
+                        column=Identifier(column),
+                        table=Identifier(table),
+                        value=Literal(value),
+                    )
+                    filters.append(filter)
 
-        return word_filter
+        return SQL("WHERE ") + SQL(" AND ").join(filters)
 
     def build(self, cursor: BaseCursor) -> ExecutableQuery[DataSeries]:
         query = SQL(
             """
-            WITH filter AS (
+            -- get the word ids
+            WITH word_ids AS (
+                SELECT id FROM {words_table} {word_filter}
+            ),
+            -- get corresponding frequencies
+            frequencies_data AS (
                 SELECT 
                     time, 
                     SUM(frequency) as frequency
                 FROM
-                    {freq_table}
-                    {source_filter}
+                    word_ids
+                    LEFT JOIN {freq_table} ON word_id = id
                 GROUP BY
                     time
             ) 
+            -- merge with corpus_size to get the full timeline
             SELECT 
                 time_bucket({time_bucket},cs.time) as time, 
                 SUM(COALESCE(frequency, 0)) as abs_freq, 
                 SUM(cs.{size}) as size, 
                 CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) END as rel_freq
-            FROM corpus_size cs 
-                LEFT JOIN filter f 
+            FROM {corpus_size_table} cs 
+                LEFT JOIN frequencies_data f 
                     ON cs.time = f.time 
             {date_filter}
             GROUP BY 
-                time_bucket({time_bucket},cs.time) 
-            ORDER BY
                 time_bucket({time_bucket},cs.time);
         """
         ).format(
             size=self.size,
+            corpus_size_table=self.corpus_size_table,
+            words_table=self.words_table,
             freq_table=self.freq_table,
             source_filter=self.source_filter,
             date_filter=self.date_filter,
             time_bucket=self.time_bucket,
+            word_filter=self.word_filter,
         )
         return ExecutableQuery(cursor, query)
