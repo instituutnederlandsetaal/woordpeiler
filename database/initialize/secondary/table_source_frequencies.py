@@ -22,9 +22,7 @@ create_indices = """
 def create_source_frequencies_table():
     time_query(
         "create table source_frequencies",
-        [
-            create_table,
-            create_indices,
-        ],
+        create_table,
+        create_indices,
     )
     analyze_vacuum()

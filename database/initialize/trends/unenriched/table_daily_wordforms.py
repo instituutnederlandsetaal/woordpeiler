@@ -28,7 +28,7 @@ add_indices = """
 def create_table_daily_wordforms():
     time_query(
         msg="Creating table daily_wordforms",
-        queries=[
+        query=[
             create_table,
             add_indices,
         ],

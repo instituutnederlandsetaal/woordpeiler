@@ -25,7 +25,7 @@ add_indices = """
 def create_table_yearly_counts():
     time_query(
         msg="Creating table yearly_counts",
-        queries=[
+        query=[
             create_table,
             add_indices,
         ],

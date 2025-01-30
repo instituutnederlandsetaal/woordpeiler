@@ -44,7 +44,7 @@ add_indices = """
 def create_table_total_wordforms():
     time_query(
         msg="Creating table total_wordforms",
-        queries=[
+        query=[
             create_table,
             add_relative_columns,
             fill_relative_columns,

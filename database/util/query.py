@@ -1,24 +1,23 @@
-# standard
-
 # third party
 import psycopg
+from psycopg.abc import Query
 
 # local
 from database.util.connection import get_writer_conn_str
 from database.util.timer import timer
 
 
-def time_query(msg: str, queries: list[str]):
+def time_query(msg: str, *query: Query):
     """Execute a list of queries in a transaction and time it"""
     with timer(msg):
-        execute_query(queries)
+        execute_query(*query)
 
 
-def execute_query(queries: list[str]):
+def execute_query(*query: Query):
     with psycopg.connect(get_writer_conn_str()) as conn:
         with conn.cursor() as cursor:
-            for query in queries:
-                cursor.execute(query)
+            for q in query:
+                cursor.execute(q)
 
 
 # separate analyze because of transaction issues
@@ -32,7 +31,7 @@ def analyze_vacuum():
         autocommit_session("VACUUM ANALYZE")
 
 
-def autocommit_session(query: str):
+def autocommit_session(query: Query):
     conn = psycopg.connect(get_writer_conn_str())
     conn.autocommit = True
     cursor = conn.cursor()

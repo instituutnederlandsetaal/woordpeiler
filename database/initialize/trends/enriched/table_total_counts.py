@@ -42,7 +42,7 @@ add_indices = """
 def create_table_total_counts():
     time_query(
         msg="Creating table total_counts",
-        queries=[
+        query=[
             create_table,
             add_relative_columns,
             fill_relative_columns,

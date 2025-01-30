@@ -17,7 +17,7 @@ class Uploader(ContextDecorator):
     def __init__(self, path: str, columns: int):
         self.path = path
         self.column_count = columns
-        self.chunk_size = 1_000_000
+        self.chunk_size = 100_000
 
     def __enter__(self):
         self.conn: Connection = psycopg.connect(get_writer_conn_str())
