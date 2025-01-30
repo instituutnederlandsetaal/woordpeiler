@@ -9,8 +9,8 @@ import { isInternal } from '@/ts/internal'
 export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     // Fields
     const searchSettings = ref<SearchSettings>({
-        timeBucketType: "month",
-        timeBucketSize: 3,
+        timeBucketType: initTimeBucket().type,
+        timeBucketSize: initTimeBucket().size,
         startDate: new Date('2000-01-01'),
         endDate: new Date(), // now
         frequencyType: "rel_freq",
@@ -64,6 +64,12 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
             "abs": "abs_freq"
         }
         if (frequencyType) searchSettings.value.frequencyType = freqMap[frequencyType]
+    }
+    function initTimeBucket(): { type: string, size: number } {
+        const desktop = { type: "month", size: 3 }
+        const mobile = { type: "year", size: 1 }
+        const isMobile = window.innerWidth < 768
+        return isMobile ? mobile : desktop
     }
     // Lifecycle
     watch(() => ({ ...searchSettings.value }), (newValue, oldValue) => {

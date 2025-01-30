@@ -116,7 +116,7 @@ const menuItems = computed(() => {
 
 // Methods
 function search() {
-    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('2000-01-01')), i: 'month', il: 3 } });
+    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('2000-01-01')) } });
 }
 </script>
 
