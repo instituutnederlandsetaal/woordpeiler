@@ -1,4 +1,5 @@
 # standard
+from decimal import Decimal
 from math import trunc
 from typing import Annotated, Any, Optional
 import base64
@@ -124,7 +125,7 @@ async def get_svg(
     max_time = max([d.time for d in data])
     min_time = min([d.time for d in data])
     for d in data:
-        d.rel_freq = d.rel_freq / max_freq * 100
+        d.rel_freq = (d.rel_freq / max_freq * 100) if max_freq > 0 else Decimal(0)
         d.time = (d.time - min_time) / (max_time - min_time) * 100
 
     for d in data:

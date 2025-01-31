@@ -36,7 +36,10 @@ class TrendsQuery(QueryBuilder):
         enriched: bool = True,
         language: Optional[str] = None,
         ascending_gradient: bool = False,
+        ngram: int = 2,
     ) -> None:
+        self.total_counts = Identifier(f"total_counts_{ngram}")
+        self.words_table = Identifier(f"words_{ngram}")
         self.enriched = enriched
         self.modifier = Literal(modifier)
         self.trend_type = TrendType(trend_type)
@@ -44,7 +47,7 @@ class TrendsQuery(QueryBuilder):
             Identifier("counts", "time"), start_date, end_date
         )
         self.end_date = Literal(datetime.fromtimestamp(end_date).strftime("%Y%m%d"))
-        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date)
+        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date, ngram)
 
         self.gradient = SQL("ASC" if ascending_gradient else "DESC")
 
@@ -57,7 +60,7 @@ class TrendsQuery(QueryBuilder):
 
     @staticmethod
     def get_counts_table(
-        start_date: Optional[int], end_date: Optional[int]
+        start_date: Optional[int], end_date: Optional[int], ngram: int
     ) -> Identifier:
         start = datetime.fromtimestamp(start_date)
         end = datetime.fromtimestamp(end_date)
@@ -70,11 +73,11 @@ class TrendsQuery(QueryBuilder):
         ends_on_last_of_month = end.day == days_in_month
         # return
         if starts_on_new_years_day and ends_on_new_years_eve:
-            return Identifier("yearly_counts")
+            return Identifier(f"yearly_counts_{ngram}")
         elif starts_on_first_of_month and ends_on_last_of_month:
-            return Identifier("monthly_counts")
+            return Identifier(f"monthly_counts_{ngram}")
         else:
-            return Identifier("daily_counts")
+            return Identifier(f"daily_counts_{ngram}")
 
     def build(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
         if self.enriched:
@@ -108,20 +111,22 @@ class TrendsQuery(QueryBuilder):
                     tc.word_id,
                     ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
                 FROM tc
-                LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
+                LEFT JOIN {total_counts} rc ON tc.word_id = rc.word_id
                 ORDER BY keyness {gradient}
                 LIMIT 1000
             )
             SELECT
-                w.wordform,
-                w.poshead,
-                w.pos,
-                w.lemma,
+                string_agg(wf.wordform, ' ') AS wordforms,
                 keyness
             FROM keyness k
-            LEFT JOIN words w ON w.id = k.word_id;
+            LEFT JOIN {words} w ON w.id = k.word_id
+            LEFT JOIN wordforms wf ON wf.id = ANY(w.wordform_ids)
+            GROUP BY keyness
+            ORDER BY keyness {gradient}
             """
         ).format(
+            words=self.words_table,
+            total_counts=self.total_counts,
             abs_freq=self.abs_freq,
             rel_freq=self.rel_freq,
             date_filter=self.date_filter,
@@ -149,7 +154,7 @@ class TrendsQuery(QueryBuilder):
                     tc.abs_freq AS tc_abs_freq,
                     rc.{abs_freq} - tc.abs_freq AS keyness
                 FROM tc
-                LEFT JOIN total_counts rc ON tc.word_id = rc.word_id
+                LEFT JOIN {total_counts} rc ON tc.word_id = rc.word_id
             ),
             filter AS (
                 SELECT
@@ -170,6 +175,7 @@ class TrendsQuery(QueryBuilder):
             LEFT JOIN words w ON w.id = f.word_id;
             """
         ).format(
+            total_counts=self.total_counts,
             abs_freq=self.abs_freq,
             date_filter=self.date_filter,
             modifier=self.modifier,

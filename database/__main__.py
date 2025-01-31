@@ -2,8 +2,9 @@
 import sys
 
 # local
-import database.initialize.primary as primary
-import database.initialize.secondary as secondary
+import database.primary as primary
+import database.secondary as secondary
+import database.trends as trends
 from database.util.timer import timer
 
 
@@ -13,20 +14,22 @@ def initialize(folder: str, config_name: str, ngram: int) -> None:
     pos_path = f"{folder}/{config_name}_pos_full_lookup.tsv.gz"
     freq_path = f"{folder}/{config_name}.tsv.gz"
 
-    primary.initialize(
-        freq_path=freq_path,
-        ngram=ngram,
-        word_path=word_path,
-        lemma_path=lemma_path,
-        pos_path=pos_path,
-    )
-    if ngram == 1:
-        secondary.initialize()
+    # primary.initialize(
+    #     freq_path=freq_path,
+    #     ngram=ngram,
+    #     word_path=word_path,
+    #     lemma_path=lemma_path,
+    #     pos_path=pos_path,
+    # )
+    # if ngram == 1:
+    #     secondary.initialize()
+
+    trends.initialize(ngram)
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python -m database.initialize [folder] [config_name] [ngram]")
+        print("Usage: python -m database [folder] [config_name] [ngram]")
         exit()
 
     with timer("Initializing database"):

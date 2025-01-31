@@ -9,7 +9,7 @@ from psycopg import Connection, Cursor
 import psycopg
 
 # local
-from database.initialize.tsv_gz_reader import TsvGzReader
+from database.util.tsv_gz_reader import TsvGzReader
 from database.util.connection import get_writer_conn_str
 
 

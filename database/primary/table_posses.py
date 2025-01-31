@@ -4,7 +4,7 @@ from psycopg.sql import SQL
 # local
 from database.util.query import analyze_vacuum, time_query, execute_query
 from database.util.timer import timer
-from database.initialize.uploader import Uploader
+from database.util.uploader import Uploader
 
 # I suppose you could search for posheads by, e.g., LIKE 'vrb%', or 'nou-c%'.
 # But this table is so small it won't matter.

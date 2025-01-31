@@ -6,7 +6,7 @@ from typing import Any
 from psycopg.sql import SQL, Identifier
 
 # local
-from database.initialize.uploader import Uploader
+from database.util.uploader import Uploader
 from database.util.query import execute_query, time_query, analyze_vacuum
 from database.util.timer import timer
 
@@ -58,7 +58,7 @@ class FrequencyTableBuilder:
         self.build_queries()
 
     def build_queries(self):
-        table = Identifier(f"frequencies_{self.ngram}")
+        self.table = Identifier(f"frequencies_{self.ngram}")
         words_table = Identifier(f"words_{self.ngram}")
 
         self.create_table = SQL("""
@@ -71,58 +71,58 @@ class FrequencyTableBuilder:
                 language TEXT,
                 frequency INTEGER
             )
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.create_source_id = SQL("""
             ALTER TABLE {table}
             ADD COLUMN source_id INTEGER;
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.create_word_id = SQL("""
             ALTER TABLE {table}
             ADD COLUMN word_id INTEGER;
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.tmp_index_sources = SQL("""
             CREATE INDEX ON {table} (source, language);
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.tmp_index_words = SQL("""
             CREATE INDEX ON {table} (wordform_ids, lemma_ids, pos_ids);
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.fill_source_ids = SQL("""
             UPDATE {table} f
             SET source_id = s.id
             FROM sources s
             WHERE f.source = s.source AND f.language = s.language;
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.fill_word_id = SQL("""
             UPDATE {table} f
             SET word_id = w.id
             FROM {words_table} w
             WHERE f.wordform_ids = w.wordform_ids AND f.lemma_ids = w.lemma_ids AND f.pos_ids = w.pos_ids;
-        """).format(table=table, words_table=words_table)
+        """).format(table=self.table, words_table=words_table)
 
         self.drop_word_columns = SQL("""
             ALTER TABLE {table}
             DROP COLUMN wordform_ids,
             DROP COLUMN lemma_ids,
             DROP COLUMN pos_ids;
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.drop_source_columns = SQL("""
             ALTER TABLE {table}
             DROP COLUMN source,
             DROP COLUMN language;
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.add_indices = SQL("""
             CREATE INDEX ON {table} (word_id, source_id) INCLUDE (time, frequency);
             CREATE INDEX ON {table} (source_id) INCLUDE (time, frequency);
             CREATE INDEX ON {table} (time) INCLUDE (frequency); -- needed for calculating corpus_size quickly
-        """).format(table=table)
+        """).format(table=self.table)
 
     def create_table_frequencies(self):
         # create table
@@ -155,7 +155,7 @@ class FrequencyTableBuilder:
 
     def add_frequencies_indices(self):
         time_query(
-            f"Creating indices for frequencies_{self.ngram}",
+            f"Creating indices for {self.table}",
             self.add_indices,
         )
         analyze_vacuum()

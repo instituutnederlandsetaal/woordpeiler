@@ -11,7 +11,7 @@ class WordsTableBuilder:
         self.build_queries()
 
     def build_queries(self):
-        table = Identifier(f"words_{self.ngram}")
+        self.table = Identifier(f"words_{self.ngram}")
         table_frequencies = Identifier(f"frequencies_{self.ngram}")
 
         self.create_table = SQL("""
@@ -27,22 +27,22 @@ class WordsTableBuilder:
                 wordform_ids,
                 lemma_ids,
                 pos_ids;
-        """).format(table=table, table_frequencies=table_frequencies)
+        """).format(table=self.table, table_frequencies=table_frequencies)
 
         self.add_primary_key = SQL("""
             ALTER TABLE 
                 {table} 
             ADD 
                 COLUMN id SERIAL PRIMARY KEY;
-        """).format(table=table)
+        """).format(table=self.table)
 
         self.add_indices = SQL("""
             CREATE INDEX ON {table} (wordform_ids, lemma_ids, pos_ids) INCLUDE (id);
-        """).format(table=table)
+        """).format(table=self.table)
 
     def create_table_words(self):
         time_query(
-            f"Creating table words_{self.ngram}",
+            f"Creating table {self.table}",
             self.create_table,
             self.add_primary_key,
             self.add_indices,

@@ -5,7 +5,7 @@ The 'production' container is called `database`. The other, used to prepare next
 Let's start with the `databuilder` container:
 1. Fill in the `.env.databuilder`. (See readme.md at the root.)
 2. `docker compose --env-file=.env.databuilder up databuilder -d`
-3. `source database/venv/bin/activate && python -m database.initialize MY-DATA-DIR`
+3. `source database/venv/bin/activate && python -m database MY-DATA-DIR`
 
 `MY-DATA-DIR` is a folder that contains `.tsv.gz` files. Each files contains the following columns in order:
 - lemma: string

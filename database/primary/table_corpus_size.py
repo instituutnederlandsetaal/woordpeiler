@@ -11,7 +11,7 @@ class CorpusSizeTableBuilder:
         self.build_queries()
 
     def build_queries(self):
-        table = Identifier(f"corpus_size_{self.ngram}")
+        self.table = Identifier(f"corpus_size_{self.ngram}")
         freq_table = Identifier(f"frequencies_{self.ngram}")
 
         self.create_table = SQL("""
@@ -42,15 +42,15 @@ class CorpusSizeTableBuilder:
                 (SELECT time, SUM(frequency) AS size FROM {freq_table} WHERE source_id = ANY (SELECT id FROM sources WHERE language = 'SN') GROUP BY time) sn
             ON
                 total.time = sn.time;
-        """).format(table=table, freq_table=freq_table)
+        """).format(table=self.table, freq_table=freq_table)
 
         self.add_indices = SQL("""
             CREATE INDEX ON {table} (time) INCLUDE (size, size_an, size_bn, size_nn, size_sn);
-        """).format(table=table)
+        """).format(table=self.table)
 
     def create_table_corpus_size(self):
         time_query(
-            f"Creating table corpus_size_{self.ngram}",
+            f"Creating table {self.table}",
             self.create_table,
             self.add_indices,
         )

@@ -143,6 +143,8 @@ class WordFrequencyQuery(QueryBuilder):
                     ON cs.time = f.time 
             {date_filter}
             GROUP BY 
+                time_bucket({time_bucket},cs.time)
+            ORDER BY
                 time_bucket({time_bucket},cs.time);
         """
         ).format(

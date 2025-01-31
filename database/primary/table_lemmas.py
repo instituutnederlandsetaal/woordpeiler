@@ -4,7 +4,7 @@ from psycopg.sql import SQL
 # local
 from database.util.query import analyze_vacuum, time_query, execute_query
 from database.util.timer import timer
-from database.initialize.uploader import Uploader
+from database.util.uploader import Uploader
 
 create_table = SQL("""
     CREATE TABLE lemmas (
