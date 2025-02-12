@@ -14,6 +14,7 @@ const router = createRouter({
     },
     {
       path: '/trends',
+      name: 'trends',
       component: TrendsView,
     },
     {

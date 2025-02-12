@@ -239,8 +239,13 @@ import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
 import TabPanels from 'primevue/tabpanels';
 import TabPanel from 'primevue/tabpanel';
+import { onMounted } from 'vue';
 
 const canShare = navigator.share != undefined;
+
+onMounted(() => {
+    document.title = "Woordpeiler - Help";
+});
 </script>
 
 <style scoped lang="scss">

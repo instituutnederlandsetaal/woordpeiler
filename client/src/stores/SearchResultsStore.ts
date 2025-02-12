@@ -5,7 +5,7 @@ import { defineStore, storeToRefs } from 'pinia'
 import { useSearchSettingsStore } from '@/stores/SearchSettingsStore'
 import { useSearchItemsStore } from '@/stores/SearchItemsStore'
 // Types & API
-import { type SearchItem, type GraphItem, equalSearchItem, type SearchSettings, equalSearchSettings } from "@/types/Search"
+import { type SearchItem, type GraphItem, equalSearchItem, type SearchSettings, equalSearchSettings, displayName } from "@/types/Search"
 import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
@@ -31,6 +31,10 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
 
         // set them as url params
         setSearchParamsInUrl()
+        // set window title, but only if we are not on the trends page
+        console.log(router.currentRoute.value)
+        if (router.currentRoute.value.name != "trends")
+            document.title = "Woordpeiler - " + validSearchItems.value.map((i) => displayName(i)).join(", ")
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")

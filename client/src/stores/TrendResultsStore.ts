@@ -38,6 +38,16 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
             })
             .finally(() => {
                 trendsLoading.value = false
+                // browser notification via document.title
+                if (document.hidden) {
+                    document.title = "(1) " + document.title
+                    // reset on focus
+                    document.addEventListener("visibilitychange", () => {
+                        if (!document.hidden) {
+                            document.title = document.title.replace("(1) ", "")
+                        }
+                    })
+                }
             })
     }
     // Export

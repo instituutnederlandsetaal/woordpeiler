@@ -28,11 +28,16 @@ import SearchSettings from "@/components/SearchSettings.vue"
 import TrendSettings from "@/components/trends/TrendSettings.vue"
 import D3Graph from "@/components/graph/GraphWrapper.vue"
 import TrendResultsList from "@/components/trends/TrendResultsList.vue"
+import { onMounted } from "vue"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore());
 const { isValid } = storeToRefs(useSearchItemsStore());
 
+// Lifecycle
+onMounted(() => {
+    document.title = "Woordpeiler - Trends";
+});
 </script>
 
 <style scoped lang="scss">
