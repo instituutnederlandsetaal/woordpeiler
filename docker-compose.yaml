@@ -23,7 +23,7 @@ services:
             timeout: 5s
             retries: 5
 
-    databuilder:
+    builder:
         image: timescale/timescaledb:2.17.2-pg17
         restart: unless-stopped
         shm_size: 2gb
@@ -34,9 +34,9 @@ services:
             - READER_USER=${READER_USER}
             - READER_PASSWORD=${READER_PASSWORD}
         ports:
-            - '${DATABUILDER_PORT}:5432'
+            - '${BUILDER_PORT}:5432'
         volumes:
-            - databuilder:/var/lib/postgresql/data
+            - builder:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
         command: "-c 'config_file=/etc/postgres/postgresql.conf'"
@@ -80,5 +80,5 @@ services:
 volumes:
     database:
         name: ${DATABASE_VOLUME}
-    databuilder:
-        name: ${DATABUILDER_VOLUME}
+    builder:
+        name: ${BUILDER_VOLUME}

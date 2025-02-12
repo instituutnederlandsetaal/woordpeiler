@@ -10,21 +10,21 @@ cd /vol1/woordpeiler
 docker volume ls | grep woordpeiler | awk '{print $2}' | sort | head -n -1 | xargs docker volume rm
 
 # set new docker volume
-cat .env > .env.databuilder # base settings
-echo "DATABUILDER_VOLUME=woordpeiler-$TODAY" >> .env.databuilder
-
+cat .env > .builder.env # base settings
+echo "BUILDER_VOLUME=woordpeiler-$TODAY" >> .builder.env
 # start up psql container
-docker compose --env-file=.env.databuilder up databuilder -d --wait
+docker compose --env-file=.builder.env up builder -d --wait
 
-# execute databuilder script: inserts $DEST tsv data into the psql databuilder container
+# execute builder script: inserts $DEST tsv data into the psql builder container
 source database/venv/bin/activate
-python -m database $TSVDATA
+python -m database $TSVDATA unigram 1
+python -m database $TSVDATA bigram 2
 
 # script finished. Database is ready to use in production
-# down databuilder
-docker compose down databuilder
+# down builder
+docker compose down builder
 
 # switch around volumes and up it
-cat .env > .env.database # base settings
-echo "DATABASE_VOLUME=woordpeiler-$TODAY" >> .env.database
-docker compose --env-file=.env.database up database -d
+cat .env > .database.env # base settings
+echo "DATABASE_VOLUME=woordpeiler-$TODAY" >> .database.env
+docker compose --env-file=.database.env up database -d

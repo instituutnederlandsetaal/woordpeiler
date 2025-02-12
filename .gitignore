@@ -3,4 +3,4 @@ venv
 *.csv
 node_modules
 .vscode
-.env
+*.env

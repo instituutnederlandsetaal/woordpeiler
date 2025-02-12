@@ -8,9 +8,9 @@ Create a `.env` with:
 POSTGRES_DB=woordpeiler
 POSTGRES_HOST=localhost
 POSTGRES_PORT=127.0.0.1:5432 # local ip forces docker not to expose to outside
-# databuilder also needs a port other than POSTGRES_PORT
-DATABUILDER_PORT=127.0.0.1:5433 # local ip forces docker not to expose to outside
-# user with write access, used by databuilder
+# builder also needs a port other than POSTGRES_PORT
+BUILDER_PORT=127.0.0.1:5433 # local ip forces docker not to expose to outside
+# user with write access, used by builder
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=[fill in]
 # user with read access, used by server
@@ -21,19 +21,19 @@ VERSION_LABEL=dev
 INTERNAL=[true | false]
 ```
 
-Because we want to rotate the database docker volume every week, we use separate .env files the database and databuilder that can be editted programatically.
-We create them by `cat`'ing the .env and appending a DATABUILDER_VOLUME or DATABASE_VOLUME variable with the correct volume name, pointing to that week's data.
+Because we want to rotate the database docker volume every week, we use separate .env files the database and builder that can be editted programatically.
+We create them by `cat`'ing the .env and appending a BUILDER_VOLUME or DATABASE_VOLUME variable with the correct volume name, pointing to that week's data.
 For development you could do the same once and update them only when needed. So:
 
-.env.databuilder:
+.builder.env:
 ```sh
 # [copy over everything from .env]
 
 # docker volume name
-DATABUILDER_VOLUME="woordpeiler-[YYYY-MM-DD]"
+BUILDER_VOLUME="woordpeiler-[YYYY-MM-DD]"
 ```
 
-.env.databuilder:
+.database.env:
 ```sh
 # [copy over everything from .env]
 
@@ -57,7 +57,7 @@ First install python. See `server/Dockerfile` for the version
 
 ## Database
 First install docker (the database will be a psql container + docker volume) and python (for all kinds of insertion scripts). We use the same python version as the server.
-Fill in `.env`, `.env.databuilder`, and `.env.database`!
+Fill in `.env`, `.builder.env`, and `.database.env`!
 
 `cd ./database`, `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, 
 
