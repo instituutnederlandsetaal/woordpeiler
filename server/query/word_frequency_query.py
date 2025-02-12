@@ -29,7 +29,8 @@ class WordFrequencyQuery(QueryBuilder):
         start_date: Optional[int] = None,
         end_date: Optional[int] = None,
     ) -> None:
-        self.ngram = len(wordform.strip().split(" "))
+        self.ngram = WordFrequencyQuery.get_ngram(wordform, lemma, pos, poshead)
+
         self.words_table = Identifier(f"words_{self.ngram}")
         self.freq_table = Identifier(f"frequencies_{self.ngram}")
         self.corpus_size_table = Identifier(f"corpus_size_{self.ngram}")
@@ -49,6 +50,19 @@ class WordFrequencyQuery(QueryBuilder):
         # self.freq_table = WordFrequencyQuery.get_freq_table(
         #     any([id, wordform, lemma, pos, poshead]), self.word_filter
         # )
+
+    @staticmethod
+    def get_ngram(
+        wordform: Optional[str],
+        lemma: Optional[str],
+        pos: Optional[str],
+        poshead: Optional[str],
+    ) -> int:
+        ngram = 1
+        for values in [wordform, lemma, pos, poshead]:
+            if values is not None:
+                ngram = max(ngram, len(values.strip().split(" ")))
+        return ngram
 
     @staticmethod
     def get_freq_table(has_word_filter: bool, word_filter: Composable) -> Composable:

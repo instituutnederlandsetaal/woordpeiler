@@ -46,7 +46,7 @@ class ListingQuery(QueryBuilder):
 
     def rows(self, table: str, column: str) -> Composable:
         if table == "words" and column == "poshead":
-            return SQL("SELECT poshead FROM posses")
+            return SQL("SELECT DISTINCT poshead FROM posses")
         elif table == "words" and column == "pos":
             return SQL("SELECT pos FROM posses")
         elif table == "sources" and column == "source":

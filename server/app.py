@@ -67,6 +67,7 @@ async def get_trends(
     language: Optional[str] = None,
     ascending: bool = False,
     exclude: Annotated[Optional[list[str]], Query()] = None,
+    ngram: int = 1,
 ) -> list[Any]:
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
@@ -82,6 +83,7 @@ async def get_trends(
                     enriched,
                     language,
                     ascending,
+                    ngram=ngram,
                 )
                 .build(cur)
                 .execute_fetchall()

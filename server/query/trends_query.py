@@ -36,7 +36,7 @@ class TrendsQuery(QueryBuilder):
         enriched: bool = True,
         language: Optional[str] = None,
         ascending_gradient: bool = False,
-        ngram: int = 2,
+        ngram: int = 1,
     ) -> None:
         self.total_counts = Identifier(f"total_counts_{ngram}")
         self.words_table = Identifier(f"words_{ngram}")
@@ -116,16 +116,16 @@ class TrendsQuery(QueryBuilder):
                 LIMIT 1000
             )
             SELECT
-                string_agg(wf.wordform, ' ') AS wordforms,
-                keyness
-            FROM keyness k
-            LEFT JOIN {words} w ON w.id = k.word_id
-            LEFT JOIN wordforms wf ON wf.id = ANY(w.wordform_ids)
-            GROUP BY keyness
-            ORDER BY keyness {gradient}
+                k.keyness,
+                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
+                (SELECT string_agg(l.lemma, ' ') FROM unnest(lemma_ids) WITH ORDINALITY u(lemma, ord) JOIN lemmas l ON u.lemma = l.id) AS lemma,
+                (SELECT string_agg(p.pos, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS pos,
+                (SELECT string_agg(p.poshead, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS poshead
+            FROM keyness k, {words_table} w
+            WHERE k.word_id = w.id;
             """
         ).format(
-            words=self.words_table,
+            words_table=self.words_table,
             total_counts=self.total_counts,
             abs_freq=self.abs_freq,
             rel_freq=self.rel_freq,
@@ -166,15 +166,16 @@ class TrendsQuery(QueryBuilder):
                 LIMIT 1000
             )
             SELECT
-                w.wordform,
-                w.poshead,
-                w.pos,
-                w.lemma,
-                tc_abs_freq AS keyness
-            FROM filter f
-            LEFT JOIN words w ON w.id = f.word_id;
+                f.tc_abs_freq as keyness,
+                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
+                (SELECT string_agg(l.lemma, ' ') FROM unnest(lemma_ids) WITH ORDINALITY u(lemma, ord) JOIN lemmas l ON u.lemma = l.id) AS lemma,
+                (SELECT string_agg(p.pos, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS pos,
+                (SELECT string_agg(p.poshead, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS poshead
+            FROM filter f, {words_table} w
+            WHERE f.word_id = w.id;
             """
         ).format(
+            words_table=self.words_table,
             total_counts=self.total_counts,
             abs_freq=self.abs_freq,
             date_filter=self.date_filter,
