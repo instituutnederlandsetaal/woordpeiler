@@ -6,7 +6,8 @@ import { useTrendSettingsStore } from "./TrendSettingsStore"
 // API
 import * as TrendAPI from "@/api/trends"
 import type { TrendRequest } from "@/api/trends"
-import { type TrendSettings, type TrendResult } from "@/types/trends"
+// Types
+import { type TrendSettings, type TrendResult, type DateRange } from "@/types/trends"
 // Utils
 import { toTimestamp } from "@/ts/date"
 
@@ -18,7 +19,7 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
     const lastTrendSettings = ref<TrendSettings>(null)
     // Methods
     function getTrends() {
-        lastTrendSettings.value = JSON.parse(JSON.stringify(trendSettings.value)) // deep copy
+        deepCopyLastUsedTrends()
         trendResults.value = []
         trendsLoading.value = true
         const selectedPeriod: DateRange = trendSettings.value[trendSettings.value.period]
@@ -50,6 +51,18 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
                     })
                 }
             })
+    }
+    function deepCopyLastUsedTrends() {
+        lastTrendSettings.value = JSON.parse(JSON.stringify(trendSettings.value))
+        // reparse dates from string (JSON.stringify converts dates to strings)
+        function parseDateRange(range: DateRange) { // technically it is a {start: string, end: string}
+            range.start = new Date(range.start)
+            range.end = new Date(range.end)
+        }
+        parseDateRange(lastTrendSettings.value.year)
+        parseDateRange(lastTrendSettings.value.month)
+        parseDateRange(lastTrendSettings.value.week)
+        parseDateRange(lastTrendSettings.value.other)
     }
     // Export
     return {

@@ -1,5 +1,5 @@
 <template>
-    <Panel header="Trendresultaten" class="trendlist">
+    <Panel :header="`Trendresultaten: ${displayName(lastTrendSettings)}`" class="trendlist">
 
         <div class="formSplit" v-if="trendResults[0].poshead">
             <label>Uitsluiten</label>
@@ -35,7 +35,7 @@ import { useTrendResultsStore } from '@/stores/TrendResultsStore';
 import { useSearchResultsStore } from '@/stores/SearchResultsStore';
 import { useSearchItemsStore } from '@/stores/SearchItemsStore';
 // Types & API
-import type { TrendResult } from '@/types/trends';
+import { type TrendResult, displayName } from '@/types/trends';
 import * as ListingAPI from '@/api/listing';
 // Primevue
 import Listbox from "primevue/listbox"
@@ -60,7 +60,7 @@ const posHeadLoading = ref(true)
 
 // Computed
 const filteredTrends = computed(() => {
-    return trendResults.value?.filter((i) => !selectedPosHead.value.includes(i.poshead))
+    return trendResults.value?.filter(i => i.poshead.split(" ").every(j => !selectedPosHead.value.includes(j)))
 })
 const badgeName = computed(() => {
     // key for keyness, freq for frequency
