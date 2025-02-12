@@ -33,6 +33,7 @@ def initialize(
     words_table.create_table_words()
     freq_table.add_word_id_column()
 
+    freq_table.deduplicate()
     freq_table.add_frequencies_indices()
 
     corpus_size_table = CorpusSizeTableBuilder(ngram)

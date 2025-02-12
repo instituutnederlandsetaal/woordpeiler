@@ -1,6 +1,7 @@
 # standard
 import re
 from typing import Any
+import os
 
 # third party
 from psycopg.sql import SQL, Identifier
@@ -118,6 +119,30 @@ class FrequencyTableBuilder:
             DROP COLUMN language;
         """).format(table=self.table)
 
+        self.deduplicate_rows = SQL("""
+            CREATE TEMP TABLE 
+                temp_frequencies AS
+                    SELECT 
+                        time,
+                        word_id,
+                        source_id,
+                        SUM(frequency) AS frequency
+                    FROM 
+                        {table}
+                    GROUP BY 
+                        time, 
+                        word_id, 
+                        source_id;
+
+            TRUNCATE TABLE {table};
+
+            INSERT INTO 
+                {table} (time, word_id, source_id, frequency)
+            SELECT *
+            FROM 
+                temp_frequencies;
+        """).format(table=self.table)
+
         self.add_indices = SQL("""
             CREATE INDEX ON {table} (word_id, source_id) INCLUDE (time, frequency);
             CREATE INDEX ON {table} (source_id) INCLUDE (time, frequency);
@@ -127,10 +152,24 @@ class FrequencyTableBuilder:
     def create_table_frequencies(self):
         # create table
         execute_query(self.create_table)
-        # fill
-        with timer(f"Filling table frequencies_{self.ngram}"):
-            with FrequencyUploader(self.path, columns=7, ngram=self.ngram) as uploader:
-                uploader.upload()
+
+        # what to upload?
+        if self.path.endswith(".gz"):
+            # single file
+            files = [self.path]
+        else:
+            # folder
+            bare_files = os.listdir(self.path)
+            files = [os.path.join(self.path, file) for file in bare_files]
+
+        # upload
+        for file in files:
+            with timer(f"Filling table frequencies_{self.ngram}"):
+                with FrequencyUploader(
+                    self.path, columns=7, ngram=self.ngram
+                ) as uploader:
+                    uploader.upload()
+
         analyze_vacuum()
 
     def add_source_id_column(self):
@@ -150,6 +189,17 @@ class FrequencyTableBuilder:
             self.tmp_index_words,
             self.fill_word_id,
             self.drop_word_columns,
+        )
+        analyze_vacuum()
+
+    def deduplicate(self):
+        if self.path.endswith(".gz"):
+            print("Deduplication not needed for single file.")
+            return
+
+        time_query(
+            f"Deduplicating {self.table}",
+            self.deduplicate_rows,
         )
         analyze_vacuum()
 
