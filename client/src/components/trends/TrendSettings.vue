@@ -3,73 +3,103 @@
         <Accordion :value="tab" ref="trendAccordion">
             <AccordionPanel value="0">
                 <AccordionHeader>Trendinstellingen</AccordionHeader>
-                <AccordionContent class="settings">
+                <AccordionContent>
 
-                    <div class="formSplit">
-                        <label for="variant">Taalvariëteit</label>
-                        <Select id="variant" v-model="trendSettings.language" :options="languageOptions" showClear
-                            optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
-                    </div>
+                    <Tabs value="0" class="settings">
+                        <TabList>
+                            <Tab value="0">Woord</Tab>
+                            <Tab value="1">Periode</Tab>
+                            <Tab value="2">Trend</Tab>
+                        </TabList>
+                        <TabPanels>
+                            <!-- Word tab -->
+                            <TabPanel value="0">
+                                <div class="formSplit">
+                                    <label for="ngram">N-gram</label>
+                                    <Select id="ngram" v-model="trendSettings.ngram" :options="ngramOptions"
+                                        optionLabel="label" optionValue="value" placeholder="N-gram" />
+                                </div>
 
-                    <div class="formSplit">
-                        <label>Periode</label>
-                        <SelectButton v-model="trendSettings.period" :options="periodOptions" optionValue="value"
-                            optionLabel="label" />
-                    </div>
+                                <div class="formSplit">
+                                    <label for="variant">Taalvariëteit</label>
+                                    <Select id="variant" v-model="trendSettings.language" :options="languageOptions"
+                                        showClear optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
+                                </div>
 
-                    <template v-if="trendSettings.period == 'other'">
-                        <div class="formSplit">
-                            <DatePicker v-model="trendSettings.other.start" showIcon fluid iconDisplay="input"
-                                dateFormat="dd-M-yy" />
-                            <DatePicker v-model="trendSettings.other.end" showIcon fluid iconDisplay="input"
-                                dateFormat="dd-M-yy" />
-                        </div>
-                    </template>
-                    <template v-else-if="trendSettings.period == 'year'">
-                        <div class="formSplit">
-                            <label>Jaar</label>
-                            <DatePicker v-model="trendSettings.year.start" view="year" dateFormat="yy"
-                                v-on:date-select="setYearEndDate()" />
-                        </div>
-                    </template>
-                    <template v-else-if="trendSettings.period == 'month'">
-                        <div class="formSplit">
-                            <label>Maand</label>
-                            <DatePicker v-model="trendSettings.month.start" view="month" dateFormat="MM yy"
-                                v-on:date-select="setMonthEndDate()" />
-                        </div>
-                    </template>
-                    <template v-else-if="trendSettings.period == 'week'">
-                        <div class="formSplit">
-                            <label>Week</label>
-                            <DatePicker v-model="week" view="date" dateFormat="dd M yy" selectionMode="range"
-                                class="week" selectOtherMonths showOtherMonths :manualInput="false"
-                                v-on:date-select="setWeekCorrectly()">
-                            </DatePicker>
-                        </div>
-                    </template>
+                                <div class="formSplit">
+                                    <label>Verrijkt met woordsoort en lemma</label>
+                                    <Checkbox v-model="trendSettings.enriched" binary />
+                                </div>
+                            </TabPanel>
 
-                    <div class="formSplit">
-                        <label>Verrijkt met woordsoort en lemma</label>
-                        <Checkbox v-model="trendSettings.enriched" binary />
-                    </div>
+                            <!-- Period tab -->
+                            <TabPanel value="1">
+                                <div class="formSplit">
+                                    <label>Periode</label>
+                                    <SelectButton v-model="trendSettings.period" :options="periodOptions"
+                                        optionValue="value" optionLabel="label" />
+                                </div>
 
-                    <div class="formSplit">
-                        <label>Trendsoort</label>
-                        <SelectButton v-model="trendSettings.trendType" :options="trendTypeOptions" optionValue="value"
-                            optionLabel="label" />
-                    </div>
+                                <template v-if="trendSettings.period == 'other'">
 
-                    <div class="formSplit">
-                        <label>{{ modifierLabel }}</label>
-                        <input type="number" class="modifierInput p-inputtext" v-model="trendSettings.modifier"
-                            min="0" />
-                    </div>
+                                    <div class="formSplit">
+                                        <label>Vanaf</label>
+                                        <DatePicker v-model="trendSettings.other.start" showIcon fluid
+                                            iconDisplay="input" dateFormat="dd-M-yy" />
+                                    </div>
+                                    <div class="formSplit">
+                                        <label>Tot en met</label>
+                                        <DatePicker v-model="trendSettings.other.end" showIcon fluid iconDisplay="input"
+                                            dateFormat="dd-M-yy" />
+                                    </div>
+                                </template>
+                                <template v-else-if="trendSettings.period == 'year'">
+                                    <div class="formSplit">
+                                        <label>Jaar</label>
+                                        <DatePicker v-model="trendSettings.year.start" view="year" dateFormat="yy"
+                                            v-on:date-select="setYearEndDate()" />
+                                    </div>
+                                </template>
+                                <template v-else-if="trendSettings.period == 'month'">
+                                    <div class="formSplit">
+                                        <label>Maand</label>
+                                        <DatePicker v-model="trendSettings.month.start" view="month" dateFormat="MM yy"
+                                            v-on:date-select="setMonthEndDate()" />
+                                    </div>
+                                </template>
+                                <template v-else-if="trendSettings.period == 'week'">
+                                    <div class="formSplit">
+                                        <label>Week</label>
+                                        <DatePicker v-model="week" view="date" dateFormat="dd M yy"
+                                            selectionMode="range" class="week" selectOtherMonths showOtherMonths
+                                            :manualInput="false" v-on:date-select="setWeekCorrectly()">
+                                        </DatePicker>
+                                    </div>
+                                </template>
+                            </TabPanel>
 
-                    <div class="formSplit" v-if="trendSettings.trendType == 'keyness'">
-                        <label>Verdwijnwoorden</label>
-                        <Checkbox v-model="trendSettings.ascending" binary />
-                    </div>
+                            <!-- Trend tab -->
+                            <TabPanel value="2">
+                                <div class="formSplit">
+                                    <label>Trendsoort</label>
+                                    <SelectButton v-model="trendSettings.trendType" :options="trendTypeOptions"
+                                        optionValue="value" optionLabel="label" />
+                                </div>
+
+                                <div class="formSplit">
+                                    <label>{{ modifierLabel }}</label>
+                                    <input type="number" class="modifierInput p-inputtext"
+                                        v-model="trendSettings.modifier" min="0" />
+                                </div>
+
+                                <div class="formSplit" v-if="trendSettings.trendType == 'keyness'">
+                                    <label>Verdwijnwoorden</label>
+                                    <Checkbox v-model="trendSettings.ascending" binary />
+                                </div>
+                            </TabPanel>
+
+                        </TabPanels>
+                    </Tabs>
 
                     <Button class="search-btn" label="Berekenen" @click="() => { tab += 1; getTrends() }" />
 
@@ -98,6 +128,11 @@ import DatePicker from "primevue/datepicker"
 import Checkbox from 'primevue/checkbox';
 import Select from 'primevue/select';
 import Panel from "primevue/panel"
+import Tabs from 'primevue/tabs';
+import TabList from 'primevue/tablist';
+import Tab from 'primevue/tab';
+import TabPanels from 'primevue/tabpanels';
+import TabPanel from 'primevue/tabpanel';
 // Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 
@@ -106,7 +141,7 @@ import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 const { languageOptions } = useSearchItemsStore()
 // trend settings store
 const trendSettingsStore = useTrendSettingsStore()
-const { trendTypeOptions, modifierOptions, periodOptions } = trendSettingsStore
+const { trendTypeOptions, modifierOptions, periodOptions, ngramOptions } = trendSettingsStore
 const { trendSettings } = storeToRefs(trendSettingsStore)
 // trend results store
 const { getTrends } = useTrendResultsStore()
@@ -155,12 +190,30 @@ onMounted(() => {
         display: none !important;
     }
 
-    :deep(.p-accordionpanel) {
-        border: none;
-    }
-
     :deep(.p-panel-content) {
-        padding-bottom: 0;
+
+        .p-accordionpanel {
+            border: none;
+
+            .p-accordionheader {
+                padding-bottom: 0;
+            }
+
+            .p-accordioncontent-content {
+                padding: 0;
+            }
+
+            .p-accordioncontent {
+
+                .p-tab {
+                    padding: 0.5rem 0.5rem;
+                }
+
+                .p-tabpanels {
+                    padding: 0.5rem 0;
+                }
+            }
+        }
     }
 }
 

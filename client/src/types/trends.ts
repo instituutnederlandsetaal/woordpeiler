@@ -9,6 +9,7 @@ export type TrendSettings = {
     enriched: boolean;
     ascending: boolean;
     language?: string;
+    ngram: number;
 }
 
 export type DateRange = {

@@ -30,6 +30,7 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
             enriched: trendSettings.value.enriched,
             language: trendSettings.value.language,
             ascending: trendSettings.value.ascending,
+            ngram: trendSettings.value.ngram,
         }
 
         TrendAPI.getTrends(trendRequest)

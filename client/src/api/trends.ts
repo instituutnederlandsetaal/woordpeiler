@@ -12,6 +12,7 @@ export type TrendRequest = {
     enriched: boolean;
     language?: string;
     ascending: boolean;
+    ngram: number;
 }
 
 export function getTrends(request: TrendRequest): Promise<TrendResponse> {

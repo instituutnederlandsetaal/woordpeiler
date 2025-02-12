@@ -17,6 +17,7 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
         period: "year",
         enriched: true,
         ascending: false,
+        ngram: 1,
     })
     const trendTypeOptions: SelectLabel[] = [
         { label: "keyness", value: "keyness" },
@@ -32,6 +33,10 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
         { label: "jaar", value: "year" },
         { label: "anders", value: "other" },
     ]
+    const ngramOptions: SelectLabel[] = [
+        { label: "1-gram", value: 1 },
+        { label: "2-gram", value: 2 },
+    ]
     // Lifecycle
     watch(() => ({ ...trendSettings.value }), (newValue, oldValue) => {
         const copy = { ...newValue }
@@ -44,5 +49,5 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
         }
     })
     // Export
-    return { trendSettings, trendTypeOptions, modifierOptions, periodOptions }
+    return { trendSettings, trendTypeOptions, modifierOptions, periodOptions, ngramOptions }
 })
