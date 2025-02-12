@@ -3,11 +3,15 @@ from enum import Enum
 import os
 from typing import Optional, Any
 from datetime import datetime
+import logging
 
 # third party
 from dotenv import load_dotenv
 from psycopg import AsyncCursor, Cursor
 from psycopg.sql import Composable, Identifier, Literal, SQL, Composed
+
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.getLevelName(logging.DEBUG))
 
 load_dotenv()
 internal = os.getenv("INTERNAL", "false").lower() == "true"
@@ -106,6 +110,9 @@ class ExecutableQuery[T]:
         self.verbose = verbose
 
     async def execute(self) -> BaseCursor:
+        if self.verbose:
+            logger.debug(self.query.as_string(self.cursor))
+
         if type(self.cursor) is AsyncCursor:
             await self.cursor.execute(self.query)
         else:

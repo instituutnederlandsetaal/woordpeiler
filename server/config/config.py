@@ -19,13 +19,14 @@ from pytz import timezone
 # local
 from server.config.connection import get_reader_conn_str
 
+load_dotenv()
+
 # Disable uvicorn access logger
 uvicorn_access = logging.getLogger("uvicorn.access")
 uvicorn_access.addFilter(lambda _: False)
 logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.getLevelName(logging.DEBUG))
-
-load_dotenv()
+logging_level = logging.DEBUG if os.getenv("VERSION_LABEL") == "dev" else logging.INFO
+logger.setLevel(logging.getLevelName(logging_level))
 
 
 class FastAPI(FastAPI):
