@@ -13,13 +13,19 @@ create_table = SQL("""
     )
 """)
 
+add_primary_key = SQL("""
+    ALTER TABLE
+        wordforms 
+    ADD CONSTRAINT wordforms_pkey PRIMARY KEY (id);
+""")
+
 create_indices = SQL("""
     CREATE INDEX ON wordforms (wordform text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100);
 """)
 
 
 class WordformUploader(Uploader):
-    def insert_rows(self, rows: list[list[str]]) -> None:
+    def _insert_rows(self, rows: list[list[str]]) -> None:
         with self.cursor.copy("COPY wordforms (id, wordform) FROM STDIN") as copy:
             for r in rows:
                 copy.write_row(r)
@@ -30,5 +36,6 @@ def create_table_wordforms(path: str):
     with timer("Creating table wordforms"):
         with WordformUploader(path, columns=2) as uploader:
             uploader.upload()
+    time_query("Adding wordforms primary key", add_primary_key)
     time_query("Creating wordform indices", create_indices)
     analyze_vacuum()

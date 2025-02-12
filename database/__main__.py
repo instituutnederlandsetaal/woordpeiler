@@ -14,15 +14,15 @@ def initialize(folder: str, config_name: str, ngram: int) -> None:
     pos_path = f"{folder}/{config_name}_pos_full_lookup.tsv.gz"
     freq_path = f"{folder}/{config_name}.tsv.gz"
 
-    # primary.initialize(
-    #     freq_path=freq_path,
-    #     ngram=ngram,
-    #     word_path=word_path,
-    #     lemma_path=lemma_path,
-    #     pos_path=pos_path,
-    # )
-    # if ngram == 1:
-    #     secondary.initialize()
+    primary.initialize(
+        freq_path=freq_path,
+        ngram=ngram,
+        word_path=word_path,
+        lemma_path=lemma_path,
+        pos_path=pos_path,
+    )
+    if ngram == 1:
+        secondary.initialize()
 
     trends.initialize(ngram)
 
@@ -34,3 +34,4 @@ if __name__ == "__main__":
 
     with timer("Initializing database"):
         initialize(folder=sys.argv[1], config_name=sys.argv[2], ngram=int(sys.argv[3]))
+        print("Done!")

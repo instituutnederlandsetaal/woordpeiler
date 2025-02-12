@@ -16,7 +16,7 @@ class FrequencyUploader(Uploader):
         self.ngram = ngram
         super().__init__(path, columns)
 
-    def transform_data(self, rows: list[list[str]]) -> list[Any]:
+    def _transform_data(self, rows: list[list[str]]) -> list[Any]:
         # input: ['1 2', '2 3', '3 3', '20210101', 'NRC', 'NN', '4']
         # output: [[1, 2], [2, 3], [3, 3], '20210101', 'NRC', 'NN', 4]
 
@@ -40,7 +40,7 @@ class FrequencyUploader(Uploader):
             for i in range(len(valid_dates))
         ]
 
-    def insert_rows(self, rows: list[Any]) -> None:
+    def _insert_rows(self, rows: list[Any]) -> None:
         table = f"frequencies_{self.ngram}"
         with self.cursor.copy(
             SQL(
@@ -52,12 +52,12 @@ class FrequencyUploader(Uploader):
 
 
 class FrequencyTableBuilder:
-    def __init__(self, path: str, ngram: int = 1):
+    def __init__(self, path: str, ngram: int):
         self.path = path
         self.ngram = ngram
-        self.build_queries()
+        self._build_queries()
 
-    def build_queries(self):
+    def _build_queries(self):
         self.table = Identifier(f"frequencies_{self.ngram}")
         words_table = Identifier(f"words_{self.ngram}")
 

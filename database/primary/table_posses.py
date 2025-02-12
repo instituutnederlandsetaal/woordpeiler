@@ -24,12 +24,12 @@ create_indices = SQL("""
 
 
 class PosUploader(Uploader):
-    def transform_data(self, rows: list[list[str]]) -> list[list[str]]:
+    def _transform_data(self, rows: list[list[str]]) -> list[list[str]]:
         # input: ['1', 'nou-c(num=sg)']
         # output: ['1', 'nou-c(num=sg)', 'nou-c']
         return [[row[0], row[1], row[1].split("(")[0]] for row in rows]
 
-    def insert_rows(self, rows: list[list[str]]) -> None:
+    def _insert_rows(self, rows: list[list[str]]) -> None:
         with self.cursor.copy("COPY posses (id, pos, poshead) FROM STDIN") as copy:
             for r in rows:
                 copy.write_row(r)

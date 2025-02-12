@@ -6,11 +6,11 @@ from database.util.query import time_query, analyze_vacuum
 
 
 class WordsTableBuilder:
-    def __init__(self, ngram: int = 1):
+    def __init__(self, ngram: int):
         self.ngram = ngram
-        self.build_queries()
+        self._build_queries()
 
-    def build_queries(self):
+    def _build_queries(self):
         self.table = Identifier(f"words_{self.ngram}")
         table_frequencies = Identifier(f"frequencies_{self.ngram}")
 

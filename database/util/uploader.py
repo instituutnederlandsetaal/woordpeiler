@@ -39,9 +39,9 @@ class Uploader(ContextDecorator):
                     TsvGzReader(self.path, self.column_count, self.chunk_size)
                 ):
                     # transform data
-                    rows = self.transform_data(chunk)
+                    rows = self._transform_data(chunk)
                     # insert data
-                    self.insert_rows(rows)
+                    self._insert_rows(rows)
                     # tqdm
                     pbar.update(self.chunk_size)
         except Exception as e:
@@ -49,8 +49,8 @@ class Uploader(ContextDecorator):
             print(e)
             traceback.print_exc()
 
-    def transform_data(self, rows: list[list[str]]) -> list[list[str]]:
+    def _transform_data(self, rows: list[list[str]]) -> list[list[str]]:
         return rows
 
-    def insert_rows(self, rows: list[list[str]]) -> None:
+    def _insert_rows(self, rows: list[list[str]]) -> None:
         raise NotImplementedError

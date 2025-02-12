@@ -13,13 +13,19 @@ create_table = SQL("""
     )
 """)
 
+add_primary_key = SQL("""
+    ALTER TABLE
+        lemmas 
+    ADD CONSTRAINT lemmas_pkey PRIMARY KEY (id);
+""")
+
 create_indices = SQL("""
     CREATE INDEX ON lemmas (lemma text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100);
 """)
 
 
 class LemmaUploader(Uploader):
-    def insert_rows(self, rows: list[list[str]]) -> None:
+    def _insert_rows(self, rows: list[list[str]]) -> None:
         with self.cursor.copy("COPY lemmas (id, lemma) FROM STDIN") as copy:
             for r in rows:
                 copy.write_row(r)
@@ -30,5 +36,6 @@ def create_table_lemmas(path: str):
     with timer("Creating table lemmas"):
         with LemmaUploader(path, columns=2) as uploader:
             uploader.upload()
+    time_query("Adding lemmas primary key", add_primary_key)
     time_query("Creating lemma indices", create_indices)
     analyze_vacuum()

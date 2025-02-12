@@ -6,13 +6,13 @@ from database.util.query import time_query, analyze_vacuum
 
 
 class TotalCountsTableBuilder:
-    def __init__(self, ngram: int = 1):
+    def __init__(self, ngram: int):
         self.ngram = ngram
-        self.build_queries()
+        self._build_queries()
 
-    def build_queries(self):
+    def _build_queries(self):
         self.table = Identifier(f"total_counts_{self.ngram}")
-        self.yearly_counts = Identifier(f"daily_counts_{self.ngram}")  # daily for now
+        self.yearly_counts = Identifier(f"yearly_counts_{self.ngram}")
 
         self.create_table = SQL("""
             SELECT 
