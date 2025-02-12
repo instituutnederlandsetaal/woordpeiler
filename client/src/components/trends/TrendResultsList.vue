@@ -135,6 +135,10 @@ watch(selectedTrend, () => {
         .p-listbox {
             border: none;
 
+            .p-listbox-header {
+                padding-top: 0;
+            }
+
             .p-listbox-list-container {
                 padding: 0 0 0 1rem;
             }

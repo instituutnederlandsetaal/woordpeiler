@@ -70,3 +70,18 @@ $theme: #48e;
     }
 
 }
+
+// MultiSelect has on overlay on the global document level
+// Hence why we don't style it scoped
+.p-multiselect-header::after {
+    content: "Alles selecteren";
+    font-style: italic;
+}
+
+.p-multiselect-header {
+    border-bottom: 1px solid #ccc;
+}
+
+.p-multiselect-list-container {
+    max-height: 28rem !important;
+}

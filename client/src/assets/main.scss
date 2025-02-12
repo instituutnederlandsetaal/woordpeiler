@@ -35,7 +35,8 @@ aside {
   gap: 1rem;
 }
 
-.settings>div {
+.settings>div,
+.settings div.p-tabpanel {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -45,7 +46,6 @@ aside {
   border: 1px solid #e2e8f0;
   background: white;
 }
-
 
 .formSplit {
   display: flex;

@@ -30,6 +30,9 @@ app.use(PrimeVue, {
         monthNames: ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'],
         dayNamesMin: ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'],
         firstDayOfWeek: 0,
+        emptyFilterMessage: 'Geen resultaten',
+        emptyMessage: 'Geen resultaten',
+        emptySearchMessage: 'Geen resultaten',
     }
 });
 app.use(PrimeVue, { unstyled: true });
