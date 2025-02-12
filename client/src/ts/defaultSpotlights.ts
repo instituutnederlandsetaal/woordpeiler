@@ -1,8 +1,8 @@
 export const items = [
     {
-        word: "fatbikes",
+        word: "russische invasie",
         color: "#FF8000",
-        start_date: "2023-01-01",
+        start_date: "2021-01-01",
         period_type: "week",
         period_length: 2,
     },
