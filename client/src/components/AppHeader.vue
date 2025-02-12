@@ -40,7 +40,7 @@
     <footer v-if="isHomePage">
         <h2>woordtrends van 2000 tot nu</h2>
         <InputGroup>
-            <InputText v-model="word" placeholder="zoeken" @keyup.enter="search" />
+            <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="search" />
             <Button severity="secondary" @click="search">
                 <span class="pi pi-search"></span>
             </Button>
