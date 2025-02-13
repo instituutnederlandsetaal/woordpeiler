@@ -2,9 +2,11 @@
 import re
 from typing import Any
 import os
+import os.path
 
 # third party
 from psycopg.sql import SQL, Identifier
+from tqdm import tqdm
 
 # local
 from database.util.uploader import Uploader
@@ -153,21 +155,20 @@ class FrequencyTableBuilder:
         # create table
         execute_query(self.create_table)
 
-        # what to upload?
-        if self.path.endswith(".gz"):
+        # what to upload? self.path is something like /vol1/tsv/unigram.tsv.gz
+        if os.path.isfile(self.path):
             # single file
             files = [self.path]
         else:
-            # folder
+            # file does not exist. Look in dir of the same name
+            self.path = self.path.split(".")[0]  # remove ext .tsv.gz
             bare_files = os.listdir(self.path)
             files = [os.path.join(self.path, file) for file in bare_files]
 
         # upload
-        for file in files:
-            with timer(f"Filling table frequencies_{self.ngram}"):
-                with FrequencyUploader(
-                    self.path, columns=7, ngram=self.ngram
-                ) as uploader:
+        with timer(f"Filling table frequencies_{self.ngram}"):
+            for file in tqdm(files):
+                with FrequencyUploader(file, columns=7, ngram=self.ngram) as uploader:
                     uploader.upload()
 
         analyze_vacuum()
