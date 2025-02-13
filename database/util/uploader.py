@@ -14,10 +14,10 @@ from database.util.connection import get_writer_conn_str
 
 
 class Uploader(ContextDecorator):
-    def __init__(self, path: str, columns: int):
+    def __init__(self, path: str, columns: int, chunk_size: int = 100_000):
         self.path = path
         self.column_count = columns
-        self.chunk_size = 100_000
+        self.chunk_size = chunk_size
 
     def __enter__(self):
         self.conn: Connection = psycopg.connect(get_writer_conn_str())

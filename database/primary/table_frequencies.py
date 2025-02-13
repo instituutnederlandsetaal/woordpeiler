@@ -15,9 +15,11 @@ from database.util.timer import timer
 
 
 class FrequencyUploader(Uploader):
-    def __init__(self, path: str, columns: int, ngram: int):
+    def __init__(
+        self, path: str, columns: int, ngram: int, chunk_size: int = 10_000_000
+    ):
         self.ngram = ngram
-        super().__init__(path, columns)
+        super().__init__(path, columns, chunk_size)
 
     def _transform_data(self, rows: list[list[str]]) -> list[Any]:
         # input: ['1 2', '2 3', '3 3', '20210101', 'NRC', 'NN', '4']
