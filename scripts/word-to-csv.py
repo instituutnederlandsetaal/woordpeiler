@@ -20,10 +20,8 @@ if __name__ == "__main__":
     for word in words:
         # get word frequency
         start_date_str = "2000-01-02"
-        start_date_unix = datetime.strptime(start_date_str, "%Y-%m-%d").timestamp()
         end_date_str = "2025-01-31"
-        end_date_unix = datetime.strptime(end_date_str, "%Y-%m-%d").timestamp()
-        url = f"{BASE_URL}?wordform={word}&period_length=1&period_type=month&start_date={start_date_unix}&end_date={end_date_unix}"
+        url = f"{BASE_URL}?wordform={word}&period_length=1&period_type=month&start={start_date_str}&end={end_date_str}"
         response = requests.get(url)
 
         # in the form

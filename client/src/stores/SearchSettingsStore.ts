@@ -5,14 +5,15 @@ import { defineStore } from 'pinia'
 import type { SearchSettings } from "@/types/Search"
 import type { SelectLabel } from '@/types/UI'
 import { isInternal } from '@/ts/internal'
+import { toMidnightUTC, toUTCDate } from '@/ts/date'
 
 export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     // Fields
     const searchSettings = ref<SearchSettings>({
-        timeBucketType: initTimeBucket().type,
-        timeBucketSize: initTimeBucket().size,
+        intervalType: initTimeBucket().type,
+        intervalLength: initTimeBucket().size,
         startDate: new Date('2000-01-01'),
-        endDate: new Date(), // now
+        endDate: toUTCDate(new Date()),
         frequencyType: "rel_freq",
         languageSplit: false,
     })
@@ -24,14 +25,14 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     // Methods
     function initTimeBucketOpts(): SelectLabel[] {
         const opts = [
-            { label: "week", value: "week" },
-            { label: "maand", value: "month" },
-            { label: "jaar", value: "year" },
+            { label: "week", value: "w" },
+            { label: "maand", value: "m" },
+            { label: "jaar", value: "y" },
         ]
         // For now always true, could be set back to internal
         const showDaySetting = true // isInternal()
         if (showDaySetting) {
-            opts.unshift({ label: "dag", value: "day" })
+            opts.unshift({ label: "dag", value: "d" })
         }
         return opts
     }
@@ -45,19 +46,33 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     }
     function resetDates() {
         searchSettings.value.startDate = new Date('2000-01-01')
-        searchSettings.value.endDate = new Date()
+        searchSettings.value.endDate = toUTCDate(new Date())
     }
     function readUrlParams() {
         const params = new URLSearchParams(window.location.search)
-        const timeBucketType = params.get('i')
-        const timeBucketSize = params.get('il')
+        const interval = params.get('i')
+        const legacyIntervalLength = params.get('il')
         const startDate = params.get('start')
         const endDate = params.get('end')
         const frequencyType = params.get('f')
-        if (timeBucketType) searchSettings.value.timeBucketType = timeBucketType
-        if (timeBucketSize) searchSettings.value.timeBucketSize = parseInt(timeBucketSize)
-        if (startDate) searchSettings.value.startDate = new Date(parseInt(startDate) * 1000)
-        if (endDate) searchSettings.value.endDate = new Date(parseInt(endDate) * 1000)
+
+        if (interval) {
+            if (interval.match(/\d/)) { // new format
+                searchSettings.value.intervalType = interval.slice(-1)
+                searchSettings.value.intervalLength = parseInt(interval.slice(0, -1))
+            } else { // legacy format
+                searchSettings.value.intervalType = interval[0]
+                if (legacyIntervalLength) searchSettings.value.intervalLength = parseInt(legacyIntervalLength)
+            }
+        }
+        /** dateStr is either a unix time stamp or a date string like YYYY-MM-DD */
+        function toDate(dateStr: string): Date {
+            if (dateStr.includes("-")) return new Date(dateStr)
+            return new Date(parseInt(dateStr) * 1000)
+        }
+
+        if (startDate) searchSettings.value.startDate = toDate(startDate)
+        if (endDate) searchSettings.value.endDate = toDate(endDate)
 
         const freqMap = {
             "rel": "rel_freq",
@@ -66,8 +81,8 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         if (frequencyType) searchSettings.value.frequencyType = freqMap[frequencyType]
     }
     function initTimeBucket(): { type: string, size: number } {
-        const desktop = { type: "month", size: 3 }
-        const mobile = { type: "year", size: 1 }
+        const desktop = { type: "m", size: 3 }
+        const mobile = { type: "y", size: 1 }
         const isMobile = window.innerWidth < 768
         return isMobile ? mobile : desktop
     }

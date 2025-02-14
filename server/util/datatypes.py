@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import Enum
 
 
-class WordColumn(Enum):
+class WordColumn(str, Enum):
     ID = "id"
     WORDFORM = "wordform"
     LEMMA = "lemma"
@@ -11,18 +11,42 @@ class WordColumn(Enum):
     POSHEAD = "poshead"
 
 
-class WordFrequencyColumn(Enum):
+class WordFrequencyColumn(str, Enum):
     TIME = "time"
     WORD_ID = "word_id"
     FREQUENCY = "frequency"
     SOURCE = "source"
 
 
-class PeriodType(str, Enum):
-    DAY = "day"
-    WEEK = "week"
-    MONTH = "month"
-    YEAR = "year"
+class IntervalType(str, Enum):
+    DAY = "d"
+    WEEK = "w"
+    MONTH = "m"
+    YEAR = "y"
+
+
+@dataclass
+class Interval:
+    type: IntervalType
+    length: int
+
+    def to_timescaledb_str(self) -> str:
+        """
+        TimeScaleDB using the full words for interval types
+        """
+        mapping = {"d": "day", "w": "week", "m": "month", "y": "year"}
+        return f"{self.length} {mapping[self.type]}"
+
+    @staticmethod
+    def from_string(interval: str) -> "Interval":
+        """
+        Parse an interval string into an Interval object.
+        The interval string. Example input: "1y", "2m", "3w", "4d".
+        When no length is provided, the default is 1. So: "y" -> "1y".
+        """
+        if len(interval) == 1:
+            return Interval(IntervalType(interval), 1)
+        return Interval(IntervalType(interval[-1]), int(interval[:-1]))
 
 
 class WordRow:

@@ -1,88 +1,76 @@
 export const items = [
     {
-        word: "russische invasie",
+        word: "russisch",
         color: "#FF8000",
+        // legacy test
         start_date: "2021-01-01",
-        period_type: "week",
-        period_length: 2,
+        period_length: 1,
+        period_type: "day"
     },
     {
         word: "corona",
         color: "#FFF064",
-        start_date: "2020-01-01",
-        period_type: "week",
-        period_length: 3,
+        start: "2020-01-01",
+        interval: "3w"
     },
     {
         word: "europapa",
         color: "#359FF0",
-        start_date: "2024-01-01",
-        period_type: "week",
-        period_length: 1,
+        start: "2024-01-01",
+        interval: "1w"
     },
     {
         word: "graaiflatie",
         color: "#BD795D",
-        start_date: "2023-01-01",
-        period_type: "week",
-        period_length: 1,
+        start: "2023-01-01",
+        interval: "1w"
     },
     {
         word: "smartphone",
         color: "#89C24B",
-        start_date: "2006-01-01",
-        period_type: "month",
-        period_length: 3,
+        start: "2006-01-01",
+        interval: "3m"
     },
     {
         word: "tiktok",
         color: "#E8503D",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
-
+        start: "2018-01-01",
+        interval: "1m"
     },
     {
         word: "knuffelcontact",
         color: "#359FF0",
-        start_date: "2020-01-01",
-        period_type: "week",
-        period_length: 1,
-
+        start: "2020-01-01",
+        interval: "1w"
     },
     {
         word: "vapen",
         color: "#FF8000",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
+        start: "2018-01-01",
+        interval: "1m"
     },
     {
         word: "knaldrang",
         color: "#FFF064",
-        start_date: "2020-01-01",
-        period_type: "week",
-        period_length: 2,
+        start: "2020-01-01",
+        interval: "2w"
     },
     {
         word: "menstruatieproducten",
         color: "#E8503D",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
+        start: "2018-01-01",
+        interval: "1m"
     },
     {
         word: "klimaatspijbelaars",
         color: "#89C24B",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
+        start: "2018-01-01",
+        interval: "1m"
     },
     {
         word: "stikstofcrisis",
         color: "#BD795D",
-        start_date: "2018-01-01",
-        period_type: "month",
-        period_length: 1,
+        start: "2018-01-01",
+        interval: "1m"
     }
 ]

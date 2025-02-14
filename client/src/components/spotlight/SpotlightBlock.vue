@@ -5,7 +5,7 @@
                 {{ spotlight.word.toLowerCase().trim() }}
             </h2>
         </header>
-        <p>sinds {{ spotlight.start_date.split("-")[0] }}</p>
+        <p>sinds {{ (spotlight.start ?? spotlight.start_date).split("-")[0] }}</p>
         <div>
             <img v-if="svgBlob" :src="svgBlob" />
         </div>
@@ -21,6 +21,7 @@ import * as API from "@/api/search"
 import { toTimestamp } from '@/ts/date';
 // Types
 import { type Spotlight } from "@/types/spotlight";
+import { toIntervalStr } from '@/types/Search';
 
 // Props
 const props = defineProps({
@@ -38,10 +39,8 @@ const svgBlob = ref()
 function search(spotlight: Spotlight) {
     const params = {
         w: spotlight.word,
-        i: spotlight.period_type,
-        il: spotlight.period_length,
-        start: toTimestamp(new Date(spotlight.start_date)),
-        end: spotlight.end_date == undefined ? undefined : toTimestamp(new Date(spotlight.end_date)),
+        i: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
+        start: spotlight.start ?? spotlight.start_date,
     }
     router.push({ path: '/grafiek', query: params });
 }
@@ -51,9 +50,8 @@ onMounted(() => {
     const spotlight = props.spotlight
     const request: API.SearchRequest = {
         wordform: spotlight.word.toLowerCase().trim(),
-        start_date: toTimestamp(new Date(spotlight.start_date)),
-        period_type: spotlight.period_type,
-        period_length: spotlight.period_length,
+        start: spotlight.start ?? spotlight.start_date,
+        interval: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
     }
 
     API.getSVG(request)

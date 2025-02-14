@@ -18,16 +18,14 @@ class ArithmeticalQuery:
         formula: str,
         source: Optional[str] = None,
         language: Optional[str] = None,
-        period_type: str = "year",
-        period_length: int = 1,
+        interval: str = "y",
         start_date: Optional[int] = None,
         end_date: Optional[int] = None,
     ):
         self.formula = formula
         self.source = source
         self.language = language
-        self.period_type = period_type
-        self.period_length = period_length
+        self.interval = interval
         self.start_date = start_date
         self.end_date = end_date
 
@@ -52,8 +50,7 @@ class ArithmeticalQuery:
                         wordform=token,
                         source=self.source,
                         language=self.language,
-                        bucket_type=self.period_type,
-                        bucket_size=self.period_length,
+                        interval=self.interval,
                         start_date=self.start_date,
                         end_date=self.end_date,
                     )
@@ -98,7 +95,6 @@ class ArithmeticalQuery:
 
     def safe_divide(self, numerator: Decimal, denominator: Decimal) -> Decimal:
         if denominator == 0 and numerator == 0:
-            # both are equally present (this does assume queries like: a / (a + b) )
             return Decimal(0)
         elif denominator == 0:
             return Decimal(1)

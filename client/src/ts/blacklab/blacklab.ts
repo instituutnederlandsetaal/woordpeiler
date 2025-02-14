@@ -1,4 +1,4 @@
-import type { GraphItem, SearchSettings, SearchItem } from "@/types/Search";
+import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/Search";
 import { isInternal } from "@/ts/internal";
 import * as d3 from "d3";
 
@@ -8,9 +8,9 @@ const titleFilter = `titleLevel2_untokenized:${titles}`
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
     let group
-    if (settings.timeBucketType == "year") {
+    if (settings.intervalType == IntervalType.YEAR) {
         group = "field:grouping_year:i"
-    } else if (settings.timeBucketType == "month") {
+    } else if (settings.intervalType == IntervalType.MONTH) {
         group = "field:grouping_year:i,field:grouping_month:i"
     } else { // week or day
         group = "field:grouping_year:i,field:grouping_month:i,field:grouping_day:i"
@@ -89,8 +89,8 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     const filters = {
         medium: "newspaper",
     }
-    const bucketType = settings.timeBucketType;
-    const bucketSize = settings.timeBucketSize;
+    const bucketType = settings.intervalType;
+    const bucketSize = settings.intervalLength;
     const year: number = parseInt(d3.timeFormat("%Y")(point.x))
     const month: number = parseInt(d3.timeFormat("%m")(point.x))
     const day: number = parseInt(d3.timeFormat("%d")(point.x))
@@ -98,17 +98,17 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     const start = d3.timeFormat("%Y%m%d")(point.x)
     let end;
     // end depends on the bucket type and size.
-    if (bucketType == "year") {
+    if (bucketType == IntervalType.YEAR) {
         // end is the last day of the year
         end = d3.timeFormat("%Y%m%d")(new Date(year + bucketSize - 1, 11, 31))
-    } else if (bucketType == "month") {
+    } else if (bucketType == IntervalType.MONTH) {
         // end is the last day of the month
         end = d3.timeFormat("%Y%m%d")(new Date(year, month + bucketSize - 1, 0))
-    } else if (bucketType == "week") {
+    } else if (bucketType == IntervalType.WEEK) {
         // weekEnd is 6 days later, inclusive. Not 7 days later, because that is the start of the next data point.
         const offset = bucketSize * 7 - 1
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
-    } else if (bucketType == "day") {
+    } else if (bucketType == IntervalType.DAY) {
         // end is the last day of the period defined by the bucket size
         const offset = bucketSize - 1;
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset));

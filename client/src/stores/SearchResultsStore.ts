@@ -5,7 +5,7 @@ import { defineStore, storeToRefs } from 'pinia'
 import { useSearchSettingsStore } from '@/stores/SearchSettingsStore'
 import { useSearchItemsStore } from '@/stores/SearchItemsStore'
 // Types & API
-import { type SearchItem, type GraphItem, equalSearchItem, type SearchSettings, equalSearchSettings, displayName } from "@/types/Search"
+import { type SearchItem, type GraphItem, equalSearchItem, type SearchSettings, equalSearchSettings, displayName, toIntervalStr } from "@/types/Search"
 import type { SearchResponse } from '@/api/search'
 import * as SearchAPI from "@/api/search"
 import { toTimestamp } from '@/ts/date'
@@ -19,9 +19,9 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
     const { searchSettings } = storeToRefs(useSearchSettingsStore())
     const { validSearchItems, languageOptions } = storeToRefs(useSearchItemsStore())
     const isSearching = ref(false)
-    const lastSearchSettings = ref<SearchSettings>(null)
-    // Methods
+    const lastSearchSettings = ref<SearchSettings>()
     function search() {
+        // Methods
         // Scroll to top of page
         window.scrollTo({ top: 0 }) // behavior: "smooth" not supported in firefox under certain conditions, like when switching views
 
@@ -32,12 +32,15 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         // set them as url params
         setSearchParamsInUrl()
         // set window title, but only if we are not on the trends page
-        console.log(router.currentRoute.value)
         if (router.currentRoute.value.name != "trends")
             document.title = "Woordpeiler - " + validSearchItems.value.map((i) => displayName(i)).join(", ")
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")
+        // reparse dates
+        oldSearchSettings.startDate = new Date(oldSearchSettings.startDate)
+        oldSearchSettings.endDate = new Date(oldSearchSettings.endDate)
+
         if (!equalSearchSettings(oldSearchSettings, searchSettings.value)) {
             searchResults.value = []
             localStorage.setItem("searchSettings", JSON.stringify(searchSettings.value))
@@ -79,10 +82,9 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             pos: item.pos,
             source: item.source,
             language: item.language,
-            period_length: searchSettings.value.timeBucketSize,
-            period_type: searchSettings.value.timeBucketType,
-            start_date: toTimestamp(searchSettings.value.startDate),
-            end_date: toTimestamp(searchSettings.value.endDate),
+            interval: toIntervalStr(searchSettings.value.intervalType, searchSettings.value.intervalLength),
+            start: searchSettings.value.startDate,
+            end: searchSettings.value.endDate,
         }
         // loading icon per item
         item.loading = true
@@ -118,8 +120,8 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
             s: searchItemPropToUrlStr(validSearchItems.value, 'source'),
             v: searchItemPropToUrlStr(validSearchItems.value, 'language'),
             c: searchItemPropToUrlStr(validSearchItems.value, 'color'),
-            i: searchSettings.value.timeBucketType, // i for interval
-            il: searchSettings.value.timeBucketSize, // il for interval length
+            i: toIntervalStr(searchSettings.value.intervalType, searchSettings.value.intervalLength),
+            il: undefined, // remove legacy interval length
             f: searchSettings.value.frequencyType.split("_")[0], // f for frequency
             start: toTimestamp(searchSettings.value.startDate),
             end: toTimestamp(searchSettings.value.endDate),

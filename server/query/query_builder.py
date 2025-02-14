@@ -76,7 +76,7 @@ class QueryBuilder:
         unixtime: Optional[int],
     ) -> Optional[Composable]:
         if unixtime is not None:
-            date: str = datetime.fromtimestamp(unixtime).strftime("%Y%m%d")
+            date = unixtime
             return SQL("{column} {operator} {date}").format(
                 column=column,
                 operator=SQL(operator.value),

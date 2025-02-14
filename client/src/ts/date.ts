@@ -1,5 +1,13 @@
-export function toTimestamp(date: Date): number {
-    return Math.floor(date.getTime() / 1000)
+export function toTimestamp(date: Date): string {
+    // format: 2021-01-01
+    return date.toISOString().slice(0, 10)
+}
+
+export function toUTCDate(date: Date): Date {
+    const localYear = date.getFullYear()
+    const localMonth = date.getMonth()
+    const localDay = date.getDate()
+    return new Date(Date.UTC(localYear, localMonth, localDay))
 }
 
 export function toMidnightUTC(timestamp: number): number {

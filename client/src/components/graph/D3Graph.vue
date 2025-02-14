@@ -12,7 +12,7 @@ import * as d3 from "d3";
 import { useSearchResultsStore } from "@/stores/SearchResultsStore";
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
-import { displayName, type GraphItem } from "@/types/Search";
+import { displayName, IntervalType, type GraphItem } from "@/types/Search";
 import { tooltipHtml } from "@/ts/tooltip";
 import { constructSearchLink } from "@/ts/blacklab/blacklab";
 
@@ -25,14 +25,14 @@ const graphTitle = computed(() => {
     if (!lastSearchSettings.value) return "";
 
     const freqType = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute" : "Relatieve";
-    const timeBucketSize = lastSearchSettings.value.timeBucketSize;
-    const timeBucketType = lastSearchSettings.value.timeBucketType;
+    const timeBucketSize = lastSearchSettings.value.intervalLength;
+    const timeBucketType = lastSearchSettings.value.intervalType;
     let timeBucketStr;
-    if (timeBucketType == "month") {
+    if (timeBucketType == IntervalType.MONTH) {
         timeBucketStr = timeBucketSize > 1 ? "maanden" : "maand";
-    } else if (timeBucketType == "year") {
+    } else if (timeBucketType == IntervalType.YEAR) {
         timeBucketStr = timeBucketSize > 1 ? "jaren" : "jaar";
-    } else if (timeBucketType == "week") {
+    } else if (timeBucketType == IntervalType.WEEK) {
         timeBucketStr = timeBucketSize > 1 ? "weken" : "week";
     } else {
         timeBucketStr = timeBucketSize > 1 ? "dagen" : "dag";
@@ -213,7 +213,7 @@ onMounted(() => {
 
         // Draw the dots
         sampledData.forEach(series => {
-            if (lastSearchSettings.value.timeBucketType == "day" && series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return;
+            if (lastSearchSettings.value.intervalType == IntervalType.DAY && series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return;
             // link data
             series.data.abs_freq.forEach(d => {
                 d.searchItem = series.searchItem;

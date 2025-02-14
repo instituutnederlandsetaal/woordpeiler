@@ -1,4 +1,12 @@
+"""
+Woordpeiler API endpoints.
+
+Endpoints themselves do permission checks and pass the request to the appropriate QueryBuilder class.
+That class may raise exceptions, which are caught and returned as HTTPExceptions.
+"""
+
 # standard
+from datetime import datetime
 from decimal import Decimal
 from math import trunc
 from typing import Annotated, Any, Optional
@@ -8,7 +16,6 @@ import base64
 from psycopg.rows import dict_row
 from fastapi import Request, HTTPException, Query
 import uvicorn
-from unidecode import unidecode
 
 # local
 from server.query.arithmetical_query import ArithmeticalQuery
@@ -27,7 +34,7 @@ app: FastAPI = create_app_with_config()
 
 @app.get("/")
 def read_root():
-    return {"version": "0.0.1"}
+    return "woordpeiler.ivdnt.org"
 
 
 @app.get("/health")
@@ -61,8 +68,8 @@ async def get_trends(
     request: Request,
     trend_type: str = "absolute",
     modifier: float = 1,
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
+    start: Optional[datetime] = None,
+    end: Optional[datetime] = None,
     enriched: bool = True,
     language: Optional[str] = None,
     ascending: bool = False,
@@ -78,8 +85,8 @@ async def get_trends(
                 await TrendsQuery(
                     trend_type,
                     modifier,
-                    start_date,
-                    end_date,
+                    start,
+                    end,
                     enriched,
                     language,
                     ascending,
@@ -93,30 +100,26 @@ async def get_trends(
 @app.get("/svg")
 async def get_svg(
     request: Request,
-    id: Optional[int] = None,
     wordform: Optional[str] = None,
     lemma: Optional[str] = None,
     pos: Optional[str] = None,
     source: Optional[str] = None,
     language: Optional[str] = None,
-    period_type: str = "year",
-    period_length: int = 1,
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
+    interval: str = "y",
+    start: Optional[datetime] = None,
+    end: Optional[datetime] = None,
 ) -> str:
     # get the word as a regular WordFrequencyQuery
     data = await get_freq(
         request,
-        id,
         wordform,
         lemma,
         pos,
         source,
         language,
-        period_type,
-        period_length,
-        start_date,
-        end_date,
+        start,
+        end,
+        interval,
     )
     # create a <svg> and <polyline> element
     svg = f'<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 100 100">'
@@ -146,8 +149,7 @@ async def get_math(
     formula: str,
     source: Optional[str] = None,
     language: Optional[str] = None,
-    period_type: str = "year",
-    period_length: int = 1,
+    interval: str = "y",
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
 ) -> list[DataSeries]:
@@ -157,8 +159,7 @@ async def get_math(
                 formula,
                 source,
                 language,
-                period_type,
-                period_length,
+                interval,
                 start_date,
                 end_date,
             ).execute(cur)
@@ -167,31 +168,18 @@ async def get_math(
 @app.get("/word_frequency")
 async def get_freq(
     request: Request,
-    id: Optional[int] = None,
     wordform: Optional[str] = None,
     lemma: Optional[str] = None,
     pos: Optional[str] = None,
     source: Optional[str] = None,
     language: Optional[str] = None,
-    period_type: str = "year",
-    period_length: int = 1,
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
+    start: Optional[datetime] = None,
+    end: Optional[datetime] = None,
+    interval: str = "1y",
 ) -> list[DataSeries]:
     # permission check
-    if any([source, lemma, pos, id]) and not request.app.internal:
+    if any([source, lemma, pos]) and not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
-
-    # unicode normalization
-    if wordform is not None:
-        wordform = unidecode(wordform)
-
-    if lemma is not None:
-        lemma = unidecode(lemma)
-
-    # period_length check
-    if period_length < 1:
-        raise HTTPException(status_code=400, detail="Invalid periodLength")
 
     # send to math, but only internally
     if wordform and ("+" in wordform or "/" in wordform) and request.app.internal:
@@ -200,45 +188,25 @@ async def get_freq(
             wordform,
             source,
             language,
-            period_type,
-            period_length,
-            start_date,
-            end_date,
+            interval,
+            start,
+            end,
         )
 
-    # Validate
-    poshead = None
-    if pos is not None:
-        if "(" not in pos:
-            poshead = pos
-            pos = None
-
-    # ensure at least one parameter is provided
-    if not any([id, wordform, lemma, pos, poshead, source, language]):
-        raise HTTPException(
-            status_code=400, detail="At least one parameter is required"
-        )
-
+    query = WordFrequencyQuery(
+        wordform=wordform,
+        lemma=lemma,
+        pos=pos,
+        source=source,
+        language=language,
+        interval=interval,
+        start_date=start,
+        end_date=end,
+    )
     # execute
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
-            return (
-                await WordFrequencyQuery(
-                    id=id,
-                    wordform=wordform,
-                    lemma=lemma,
-                    pos=pos,
-                    poshead=poshead,
-                    source=source,
-                    language=language,
-                    bucket_type=period_type,
-                    bucket_size=period_length,
-                    start_date=start_date,
-                    end_date=end_date,
-                )
-                .build(cur)
-                .execute_fetchall()
-            )
+            return await query.build(cur).execute_fetchall()
 
 
 if __name__ == "__main__":

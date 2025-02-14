@@ -5,8 +5,6 @@
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="settings">
 
-
-
                     <div class="formSplit">
                         <label>Frequentie</label>
                         <SelectButton v-model="searchSettings.frequencyType" :options="frequencyTypeOptions"
@@ -23,17 +21,15 @@
                     </div>
 
                     <div class="dateRange">
-                        <DatePicker v-model="searchSettings.startDate" showIcon fluid iconDisplay="input"
-                            dateFormat="dd-M-yy" />
-                        <DatePicker v-model="searchSettings.endDate" showIcon fluid iconDisplay="input"
-                            dateFormat="dd-M-yy" />
+                        <DatePicker v-model="startDate" showIcon fluid iconDisplay="input" dateFormat="dd-M-yy" />
+                        <DatePicker v-model="endDate" showIcon fluid iconDisplay="input" dateFormat="dd-M-yy" />
                     </div>
 
                     <label>Interval</label>
                     <div class="formSplit">
                         <input type="number" class="modifierInput p-inputtext" min="1"
-                            v-model="searchSettings.timeBucketSize" />
-                        <SelectButton v-model="searchSettings.timeBucketType" :options="timeBucketOptions"
+                            v-model="searchSettings.intervalLength" />
+                        <SelectButton v-model="searchSettings.intervalType" :options="timeBucketOptions"
                             optionValue="value" optionLabel="label" />
                     </div>
 
@@ -55,7 +51,7 @@
 <script setup lang="ts">
 // Libraries
 import { storeToRefs } from "pinia"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 // Stores
 import { useSearchSettingsStore } from "@/stores/SearchSettingsStore"
 import { useSearchResultsStore } from "@/stores/SearchResultsStore"
@@ -70,6 +66,7 @@ import Button from "primevue/button"
 import SelectButton from "primevue/selectbutton"
 import DatePicker from "primevue/datepicker"
 import Checkbox from "primevue/checkbox"
+import { toUTCDate } from "@/ts/date"
 
 // Stores
 const searchSettingsStore = useSearchSettingsStore()
@@ -80,6 +77,15 @@ const { search } = useSearchResultsStore()
 
 // Fields
 const tab = ref()
+// note that these are initialized with the current values from the store, but not reactive by default
+const startDate = ref(searchSettings.value.startDate)
+const endDate = ref(searchSettings.value.endDate)
+
+// Watchers
+watch([startDate, endDate], () => {
+    searchSettings.value.startDate = toUTCDate(startDate.value)
+    searchSettings.value.endDate = toUTCDate(endDate.value)
+})
 
 </script>
 

@@ -31,8 +31,8 @@ class TrendsQuery(QueryBuilder):
         self,
         trend_type: str = "absolute",
         modifier: float = 1,
-        start_date: Optional[int] = None,
-        end_date: Optional[int] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
         enriched: bool = True,
         language: Optional[str] = None,
         ascending_gradient: bool = False,
@@ -44,10 +44,10 @@ class TrendsQuery(QueryBuilder):
         self.modifier = Literal(modifier)
         self.trend_type = TrendType(trend_type)
         self.date_filter = QueryBuilder.get_date_filter(
-            Identifier("counts", "time"), start_date, end_date
+            Identifier("counts", "time"), start, end
         )
-        self.end_date = Literal(datetime.fromtimestamp(end_date).strftime("%Y%m%d"))
-        self.counts_table = TrendsQuery.get_counts_table(start_date, end_date, ngram)
+        self.end_date = end
+        self.counts_table = TrendsQuery.get_counts_table(start, end, ngram)
 
         self.gradient = SQL("ASC" if ascending_gradient else "DESC")
 
@@ -62,8 +62,8 @@ class TrendsQuery(QueryBuilder):
     def get_counts_table(
         start_date: Optional[int], end_date: Optional[int], ngram: int
     ) -> Identifier:
-        start = datetime.fromtimestamp(start_date)
-        end = datetime.fromtimestamp(end_date)
+        start = start_date
+        end = end_date
         # yearly checks
         starts_on_new_years_day = start.month == 1 and start.day == 1
         ends_on_new_years_eve = end.month == 12 and end.day == 31

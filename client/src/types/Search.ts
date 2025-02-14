@@ -1,6 +1,25 @@
+export enum IntervalType {
+    DAY = "d",
+    WEEK = "w",
+    MONTH = "m",
+    YEAR = "y"
+}
+
+export const intervalMap = {
+    "d": "day",
+    "w": "week",
+    "m": "month",
+    "y": "year"
+}
+
+/** converts 1 month to 1m */
+export function toIntervalStr(period_type: string, period_length: number): string {
+    return period_length + period_type[0]
+}
+
 export type SearchSettings = {
-    timeBucketType: string;
-    timeBucketSize: number;
+    intervalType: string;
+    intervalLength: number;
     startDate: Date;
     endDate: Date;
     frequencyType: string;
@@ -9,10 +28,10 @@ export type SearchSettings = {
 
 export function equalSearchSettings(a: SearchSettings, b: SearchSettings): boolean {
     return a.languageSplit == b.languageSplit &&
-        a.timeBucketType == b.timeBucketType &&
-        a.timeBucketSize == b.timeBucketSize &&
-        new Date(a.startDate).toISOString() == new Date(b.startDate).toISOString() &&
-        new Date(a.endDate).toISOString() == new Date(b.endDate).toISOString()
+        a.intervalType == b.intervalType &&
+        a.intervalLength == b.intervalLength &&
+        a.startDate.getTime() == b.startDate.getTime() &&
+        a.endDate.getTime() == b.endDate.getTime()
 }
 
 export interface SearchItem {

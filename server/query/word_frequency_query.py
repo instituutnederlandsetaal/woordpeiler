@@ -3,14 +3,15 @@ from typing import Optional
 
 # third party
 from psycopg.sql import Literal, SQL, Composable, Identifier
+from unidecode import unidecode
 
 # local
-from server.util.datatypes import DataSeries, PeriodType, WordColumn
+from server.util.datatypes import DataSeries, Interval, IntervalType
 from server.query.query_builder import ExecutableQuery, QueryBuilder, BaseCursor
 
 
 class WordFrequencyQuery(QueryBuilder):
-    time_bucket: Literal
+    interval: Literal
     word_filter: Composable
     source_filter: Composable
     date_filter: Composable
@@ -21,14 +22,25 @@ class WordFrequencyQuery(QueryBuilder):
         wordform: Optional[str] = None,
         lemma: Optional[str] = None,
         pos: Optional[str] = None,
-        poshead: Optional[str] = None,
         source: Optional[str] = None,
         language: Optional[str] = None,
-        bucket_type: str = "year",
-        bucket_size: int = 1,
         start_date: Optional[int] = None,
         end_date: Optional[int] = None,
+        interval: str = "1y",
     ) -> None:
+        # trimming and unicode normalization for non-fixed user input
+        if wordform is not None:
+            wordform = unidecode(wordform.strip())
+        if lemma is not None:
+            lemma = unidecode(lemma.strip())
+
+        # get poshead from pos if no parentheses present
+        poshead = None
+        if pos is not None:
+            if "(" not in pos:
+                poshead = pos
+                pos = None
+
         self.ngram = WordFrequencyQuery.get_ngram(wordform, lemma, pos, poshead)
 
         self.words_table = Identifier(f"words_{self.ngram}")
@@ -41,15 +53,11 @@ class WordFrequencyQuery(QueryBuilder):
         self.date_filter = QueryBuilder.get_date_filter(
             Identifier("cs", "time"), start_date, end_date
         )
-        self.time_bucket = WordFrequencyQuery.get_time_bucket(bucket_type, bucket_size)
+        self.interval = Literal(Interval.from_string(interval).to_timescaledb_str())
         if language is None:
             self.size = Identifier("size")
         else:
             self.size = Identifier(f"size_{language.lower()}")
-
-        # self.freq_table = WordFrequencyQuery.get_freq_table(
-        #     any([id, wordform, lemma, pos, poshead]), self.word_filter
-        # )
 
     @staticmethod
     def get_ngram(
@@ -78,7 +86,7 @@ class WordFrequencyQuery(QueryBuilder):
 
     @staticmethod
     def get_time_bucket(bucket_type: str, bucket_size: int) -> Literal:
-        bucket_type = PeriodType(bucket_type)
+        bucket_type = IntervalType(bucket_type)
         if bucket_size < 1:
             raise ValueError("Invalid periodLength")
         return Literal(f"{bucket_size} {bucket_type.value}")
@@ -168,7 +176,7 @@ class WordFrequencyQuery(QueryBuilder):
             freq_table=self.freq_table,
             source_filter=self.source_filter,
             date_filter=self.date_filter,
-            time_bucket=self.time_bucket,
+            time_bucket=self.interval,
             word_filter=self.word_filter,
         )
         return ExecutableQuery(cursor, query)
