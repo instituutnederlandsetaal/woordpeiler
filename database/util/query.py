@@ -20,6 +20,14 @@ def execute_query(*query: Query):
                 cursor.execute(q)
 
 
+def fetch_query(*query: Query):
+    with psycopg.connect(get_writer_conn_str()) as conn:
+        with conn.cursor() as cursor:
+            for q in query:
+                cursor.execute(q)
+            return cursor.fetchall()
+
+
 # separate analyze because of transaction issues
 def analyze():
     with timer("Analyze"):
