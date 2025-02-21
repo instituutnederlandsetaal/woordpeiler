@@ -20,7 +20,7 @@ create_table = SQL("""
 """)
 
 create_indices = SQL("""
-    CREATE INDEX source_frequencies_source_id ON source_frequencies (source_id, time) INCLUDE (frequency);
+    CREATE INDEX ON source_frequencies (source_id, time) INCLUDE (frequency);
 """)
 
 

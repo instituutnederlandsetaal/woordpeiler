@@ -87,14 +87,6 @@ class FrequencyTableBuilder:
             ADD COLUMN word_id INTEGER;
         """).format(table=self.table)
 
-        self.tmp_index_sources = SQL("""
-            CREATE INDEX ON {table} (source, language);
-        """).format(table=self.table)
-
-        self.tmp_index_words = SQL("""
-            CREATE INDEX ON {table} (wordform_ids, lemma_ids, pos_ids);
-        """).format(table=self.table)
-
         self.fill_source_ids = SQL("""
             UPDATE {table} f
             SET source_id = s.id
