@@ -1,6 +1,6 @@
 psycopg==3.2.4
 psycopg-binary==3.2.4
-psycopg-pool==3.2.4
+psycopg-pool==3.2.6
 typing_extensions==4.12.2
 tqdm==4.67.1
 python-dotenv==1.0.1
