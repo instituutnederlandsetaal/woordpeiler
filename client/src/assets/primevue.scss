@@ -1,7 +1,7 @@
 @use 'sass:color';
 
 
-$theme: #48e;
+$theme: #E8503D;
 
 :root:root {
     --p-scrollpanel-bar-background: #aaa;
@@ -14,7 +14,7 @@ $theme: #48e;
     --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
     --p-primary-active-color: #{color.adjust($theme, $lightness: -20%)};
     --p-primary-hover-color: #{color.adjust($theme, $lightness: -10%)};
-    --p-button-primary-background: #46a9ff;
+    --p-button-primary-background: #{$theme};
     --p-tabs-tab-active-color: #{$theme};
 
     // Dialog

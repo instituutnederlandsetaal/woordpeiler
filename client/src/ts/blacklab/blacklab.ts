@@ -9,17 +9,17 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     // group on year or year-month
     let group
     if (settings.intervalType == IntervalType.YEAR) {
-        group = "field:grouping_year:i"
+        group = "field:witness_year_from:i"
     } else if (settings.intervalType == IntervalType.MONTH) {
-        group = "field:grouping_year:i,field:grouping_month:i"
+        group = "field:witness_year_from:i,field:witness_month_from:i"
     } else { // week or day
-        group = "field:grouping_year:i,field:grouping_month:i,field:grouping_day:i"
+        group = "field:witness_year_from:i,field:witness_month_from:i,field:witness_day_from:i"
     }
 
     // optionally filter on language
     let filter = `medium:newspaper`
     if (item.language) {
-        filter += ` AND languageVariant:${item.language}`
+        filter += ` AND settingLocation_country:${item.language}`
     }
 
     const params = {
@@ -39,7 +39,7 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
 export function constructTooltipLink(point: GraphItem, settings: SearchSettings): string {
     const params = {
         patt: constructBLPatt(point.searchItem),
-        filter: constructBLFilter(point, settings),
+        filter: `(${constructBLFilter(point, settings)})`,
         interface: JSON.stringify({ form: "search", patternMode: "expert" }),
         groupDisplayMode: "relative hits",
         group: "field:titleLevel2:i"
@@ -50,9 +50,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    const internalBase = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
-    const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
-    return isInternal() ? internalBase : externalBase;
+    return "http://svotmc10.ivdnt.loc/corpus-frontend/Couranten2024/search/hits"
 }
 
 function constructBLPatt(item: SearchItem) {
@@ -72,11 +70,16 @@ function constructBLPatt(item: SearchItem) {
     Object.keys(pattTerms).forEach(
         (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key]
     )
-    const isRegex = item.wordform?.includes("*") || item.wordform?.includes("?")
+    const isRegex = item.wordform?.includes("*") || item.lemma?.includes("*")
     if (isRegex) {
-        pattTerms["word"] = toBLRegex(item.wordform)
+        if (pattTerms["word"]) {
+            pattTerms["word"] = toBLRegex(item.wordform)
+        }
+        if (pattTerms["lemma"]) {
+            pattTerms["lemma"] = toBLRegex(item.lemma)
+        }
     }
-    const literal = (isInternal() && !isRegex) ? "l" : ""
+    const literal = ""
     const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
     return `[${patt}]`
 }
@@ -87,7 +90,7 @@ function toBLRegex(s: string): string {
 
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     const filters = {
-        medium: "newspaper",
+        // medium: "newspaper",
     }
     const bucketType = settings.intervalType;
     const bucketSize = settings.intervalLength;
@@ -113,14 +116,15 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
         const offset = bucketSize - 1;
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset));
     }
-    filters["witnessDate_from"] = `[${start} TO ${end}]`
+    filters["date_from"] = `[${start} TO ${end}]`
+    filters["date_to"] = `[${start} TO ${end}]`
 
     if (point.searchItem.source) {
         filters["titleLevel2"] = `"${point.searchItem.source}"`
     }
 
     if (point.searchItem.language) {
-        filters["languageVariant"] = `"${point.searchItem.language}"`
+        filters["settingLocation_country"] = `"${point.searchItem.language}"`
     }
 
     return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")

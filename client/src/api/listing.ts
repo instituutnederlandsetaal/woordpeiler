@@ -11,3 +11,7 @@ export function getPosses(): Promise<AxiosResponse<string[]>> {
 export function getPosheads(): Promise<AxiosResponse<string[]>> {
     return axios.get(`/posheads`)
 }
+
+export function getLanguages(): Promise<AxiosResponse<string[]>> {
+    return axios.get(`/languages`)
+}

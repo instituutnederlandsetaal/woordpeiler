@@ -36,9 +36,6 @@
             <p class="invalid" v-if="invalidInputText(searchItem.lemma) || invalidInputText(searchItem.wordform)">
                 Zoeken op woordgroepen is niet mogelijk.
             </p>
-            <p class="invalid" v-if="searchItem.language && searchItem.source">Kies óf een <b>krant</b> óf een
-                <b>taalvariëteit</b>.
-            </p>
 
             <div class="formSplit">
                 <label for="word">Woord</label><br />
@@ -63,21 +60,19 @@
                 <div class="formSplit">
                     <label for="source">Krant</label>
                     <Select id="source" v-model="searchItem.source" :options="sourceOptions" showClear
-                        placeholder="Krant" :loading="!sourceOptions.length"
-                        :invalid="searchItem.language && searchItem.source" />
+                        placeholder="Krant" :loading="!sourceOptions.length" />
                 </div>
             </template>
 
             <div class="formSplit">
-                <label for="variant">Taalvariëteit</label>
+                <label for="variant">Locatie</label>
                 <Select id="variant" v-model="searchItem.language" :options="languageOptions" showClear
-                    optionLabel="label" optionValue="value" placeholder="Taalvariëteit"
-                    :invalid="searchItem.language && searchItem.source" />
+                    placeholder="Locatie" :loading="!languageOptions.length" />
             </div>
 
             <a class="searchCHN" :href="constructSearchLink(searchItem, searchSettingsStore.searchSettings)"
                 target="_blank" v-if="searchItem.wordform && !invalidSearchItem(searchItem)">
-                Zoeken in CHN (2000 &ndash; nu)
+                Zoeken in Couranten (1600 &ndash; 1700)
             </a>
 
         </Panel>

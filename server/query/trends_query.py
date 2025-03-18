@@ -40,6 +40,8 @@ class TrendsQuery(QueryBuilder):
     ) -> None:
         self.total_counts = Identifier(f"total_counts_{ngram}")
         self.words_table = Identifier(f"words_{ngram}")
+        self.daily_wordforms = Identifier(f"daily_wordforms_{ngram}")
+        self.total_wordforms = Identifier(f"total_wordforms_{ngram}")
         self.enriched = enriched
         self.modifier = Literal(modifier)
         self.trend_type = TrendType(trend_type)
@@ -191,23 +193,23 @@ class TrendsQuery(QueryBuilder):
         query = SQL("""
             WITH tc AS (
                 SELECT
-                    wordform,
+                    wordform_ids,
                     SUM({abs_freq}) / SUM(SUM({abs_freq})) OVER () as rel_freq
-                FROM daily_wordforms counts
+                FROM {daily_wordforms} counts
                 {date_filter}
-                GROUP BY wordform
+                GROUP BY wordform_ids
             ),
             keyness AS (
                 SELECT
-                    tc.wordform,
+                    tc.wordform_ids,
                     ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
                 FROM tc
-                LEFT JOIN total_wordforms rc ON tc.wordform = rc.wordform
+                LEFT JOIN {total_wordforms} rc ON tc.wordform_ids = rc.wordform_ids
                 ORDER BY keyness {gradient}
                 LIMIT 1000
             )
             SELECT
-                wordform,
+                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
                 keyness
             FROM keyness k
         """).format(
@@ -216,6 +218,8 @@ class TrendsQuery(QueryBuilder):
             date_filter=self.date_filter,
             modifier=self.modifier,
             gradient=self.gradient,
+            daily_wordforms=self.daily_wordforms,
+            total_wordforms=self.total_wordforms,
         )
         return ExecutableQuery(cursor, query)
 
@@ -225,32 +229,32 @@ class TrendsQuery(QueryBuilder):
         query = SQL("""
             WITH tc AS (
                 SELECT
-                    wordform,
+                    wordform_ids,
                     SUM({abs_freq}) as abs_freq
-                FROM daily_wordforms counts
+                FROM {daily_wordforms} counts
                 {date_filter}
-                GROUP BY wordform
+                GROUP BY wordform_ids
             ),
             after_tc AS (
                 SELECT
-                    wordform,
+                    wordform_ids,
                     SUM({abs_freq}) as abs_freq
-                FROM daily_wordforms counts
+                FROM {daily_wordforms} counts
                 WHERE counts.time > {end_date}
-                GROUP BY wordform
+                GROUP BY wordform_ids
             ),
             keyness AS (
                 SELECT
-                    tc.wordform,
+                    tc.wordform_ids,
                     tc.abs_freq AS tc_abs_freq,
                     rc.{abs_freq} - COALESCE(ac.abs_freq,0) - tc.abs_freq AS keyness
                 FROM tc
-                LEFT JOIN total_wordforms rc ON tc.wordform = rc.wordform
-                LEFT JOIN after_tc ac ON tc.wordform = ac.wordform
+                LEFT JOIN {total_wordforms} rc ON tc.wordform_ids = rc.wordform_ids
+                LEFT JOIN after_tc ac ON tc.wordform_ids = ac.wordform_ids
             ),
             filter AS (
                 SELECT
-                    k.wordform,
+                    k.wordform_ids,
                     tc_abs_freq
                 FROM keyness k
                 WHERE k.keyness <= {modifier}
@@ -258,7 +262,7 @@ class TrendsQuery(QueryBuilder):
                 LIMIT 1000
             )
             SELECT
-                wordform,
+                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
                 tc_abs_freq AS keyness
             FROM filter f
         """).format(
@@ -266,5 +270,7 @@ class TrendsQuery(QueryBuilder):
             date_filter=self.date_filter,
             modifier=self.modifier,
             end_date=self.end_date,
+            daily_wordforms=self.daily_wordforms,
+            total_wordforms=self.total_wordforms,
         )
         return ExecutableQuery(cursor, query)

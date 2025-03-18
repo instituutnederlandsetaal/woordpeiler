@@ -1,5 +1,6 @@
 export type Spotlight = {
     word: string;
+    lemma: string;
     color: string;
     start: string;
     interval: string;

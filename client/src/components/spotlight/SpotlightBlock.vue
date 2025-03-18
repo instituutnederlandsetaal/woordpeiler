@@ -2,7 +2,7 @@
     <section class="spotlight" :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
         <header>
             <h2>
-                {{ spotlight.word.toLowerCase().trim() }}
+                {{ title }}
             </h2>
         </header>
         <p>sinds {{ (spotlight.start ?? spotlight.start_date).split("-")[0] }}</p>
@@ -15,7 +15,7 @@
 <script setup lang="ts">
 // Libraries
 import { useRouter } from 'vue-router';
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 // API
 import * as API from "@/api/search"
 import { toTimestamp } from '@/ts/date';
@@ -34,11 +34,13 @@ const props = defineProps({
 // Fields
 const router = useRouter()
 const svgBlob = ref()
+const title = computed(() => (props.spotlight.word ?? props.spotlight.lemma).toLowerCase().trim())
 
 // Methods
 function search(spotlight: Spotlight) {
     const params = {
         w: spotlight.word,
+        l: spotlight.lemma,
         i: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
         start: spotlight.start ?? spotlight.start_date,
     }
@@ -49,7 +51,8 @@ function search(spotlight: Spotlight) {
 onMounted(() => {
     const spotlight = props.spotlight
     const request: API.SearchRequest = {
-        wordform: spotlight.word.toLowerCase().trim(),
+        wordform: spotlight.word?.toLowerCase()?.trim(),
+        lemma: spotlight.lemma?.toLowerCase()?.trim(),
         start: spotlight.start ?? spotlight.start_date,
         interval: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
     }

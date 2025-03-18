@@ -12,8 +12,8 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
     const searchSettings = ref<SearchSettings>({
         intervalType: initTimeBucket().type,
         intervalLength: initTimeBucket().size,
-        startDate: new Date('2000-01-01'),
-        endDate: toUTCDate(new Date()),
+        startDate: new Date('1600-01-01'),
+        endDate: new Date('1700-01-01'),
         frequencyType: "rel_freq",
         languageSplit: false,
     })
@@ -45,8 +45,8 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         }
     }
     function resetDates() {
-        searchSettings.value.startDate = new Date('2000-01-01')
-        searchSettings.value.endDate = toUTCDate(new Date())
+        searchSettings.value.startDate = new Date('1600-01-01')
+        searchSettings.value.endDate = new Date('1701-01-01')
     }
     function readUrlParams() {
         const params = new URLSearchParams(window.location.search)

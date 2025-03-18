@@ -1,76 +1,50 @@
 export const items = [
     {
-        word: "russisch",
-        color: "#FF8000",
-        // legacy test
-        start_date: "2021-01-01",
-        period_length: 1,
-        period_type: "day"
-    },
-    {
-        word: "corona",
+        word: "darien",
         color: "#FFF064",
-        start: "2020-01-01",
-        interval: "3w"
-    },
-    {
-        word: "europapa",
-        color: "#359FF0",
-        start: "2024-01-01",
+        start: "1699-01-01",
         interval: "1w"
     },
     {
-        word: "graaiflatie",
-        color: "#BD795D",
-        start: "2023-01-01",
-        interval: "1w"
-    },
-    {
-        word: "smartphone",
-        color: "#89C24B",
-        start: "2006-01-01",
-        interval: "3m"
-    },
-    {
-        word: "tiktok",
-        color: "#E8503D",
-        start: "2018-01-01",
-        interval: "1m"
-    },
-    {
-        word: "knuffelcontact",
-        color: "#359FF0",
-        start: "2020-01-01",
-        interval: "1w"
-    },
-    {
-        word: "vapen",
+        lemma: "zich",
         color: "#FF8000",
-        start: "2018-01-01",
-        interval: "1m"
+        start: "1600-01-01",
+        interval: "1y"
     },
     {
-        word: "knaldrang",
-        color: "#FFF064",
-        start: "2020-01-01",
-        interval: "2w"
+        lemma: "zilvervloot",
+        color: "#F3F3F3",
+        start: "1600-01-01",
+        interval: "2y"
     },
     {
-        word: "menstruatieproducten",
+        word: "lymrick",
         color: "#E8503D",
-        start: "2018-01-01",
+        start: "1689-01-01",
         interval: "1m"
     },
     {
-        word: "klimaatspijbelaars",
+        lemma: "amerika",
         color: "#89C24B",
-        start: "2018-01-01",
-        interval: "1m"
+        start: "1630-01-01",
+        interval: "1y"
     },
     {
-        word: "stikstofcrisis",
-        color: "#BD795D",
-        start: "2018-01-01",
-        interval: "1m"
-    }
+        lemma: "republiek",
+        color: "#E8503D",
+        start: "1630-01-01",
+        interval: "1y"
+    },
+    {
+        lemma: "zweeds",
+        color: "#359FF0",
+        start: "1600-01-01",
+        interval: "1y"
+    },
+    {
+        lemma: "nassau",
+        color: "#FF8000",
+        start: "1600-01-01",
+        interval: "1y"
+    },
 ]

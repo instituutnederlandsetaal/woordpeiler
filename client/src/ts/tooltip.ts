@@ -8,13 +8,7 @@ export function tooltipHtml(point: GraphItem, settings: SearchSettings): string 
     const name = displayName(point.searchItem).split("–")[0];
     let language_or_source;
     if (point.searchItem.language) {
-        const langMap = {
-            "AN": "Antilliaans-Nederlands",
-            "BN": "Belgisch-Nederlands",
-            "NN": "Nederlands-Nederlands",
-            "SN": "Surinaams-Nederlands",
-        }
-        language_or_source = langMap[point.searchItem.language]
+        language_or_source = point.searchItem.language
     } else if (point.searchItem.source) {
         language_or_source = point.searchItem.source
     }
@@ -30,7 +24,7 @@ export function tooltipHtml(point: GraphItem, settings: SearchSettings): string 
     const abs_or_rel = settings.frequencyType == "abs_freq" ? "voorkomens" : "/ mln. woorden";
     const value = `${truncateRound(point.y, 2).toLocaleString()} <small>${abs_or_rel}</small>`;
     const href = constructTooltipLink(point, settings);
-    const a = containsMath(name) ? '' : `<a target='_blank' href='${href}'>Zoeken in CHN</a>`
+    const a = containsMath(name) ? '' : `<a target='_blank' href='${href}'>Zoeken in Couranten</a>`
 
     return `<b>${name}</b>${source}<br>${date}<br><b>${value}</b><br/>${a}`
 }

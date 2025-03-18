@@ -1,8 +1,10 @@
 <template>
     <header role="banner" :style="headerStyle">
         <div class="logo">
-            <RouterLink to="/">
-                <img src="/woordpeiler-logo.svg" alt="logo" />
+            <RouterLink to="/" :style="'position: relative'">
+                <img src="/teniers_krantlezer.jpg" alt="courantenlogo"
+                    style="position: absolute; z-index: -1; height: 72px; left: -1rem;" />
+                <img src="/woordpeiler-logo.svg" alt="woordpeilerlogo" style="filter: opacity(0.8) brightness(100)" />
             </RouterLink>
             <div class="logo-text">
                 <h2>
@@ -12,7 +14,7 @@
                 </h2>
                 <h1>
                     <RouterLink to="/">
-                        woordpeiler
+                        courantenpeiler
                     </RouterLink>
                 </h1>
             </div>
@@ -28,7 +30,7 @@
             <RouterLink to="/grafiek">grafiek</RouterLink>
             <RouterLink to="/help">help</RouterLink>
             <RouterLink to="/over">over</RouterLink>
-            <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/" target="_blank">chn</a>
+            <a href="http://svotmc10.ivdnt.loc/corpus-frontend/Couranten2024/search" target="_blank">couranten</a>
 
             <!-- hamburger menu -->
             <Button text severity="secondary" type="button" icon="pi pi-bars" @click="(event) => { menu.toggle(event) }"
@@ -38,7 +40,7 @@
 
     </header>
     <footer v-if="isHomePage">
-        <h2>woordtrends van 2000 tot nu</h2>
+        <h2>woordtrends in de 17<sup>e</sup> eeuw</h2>
         <InputGroup>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="search" />
             <Button severity="secondary" @click="search">
@@ -116,7 +118,7 @@ const menuItems = computed(() => {
 
 // Methods
 function search() {
-    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('2000-01-01')) } });
+    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('1600-01-01')) } });
 }
 </script>
 
@@ -125,7 +127,7 @@ function search() {
 header {
     font-family: Schoolboek;
     min-height: 80px;
-    border-bottom: 9px solid #48e;
+    border-bottom: 9px solid #E8503D;
     display: flex;
     justify-content: space-between;
     background-color: white;
@@ -190,7 +192,7 @@ header {
 }
 
 footer {
-    background-color: #48e;
+    background-color: #E8503D;
     width: 100%;
     padding-bottom: 1rem;
     display: flex;

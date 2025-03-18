@@ -54,10 +54,10 @@ class WordFrequencyQuery(QueryBuilder):
             Identifier("cs", "time"), start_date, end_date
         )
         self.interval = Literal(Interval.from_string(interval).to_timescaledb_str())
-        if language is None:
-            self.size = Identifier("size")
-        else:
-            self.size = Identifier(f"size_{language.lower()}")
+        # if language is None:
+        self.size = Identifier("size")
+        # else:
+        #     self.size = Identifier(f"size_{language.lower()}")
 
     @staticmethod
     def get_ngram(
@@ -123,14 +123,17 @@ class WordFrequencyQuery(QueryBuilder):
         ]:
             if values is not None:
                 for i, value in enumerate(values.strip().split(" ")):
+                    value = value.replace("*", "%")
+                    equals_like = SQL("LIKE") if "%" in value else SQL("=")
                     filter = SQL(
-                        "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} = {value})"
+                        "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} {equals_like} {value})"
                     ).format(
                         i=Literal(i + 1),
                         ids=Identifier(ids),
                         column=Identifier(column),
                         table=Identifier(table),
                         value=Literal(value),
+                        equals_like=equals_like,
                     )
                     filters.append(filter)
 

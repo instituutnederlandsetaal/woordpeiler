@@ -80,10 +80,6 @@ export function invalidSearchItem(item: SearchItem): boolean {
         if (invalidInputText(item.lemma) || invalidInputText(item.wordform)) {
             return true // invalid
         }
-        // language and source can't be both defined
-        if (item.language && item.source) {
-            return true // invalid
-        }
     }
     return false // not invalid
 }

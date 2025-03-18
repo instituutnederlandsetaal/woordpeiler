@@ -177,9 +177,7 @@ function setWeekCorrectly() {
 // Lifecycle
 onMounted(() => {
     // set initial week
-    const oneWeekAgo = new Date()
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-    week.value = [oneWeekAgo, null]
+    week.value = [new Date("1600-01-01"), null]
     setWeekCorrectly()
 })
 </script>

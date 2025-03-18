@@ -20,12 +20,7 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
     const sourceOptions = ref<string[]>([])
     /** Part of Speech options, to be fetched */
     const posOptions = ref([])
-    const languageOptions = ref<SelectLabel[]>([
-        { label: "Antilliaans-Nederlands", value: "AN", color: "00AAFF" },
-        { label: "Belgisch-Nederlands", value: "BN", color: "FF0000" },
-        { label: "Nederlands-Nederlands", value: "NN", color: "FFA500" },
-        { label: "Surinaams-Nederlands", value: "SN", color: "009900" },
-    ])
+    const languageOptions = ref<string[]>([])
     // computed
     const isValid = computed<Boolean>(() => {
         // empty array
@@ -57,6 +52,11 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
         if (sourceOptions.value.length > 0 && posOptions.value.length > 0) {
             return
         }
+
+        ListingAPI.getLanguages()
+            .then((response) => {
+                languageOptions.value = response.data
+            })
 
         ListingAPI.getSources()
             .then((response) => {

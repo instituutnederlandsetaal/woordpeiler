@@ -49,18 +49,27 @@ async def get_sources(request: Request) -> list[str]:
             return await ListingQuery("sources", "source").build(cur).execute_fetchall()
 
 
+@app.get("/languages")
+async def get_languages(request: Request) -> list[str]:
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
+            return (
+                await ListingQuery("sources", "language").build(cur).execute_fetchall()
+            )
+
+
 @app.get("/posses")
 async def get_posses(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("words", "pos").build(cur).execute_fetchall()
+            return await ListingQuery("posses", "pos").build(cur).execute_fetchall()
 
 
 @app.get("/posheads")
 async def get_posheads(request: Request) -> list[str]:
     async with request.app.async_pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("words", "poshead").build(cur).execute_fetchall()
+            return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
 
 
 @app.get("/trends")
