@@ -151,6 +151,7 @@ class WordFrequencyQuery(QueryBuilder):
                 FROM
                     word_ids
                     LEFT JOIN {freq_table} ON word_id = id
+                    {source_filter}
                 GROUP BY
                     time
             ) 

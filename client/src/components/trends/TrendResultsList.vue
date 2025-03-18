@@ -60,7 +60,7 @@ const posHeadLoading = ref(true)
 
 // Computed
 const filteredTrends = computed(() => {
-    return trendResults.value?.filter(i => i.poshead.split(" ").every(j => !selectedPosHead.value.includes(j)))
+    return trendResults.value?.filter(i => i.poshead?.split(" ")?.every(j => !selectedPosHead.value.includes(j)) || true)
 })
 const badgeName = computed(() => {
     // key for keyness, freq for frequency

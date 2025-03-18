@@ -25,23 +25,23 @@ class FrequencyUploader(Uploader):
         # output: [[1, 2], [2, 3], [3, 3], '20210101', 'NRC', 'NN', 4]
 
         # only valid dates
-        valid_dates = [row for row in rows if re.match(r"^\d{8}$", row[3])]
+        # valid_dates = [row for row in rows if re.match(r"^\d{8}$", row[3])]
         # parse space-separated integers
-        wordform_ids = [[int(i) for i in row[0].split()] for row in valid_dates]
-        lemma_ids = [[int(i) for i in row[1].split()] for row in valid_dates]
-        pos_ids = [[int(i) for i in row[2].split()] for row in valid_dates]
+        wordform_ids = [[int(i) for i in row[0].split()] for row in rows]
+        lemma_ids = [[int(i) for i in row[1].split()] for row in rows]
+        pos_ids = [[int(i) for i in row[2].split()] for row in rows]
         # combine
         return [
             [
                 wordform_ids[i],
                 lemma_ids[i],
                 pos_ids[i],
-                valid_dates[i][3],
-                valid_dates[i][4],
-                valid_dates[i][5],
-                int(valid_dates[i][6]),
+                rows[i][3],
+                rows[i][4],
+                rows[i][5],
+                int(rows[i][6]),
             ]
-            for i in range(len(valid_dates))
+            for i in range(len(rows))
         ]
 
     def _insert_rows(self, rows: list[Any]) -> None:
