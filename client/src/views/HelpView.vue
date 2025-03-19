@@ -244,7 +244,7 @@ import { onMounted } from 'vue';
 const canShare = navigator.share != undefined;
 
 onMounted(() => {
-    document.title = "Woordpeiler - Help";
+    document.title = "Courantenpeiler - Help";
 });
 </script>
 

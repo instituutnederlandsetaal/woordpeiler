@@ -213,7 +213,7 @@ onMounted(() => {
 
         // Draw the dots
         sampledData.forEach(series => {
-            if (lastSearchSettings.value.intervalType == IntervalType.DAY && series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return;
+            if (series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return;
             // link data
             series.data.abs_freq.forEach(d => {
                 d.searchItem = series.searchItem;

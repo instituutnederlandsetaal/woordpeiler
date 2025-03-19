@@ -18,12 +18,8 @@ class DailyWordformsTableBuilder:
         self.create_table = SQL("""
             SELECT
                 time,
-                w.wordform_ids,
-                SUM(abs_freq) AS abs_freq,
-                SUM(abs_freq_an) AS abs_freq_an,
-                SUM(abs_freq_bn) AS abs_freq_bn,
-                SUM(abs_freq_nn) AS abs_freq_nn,
-                SUM(abs_freq_sn) AS abs_freq_sn
+                w.lemma_ids,
+                SUM(abs_freq) AS abs_freq
             INTO 
                 {table}
             FROM 
@@ -31,7 +27,7 @@ class DailyWordformsTableBuilder:
             LEFT JOIN 
                 {table_words} w ON w.id = word_id 
             GROUP BY 
-                w.wordform_ids, 
+                w.lemma_ids, 
                 time;
         """).format(
             table=self.table,
@@ -40,7 +36,7 @@ class DailyWordformsTableBuilder:
         )
 
         self.add_indices = SQL("""
-            CREATE INDEX ON {table} (time, wordform_ids) INCLUDE (abs_freq, abs_freq_an, abs_freq_bn, abs_freq_nn, abs_freq_sn);
+            CREATE INDEX ON {table} (time, lemma_ids) INCLUDE (abs_freq);
         """).format(table=self.table)
 
     def create(self):

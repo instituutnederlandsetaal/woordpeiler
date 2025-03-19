@@ -23,7 +23,7 @@
                 <D3Graph v-else ref="graph" />
             </template>
             <template v-else>
-                <ProgressSpinner v-if="isSearching" />
+                <ProgressSpinner v-if="isSearching" animationDuration=".5s" />
                 <div v-else>Zoek een woord</div>
             </template>
         </Panel>

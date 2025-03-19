@@ -69,6 +69,7 @@ const badgeName = computed(() => {
 
 // Methods
 function formatNumber(num: number): number {
+    if (num < 1) num = Math.abs(Math.log2(num))
     return Math.floor(num * 10) / 10
 }
 
@@ -91,11 +92,13 @@ onMounted(() => {
 /** Insert selected trends into search items, and search them. */
 watch(selectedTrend, () => {
     searchItems.value = []
+    const isWordform = lastTrendSettings.value.enriched
+
     for (const trendItem of selectedTrend.value) {
         searchItems.value.push({
-            wordform: trendItem.wordform,
+            wordform: isWordform ? trendItem.wordform : undefined,
             pos: trendItem.pos,
-            lemma: trendItem.lemma,
+            lemma: isWordform ? trendItem.lemma : trendItem.wordform,
             color: randomColor(),
             visible: true
         })

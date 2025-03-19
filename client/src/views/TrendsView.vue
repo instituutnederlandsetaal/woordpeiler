@@ -36,7 +36,7 @@ const { isValid } = storeToRefs(useSearchItemsStore());
 
 // Lifecycle
 onMounted(() => {
-    document.title = "Woordpeiler - Trends";
+    document.title = "Courantenpeiler - Trends";
 });
 </script>
 

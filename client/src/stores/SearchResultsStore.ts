@@ -33,7 +33,7 @@ export const useSearchResultsStore = defineStore('SearchResults', () => {
         setSearchParamsInUrl()
         // set window title, but only if we are not on the trends page
         if (router.currentRoute.value.name != "trends")
-            document.title = "Woordpeiler - " + validSearchItems.value.map((i) => displayName(i)).join(", ")
+            document.title = "Courantenpeiler - " + validSearchItems.value.map((i) => displayName(i)).join(", ")
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")

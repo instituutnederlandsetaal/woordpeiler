@@ -23,7 +23,7 @@ const { fetchSpotlights } = spotlightStore
 // Lifecycle
 onMounted(() => {
     fetchSpotlights()
-    document.title = "Woordpeiler"
+    document.title = "Courantenpeiler"
 })
 
 </script>

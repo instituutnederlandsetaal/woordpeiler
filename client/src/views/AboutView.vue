@@ -80,7 +80,7 @@ import Panel from 'primevue/panel';
 import { onMounted } from 'vue';
 
 onMounted(() => {
-    document.title = "Woordpeiler - Over";
+    document.title = "Courantenpeiler - Over";
 });
 </script>
 

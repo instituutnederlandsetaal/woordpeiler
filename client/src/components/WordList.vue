@@ -72,7 +72,7 @@
 
             <a class="searchCHN" :href="constructSearchLink(searchItem, searchSettingsStore.searchSettings)"
                 target="_blank" v-if="searchItem.wordform && !invalidSearchItem(searchItem)">
-                Zoeken in Couranten (1600 &ndash; 1700)
+                Zoeken in Couranten (1618 &ndash; 1700)
             </a>
 
         </Panel>

@@ -193,23 +193,23 @@ class TrendsQuery(QueryBuilder):
         query = SQL("""
             WITH tc AS (
                 SELECT
-                    wordform_ids,
+                    lemma_ids,
                     SUM({abs_freq}) / SUM(SUM({abs_freq})) OVER () as rel_freq
                 FROM {daily_wordforms} counts
                 {date_filter}
-                GROUP BY wordform_ids
+                GROUP BY lemma_ids
             ),
             keyness AS (
                 SELECT
-                    tc.wordform_ids,
+                    tc.lemma_ids,
                     ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
                 FROM tc
-                LEFT JOIN {total_wordforms} rc ON tc.wordform_ids = rc.wordform_ids
+                LEFT JOIN {total_wordforms} rc ON tc.lemma_ids = rc.lemma_ids
                 ORDER BY keyness {gradient}
                 LIMIT 1000
             )
             SELECT
-                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
+                (SELECT string_agg(wf.lemma, ' ') FROM unnest(lemma_ids) WITH ORDINALITY u(lemma, ord) JOIN lemmas wf ON u.lemma = wf.id) AS wordform,
                 keyness
             FROM keyness k
         """).format(
@@ -229,32 +229,32 @@ class TrendsQuery(QueryBuilder):
         query = SQL("""
             WITH tc AS (
                 SELECT
-                    wordform_ids,
+                    lemma_ids,
                     SUM({abs_freq}) as abs_freq
                 FROM {daily_wordforms} counts
                 {date_filter}
-                GROUP BY wordform_ids
+                GROUP BY lemma_ids
             ),
             after_tc AS (
                 SELECT
-                    wordform_ids,
+                    lemma_ids,
                     SUM({abs_freq}) as abs_freq
                 FROM {daily_wordforms} counts
                 WHERE counts.time > {end_date}
-                GROUP BY wordform_ids
+                GROUP BY lemma_ids
             ),
             keyness AS (
                 SELECT
-                    tc.wordform_ids,
+                    tc.lemma_ids,
                     tc.abs_freq AS tc_abs_freq,
                     rc.{abs_freq} - COALESCE(ac.abs_freq,0) - tc.abs_freq AS keyness
                 FROM tc
-                LEFT JOIN {total_wordforms} rc ON tc.wordform_ids = rc.wordform_ids
-                LEFT JOIN after_tc ac ON tc.wordform_ids = ac.wordform_ids
+                LEFT JOIN {total_wordforms} rc ON tc.lemma_ids = rc.lemma_ids
+                LEFT JOIN after_tc ac ON tc.lemma_ids = ac.lemma_ids
             ),
             filter AS (
                 SELECT
-                    k.wordform_ids,
+                    k.lemma_ids,
                     tc_abs_freq
                 FROM keyness k
                 WHERE k.keyness <= {modifier}
@@ -262,7 +262,7 @@ class TrendsQuery(QueryBuilder):
                 LIMIT 1000
             )
             SELECT
-                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
+                (SELECT string_agg(wf.lemma, ' ') FROM unnest(lemma_ids) WITH ORDINALITY u(lemma, ord) JOIN lemmas wf ON u.lemma = wf.id) AS wordform,
                 tc_abs_freq AS keyness
             FROM filter f
         """).format(

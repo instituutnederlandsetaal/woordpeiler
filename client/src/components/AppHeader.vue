@@ -3,7 +3,7 @@
         <div class="logo">
             <RouterLink to="/" :style="'position: relative'">
                 <img src="/teniers_krantlezer.jpg" alt="courantenlogo"
-                    style="position: absolute; z-index: -1; height: 72px; left: -1rem;" />
+                    style="position: absolute; z-index: -1; max-height: 72px; left: -1rem;" />
                 <img src="/woordpeiler-logo.svg" alt="woordpeilerlogo" style="filter: opacity(0.8) brightness(100)" />
             </RouterLink>
             <div class="logo-text">
@@ -118,7 +118,7 @@ const menuItems = computed(() => {
 
 // Methods
 function search() {
-    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('1600-01-01')) } });
+    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('1618-01-01')) } });
 }
 </script>
 

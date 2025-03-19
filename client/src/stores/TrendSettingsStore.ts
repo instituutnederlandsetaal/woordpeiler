@@ -8,9 +8,9 @@ import { ref, watch } from "vue"
 export const useTrendSettingsStore = defineStore('TrendSettings', () => {
     // Fields
     const trendSettings = ref<TrendSettings>({
-        year: { start: new Date("1600-01-01"), end: new Date("1600-12-31") },
-        month: { start: toFirstDayOfMonth(new Date("1600-01-01")), end: toLastDayOfMonth(new Date("1600-01-01")) },
-        week: { start: new Date("1600-01-01"), end: new Date("1600-01-01") },
+        year: { start: new Date("1618-01-01"), end: new Date("1618-12-31") },
+        month: { start: toFirstDayOfMonth(new Date("1618-01-01")), end: toLastDayOfMonth(new Date("1618-01-01")) },
+        week: { start: new Date("1618-01-01"), end: new Date("1618-01-01") },
         other: { start: new Date("1690-01-01"), end: new Date("1701-01-01") },
         trendType: "absolute",
         modifier: 1,
