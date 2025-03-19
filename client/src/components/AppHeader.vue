@@ -2,9 +2,9 @@
     <header role="banner" :style="headerStyle">
         <div class="logo">
             <RouterLink to="/" :style="'position: relative'">
-                <img src="/teniers_krantlezer.jpg" alt="courantenlogo"
+                <img src="@/assets/teniers_krantlezer.jpg" alt="courantenlogo"
                     style="position: absolute; z-index: -1; max-height: 72px; left: -1rem;" />
-                <img src="/woordpeiler-logo.svg" alt="woordpeilerlogo" style="filter: opacity(0.8) brightness(100)" />
+                <img src="@/assets/woordpeiler-logo.svg" alt="woordpeilerlogo" style="filter: opacity(0.8) brightness(100)" />
             </RouterLink>
             <div class="logo-text">
                 <h2>

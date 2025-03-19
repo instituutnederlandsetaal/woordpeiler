@@ -6,10 +6,10 @@ export const items = [
         interval: "1w"
     },
     {
-        word: "sig",
+        lemma: "admiraal russel",
         color: "#FF8000",
-        start: "1618-01-01",
-        interval: "1y"
+        start: "1685-01-01",
+        interval: "3m"
     },
     {
         lemma: "zilvervloot",
@@ -36,10 +36,10 @@ export const items = [
         interval: "1y"
     },
     {
-        lemma: "zweeds",
+        lemma: "zweeds konvooi",
         color: "#359FF0",
-        start: "1618-01-01",
-        interval: "1y"
+        start: "1685-01-01",
+        interval: "3m"
     },
     {
         lemma: "nassau",

@@ -6,7 +6,7 @@ export function setAxiosBaseUrl() {
     if (window.location.hostname == 'localhost') {
         axios.defaults.baseURL = `${window.location.protocol}//${window.location.hostname}:8000/`
     } else {
-        axios.defaults.baseURL = `${window.location.protocol}//${window.location.hostname}/api/`
+        axios.defaults.baseURL = `${window.location.protocol}//${window.location.hostname}/couranten/api/`
     }
 }
 
