@@ -6,7 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-
+  base: '/couranten/',
   css: {
     preprocessorOptions: {
       scss: {
@@ -18,7 +18,7 @@ export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
-  ],  server: {
+  ], server: {
     watch: {
       usePolling: true
     }

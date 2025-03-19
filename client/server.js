@@ -13,7 +13,10 @@ app.use((req, res, next) => {
 
 // Note!: use history should come before use static middleware. Otherwise subpages don't load.
 app.use(history({ index: '/index.html' }))
-app.use(staticFileMiddleware)
+app.use('/couranten', staticFileMiddleware)
+app.get('/couranten/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
 
 app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`)
