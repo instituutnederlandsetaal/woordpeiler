@@ -111,7 +111,7 @@ export const useSearchItemsStore = defineStore('SearchItems', () => {
                         lemma: lemmas?.split(split)[i] || undefined,
                         pos: pos?.split(split)[i] || undefined,
                         source: source?.split(split)[i] || undefined,
-                        language: language?.split(split)[i].toUpperCase() || undefined,
+                        language: language?.split(split)[i] || undefined,
                         color: color?.split(split)[i] || randomColor(),
                         visible: true
                     }

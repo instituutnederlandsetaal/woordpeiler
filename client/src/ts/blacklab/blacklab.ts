@@ -1,9 +1,7 @@
 import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/Search";
 import { isInternal } from "@/ts/internal";
 import * as d3 from "d3";
-
-const titles = '("NRC" "Het Parool" "De Volkskrant" "Trouw" "Algemeen Dagblad" "Het Nieuwsblad" "De Standaard" "Het Belang van Limburg" "Gazet van Antwerpen" "Het Laatste Nieuws" "De Morgen" "Starnieuws" "Antilliaans Dagblad" "Bonaire.nu" "Bonaire.Nu")'
-const titleFilter = `titleLevel2_untokenized:${titles}`
+import { tint } from "@primevue/themes";
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
@@ -17,10 +15,11 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     }
 
     // optionally filter on language
-    let filter = `medium:newspaper`
-    if (item.language) {
-        filter += ` AND settingLocation_country:${item.language}`
+    const filterObj = {
+        settingLocation_country: item.language,
+        titleLevel2: item.source,
     }
+    const filter = Object.entries(filterObj).filter(i => i[1]).map(([key, value]) => `${key}:"${value}"`).join(" AND ") || null
 
     const params = {
         patt: constructBLPatt(item),
@@ -28,7 +27,9 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
         groupDisplayMode: "hits",
         group: group,
         sort: "-identity",
-        filter: filter,
+    }
+    if (filter) {
+        params["filter"] = filter
     }
     const base = getBaseURL()
 
@@ -39,7 +40,7 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
 export function constructTooltipLink(point: GraphItem, settings: SearchSettings): string {
     const params = {
         patt: constructBLPatt(point.searchItem),
-        filter: `(${constructBLFilter(point, settings)})`,
+        filter: constructBLFilter(point, settings),
         interface: JSON.stringify({ form: "search", patternMode: "expert" }),
         groupDisplayMode: "relative hits",
         group: "field:titleLevel2:i"
@@ -54,13 +55,31 @@ function getBaseURL(): string {
 }
 
 function constructBLPatt(item: SearchItem) {
+    // assume the number of n-grams in lemma, word is equal
+    const lemmas = item.lemma?.split(" ")
+    const words = item.wordform?.split(" ")
+    const n = lemmas?.length || words?.length
+
+    let patt = ""
+    for (let i = 0; i < n; i++) {
+        const singleItem: SearchItem = {
+            lemma: lemmas?.[i],
+            wordform: words?.[i],
+            pos: item.pos, // always same pos for now
+        }
+        patt += constructSingleBLPatt(singleItem)
+    }
+    return patt
+}
+
+function constructSingleBLPatt(item: SearchItem) {
     const pattTerms = {
         lemma: item.lemma,
         word: item.wordform,
     }
     // Add pos separately because only one can be present
     if (item.pos?.includes("(")) {
-        pattTerms["pos_full"] = item.pos
+        pattTerms["grouping_pos_full"] = item.pos
     }
     else {
         pattTerms["pos"] = item.pos
@@ -79,7 +98,7 @@ function constructBLPatt(item: SearchItem) {
             pattTerms["lemma"] = toBLRegex(item.lemma)
         }
     }
-    const literal = ""
+    const literal = "l"
     const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
     return `[${patt}]`
 }
@@ -116,8 +135,8 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
         const offset = bucketSize - 1;
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset));
     }
-    filters["date_from"] = `[${start} TO ${end}]`
-    filters["date_to"] = `[${start} TO ${end}]`
+    const dateRange = `[${start} TO ${end}]`
+    const dateFilter = `(date_to:${dateRange} AND date_from:${dateRange})`
 
     if (point.searchItem.source) {
         filters["titleLevel2"] = `"${point.searchItem.source}"`
@@ -127,5 +146,6 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
         filters["settingLocation_country"] = `"${point.searchItem.language}"`
     }
 
-    return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
+    const otherFilters = Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
+    return [dateFilter, otherFilters].filter(i => i).join(" AND ")
 }

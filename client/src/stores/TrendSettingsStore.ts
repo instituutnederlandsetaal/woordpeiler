@@ -36,6 +36,8 @@ export const useTrendSettingsStore = defineStore('TrendSettings', () => {
     const ngramOptions: SelectLabel[] = [
         { label: "1-gram", value: 1 },
         { label: "2-gram", value: 2 },
+        { label: "3-gram", value: 3 },
+        { label: "4-gram", value: 4 }
     ]
     // Lifecycle
     watch(() => ({ ...trendSettings.value }), (newValue, oldValue) => {
