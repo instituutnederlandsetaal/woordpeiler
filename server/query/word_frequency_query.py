@@ -45,19 +45,18 @@ class WordFrequencyQuery(QueryBuilder):
 
         self.words_table = Identifier(f"words_{self.ngram}")
         self.freq_table = Identifier(f"frequencies_{self.ngram}")
-        self.corpus_size_table = Identifier(f"corpus_size_{self.ngram}")
         self.word_filter = WordFrequencyQuery.get_word_filter(
             id, wordform, lemma, pos, poshead
         )
         self.source_filter = WordFrequencyQuery.get_source_filter(source, language)
+        self.corpus_size_table = WordFrequencyQuery.get_corpus_size_table(
+            self.source_filter, self.ngram
+        )
         self.date_filter = QueryBuilder.get_date_filter(
             Identifier("cs", "time"), start_date, end_date
         )
         self.interval = Literal(Interval.from_string(interval).to_timescaledb_str())
-        # if language is None:
         self.size = Identifier("size")
-        # else:
-        #     self.size = Identifier(f"size_{language.lower()}")
 
     @staticmethod
     def get_ngram(
@@ -73,16 +72,31 @@ class WordFrequencyQuery(QueryBuilder):
         return ngram
 
     @staticmethod
-    def get_freq_table(has_word_filter: bool, word_filter: Composable) -> Composable:
-        if has_word_filter:
+    def get_corpus_size_table(source_filter: Composable, ngram: int) -> Composable:
+        corpus_size = Identifier(f"corpus_size_{ngram}")
+        source_size = Identifier(f"source_size_{ngram}")
+
+        if source_filter == SQL(""):
             # get from regular frequencies table
-            return SQL("""
-                (SELECT id FROM words {word_filter}) 
-                LEFT JOIN frequencies ON word_id = id
-            """).format(word_filter=word_filter)
+            return corpus_size
         else:
             # get from source_frequencies table
-            return SQL("source_frequencies")
+            return SQL("""(
+                SELECT 
+                    {corpus_size}.time,
+                    SUM(COALESCE({source_size}.frequency,0)) AS size 
+                FROM 
+                    {corpus_size}
+                LEFT JOIN
+                    {source_size}
+                    ON {corpus_size}.time = {source_size}.time AND {source_filter} 
+                GROUP BY
+                    {corpus_size}.time -- needed for combining e.g. locations over different sources
+            )""").format(
+                corpus_size=corpus_size,
+                source_size=source_size,
+                source_filter=source_filter,
+            )
 
     @staticmethod
     def get_time_bucket(bucket_type: str, bucket_size: int) -> Literal:
@@ -100,7 +114,7 @@ class WordFrequencyQuery(QueryBuilder):
         source_filter = SQL("")  # default
         if any([source, language]):
             source_filter = SQL(
-                "WHERE source_id = ANY (SELECT s.id FROM sources s WHERE {source_where})"
+                "source_id = ANY (SELECT s.id FROM sources s WHERE {source_where})"
             ).format(source_where=source_where)
 
         return source_filter
@@ -166,7 +180,9 @@ class WordFrequencyQuery(QueryBuilder):
             FROM {corpus_size_table} cs 
                 LEFT JOIN frequencies_data f 
                     ON cs.time = f.time 
+            -- filter the timeline
             {date_filter}
+            -- aggregate
             GROUP BY 
                 time_bucket({time_bucket},cs.time)
             ORDER BY
@@ -177,7 +193,7 @@ class WordFrequencyQuery(QueryBuilder):
             corpus_size_table=self.corpus_size_table,
             words_table=self.words_table,
             freq_table=self.freq_table,
-            source_filter=self.source_filter,
+            source_filter=SQL("WHERE {source_filter}").format(source_filter=self.source_filter) if self.source_filter != SQL("") else SQL(""),
             date_filter=self.date_filter,
             time_bucket=self.interval,
             word_filter=self.word_filter,
