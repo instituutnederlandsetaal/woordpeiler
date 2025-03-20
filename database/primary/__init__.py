@@ -6,6 +6,7 @@ from database.primary.table_frequencies import FrequencyTableBuilder
 from database.primary.table_sources import create_table_sources
 from database.primary.table_words import WordsTableBuilder
 from database.primary.table_corpus_size import CorpusSizeTableBuilder
+from database.primary.table_source_size import SourceSizeTableBuilder
 
 
 def initialize(
@@ -23,18 +24,21 @@ def initialize(
         create_table_posses(pos_path)
 
     freq_table = FrequencyTableBuilder(freq_path, ngram)
-    freq_table.create_table_frequencies()
+    freq_table.create()
 
     if ngram == 1:
         create_table_sources()
     freq_table.add_source_id_column()
 
     words_table = WordsTableBuilder(ngram)
-    words_table.create_table_words()
+    words_table.create()
     freq_table.add_word_id_column()
 
     freq_table.deduplicate()
     freq_table.add_frequencies_indices()
 
     corpus_size_table = CorpusSizeTableBuilder(ngram)
-    corpus_size_table.create_table_corpus_size()
+    corpus_size_table.create()
+
+    source_size = SourceSizeTableBuilder(ngram)
+    source_size.create()

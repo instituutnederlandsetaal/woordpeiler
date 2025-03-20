@@ -1,60 +1,42 @@
 # third party
-from psycopg.sql import Identifier, SQL
+from psycopg.sql import SQL
 
 # local
 from database.util.query import time_query, analyze_vacuum
+from database.util.table_builder import TableBuilder
 
 
-class TotalCountsTableBuilder:
-    def __init__(self, ngram: int):
-        self.ngram = ngram
-        self._build_queries()
-
+class TotalCountsTableBuilder(TableBuilder):
     def _build_queries(self):
-        self.table = Identifier(f"total_counts_{self.ngram}")
-        self.yearly_counts = Identifier(f"yearly_counts_{self.ngram}")
-
         self.create_table = SQL("""
             SELECT 
                 word_id, 
-                SUM(abs_freq) as abs_freq,
-                SUM(abs_freq_an) as abs_freq_an,
-                SUM(abs_freq_bn) as abs_freq_bn,
-                SUM(abs_freq_nn) as abs_freq_nn,
-                SUM(abs_freq_sn) as abs_freq_sn
-            INTO {table}
+                SUM(abs_freq) as abs_freq
+            INTO {total_counts}
             FROM {yearly_counts}
             GROUP BY 
                 word_id;
-        """).format(table=self.table, yearly_counts=self.yearly_counts)
+        """).format(total_counts=self.total_counts, yearly_counts=self.yearly_counts)
 
         self.add_relative_columns = SQL("""
-            ALTER TABLE {table}
-            ADD COLUMN rel_freq FLOAT,
-            ADD COLUMN rel_freq_an FLOAT,
-            ADD COLUMN rel_freq_bn FLOAT,
-            ADD COLUMN rel_freq_nn FLOAT,
-            ADD COLUMN rel_freq_sn FLOAT;
-        """).format(table=self.table)
+            ALTER TABLE {total_counts}
+            ADD COLUMN rel_freq FLOAT;
+        """).format(total_counts=self.total_counts)
 
         self.fill_relative_columns = SQL("""
             UPDATE
-                {table} 
+                {total_counts} 
             SET 
-                rel_freq = abs_freq / (SELECT SUM(abs_freq) FROM {table}),
-                rel_freq_an = abs_freq_an / NULLIF((SELECT SUM(abs_freq_an) FROM {table}), 0),
-                rel_freq_bn = abs_freq_bn / NULLIF((SELECT SUM(abs_freq_bn) FROM {table}), 0),
-                rel_freq_nn = abs_freq_nn / NULLIF((SELECT SUM(abs_freq_nn) FROM {table}), 0),
-                rel_freq_sn = abs_freq_sn / NULLIF((SELECT SUM(abs_freq_sn) FROM {table}), 0);
-        """).format(table=self.table)
+                rel_freq = abs_freq / (SELECT SUM(abs_freq) FROM {total_counts});
+        """).format(total_counts=self.total_counts)
 
         self.add_indices = SQL("""
-            CREATE INDEX ON {table} (word_id) INCLUDE (abs_freq, rel_freq, abs_freq_an, rel_freq_an, abs_freq_bn, rel_freq_bn, abs_freq_nn, rel_freq_nn, abs_freq_sn, rel_freq_sn);	
-        """).format(table=self.table)
+            CREATE INDEX ON {total_counts} (word_id) INCLUDE (abs_freq, rel_freq);	
+        """).format(total_counts=self.total_counts)
 
     def create(self):
         time_query(
-            f"Creating table {self.table}",
+            f"Creating table {self.total_counts}",
             self.create_table,
             self.add_relative_columns,
             self.fill_relative_columns,

@@ -30,9 +30,9 @@ export const items = [
         interval: "1y"
     },
     {
-        lemma: "republiek",
+        lemma: "volgens de brief",
         color: "#E8503D",
-        start: "1630-01-01",
+        start: "1670-01-01",
         interval: "1y"
     },
     {

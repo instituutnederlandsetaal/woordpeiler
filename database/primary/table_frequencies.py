@@ -13,6 +13,7 @@ from tqdm import tqdm
 from database.util.uploader import Uploader
 from database.util.query import execute_query, time_query, analyze_vacuum, fetch_query
 from database.util.timer import timer
+from database.util.table_builder import TableBuilder
 
 
 class FrequencyUploader(Uploader):
@@ -45,28 +46,24 @@ class FrequencyUploader(Uploader):
         ]
 
     def _insert_rows(self, rows: list[Any]) -> None:
-        table = f"frequencies_{self.ngram}"
+        frequencies = Identifier(f"frequencies_{self.ngram}")
         with self.cursor.copy(
             SQL(
-                "COPY {table} (wordform_ids, lemma_ids, pos_ids, time, source, language, frequency) FROM STDIN"
-            ).format(table=Identifier(table))
+                "COPY {frequencies} (wordform_ids, lemma_ids, pos_ids, time, source, language, frequency) FROM STDIN"
+            ).format(frequencies=frequencies)
         ) as copy:
             for r in rows:
                 copy.write_row(r)
 
 
-class FrequencyTableBuilder:
+class FrequencyTableBuilder(TableBuilder):
     def __init__(self, path: str, ngram: int):
         self.path = path
-        self.ngram = ngram
-        self._build_queries()
+        super().__init__(ngram)
 
     def _build_queries(self):
-        self.table = Identifier(f"frequencies_{self.ngram}")
-        self.words_table = Identifier(f"words_{self.ngram}")
-
         self.create_table = SQL("""
-            CREATE TABLE {table} (
+            CREATE TABLE {frequencies} (
                 wordform_ids INTEGER[],
                 lemma_ids INTEGER[],
                 pos_ids INTEGER[],
@@ -75,44 +72,44 @@ class FrequencyTableBuilder:
                 language TEXT,
                 frequency INTEGER
             )
-        """).format(table=self.table)
+        """).format(frequencies=self.frequencies)
 
         self.create_source_id = SQL("""
-            ALTER TABLE {table}
+            ALTER TABLE {frequencies}
             ADD COLUMN source_id INTEGER;
-        """).format(table=self.table)
+        """).format(frequencies=self.frequencies)
 
         self.create_word_id = SQL("""
-            ALTER TABLE {table}
+            ALTER TABLE {frequencies}
             ADD COLUMN word_id INTEGER;
-        """).format(table=self.table)
+        """).format(frequencies=self.frequencies)
 
         self.fill_source_ids = SQL("""
-            UPDATE {table} f
+            UPDATE {frequencies} f
             SET source_id = s.id
             FROM sources s
             WHERE f.source = s.source AND f.language = s.language;
-        """).format(table=self.table)
+        """).format(frequencies=self.frequencies)
 
         self.fill_word_id = SQL("""
-            UPDATE {table} f
+            UPDATE {frequencies} f
             SET word_id = w.id
-            FROM {words_table} w
+            FROM {words} w
             WHERE f.wordform_ids = w.wordform_ids AND f.lemma_ids = w.lemma_ids AND f.pos_ids = w.pos_ids;
-        """).format(table=self.table, words_table=self.words_table)
+        """).format(frequencies=self.frequencies, words=self.words)
 
         self.drop_word_columns = SQL("""
-            ALTER TABLE {table}
+            ALTER TABLE {frequencies}
             DROP COLUMN wordform_ids,
             DROP COLUMN lemma_ids,
             DROP COLUMN pos_ids;
-        """).format(table=self.table)
+        """).format(frequencies=self.frequencies)
 
         self.drop_source_columns = SQL("""
-            ALTER TABLE {table}
+            ALTER TABLE {frequencies}
             DROP COLUMN source,
             DROP COLUMN language;
-        """).format(table=self.table)
+        """).format(frequencies=self.frequencies)
 
         self.deduplicate_rows = SQL("""
             CREATE TEMP TABLE 
@@ -123,28 +120,28 @@ class FrequencyTableBuilder:
                         source_id,
                         SUM(frequency) AS frequency
                     FROM 
-                        {table}
+                        {frequencies}
                     GROUP BY 
                         time, 
                         word_id, 
                         source_id;
 
-            TRUNCATE TABLE {table};
+            TRUNCATE TABLE {frequencies};
 
             INSERT INTO 
-                {table} (time, word_id, source_id, frequency)
+                {frequencies} (time, word_id, source_id, frequency)
             SELECT *
             FROM 
                 temp_frequencies;
-        """).format(table=self.table)
+        """).format(frequencies=self.frequencies)
 
         self.add_indices = SQL("""
-            CREATE INDEX ON {table} (word_id, source_id) INCLUDE (time, frequency);
-            CREATE INDEX ON {table} (source_id) INCLUDE (time, frequency);
-            CREATE INDEX ON {table} (time) INCLUDE (frequency); -- needed for calculating corpus_size quickly
-        """).format(table=self.table)
+            CREATE INDEX ON {frequencies} (word_id, source_id) INCLUDE (time, frequency);
+            CREATE INDEX ON {frequencies} (source_id) INCLUDE (time, frequency);
+            CREATE INDEX ON {frequencies} (time) INCLUDE (frequency); -- needed for calculating corpus_size quickly
+        """).format(frequencies=self.frequencies)
 
-    def create_table_frequencies(self):
+    def create(self):
         # create table
         execute_query(self.create_table)
 
@@ -206,17 +203,17 @@ class FrequencyTableBuilder:
 
             # 2. Get total number of rows N
             count_query = SQL("""
-                SELECT COUNT(*) FROM {table};
-            """).format(table=self.table)
+                SELECT COUNT(*) FROM {frequencies};
+            """).format(frequencies=self.frequencies)
             total_rows: int = fetch_query(count_query)[0][0]
 
             # 3. Add PK to the frequencies table
             pk_query = SQL("""
                 ALTER TABLE 
-                    {table} 
+                    {frequencies} 
                 ADD 
                     COLUMN id SERIAL PRIMARY KEY;
-            """).format(table=self.table)
+            """).format(frequencies=self.frequencies)
             execute_query(pk_query)
 
             BATCH_SIZE = 100_000
@@ -228,16 +225,16 @@ class FrequencyTableBuilder:
                         DROP TABLE IF EXISTS processing;            
 
                         CREATE TABLE processing AS
-                        SELECT * FROM {table}
+                        SELECT * FROM {frequencies}
                         LIMIT {batch_size}
-                    """).format(table=self.table, batch_size=BATCH_SIZE)
+                    """).format(frequencies=self.frequencies, batch_size=BATCH_SIZE)
                     execute_query(tmp_query)
 
                     # 4. Delete those extracted rows from the frequencies table
                     delete_query = SQL("""
-                        DELETE FROM {table}
+                        DELETE FROM {frequencies}
                         WHERE id IN (SELECT id FROM processing);
-                    """).format(table=self.table)
+                    """).format(frequencies=self.frequencies)
                     execute_query(delete_query)
 
                     # 5. Add the word_id column to the tmp table
@@ -251,9 +248,9 @@ class FrequencyTableBuilder:
                     fill_word_id_query = SQL("""
                         UPDATE processing f
                         SET word_id = w.id
-                        FROM {words_table} w
+                        FROM {words} w
                         WHERE f.wordform_ids = w.wordform_ids AND f.lemma_ids = w.lemma_ids AND f.pos_ids = w.pos_ids;
-                    """).format(words_table=self.words_table)
+                    """).format(words=self.words)
                     execute_query(fill_word_id_query)
 
                     # 7. Remove the wordform_ids, lemma_ids, pos_ids columns from the tmp table
@@ -279,13 +276,13 @@ class FrequencyTableBuilder:
 
             # 10. Drop the tmp table and rename the output table to the original table
             drop_query = SQL("""
-                DROP TABLE processing, {table};
-            """).format(table=self.table)
+                DROP TABLE processing, {frequencies};
+            """).format(frequencies=self.frequencies)
             execute_query(drop_query)
 
             rename_query = SQL("""
-                ALTER TABLE output RENAME TO {table};
-            """).format(table=self.table)
+                ALTER TABLE output RENAME TO {frequencies};
+            """).format(frequencies=self.frequencies)
             execute_query(rename_query)
 
     def deduplicate(self):
@@ -294,14 +291,14 @@ class FrequencyTableBuilder:
             return
 
         time_query(
-            f"Deduplicating {self.table}",
+            f"Deduplicating {self.frequencies}",
             self.deduplicate_rows,
         )
         analyze_vacuum()
 
     def add_frequencies_indices(self):
         time_query(
-            f"Creating indices for {self.table}",
+            f"Creating indices for {self.frequencies}",
             self.add_indices,
         )
         analyze_vacuum()
