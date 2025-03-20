@@ -94,15 +94,14 @@ class WordFrequencyQuery(QueryBuilder):
     @staticmethod
     def get_source_filter(source: Optional[str], language: Optional[str]) -> Composable:
         # example: AND source_id = ANY (SELECT s.id FROM sources s WHERE s.language = 'BN')
+        source_where = QueryBuilder.where_and(
+            ["source", "language"], [source, language]
+        )
         source_filter = SQL("")  # default
-        if source is not None:
+        if any([source, language]):
             source_filter = SQL(
-                "WHERE source_id = ANY (SELECT s.id FROM sources s WHERE source = {source})"
-            ).format(source=Literal(source))
-        elif language is not None:
-            source_filter = SQL(
-                "WHERE source_id = ANY (SELECT s.id FROM sources s WHERE language = {language})"
-            ).format(language=Literal(language))
+                "WHERE source_id = ANY (SELECT s.id FROM sources s WHERE {source_where})"
+            ).format(source_where=source_where)
 
         return source_filter
 
