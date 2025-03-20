@@ -54,7 +54,7 @@ export const items = [
         interval: "3m"
     },
     {
-        lemma: "het franse leger",
+        lemma: "het frans leger",
         color: "#359FF0",
         start: "1618-01-01",
         interval: "3y"
