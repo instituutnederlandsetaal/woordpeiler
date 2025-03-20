@@ -47,4 +47,28 @@ export const items = [
         start: "1618-01-01",
         interval: "1y"
     },
+    {
+        lemma: "prince van oranje",
+        color: "#FF8000",
+        start: "1618-01-01",
+        interval: "3m"
+    },
+    {
+        lemma: "het franse leger",
+        color: "#359FF0",
+        start: "1618-01-01",
+        interval: "3y"
+    },
+    {
+        lemma: "de raad van state",
+        color: "#F3F3F3",
+        start: "1660-01-01",
+        interval: "3m"
+    },
+    {
+        lemma: "een aanslag op",
+        color: "#FFF064",
+        start: "1618-01-01",
+        interval: "1y"
+    }    
 ]
