@@ -98,7 +98,7 @@ function constructSingleBLPatt(item: SearchItem) {
             pattTerms["lemma"] = toBLRegex(item.lemma)
         }
     }
-    const literal = "l"
+    const literal = ""
     const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
     return `[${patt}]`
 }

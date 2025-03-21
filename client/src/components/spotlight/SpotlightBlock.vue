@@ -5,9 +5,15 @@
                 {{ title }}
             </h2>
         </header>
-        <p>sinds {{ (spotlight.start ?? spotlight.start_date).split("-")[0] }}</p>
         <div>
-            <img v-if="svgBlob" :src="svgBlob" />
+            <p>sinds {{ (spotlight.start ?? spotlight.start_date).split("-")[0] }}</p>
+            <p v-if="spotlight.articleUrl"><a :href="spotlight.articleUrl" target="_blank"
+                    @click="($event) => $event.stopPropagation()">
+                    lees artikel <span class="pi pi-angle-double-right"></span>&nbsp;</a>
+            </p>
+            <div>
+                <img v-if="svgBlob" :src="svgBlob" />
+            </div>
         </div>
     </section>
 </template>
@@ -34,7 +40,7 @@ const props = defineProps({
 // Fields
 const router = useRouter()
 const svgBlob = ref()
-const title = computed(() => (props.spotlight.word ?? props.spotlight.lemma).toLowerCase().trim())
+const title = computed(() => (props.spotlight.title ?? props.spotlight.word ?? props.spotlight.lemma).toLowerCase().trim())
 
 // Methods
 function search(spotlight: Spotlight) {
@@ -74,35 +80,62 @@ section {
 
     header {
         border-bottom: 1px solid black;
-    }
 
-    p {
-        font-size: 1rem;
-        font-weight: 400;
-    }
-
-    div {
-        flex: 1 0;
-        min-height: 0;
-        padding-top: 0.3rem;
-
-        img {
-            height: 100%;
-            // strech svg without keeping aspect ratio
+        h2 {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            min-width: 0;
+            font-size: 2rem;
+            font-weight: 400;
+            padding-bottom: 0.5rem;
             width: 100%;
         }
     }
 
-    h2 {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: inline-block;
-        min-width: 0;
-        font-size: 2rem;
-        font-weight: 400;
-        padding-bottom: 0.5rem;
-        width: 100%;
+    div {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        min-height: 0;
+
+        p {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* second p */
+        p:nth-of-type(2) {
+            text-align: right;
+            position: absolute;
+            width: 100%;
+
+            a {
+                color: inherit;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+
+                span {
+                    display: inline;
+                }
+            }
+        }
+
+        div {
+            flex: 1 0;
+            min-height: 0;
+            padding-top: 0.3rem;
+
+            img {
+                height: 100%;
+                // strech svg without keeping aspect ratio
+                width: 100%;
+            }
+        }
     }
 }
 
@@ -110,7 +143,7 @@ section:hover,
 section:focus {
     cursor: pointer;
 
-    h2 {
+    header h2 {
         color: white;
     }
 }

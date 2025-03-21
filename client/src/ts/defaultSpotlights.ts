@@ -1,15 +1,21 @@
-export const items = [
+import type { Spotlight } from "@/types/spotlight";
+
+export const items: Spotlight[] = [
     {
-        word: "darien",
+        title: "geldsnoeier",
+        articleUrl: "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/geldsnoeier/",
+        word: "gel*snoey*",
         color: "#FFF064",
-        start: "1699-01-01",
-        interval: "1w"
+        start: "1685-01-01",
+        interval: "6m"
     },
     {
-        lemma: "admiraal russel",
+        title: "kinderpokjes",
+        articleUrl: "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/kinderpokjes/",
+        word: "kinder*po*",
         color: "#FF8000",
-        start: "1685-01-01",
-        interval: "3m"
+        start: "1650-01-01",
+        interval: "1y"
     },
     {
         lemma: "zilvervloot",
@@ -18,10 +24,11 @@ export const items = [
         interval: "2y"
     },
     {
-        word: "lymrick",
+        title: "hertog van lotharingen",
+        word: "hertog* van lot*ring*",
         color: "#E8503D",
-        start: "1689-01-01",
-        interval: "1m"
+        start: "1618-01-01",
+        interval: "1y"
     },
     {
         lemma: "amerika",
@@ -47,13 +54,16 @@ export const items = [
         start: "1618-01-01",
         interval: "1y"
     },
+
     {
+        title: "prins van oranje",
         lemma: "prince van oranje",
         color: "#FF8000",
         start: "1618-01-01",
         interval: "3m"
     },
     {
+        title: "het franse leger",
         lemma: "het frans leger",
         color: "#359FF0",
         start: "1618-01-01",
@@ -70,5 +80,5 @@ export const items = [
         color: "#FFF064",
         start: "1618-01-01",
         interval: "1y"
-    }    
+    }
 ]
