@@ -1,11 +1,11 @@
 <template>
     <header role="banner" :style="headerStyle">
         <div class="logo">
-            <RouterLink to="/" :style="'position: relative'">
-                <img src="@/assets/teniers_krantlezer.jpg" alt="courantenlogo"
-                    style="position: absolute; z-index: -1; max-height: 72px; left: -1rem;" />
-                <img src="@/assets/woordpeiler-logo.svg" alt="woordpeilerlogo" style="filter: opacity(0.8) brightness(100)" />
-            </RouterLink>
+            <div class="logo-img">
+                <RouterLink to="/">
+                    <img src="@/assets/teniers_krantlezer.jpg" alt="courantenlogo" />
+                </RouterLink>
+            </div>
             <div class="logo-text">
                 <h2>
                     <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
@@ -13,14 +13,10 @@
                     </a>
                 </h2>
                 <h1>
-                    <RouterLink to="/">
-                        courantenpeiler
-                    </RouterLink>
+                    <RouterLink to="/">courantenpeiler</RouterLink>
                 </h1>
             </div>
         </div>
-
-
 
         <nav>
             <!-- regular links -->
@@ -124,14 +120,15 @@ function search() {
 
 
 <style scoped lang="scss">
+@import "@/assets/primevue.scss";
+
 header {
     font-family: Schoolboek;
-    min-height: 80px;
-    border-bottom: 9px solid #E8503D;
+    height: 70px;
+    border-bottom: 5px solid $theme;
     display: flex;
     justify-content: space-between;
     background-color: white;
-    box-shadow: 0px 4px 5px 1px #ccc;
     z-index: 1;
 
     a {
@@ -141,28 +138,28 @@ header {
 
     .logo {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        line-height: normal;
+        gap: 1rem;
 
-        img {
-            min-width: 72px;
-            margin: 0 1rem;
-        }
-    }
-
-    .logo-text {
-        align-self: flex-start;
-
-        h1 {
-            font-weight: 400;
-            font-size: 2rem;
+        .logo-img img {
+            height: 65px;
         }
 
-        h2 {
-            font-weight: 400;
-            font-size: 0.9rem;
-            margin-top: 0.2rem;
-            margin-bottom: -0.2rem;
+        .logo-text {
+            padding: 5px 0;
+
+            display: flex;
+            flex-direction: column;
+
+            h1 {
+                font-weight: normal;
+                font-size: 1.7rem;
+            }
+
+            h2 {
+                font-weight: normal;
+                font-size: 0.8rem;
+            }
         }
     }
 
@@ -170,11 +167,11 @@ header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-right: 1rem;
-        gap: 1rem;
+        margin-right: 36px;
+        gap: 32px;
 
         a {
-            font-size: 1.1rem;
+            font-size: 16px;
 
             &:hover {
                 text-decoration: underline;
@@ -192,7 +189,7 @@ header {
 }
 
 footer {
-    background-color: #E8503D;
+    background-color: $theme;
     width: 100%;
     padding-bottom: 1rem;
     display: flex;
@@ -203,7 +200,7 @@ footer {
 
     h2 {
         font-family: Schoolboek;
-        font-weight: 400;
+        font-weight: normal;
         font-size: 1.5rem;
         color: white;
         padding: 5px 0 14px 0;

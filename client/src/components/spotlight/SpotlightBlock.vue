@@ -88,7 +88,7 @@ section {
             display: inline-block;
             min-width: 0;
             font-size: 2rem;
-            font-weight: 400;
+            font-weight: normal;
             padding-bottom: 0.5rem;
             width: 100%;
         }
@@ -102,7 +102,7 @@ section {
 
         p {
             font-size: 1rem;
-            font-weight: 400;
+            font-weight: normal;
         }
 
         /* second p */
