@@ -1,61 +1,45 @@
-services:
+x-defaults: &defaults
+    restart: unless-stopped
+    shm_size: 2gb
+    command: "-c 'config_file=/etc/postgres/postgresql.conf'"
+    environment: &environment
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        READER_USER: ${READER_USER}
+        READER_PASSWORD: ${READER_PASSWORD}
+    healthcheck: &db-health
+        test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+        interval: 3s
+        timeout: 5s
+        retries: 5
 
+services:
     database:
+        <<: *defaults
         image: timescale/timescaledb:2.18.1-pg17
-        restart: unless-stopped
-        shm_size: 2gb
-        environment:
-            - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - READER_USER=${READER_USER}
-            - READER_PASSWORD=${READER_PASSWORD}
         ports:
-            - '${POSTGRES_PORT}:5432'
+            - ${POSTGRES_PORT}:5432
         volumes:
             - database:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
-        command: "-c 'config_file=/etc/postgres/postgresql.conf'"
-        healthcheck:
-            test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
-            interval: 3s
-            timeout: 5s
-            retries: 5
 
     builder:
         image: timescale/timescaledb:2.18.1-pg17
-        restart: unless-stopped
-        shm_size: 2gb
-        environment:
-            - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - READER_USER=${READER_USER}
-            - READER_PASSWORD=${READER_PASSWORD}
         ports:
-            - '${BUILDER_PORT}:5432'
+            - ${BUILDER_PORT}:5432
         volumes:
             - builder:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
-        command: "-c 'config_file=/etc/postgres/postgresql.conf'"
-        healthcheck:
-            test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
-            interval: 3s
-            timeout: 5s
-            retries: 5
 
     server:
         image: instituutnederlandsetaal/woordpeiler-server:${VERSION_LABEL}
         environment:
-            - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_HOST=database # Always refer to the database container
-            - POSTGRES_PORT=${POSTGRES_PORT}
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - READER_USER=${READER_USER}
-            - READER_PASSWORD=${READER_PASSWORD}
+            <<: *environment
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_HOST: database # Always refer to the database container
         build:
             context: server
         restart: unless-stopped
@@ -67,14 +51,14 @@ services:
         restart: unless-stopped
 
     proxy:
-        image: nginx:1.27.4-alpine3.21
+        image: nginx:1.28.0-alpine3.21-slim
         volumes:
             - ./proxy/nginx.conf:/etc/nginx/nginx.conf
         depends_on:
             - client
             - server
         ports:
-            - "80:80"
+            - $PROXY_PORT:80
         restart: unless-stopped
 
 volumes:
