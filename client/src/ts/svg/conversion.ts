@@ -2,6 +2,8 @@
 import * as d3 from "d3"
 // Types
 import type { ResizeState } from "@/ts/resizeObserver"
+// Utils
+import { isInternal } from "../internal"
 
 function getSVGString(width, height, w, h) {
     const svgNode = d3.select("#svg-graph").node()
@@ -82,7 +84,13 @@ export function svgString2Image(resizeState: ResizeState, callback: (dataBlob: B
                 fontSize: (height / 1080) * 4, // 10rem at 1080p
             }
 
-            for (const { text, align, baseline, fontSize, color, x, y } of [title, subtitle, largeWatermark]) {
+            // only draw largeWatermark externally
+            const textToDraw = [title, subtitle]
+            if (!isInternal()) {
+                textToDraw.push(largeWatermark)
+            }
+
+            for (const { text, align, baseline, fontSize, color, x, y } of textToDraw) {
                 context.textAlign = align
                 context.textBaseline = baseline
                 context.font = `${fontSize}rem 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif`
