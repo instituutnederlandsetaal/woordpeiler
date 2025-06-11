@@ -1,4 +1,1 @@
-export type SelectLabel = {
-    label: string;
-    value: string;
-}
+export type SelectLabel = { label: string; value: string }

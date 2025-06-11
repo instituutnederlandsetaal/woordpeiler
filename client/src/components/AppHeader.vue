@@ -29,11 +29,23 @@
             <a href="http://svotmc10.ivdnt.loc/corpus-frontend/Couranten2024/search" target="_blank">couranten</a>
 
             <!-- hamburger menu -->
-            <Button text severity="secondary" type="button" icon="pi pi-bars" @click="(event) => { menu.toggle(event) }"
-                aria-haspopup="true" aria-controls="overlayMenu" id="hamburger" title="Menu" />
+            <Button
+                text
+                severity="secondary"
+                type="button"
+                icon="pi pi-bars"
+                @click="
+                    (event) => {
+                        menu.toggle(event)
+                    }
+                "
+                aria-haspopup="true"
+                aria-controls="overlayMenu"
+                id="hamburger"
+                title="Menu"
+            />
             <Menu ref="menu" id="overlayMenu" :model="menuItems" :popup="true" />
         </nav>
-
     </header>
     <footer v-if="isHomePage">
         <h2>woordtrends in de 17<sup>e</sup> eeuw</h2>
@@ -47,80 +59,71 @@
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { computed, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-// PrimeVue
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import InputGroup from 'primevue/inputgroup';
-import Menu from 'primevue/menu';
 // Util
-import { toTimestamp } from '@/ts/date';
-import { isInternal } from '@/ts/internal';
+import { toTimestamp } from "@/ts/date"
+import { isInternal } from "@/ts/internal"
 
 // Fields
-const word = ref();
-const route = useRoute();
-const router = useRouter();
-const menu = ref();
+const word = ref()
+const route = useRoute()
+const router = useRouter()
+const menu = ref()
 
 // Computed
-const isHomePage = computed(() => route.path == "/");
-const headerStyle = computed(() => isHomePage.value ? { boxShadow: 'none' } : {});
+const isHomePage = computed(() => route.path == "/")
+const headerStyle = computed(() => (isHomePage.value ? { boxShadow: "none" } : {}))
 const menuItems = computed(() => {
-    let items = [
+    const items = [
         {
-            label: 'grafiek',
-            icon: 'pi pi-chart-line',
+            label: "grafiek",
+            icon: "pi pi-chart-line",
             command: () => {
-                router.push('/grafiek');
-            }
+                router.push("/grafiek")
+            },
         },
         {
-            label: 'help',
-            icon: 'pi pi-question',
+            label: "help",
+            icon: "pi pi-question",
             command: () => {
-                router.push('/help');
-            }
+                router.push("/help")
+            },
         },
         {
-            label: 'over',
-            icon: 'pi pi-info',
+            label: "over",
+            icon: "pi pi-info",
             command: () => {
-                router.push('/over');
-            }
+                router.push("/over")
+            },
         },
         {
-            label: 'chn',
-            icon: 'pi pi-database',
-            url: 'https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/',
-            target: '_blank'
-        }
+            label: "chn",
+            icon: "pi pi-database",
+            url: "https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/",
+            target: "_blank",
+        },
     ]
 
     if (isInternal()) {
         items.unshift({
-            label: 'trends',
-            icon: 'pi pi-sort-amount-up',
+            label: "trends",
+            icon: "pi pi-sort-amount-up",
             command: () => {
-                router.push('/trends');
-            }
-        },);
+                router.push("/trends")
+            },
+        })
     }
 
-    return items;
-});
+    return items
+})
 
 // Methods
 function search() {
-    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('1618-01-01')) } });
+    router.push({ path: "/grafiek", query: { w: word.value, start: toTimestamp(new Date("1618-01-01")) } })
 }
 </script>
 
-
 <style scoped lang="scss">
-@import "@/assets/primevue.scss";
+@use "@/assets/primevue.scss" as *;
 
 header {
     font-family: Schoolboek;

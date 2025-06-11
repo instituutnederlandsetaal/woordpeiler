@@ -7,13 +7,8 @@
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { storeToRefs } from "pinia"
 // Stores
-import { useSpotlightStore } from "@/stores/SpotlightStore"
-// Components
-import SpotlightBlock from "@/components/spotlight/SpotlightBlock.vue"
-import { onMounted } from "vue"
+import { useSpotlightStore } from "@/stores/spotlights"
 
 // Stores
 const spotlightStore = useSpotlightStore()
@@ -25,7 +20,6 @@ onMounted(() => {
     fetchSpotlights()
     document.title = "Courantenpeiler"
 })
-
 </script>
 
 <style scoped lang="scss">

@@ -1,17 +1,12 @@
-// Libraries
-import { defineStore, storeToRefs } from "pinia"
-import { ref } from "vue"
 // Stores
-import { useTrendSettingsStore } from "./TrendSettingsStore"
+import { useTrendSettingsStore } from "@/stores/trendSettings"
 // API
 import * as TrendAPI from "@/api/trends"
 import type { TrendRequest } from "@/api/trends"
 // Types
 import { type TrendSettings, type TrendResult, type DateRange } from "@/types/trends"
-// Utils
-import { toTimestamp } from "@/ts/date"
 
-export const useTrendResultsStore = defineStore('TrendResults', () => {
+export const useTrendResultsStore = defineStore("TrendResults", () => {
     // Fields
     const { trendSettings } = storeToRefs(useTrendSettingsStore())
     const trendResults = ref<TrendResult[]>(null)
@@ -55,7 +50,8 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
     function deepCopyLastUsedTrends() {
         lastTrendSettings.value = JSON.parse(JSON.stringify(trendSettings.value))
         // reparse dates from string (JSON.stringify converts dates to strings)
-        function parseDateRange(range: DateRange) { // technically it is a {start: string, end: string}
+        function parseDateRange(range: DateRange) {
+            // technically it is a {start: string, end: string}
             range.start = new Date(range.start)
             range.end = new Date(range.end)
         }
@@ -67,8 +63,10 @@ export const useTrendResultsStore = defineStore('TrendResults', () => {
     // Export
     return {
         // Fields
-        trendResults, trendsLoading, lastTrendSettings,
+        trendResults,
+        trendsLoading,
+        lastTrendSettings,
         // Methods
-        getTrends
+        getTrends,
     }
 })

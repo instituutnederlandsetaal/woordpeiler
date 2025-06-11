@@ -6,10 +6,15 @@
             </h2>
         </header>
         <div>
-            <p>sinds {{ (spotlight.start ?? spotlight.start_date).split("-")[0] }}</p>
-            <p v-if="spotlight.articleUrl"><a :href="spotlight.articleUrl" target="_blank"
-                    @click="($event) => $event.stopPropagation()">
-                    lees artikel <span class="pi pi-angle-double-right"></span>&nbsp;</a>
+            <p>
+                sinds
+                {{ (spotlight.start ?? spotlight.start_date).split("-")[0] }}
+            </p>
+            <p v-if="spotlight.articleUrl">
+                <a :href="spotlight.articleUrl" target="_blank" @click="($event) => $event.stopPropagation()">
+                    lees artikel
+                    <span class="pi pi-angle-double-right"></span>&nbsp;</a
+                >
             </p>
             <div>
                 <img v-if="svgBlob" :src="svgBlob" />
@@ -19,28 +24,21 @@
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { useRouter } from 'vue-router';
-import { computed, onMounted, ref } from "vue";
 // API
 import * as API from "@/api/search"
-import { toTimestamp } from '@/ts/date';
 // Types
-import { type Spotlight } from "@/types/spotlight";
-import { toIntervalStr } from '@/types/Search';
+import { type Spotlight } from "@/types/spotlight"
+import { toIntervalStr } from "@/types/search"
 
 // Props
-const props = defineProps({
-    spotlight: {
-        type: Object as PropType<Spotlight>,
-        required: true
-    }
-})
+const props = defineProps({ spotlight: { type: Object as PropType<Spotlight>, required: true } })
 
 // Fields
 const router = useRouter()
 const svgBlob = ref()
-const title = computed(() => (props.spotlight.title ?? props.spotlight.word ?? props.spotlight.lemma).toLowerCase().trim())
+const title = computed(() =>
+    (props.spotlight.title ?? props.spotlight.word ?? props.spotlight.lemma).toLowerCase().trim(),
+)
 
 // Methods
 function search(spotlight: Spotlight) {
@@ -50,7 +48,7 @@ function search(spotlight: Spotlight) {
         i: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
         start: spotlight.start ?? spotlight.start_date,
     }
-    router.push({ path: '/grafiek', query: params });
+    router.push({ path: "/grafiek", query: params })
 }
 
 // Lifecycle
@@ -63,17 +61,16 @@ onMounted(() => {
         interval: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
     }
 
-    API.getSVG(request)
-        .then((response) => {
-            const blob = response.data
-            svgBlob.value = `data:image/svg+xml;base64,${blob}`
-        })
+    API.getSVG(request).then((response) => {
+        const blob = response.data
+        svgBlob.value = `data:image/svg+xml;base64,${blob}`
+    })
 })
 </script>
 
 <style scoped lang="scss">
 section {
-    font-family: 'Schoolboek';
+    font-family: "Schoolboek";
     display: flex;
     flex-direction: column;
     padding: 1rem 2rem;

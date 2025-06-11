@@ -4,14 +4,15 @@
             <AccordionPanel value="0">
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="settings">
-
                     <div class="formSplit">
                         <label>Frequentie</label>
-                        <SelectButton v-model="searchSettings.frequencyType" :options="frequencyTypeOptions"
-                            optionValue="value" optionLabel="label" />
+                        <SelectButton
+                            v-model="searchSettings.frequencyType"
+                            :options="frequencyTypeOptions"
+                            optionValue="value"
+                            optionLabel="label"
+                        />
                     </div>
-
-
 
                     <div>
                         <label>Periode</label>
@@ -27,45 +28,49 @@
 
                     <label>Interval</label>
                     <div class="formSplit">
-                        <input type="number" class="modifierInput p-inputtext" min="1"
-                            v-model="searchSettings.intervalLength" />
-                        <SelectButton v-model="searchSettings.intervalType" :options="timeBucketOptions"
-                            optionValue="value" optionLabel="label" />
+                        <input
+                            type="number"
+                            class="modifierInput p-inputtext"
+                            min="1"
+                            v-model="searchSettings.intervalLength"
+                        />
+                        <SelectButton
+                            v-model="searchSettings.intervalType"
+                            :options="timeBucketOptions"
+                            optionValue="value"
+                            optionLabel="label"
+                        />
                     </div>
 
-                    <div class="formSplit" style="margin: 0.2rem 0 -0.2rem 0;">
+                    <div class="formSplit" style="margin: 0.2rem 0 -0.2rem 0">
                         <label>Splits automatisch op taalvariëteit</label>
                         <Checkbox v-model="searchSettings.languageSplit" binary />
                     </div>
-
                 </AccordionContent>
             </AccordionPanel>
         </Accordion>
 
-        <Button class="search-btn" title="Zoeken" label="Zoeken" @click="() => { tab += 1; search(); }"
-            :disabled="!isValid" />
-
+        <Button
+            class="search-btn"
+            title="Zoeken"
+            label="Zoeken"
+            @click="
+                () => {
+                    tab += 1
+                    search()
+                }
+            "
+            :disabled="!isValid"
+        />
     </Panel>
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { storeToRefs } from "pinia"
-import { ref, watch } from "vue"
 // Stores
-import { useSearchSettingsStore } from "@/stores/SearchSettingsStore"
-import { useSearchResultsStore } from "@/stores/SearchResultsStore"
-import { useSearchItemsStore } from "@/stores/SearchItemsStore"
-// Components
-import Accordion from "primevue/accordion"
-import AccordionPanel from "primevue/accordionpanel"
-import AccordionHeader from "primevue/accordionheader"
-import AccordionContent from "primevue/accordioncontent"
-import Panel from "primevue/panel"
-import Button from "primevue/button"
-import SelectButton from "primevue/selectbutton"
-import DatePicker from "primevue/datepicker"
-import Checkbox from "primevue/checkbox"
+import { useSearchSettingsStore } from "@/stores/searchSettings"
+import { useSearchResultsStore } from "@/stores/searchResults"
+import { useSearchItemsStore } from "@/stores/searchItems"
+// Utils
 import { toUTCDate } from "@/ts/date"
 
 // Stores
@@ -86,7 +91,6 @@ watch([startDate, endDate], () => {
     searchSettings.value.startDate = toUTCDate(startDate.value)
     searchSettings.value.endDate = toUTCDate(endDate.value)
 })
-
 </script>
 
 <style scoped lang="scss">
@@ -106,9 +110,9 @@ watch([startDate, endDate], () => {
     display: inline;
     width: fit-content;
     line-height: 0;
-    font-size: .9rem;
+    font-size: 0.9rem;
     margin: 0;
-    padding-left: .3rem;
+    padding-left: 0.3rem;
 
     span {
         font-size: inherit;

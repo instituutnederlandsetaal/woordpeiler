@@ -1,15 +1,28 @@
 <template>
     <Panel :header="`Trendresultaten: ${displayName(lastTrendSettings)}`" class="trendlist">
-
         <div class="formSplit" v-if="trendResults[0].poshead">
             <label>Uitsluiten</label>
-            <MultiSelect v-model="selectedPosHead" display="chip" :options="posHeadOptions" placeholder="Woordsoort"
-                :loading="posHeadLoading" class="posSelect" />
+            <MultiSelect
+                v-model="selectedPosHead"
+                display="chip"
+                :options="posHeadOptions"
+                placeholder="Woordsoort"
+                :loading="posHeadLoading"
+                class="posSelect"
+            />
         </div>
 
-        <Listbox multiple metaKeySelection v-model="selectedTrend" filter :options="filteredTrends"
-            filterPlaceholder="Zoeken" optionLabel="wordform" :virtualScrollerOptions="{ itemSize: 45 }"
-            listStyle="height:100%">
+        <Listbox
+            multiple
+            metaKeySelection
+            v-model="selectedTrend"
+            filter
+            :options="filteredTrends"
+            filterPlaceholder="Zoeken"
+            optionLabel="wordform"
+            :virtualScrollerOptions="{ itemSize: 45 }"
+            listStyle="height:100%"
+        >
             <template #option="{ option }">
                 <!-- index -->
                 <span class="index" title="Rangnummer">{{ trendResults.indexOf(option) + 1 }}.</span>
@@ -22,34 +35,24 @@
                 <Badge :value="`${badgeName}: ${formatNumber(option.keyness)}`" severity="secondary" />
             </template>
         </Listbox>
-
     </Panel>
 </template>
 
 <script setup lang="ts">
-// Libraries & Stores
-import { ref, computed, watch, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
 // Stores
-import { useTrendResultsStore } from '@/stores/TrendResultsStore';
-import { useSearchResultsStore } from '@/stores/SearchResultsStore';
-import { useSearchItemsStore } from '@/stores/SearchItemsStore';
+import { useTrendResultsStore } from "@/stores/trendResults"
+import { useSearchResultsStore } from "@/stores/searchResults"
+import { useSearchItemsStore } from "@/stores/searchItems"
 // Types & API
-import { type TrendResult, displayName } from '@/types/trends';
-import * as ListingAPI from '@/api/listing';
-// Primevue
-import Listbox from "primevue/listbox"
-import Panel from "primevue/panel"
-import Chip from "primevue/chip"
-import Badge from "primevue/badge"
-import MultiSelect from "primevue/multiselect"
-
-import { randomColor } from '@/ts/color';
+import { type TrendResult, displayName } from "@/types/trends"
+import * as ListingAPI from "@/api/listing"
+// Util
+import { randomColor } from "@/ts/color"
 
 // Stores
-const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore());
-const { searchItems } = storeToRefs(useSearchItemsStore());
-const { search } = useSearchResultsStore();
+const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore())
+const { searchItems } = storeToRefs(useSearchItemsStore())
+const { search } = useSearchResultsStore()
 
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
@@ -60,11 +63,13 @@ const posHeadLoading = ref(true)
 
 // Computed
 const filteredTrends = computed(() => {
-    return trendResults.value?.filter(i => i.poshead?.split(" ")?.every(j => !selectedPosHead.value.includes(j)) || true)
+    return trendResults.value?.filter(
+        (i) => i.poshead?.split(" ")?.every((j) => !selectedPosHead.value.includes(j)) || true,
+    )
 })
 const badgeName = computed(() => {
     // key for keyness, freq for frequency
-    return lastTrendSettings.value.trendType === 'keyness' ? 'key' : 'freq'
+    return lastTrendSettings.value.trendType === "keyness" ? "key" : "freq"
 })
 
 // Methods
@@ -77,7 +82,7 @@ function getPosHeadOptions() {
     posHeadLoading.value = true
     ListingAPI.getPosheads()
         .then((response) => {
-            posHeadOptions.value = response.data;
+            posHeadOptions.value = response.data
         })
         .finally(() => {
             posHeadLoading.value = false
@@ -100,7 +105,7 @@ watch(selectedTrend, () => {
             pos: trendItem.pos,
             lemma: isWordform ? trendItem.lemma : trendItem.wordform,
             color: randomColor(),
-            visible: true
+            visible: true,
         })
     }
     search()

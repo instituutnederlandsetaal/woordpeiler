@@ -18,26 +18,17 @@
 <script setup lang="ts">
 // Libraries & Stores
 import { storeToRefs } from "pinia"
-import { useTrendResultsStore } from "@/stores/TrendResultsStore"
-import { useSearchItemsStore } from "@/stores/SearchItemsStore"
-// Primevue
-import Skeleton from "primevue/skeleton"
-import Panel from "primevue/panel"
-// Components
-import SearchSettings from "@/components/SearchSettings.vue"
-import TrendSettings from "@/components/trends/TrendSettings.vue"
-import D3Graph from "@/components/graph/GraphWrapper.vue"
-import TrendResultsList from "@/components/trends/TrendResultsList.vue"
-import { onMounted } from "vue"
+import { useTrendResultsStore } from "@/stores/trendResults"
+import { useSearchItemsStore } from "@/stores/searchItems"
 
 // Stores
-const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore());
-const { isValid } = storeToRefs(useSearchItemsStore());
+const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore())
+const { isValid } = storeToRefs(useSearchItemsStore())
 
 // Lifecycle
 onMounted(() => {
-    document.title = "Courantenpeiler - Trends";
-});
+    document.title = "Courantenpeiler - Trends"
+})
 </script>
 
 <style scoped lang="scss">

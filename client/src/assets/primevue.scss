@@ -1,7 +1,6 @@
-@use 'sass:color';
+@use "sass:color";
 
-
-$theme: #E8503D;
+$theme: #e8503d;
 
 :root:root {
     --p-scrollpanel-bar-background: #aaa;
@@ -63,13 +62,11 @@ $theme: #E8503D;
 }
 
 .wordlist {
-
     .p-select,
     .p-inputtext,
     .p-cascadeselect {
         width: 200px;
     }
-
 }
 
 // MultiSelect has on overlay on the global document level
