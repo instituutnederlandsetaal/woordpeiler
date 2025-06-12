@@ -1,14 +1,15 @@
 // Types & API
 import type { SearchSettings } from "@/types/search"
 import type { SelectLabel } from "@/types/ui"
+import { config } from "@/main"
 
 export const useSearchSettingsStore = defineStore("SearchSettings", () => {
     // Fields
     const searchSettings = ref<SearchSettings>({
         intervalType: initTimeBucket().type,
         intervalLength: initTimeBucket().size,
-        startDate: new Date("1618-01-01"),
-        endDate: new Date("1701-01-01"),
+        startDate: new Date(config.period.start),
+        endDate: new Date(config.period.end),
         frequencyType: "rel_freq",
         languageSplit: false,
     })

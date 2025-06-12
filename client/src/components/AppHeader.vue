@@ -3,7 +3,7 @@
         <div class="logo">
             <div class="logo-img">
                 <RouterLink to="/">
-                    <img src="@/assets/teniers_krantlezer.jpg" alt="courantenlogo" />
+                    <img :src="$config.theme.logo" alt="logo" />
                 </RouterLink>
             </div>
             <div class="logo-text">
@@ -13,7 +13,7 @@
                     </a>
                 </h2>
                 <h1>
-                    <RouterLink to="/">courantenpeiler</RouterLink>
+                    <RouterLink to="/">{{ $config.app.name.toLowerCase() }}</RouterLink>
                 </h1>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <RouterLink to="/grafiek">grafiek</RouterLink>
             <RouterLink to="/help">help</RouterLink>
             <RouterLink to="/over">over</RouterLink>
-            <a href="http://svotmc10.ivdnt.loc/corpus-frontend/Couranten2024/search" target="_blank">couranten</a>
+            <a :href="$config.corpus.url" target="_blank">{{ $config.corpus.name }}</a>
 
             <!-- hamburger menu -->
             <Button
@@ -48,7 +48,7 @@
         </nav>
     </header>
     <footer v-if="isHomePage">
-        <h2>woordtrends in de 17<sup>e</sup> eeuw</h2>
+        <h2>{{ $config.app.slogan }}</h2>
         <InputGroup>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="search" />
             <Button severity="secondary" @click="search">

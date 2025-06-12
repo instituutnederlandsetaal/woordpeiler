@@ -1,7 +1,7 @@
 <template>
     <main>
         <aside>
-            <WordListView />
+            <WordList />
             <SearchSettings />
         </aside>
         <GraphWrapper />

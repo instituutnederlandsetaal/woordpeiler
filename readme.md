@@ -21,6 +21,8 @@ VERSION_LABEL=dev
 INTERNAL=[true | false]
 # proxy
 PROXY_PORT=80
+# client
+CLIENT_CONFIG=[fill in] # json file
 ```
 
 Because we want to rotate the database docker volume every week, we use separate .env files the database and builder that can be editted programatically.
