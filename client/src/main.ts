@@ -49,24 +49,23 @@ app.use(createPinia())
 app.use(router)
 
 // global config
-app.config.globalProperties.$internal = isInternal()
-await fetch("/config.json")
+export let config = {}
+fetch("/config.json")
     .then((response) => response.json())
-    .then((config) => {
-        app.config.globalProperties.$config = config
+    .then((conf) => {
+        app.config.globalProperties.$config = conf
+        config = conf
+        app.config.globalProperties.$internal = isInternal()
+        // set theme
+        document.documentElement.style.setProperty("--theme", config.theme.color)
+        // set app name
+        document.title = config.appName
+        // set description
+        document.querySelector("meta[name='description']")?.setAttribute("content", config.app.description)
+        // set favicon
+        document.querySelector("link[rel='icon']")?.setAttribute("href", config.theme.favicon)
+        // set api
+        setAxiosBaseUrl()
+        // launch app
+        app.mount("#app")
     })
-export const config = app.config.globalProperties.$config
-
-document.documentElement.style.setProperty("--theme", app.config.globalProperties.$config.theme.color)
-document.title = app.config.globalProperties.$config.appName
-// set description
-document
-    .querySelector("meta[name='description']")
-    ?.setAttribute("content", app.config.globalProperties.$config.app.description)
-// set favicon
-const favicon = document.querySelector("link[rel='icon']")
-favicon?.setAttribute("href", app.config.globalProperties.$config.theme.favicon)
-
-setAxiosBaseUrl()
-// launch app
-app.mount("#app")
