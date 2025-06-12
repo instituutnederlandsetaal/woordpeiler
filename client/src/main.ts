@@ -3,12 +3,12 @@ import "@/assets/primevue.scss"
 import "@/assets/media.scss"
 import "primeicons/primeicons.css"
 import { setAxiosBaseUrl } from "@/api/api"
+import router from "@/router"
 
 import PrimeVue from "primevue/config"
 import Aura from "@primeuix/themes/aura"
 
 import App from "@/App.vue"
-import router from "@/router"
 import { isInternal } from "@/ts/internal"
 
 // create app
@@ -45,8 +45,7 @@ app.use(PrimeVue, { unstyled: true })
 // setup pinia store
 app.use(createPinia())
 
-// setup router
-app.use(router)
+
 
 // global config
 export let config = {}
@@ -66,6 +65,8 @@ fetch("/config.json")
         document.querySelector("link[rel='icon']")?.setAttribute("href", config.theme.favicon)
         // set api
         setAxiosBaseUrl()
+        // setup router
+        app.use(router())
         // launch app
         app.mount("#app")
     })

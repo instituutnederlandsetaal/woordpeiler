@@ -1,5 +1,5 @@
 {
-    "apiUrl": "couranten/api",
+    "basePath": "couranten",
     "spotlightUrl": "https://www.ivdnt.org/courantenpeiler.json",
     "app": {
         "name": "Courantenpeiler",
