@@ -8,5 +8,9 @@
     },
     "corpus": { "name": "couranten", "url": "http://svotmc10.ivdnt.loc/corpus-frontend/Couranten/search" },
     "period": { "start": "1600-01-01", "end": "1700-01-01" },
-    "theme": { "color": "#ae0932", "logo": "/courantenpeiler-logo.jpg", "favicon": "/courantenpeiler-logo.jpg" }
+    "theme": {
+        "color": "#ae0932",
+        "logo": "assets/config/courantenpeiler-logo.jpg",
+        "favicon": "assets/config/courantenpeiler-logo.jpg"
+    }
 }

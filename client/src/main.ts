@@ -45,11 +45,9 @@ app.use(PrimeVue, { unstyled: true })
 // setup pinia store
 app.use(createPinia())
 
-
-
 // global config
 export let config = {}
-fetch("/config.json")
+fetch("assets/config/config.json")
     .then((response) => response.json())
     .then((conf) => {
         app.config.globalProperties.$config = conf
@@ -58,11 +56,17 @@ fetch("/config.json")
         // set theme
         document.documentElement.style.setProperty("--theme", config.theme.color)
         // set app name
-        document.title = config.appName
+        document.title = config.app.name
         // set description
-        document.querySelector("meta[name='description']")?.setAttribute("content", config.app.description)
+        const desc = document.createElement("meta")
+        desc.name = "description"
+        desc.content = config.app.description
+        document.head.appendChild(desc)
         // set favicon
-        document.querySelector("link[rel='icon']")?.setAttribute("href", config.theme.favicon)
+        const favicon = document.createElement("link")
+        favicon.rel = "icon"
+        favicon.href = config.theme.favicon
+        document.head.appendChild(favicon)
         // set api
         setAxiosBaseUrl()
         // setup router

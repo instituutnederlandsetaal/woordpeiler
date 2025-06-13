@@ -12,7 +12,7 @@
             </p>
             <p v-if="spotlight.articleUrl">
                 <a :href="spotlight.articleUrl" target="_blank" @click="($event) => $event.stopPropagation()">
-                    lees artikel
+                    artikel lezen
                     <span class="pi pi-angle-double-right"></span>&nbsp;</a
                 >
             </p>
