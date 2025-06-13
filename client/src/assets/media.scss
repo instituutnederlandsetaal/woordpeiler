@@ -48,6 +48,7 @@
 
         div.wordlist {
             padding-bottom: 6rem !important;
+            gap: 0.3rem !important;
         }
     }
 
@@ -108,7 +109,6 @@
 }
 
 @media screen and (max-width: 500px) {
-
     // switch to hamburger menu
     nav {
         a {
@@ -145,7 +145,6 @@
         margin-top: 30px;
 
         .p-panel {
-
             .p-panel-header {
                 box-sizing: border-box !important;
                 background-color: white;
@@ -163,5 +162,4 @@
             }
         }
     }
-
 }

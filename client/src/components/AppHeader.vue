@@ -1,9 +1,11 @@
 <template>
     <header role="banner" :style="headerStyle">
         <div class="logo">
-            <RouterLink to="/">
-                <img src="/woordpeiler-logo.svg" alt="logo" />
-            </RouterLink>
+            <div class="logo-img">
+                <RouterLink to="/">
+                    <img :src="$config.theme.logo" alt="logo" />
+                </RouterLink>
+            </div>
             <div class="logo-text">
                 <h2>
                     <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
@@ -11,14 +13,10 @@
                     </a>
                 </h2>
                 <h1>
-                    <RouterLink to="/">
-                        woordpeiler
-                    </RouterLink>
+                    <RouterLink to="/">{{ $config.app.name.toLowerCase() }}</RouterLink>
                 </h1>
             </div>
         </div>
-
-
 
         <nav>
             <!-- regular links -->
@@ -28,17 +26,29 @@
             <RouterLink to="/grafiek">grafiek</RouterLink>
             <RouterLink to="/help">help</RouterLink>
             <RouterLink to="/over">over</RouterLink>
-            <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/" target="_blank">chn</a>
+            <a :href="$config.corpus.url" target="_blank">{{ $config.corpus.name.toLowerCase() }}</a>
 
             <!-- hamburger menu -->
-            <Button text severity="secondary" type="button" icon="pi pi-bars" @click="(event) => { menu.toggle(event) }"
-                aria-haspopup="true" aria-controls="overlayMenu" id="hamburger" title="Menu" />
+            <Button
+                text
+                severity="secondary"
+                type="button"
+                icon="pi pi-bars"
+                @click="
+                    (event) => {
+                        menu.toggle(event)
+                    }
+                "
+                aria-haspopup="true"
+                aria-controls="overlayMenu"
+                id="hamburger"
+                title="Menu"
+            />
             <Menu ref="menu" id="overlayMenu" :model="menuItems" :popup="true" />
         </nav>
-
     </header>
     <footer v-if="isHomePage">
-        <h2>woordtrends van 2000 tot nu</h2>
+        <h2>{{ $config.app.slogan }}</h2>
         <InputGroup>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="search" />
             <Button severity="secondary" @click="search">
@@ -49,87 +59,79 @@
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { computed, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-// PrimeVue
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import InputGroup from 'primevue/inputgroup';
-import Menu from 'primevue/menu';
 // Util
-import { toTimestamp } from '@/ts/date';
-import { isInternal } from '@/ts/internal';
+import { toTimestamp } from "@/ts/date"
+import { isInternal } from "@/ts/internal"
 
 // Fields
-const word = ref();
-const route = useRoute();
-const router = useRouter();
-const menu = ref();
+const word = ref()
+const route = useRoute()
+const router = useRouter()
+const menu = ref()
 
 // Computed
-const isHomePage = computed(() => route.path == "/");
-const headerStyle = computed(() => isHomePage.value ? { boxShadow: 'none' } : {});
+const isHomePage = computed(() => route.path == "/")
+const headerStyle = computed(() => (isHomePage.value ? { boxShadow: "none" } : {}))
 const menuItems = computed(() => {
-    let items = [
+    const items = [
         {
-            label: 'grafiek',
-            icon: 'pi pi-chart-line',
+            label: "grafiek",
+            icon: "pi pi-chart-line",
             command: () => {
-                router.push('/grafiek');
-            }
+                router.push("/grafiek")
+            },
         },
         {
-            label: 'help',
-            icon: 'pi pi-question',
+            label: "help",
+            icon: "pi pi-question",
             command: () => {
-                router.push('/help');
-            }
+                router.push("/help")
+            },
         },
         {
-            label: 'over',
-            icon: 'pi pi-info',
+            label: "over",
+            icon: "pi pi-info",
             command: () => {
-                router.push('/over');
-            }
+                router.push("/over")
+            },
         },
         {
-            label: 'chn',
-            icon: 'pi pi-database',
-            url: 'https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/',
-            target: '_blank'
-        }
+            label: "chn",
+            icon: "pi pi-database",
+            url: "https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/",
+            target: "_blank",
+        },
     ]
 
     if (isInternal()) {
         items.unshift({
-            label: 'trends',
-            icon: 'pi pi-sort-amount-up',
+            label: "trends",
+            icon: "pi pi-sort-amount-up",
             command: () => {
-                router.push('/trends');
-            }
-        },);
+                router.push("/trends")
+            },
+        })
     }
 
-    return items;
-});
+    return items
+})
 
 // Methods
 function search() {
-    router.push({ path: '/grafiek', query: { w: word.value, start: toTimestamp(new Date('2000-01-01')) } });
+    router.push({ path: "/grafiek", query: { w: word.value, start: toTimestamp(new Date("1618-01-01")) } })
 }
 </script>
 
-
 <style scoped lang="scss">
+@use "@/assets/primevue.scss" as *;
+
 header {
     font-family: Schoolboek;
-    min-height: 80px;
-    border-bottom: 9px solid #48e;
+    height: 70px;
+    border-bottom: 5px solid $theme;
     display: flex;
     justify-content: space-between;
     background-color: white;
-    box-shadow: 0px 4px 5px 1px #ccc;
     z-index: 1;
 
     a {
@@ -139,28 +141,28 @@ header {
 
     .logo {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        line-height: normal;
+        gap: 1rem;
 
-        img {
-            min-width: 72px;
-            margin: 0 1rem;
-        }
-    }
-
-    .logo-text {
-        align-self: flex-start;
-
-        h1 {
-            font-weight: 400;
-            font-size: 2rem;
+        .logo-img img {
+            height: 65px;
         }
 
-        h2 {
-            font-weight: 400;
-            font-size: 0.9rem;
-            margin-top: 0.2rem;
-            margin-bottom: -0.2rem;
+        .logo-text {
+            padding: 5px 0;
+
+            display: flex;
+            flex-direction: column;
+
+            h1 {
+                font-weight: normal;
+                font-size: 1.7rem;
+            }
+
+            h2 {
+                font-weight: normal;
+                font-size: 0.8rem;
+            }
         }
     }
 
@@ -168,11 +170,11 @@ header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-right: 1rem;
-        gap: 1rem;
+        margin-right: 36px;
+        gap: 32px;
 
         a {
-            font-size: 1.1rem;
+            font-size: 16px;
 
             &:hover {
                 text-decoration: underline;
@@ -190,7 +192,7 @@ header {
 }
 
 footer {
-    background-color: #48e;
+    background-color: $theme;
     width: 100%;
     padding-bottom: 1rem;
     display: flex;
@@ -201,7 +203,7 @@ footer {
 
     h2 {
         font-family: Schoolboek;
-        font-weight: 400;
+        font-weight: normal;
         font-size: 1.5rem;
         color: white;
         padding: 5px 0 14px 0;

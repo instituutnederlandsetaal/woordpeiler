@@ -1,5 +1,5 @@
 import axios, { type AxiosResponse } from "axios"
-import type { Spotlight } from '@/types/spotlight'
+import type { Spotlight } from "@/types/spotlight"
 
 export type SpotlightResponse = AxiosResponse<Spotlight[]>
 

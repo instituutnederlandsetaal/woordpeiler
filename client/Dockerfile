@@ -1,18 +1,7 @@
-# Build stage
-FROM node:23.9.0-alpine3.21 AS build
+FROM node:24.2.0-bookworm-slim AS build
 COPY . .
-RUN npm ci
-# Builds to dist/
-RUN npm run build
+RUN npm ci && npm run build && mv /dist/*.* /dist/assets && mv /dist/assets/index.html /dist/assets/robots.txt /dist/
 
-# Production stage.
-FROM node:23.9.0-alpine3.21
-WORKDIR /app
-# Install dependencies of server.js
-RUN npm install express connect-history-api-fallback && npm cache clean --force
-# Copy over build & server.
-COPY --link --from=build /dist ./dist
-COPY . .
-
-EXPOSE 8080
-CMD [ "node", "server.js" ]
+FROM nginx:1.28.0-alpine3.21-slim
+COPY --from=build /dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf

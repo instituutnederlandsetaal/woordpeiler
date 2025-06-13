@@ -43,24 +43,24 @@ class QueryBuilder:
         raise NotImplementedError()
 
     @staticmethod
-    def where(column: Enum, value: Optional[str]) -> Composable:
+    def where(column: str, value: Optional[str]) -> Composable:
         if value is not None:
             if (
                 "*" in value or "?" in value
             ) and internal:  # only allow regex internally
                 escaped = value.replace("*", "%").replace("?", "_")
                 return SQL("{column} LIKE {value}").format(
-                    column=Identifier(column.value), value=Literal(escaped)
+                    column=Identifier(column), value=Literal(escaped)
                 )
             else:
                 return SQL("{column} = {value}").format(
-                    column=Identifier(column.value), value=Literal(value)
+                    column=Identifier(column), value=Literal(value)
                 )
 
         return SQL("")
 
     @staticmethod
-    def where_and(columns: list[Enum], values: list[Optional[str]]) -> Composable:
+    def where_and(columns: list[str], values: list[Optional[str]]) -> Composable:
         return SQL(" AND ").join(
             [
                 QueryBuilder.where(column, value)

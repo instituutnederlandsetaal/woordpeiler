@@ -1,7 +1,6 @@
 <template>
     <div class="graph">
         <Panel class="p-panel">
-
             <!--icons-->
             <template #header v-if="visible.length > 0">
                 <Button text severity="secondary" @click="downloadBtn">
@@ -18,12 +17,13 @@
             <template v-if="searchResults.length > 0">
                 <div v-if="visible.length == 0">
                     Alle woorden zijn verborgen. <br />
-                    Toon woorden door op <span class="pi pi-eye-slash"></span> te klikken.
+                    Toon woorden door op
+                    <span class="pi pi-eye-slash"></span> te klikken.
                 </div>
                 <D3Graph v-else ref="graph" />
             </template>
             <template v-else>
-                <ProgressSpinner v-if="isSearching" />
+                <ProgressSpinner v-if="isSearching" animationDuration=".5s" />
                 <div v-else>Zoek een woord</div>
             </template>
         </Panel>
@@ -31,42 +31,33 @@
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { computed, ref } from "vue";
-import { storeToRefs } from "pinia";
 // Stores
-import { useSearchResultsStore } from "@/stores/SearchResultsStore";
-// Components
-import D3Graph from "@/components/graph/D3Graph.vue";
-// Primevue
-import ProgressSpinner from "primevue/progressspinner";
-import Panel from "primevue/panel";
-import Button from "primevue/button";
+import { useSearchResultsStore } from "@/stores/searchResults"
 // Util
-import { share } from "@/ts/svg/share";
-import { download } from "@/ts/svg/download";
+import { share } from "@/ts/svg/share"
+import { download } from "@/ts/svg/download"
 
 // Stores
-const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
+const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore())
 
 // Fields
-const graph = ref(null);
-const canShare = navigator.share != undefined;
+const graph = ref(null)
+const canShare = navigator.share != undefined
 
 // Computed
-const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
-const zoomedIn = computed(() => graph.value?.zoomedIn);
+const visible = computed<GraphItem[]>(() => searchResults.value.filter((d) => d.searchItem.visible))
+const zoomedIn = computed(() => graph.value?.zoomedIn)
 
 // Methods
 function downloadBtn() {
-    download(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
+    download(graph.value.resizeState, searchResults.value, lastSearchSettings.value)
 }
 function shareBtn() {
-    share(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
+    share(graph.value.resizeState, searchResults.value, lastSearchSettings.value)
 }
 
 function resetZoom() {
-    graph.value.resetZoom();
+    graph.value.resetZoom()
 }
 </script>
 
@@ -91,7 +82,6 @@ function resetZoom() {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-
 
                 #svg-container {
                     flex: 1;

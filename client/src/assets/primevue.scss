@@ -1,7 +1,6 @@
-@use 'sass:color';
+@use "sass:color";
 
-
-$theme: #48e;
+$theme: var(--theme); // Default theme color
 
 :root:root {
     --p-scrollpanel-bar-background: #aaa;
@@ -10,11 +9,11 @@ $theme: #48e;
     --p-highlight-focus-color: #000;
 
     // colors
-    --p-highlight-focus-background: #{color.adjust($theme, $lightness: 20%)};
-    --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
-    --p-primary-active-color: #{color.adjust($theme, $lightness: -20%)};
-    --p-primary-hover-color: #{color.adjust($theme, $lightness: -10%)};
-    --p-button-primary-background: #46a9ff;
+    // --p-highlight-focus-background: #{color.adjust($theme, $lightness: 20%)};
+    // --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
+    --p-primary-active-color: color-mix(in srgb, var(--theme), #000 20%);
+    --p-primary-hover-color: color-mix(in srgb, var(--theme), #000 10%);
+    --p-button-primary-background: #{$theme};
     --p-tabs-tab-active-color: #{$theme};
 
     // Dialog
@@ -63,13 +62,11 @@ $theme: #48e;
 }
 
 .wordlist {
-
     .p-select,
     .p-inputtext,
     .p-cascadeselect {
         width: 200px;
     }
-
 }
 
 // MultiSelect has on overlay on the global document level

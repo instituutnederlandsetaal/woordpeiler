@@ -1,51 +1,40 @@
 # third party
-from psycopg.sql import Identifier, SQL
+from psycopg.sql import SQL
 
 # local
 from database.util.query import time_query, analyze_vacuum
+from database.util.table_builder import TableBuilder
 
 
-class DailyWordformsTableBuilder:
-    def __init__(self, ngram: int):
-        self.ngram = ngram
-        self._build_queries()
-
+class DailyWordformsTableBuilder(TableBuilder):
     def _build_queries(self):
-        self.table = Identifier(f"daily_wordforms_{self.ngram}")
-        self.daily_counts = Identifier(f"daily_counts_{self.ngram}")
-        self.table_words = Identifier(f"words_{self.ngram}")
-
         self.create_table = SQL("""
             SELECT
                 time,
-                w.wordform_ids,
-                SUM(abs_freq) AS abs_freq,
-                SUM(abs_freq_an) AS abs_freq_an,
-                SUM(abs_freq_bn) AS abs_freq_bn,
-                SUM(abs_freq_nn) AS abs_freq_nn,
-                SUM(abs_freq_sn) AS abs_freq_sn
+                w.lemma_ids,
+                SUM(abs_freq) AS abs_freq
             INTO 
-                {table}
+                {daily_wordforms}
             FROM 
                 {daily_counts}
             LEFT JOIN 
-                {table_words} w ON w.id = word_id 
+                {words} w ON w.id = word_id 
             GROUP BY 
-                w.wordform_ids, 
+                w.lemma_ids, 
                 time;
         """).format(
-            table=self.table,
+            daily_wordforms=self.daily_wordforms,
             daily_counts=self.daily_counts,
-            table_words=self.table_words,
+            words=self.words,
         )
 
         self.add_indices = SQL("""
-            CREATE INDEX ON {table} (time, wordform_ids) INCLUDE (abs_freq, abs_freq_an, abs_freq_bn, abs_freq_nn, abs_freq_sn);
-        """).format(table=self.table)
+            CREATE INDEX ON {daily_wordforms} (time, lemma_ids) INCLUDE (abs_freq);
+        """).format(daily_wordforms=self.daily_wordforms)
 
     def create(self):
         time_query(
-            f"Creating table {self.table}",
+            f"Creating table {self.daily_wordforms}",
             self.create_table,
             self.add_indices,
         )

@@ -5,98 +5,108 @@
 
 <script setup lang="ts">
 // Libraries
-import { onMounted, watchEffect, computed, ref } from "vue";
-import { storeToRefs } from "pinia";
-import * as d3 from "d3";
+import * as d3 from "d3"
 // Stores
-import { useSearchResultsStore } from "@/stores/SearchResultsStore";
+import { useSearchResultsStore } from "@/stores/searchResults"
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
-import { displayName, IntervalType, type GraphItem } from "@/types/Search";
-import { tooltipHtml } from "@/ts/tooltip";
-import { constructSearchLink } from "@/ts/blacklab/blacklab";
+import { displayName, IntervalType, type GraphItem } from "@/types/search"
+import { tooltipHtml } from "@/ts/tooltip"
+import { constructSearchLink } from "@/ts/blacklab/blacklab"
 
 // Stores
-const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore());
+const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore())
 
 // Computed
-const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
+const visible = computed<GraphItem[]>(() => searchResults.value.filter((d) => d.searchItem.visible))
 const graphTitle = computed(() => {
-    if (!lastSearchSettings.value) return "";
+    if (!lastSearchSettings.value) return ""
 
-    const freqType = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute" : "Relatieve";
-    const timeBucketSize = lastSearchSettings.value.intervalLength;
-    const timeBucketType = lastSearchSettings.value.intervalType;
-    let timeBucketStr;
+    const freqType = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute" : "Relatieve"
+    const timeBucketSize = lastSearchSettings.value.intervalLength
+    const timeBucketType = lastSearchSettings.value.intervalType
+    let timeBucketStr
     if (timeBucketType == IntervalType.MONTH) {
-        timeBucketStr = timeBucketSize > 1 ? "maanden" : "maand";
+        timeBucketStr = timeBucketSize > 1 ? "maanden" : "maand"
     } else if (timeBucketType == IntervalType.YEAR) {
-        timeBucketStr = timeBucketSize > 1 ? "jaren" : "jaar";
+        timeBucketStr = timeBucketSize > 1 ? "jaren" : "jaar"
     } else if (timeBucketType == IntervalType.WEEK) {
-        timeBucketStr = timeBucketSize > 1 ? "weken" : "week";
+        timeBucketStr = timeBucketSize > 1 ? "weken" : "week"
     } else {
-        timeBucketStr = timeBucketSize > 1 ? "dagen" : "dag";
+        timeBucketStr = timeBucketSize > 1 ? "dagen" : "dag"
     }
-    const timeBucket = timeBucketSize > 1 ? `${timeBucketSize} ${timeBucketStr}` : timeBucketStr;
+    const timeBucket = timeBucketSize > 1 ? `${timeBucketSize} ${timeBucketStr}` : timeBucketStr
 
-    return `${freqType} woordfrequentie per ${timeBucket}`;
-});
+    return `${freqType} woordfrequentie per ${timeBucket}`
+})
 
-const zoomedIn = ref(false);
+const zoomedIn = ref(false)
 
 // create another ref to observe resizing, since observing SVGs doesn't work!
-const { resizeRef, resizeState } = useResizeObserver();
-const animationDuration = 500;
-const maxPoints = 500;
+const { resizeRef, resizeState } = useResizeObserver()
+const animationDuration = 500
+const maxPoints = 500
 
-defineExpose({ resizeState, resetZoom, zoomedIn });
+defineExpose({ resizeState, resetZoom, zoomedIn })
 
 function dateFormat(date: Date) {
     if (d3.timeMonth(date) < date) {
-        return d3.timeFormat('%e %b')(date);
+        return d3.timeFormat("%e %b")(date)
     } else if (d3.timeYear(date) < date) {
-        return d3.timeFormat('%b ’%y')(date);
+        return d3.timeFormat("%b ’%y")(date)
     } else {
-        return d3.timeFormat('%Y')(date);
+        return d3.timeFormat("%Y")(date)
     }
 }
 
 onMounted(() => {
     // Define the Dutch locale
     const dutchLocale = {
-        "dateTime": "%A %e %B %Y %X",
-        "date": "%d-%m-%Y",
-        "time": "%H:%M:%S",
-        "periods": ["AM", "PM"],
-        "days": ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"],
-        "shortDays": ["zo", "ma", "di", "wo", "do", "vr", "za"],
-        "months": ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"],
-        "shortMonths": ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"]
-    };
+        dateTime: "%A %e %B %Y %X",
+        date: "%d-%m-%Y",
+        time: "%H:%M:%S",
+        periods: ["AM", "PM"],
+        days: ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"],
+        shortDays: ["zo", "ma", "di", "wo", "do", "vr", "za"],
+        months: [
+            "januari",
+            "februari",
+            "maart",
+            "april",
+            "mei",
+            "juni",
+            "juli",
+            "augustus",
+            "september",
+            "oktober",
+            "november",
+            "december",
+        ],
+        shortMonths: ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"],
+    }
 
     // Set up the Dutch locale in D3
-    d3.timeFormatDefaultLocale(dutchLocale);
+    d3.timeFormatDefaultLocale(dutchLocale)
 
     // append the svg object to the body of the page
-    const svg = d3.select("#svg-container")
+    const svg = d3
+        .select("#svg-container")
         .append("svg")
         .attr("id", "svg-graph")
         .style("font-family", "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif")
 
     // Add X axis --> it is a date format
     const x = d3.scaleTime()
-    const xAxis = svg.append("g").attr("class", "x-axis")
-        .style("font-size", "calc(0.5vw + 0.4rem)")
+    const xAxis = svg.append("g").attr("class", "x-axis").style("font-size", "calc(0.5vw + 0.4rem)")
 
     // Add Y axis
     const y = d3.scaleLinear()
-    const yAxis = svg.append("g").attr("class", "y-axis")
-        .style("font-size", "calc(0.5vw + 0.4rem)")
+    const yAxis = svg.append("g").attr("class", "y-axis").style("font-size", "calc(0.5vw + 0.4rem)")
 
     // y axis label
     svg.append("text")
         .style("text-anchor", "middle")
-        .style("fill", 'black')
+        .style("fill", "black")
         .attr("class", "y-axis-label")
         .style("font-size", "calc(0.5vw + 0.5rem)")
 
@@ -108,42 +118,41 @@ onMounted(() => {
         .style("font-weight", "bold")
         .style("font-size", "calc(0.5vw + 0.6rem)")
 
-
     // Add a clipPath: everything out of this area won't be drawn.
-    const clip = svg.append("defs").append("svg:clipPath")
-        .attr("id", "clip")
-        .attr("class", "clip")
-        .append("svg:rect")
+    const clip = svg.append("defs").append("svg:clipPath").attr("id", "clip").attr("class", "clip").append("svg:rect")
 
     // Add brushing
     const brush = d3.brushX()
     const brushEl = svg.append("g")
-    const graph = svg.append("g")
-        .attr("class", "graph")
+    const graph = svg.append("g").attr("class", "graph")
 
     // Add the legend
-    const legend = svg.append("g")
-        .attr("class", "legend")
-
+    const legend = svg.append("g").attr("class", "legend")
 
     // Set up the line generator
-    const lineGen = d3.line()
-        .x(d => x(d.x))
-        .y(d => y(d.y));
+    const lineGen = d3
+        .line()
+        .x((d) => x(d.x))
+        .y((d) => y(d.y))
 
     // data
     watchEffect(() => {
+        if (!lastSearchSettings.value) return
+
         // Add Y axis label (rotated 90 vertical)
-        const yAxisLabel = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute frequentie" : "Frequentie per miljoen woorden"
-        svg.select(".y-axis-label").text(yAxisLabel);
-        svg.select(".title").text(graphTitle.value);
+        const yAxisLabel =
+            lastSearchSettings.value.frequencyType === "abs_freq"
+                ? "Absolute frequentie"
+                : "Frequentie per miljoen woorden"
+        svg.select(".y-axis-label").text(yAxisLabel)
+        svg.select(".title").text(graphTitle.value)
 
         // clear the svg
-        svg.selectAll(".line-group").remove();
-        svg.selectAll(".legend-item").remove();
+        svg.selectAll(".line-group").remove()
+        svg.selectAll(".legend-item").remove()
 
         // Sample the data to maxPoints
-        const flat = visible.value.flatMap(d => d.data[lastSearchSettings.value.frequencyType]);
+        const flat = visible.value.flatMap((d) => d.data[lastSearchSettings.value.frequencyType])
         // const zoomLevel = x.domain()[1] - x.domain()[0];
         // const totalPoints = flat.length;
         // const sampleRate = Math.max(1, Math.floor(totalPoints / maxPoints));
@@ -157,169 +166,167 @@ onMounted(() => {
         // }));
 
         // first update the axes
-        x.domain(d3.extent(flat, d => d.x));
-        xAxis.call(d3.axisBottom(x).ticks(10));
+        x.domain(d3.extent(flat, (d) => d.x))
+        xAxis.call(d3.axisBottom(x).ticks(10))
         // y domain from 0 to max value
-        y.domain([0, d3.max(flat, d => d.y)]);
-        yAxis.call(d3.axisLeft(y));
-
+        y.domain([0, d3.max(flat, (d) => d.y)])
+        yAxis.call(d3.axisLeft(y))
 
         // add empty g for each dataseries and data-label it
-        sampledData.forEach(series => {
-            graph.append("g")
-                .attr("data-name", series.uuid)
-                .attr("clip-path", "url(#clip)")
-                .attr("class", "line-group");
-        });
+        sampledData.forEach((series) => {
+            graph.append("g").attr("data-name", series.uuid).attr("clip-path", "url(#clip)").attr("class", "line-group")
+        })
 
         // Legend
         sampledData.forEach((series, i) => {
-            const legendItem = legend.append("g")
+            const legendItem = legend
+                .append("g")
                 .attr("class", "legend-item")
                 .attr("transform", `translate(0, ${i * 20})`)
-            legendItem.append("rect")
+            legendItem
+                .append("rect")
                 .attr("class", "legend-square")
                 .attr("x", 0)
                 .attr("y", -8)
                 .attr("width", 12)
                 .attr("height", 12)
-                .style("fill", "#" + series.searchItem.color);
-            const chnLink = constructSearchLink(series.searchItem, lastSearchSettings.value);
-            legendItem.append("a")
+                .style("fill", "#" + series.searchItem.color)
+            const chnLink = constructSearchLink(series.searchItem, lastSearchSettings.value)
+            legendItem
+                .append("a")
                 .attr("xlink:href", chnLink)
                 .attr("target", "_blank")
                 .append("text")
                 .text(displayName(series.searchItem))
-                .style("fill", 'black')
+                .style("fill", "black")
                 .style("font-size", "calc(0.5vw + 0.6rem)")
                 .attr("x", 20)
                 .attr("y", 3)
-        });
+        })
 
         // draw the lines
-        sampledData.forEach(series => {
+        sampledData.forEach((series) => {
             svg.select(`.line-group[data-name='${series.uuid}']`)
-                .selectAll('.line')
+                .selectAll(".line")
                 .data([series.data[lastSearchSettings.value.frequencyType]])
-                .enter().append("path")
+                .enter()
+                .append("path")
                 .attr("class", "line")
-                .attr("d", d => lineGen(d))
+                .attr("d", (d) => lineGen(d))
                 .attr("fill", "none")
                 .attr("stroke", "#" + series.searchItem.color)
                 .attr("stroke-width", 2)
-                .style("pointer-events", "none");
-
-        });
+                .style("pointer-events", "none")
+        })
 
         // Draw the dots
-        sampledData.forEach(series => {
-            if (lastSearchSettings.value.intervalType == IntervalType.DAY && series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return;
+        sampledData.forEach((series) => {
+            if (series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return
             // link data
-            series.data.abs_freq.forEach(d => {
-                d.searchItem = series.searchItem;
-            });
-            series.data.rel_freq.forEach(d => {
-                d.searchItem = series.searchItem;
-            });
+            series.data.abs_freq.forEach((d) => {
+                d.searchItem = series.searchItem
+            })
+            series.data.rel_freq.forEach((d) => {
+                d.searchItem = series.searchItem
+            })
 
-            const dot = svg.select(`.line-group[data-name='${series.uuid}']`)
-                .selectAll('.dot')
+            const dot = svg
+                .select(`.line-group[data-name='${series.uuid}']`)
+                .selectAll(".dot")
                 .data(series.data[lastSearchSettings.value.frequencyType])
-                .enter().append("g")
+                .enter()
+                .append("g")
                 .attr("class", `dot`)
-                .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
+                .attr("transform", (d) => `translate(${x(d.x)}, ${y(d.y)})`)
             dot.append("circle")
                 .attr("r", 4)
                 .attr("fill", "#" + series.searchItem.color)
-            dot.append("circle")
-                .attr("class", "hit-area")
-                .attr("r", 25)
-                .attr("fill", "transparent")
-
-        });
+            dot.append("circle").attr("class", "hit-area").attr("r", 25).attr("fill", "transparent")
+        })
 
         // tooltip events
-        const tooltip = d3.select("#tooltip");
-        let tooltipVisible = false;
-        let left, top;
+        const tooltip = d3.select("#tooltip")
+        const tooltipVisible = false
+        let left, top
 
-        function showTooltip(event, d) {
-            if (tooltipVisible) return;
-            let tooltipWidth = tooltip.node().offsetWidth;
-            let tooltipHeight = tooltip.node().offsetHeight;
+        function showTooltip(event) {
+            if (tooltipVisible) return
+            const tooltipWidth = tooltip.node().offsetWidth
+            const tooltipHeight = tooltip.node().offsetHeight
             // The dot selected by the mouse
-            let dotRect = event.target.getBoundingClientRect();
+            const dotRect = event.target.getBoundingClientRect()
             dotRect.center = {
                 x: dotRect.left + dotRect.width / 2,
-                y: dotRect.top + dotRect.height / 2 + window.scrollY
+                y: dotRect.top + dotRect.height / 2 + window.scrollY,
             }
-            let margin = 10;
+            const margin = 10
 
-            left = dotRect.center.x - tooltipWidth / 2;
-            top = dotRect.center.y - tooltipHeight - margin;
+            left = dotRect.center.x - tooltipWidth / 2
+            top = dotRect.center.y - tooltipHeight - margin
 
             // if tooltip is going out of the window, then move it inside
             if (left + tooltipWidth > window.innerWidth) {
-                left = window.innerWidth - tooltipWidth; // right align to screen edge
+                left = window.innerWidth - tooltipWidth // right align to screen edge
             }
             if (left < window.scrollX) {
-                left = window.scrollX; // left align to screen edge
+                left = window.scrollX // left align to screen edge
             }
             if (top < window.scrollY) {
-                top = event.pageY + 10; // below the cursor
+                top = event.pageY + 10 // below the cursor
             }
-            tooltip
-                .style("left", left + "px")
-                .style("top", top + "px");
+            tooltip.style("left", left + "px").style("top", top + "px")
         }
 
         svg.selectAll(".hit-area")
             .on("mouseover", function (event, d) {
-                if (tooltipVisible) return;
-                tooltip.style("visibility", "visible");
-                tooltip.html(tooltipHtml(d, lastSearchSettings.value));
+                if (tooltipVisible) return
+                tooltip.style("visibility", "visible")
+                tooltip.html(tooltipHtml(d, lastSearchSettings.value))
             })
             .on("mousemove", function (event, d) {
-                showTooltip(event, d);
+                showTooltip(event, d)
             })
-            .on("mouseout", function (d) {
-                if (tooltipVisible) return;
-                tooltip.style("visibility", "hidden");
+            .on("mouseout", function () {
+                if (tooltipVisible) return
+                tooltip.style("visibility", "hidden")
             })
             .on("click", function (event, d) {
                 // Needs to be on a timeout to prevent the same click from clicking on the link. (weird...)
                 setTimeout(() => {
-                    showTooltip(event, d);
-                }, 400);
+                    showTooltip(event, d)
+                }, 400)
+            })
 
-            });
-
-
-
-        tooltip.on("mouseout", function (d) {
-            tooltip.style("visibility", "hidden");
-        }).on("mouseover", function (d) {
-            tooltip.style("visibility", "visible");
-        });
+        tooltip
+            .on("mouseout", function () {
+                tooltip.style("visibility", "hidden")
+            })
+            .on("mouseover", function () {
+                tooltip.style("visibility", "visible")
+            })
     })
-
 
     // A function that set idleTimeOut to null
     let idleTimeout
-    function idled() { idleTimeout = null; }
+    function idled() {
+        idleTimeout = null
+    }
 
     // A function that update the chart for given boundaries
     function brushChart(event) {
         // What are the selected boundaries?
         const extent = event.selection
 
-
-
         if (!extent) {
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
-            if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-            x.domain(d3.extent(visible.value.flatMap(d => d.data[lastSearchSettings.value.frequencyType]), d => d.x))
-            zoomedIn.value = false;
+            if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350)) // This allows to wait a little bit
+            x.domain(
+                d3.extent(
+                    visible.value.flatMap((d) => d.data[lastSearchSettings.value.frequencyType]),
+                    (d) => d.x,
+                ),
+            )
+            zoomedIn.value = false
         } else {
             // A selection was made
             // remove the grey brush area
@@ -328,13 +335,13 @@ onMounted(() => {
             // if the extent is really small, do nothing
             if (extent[0] + 20 > extent[1]) return // safely return, grey brush area is removed above
             // if the extent zooms in further than a week, do nothing
-            const zoomLevel = x.domain()[1] - x.domain()[0];
-            const maxZoom = 7 * 24 * 60 * 60 * 1000;
+            const zoomLevel = x.domain()[1] - x.domain()[0]
+            const maxZoom = 7 * 24 * 60 * 60 * 1000
             if (zoomLevel < maxZoom) return
 
             // otherwise, update the x domain
             x.domain([x.invert(extent[0]), x.invert(extent[1])])
-            zoomedIn.value = true;
+            zoomedIn.value = true
         }
 
         // Update axis and line position
@@ -352,17 +359,19 @@ onMounted(() => {
         // }));
 
         // update the lines and dots data
-        visible.value.forEach(series => {
+        visible.value.forEach((series) => {
             svg.select(`.line-group[data-name='${series.uuid}']`)
-                .selectAll('.line')
+                .selectAll(".line")
                 .data([series.data[lastSearchSettings.value.frequencyType]])
-                .transition().duration(animationDuration)
-                .attr("d", d => lineGen(d))
+                .transition()
+                .duration(animationDuration)
+                .attr("d", (d) => lineGen(d))
             svg.select(`.line-group[data-name='${series.uuid}']`)
-                .selectAll('.dot')
+                .selectAll(".dot")
                 .data(series.data[lastSearchSettings.value.frequencyType])
-                .transition().duration(animationDuration)
-                .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
+                .transition()
+                .duration(animationDuration)
+                .attr("transform", (d) => `translate(${x(d.x)}, ${y(d.y)})`)
         })
     }
 
@@ -370,88 +379,81 @@ onMounted(() => {
     svg.on("dblclick", function () {
         // fake a call to updateChart
         brushChart({ selection: null })
-    });
+    })
 
     // responsive resize
     watchEffect(() => {
         // trigger reactivity. Needed as different dataseries have different y axis label sizes.
-        visible.value;
+        visible.value
 
         // Get the dimensions of the resizeRef div
-        const { width: divWidth, height: divHeight } = resizeState.dimensions;
-        const margin = { top: 10, right: 10, bottom: 10, left: 0, titleBottom: 15, yAxisTitleRight: 10, legendLeft: 10 };
+        const { width: divWidth, height: divHeight } = resizeState.dimensions
+        const margin = { top: 10, right: 10, bottom: 10, left: 0, titleBottom: 15, yAxisTitleRight: 10, legendLeft: 10 }
         // This div contains the svg. Fill it up.
         svg.attr("width", divWidth).attr("height", divHeight)
 
         // title
-        const titleY = svg.select(".title").node().getBBox().height + margin.top;
-        const titleHeight = titleY + margin.titleBottom;
-        svg.select(".title").attr("transform", `translate(${divWidth / 2}, ${titleY})`);
+        const titleY = svg.select(".title").node().getBBox().height + margin.top
+        const titleHeight = titleY + margin.titleBottom
+        svg.select(".title").attr("transform", `translate(${divWidth / 2}, ${titleY})`)
 
         // y axis title
         const yAxisTitleX = svg.select(".y-axis-label").node().getBBox().height + margin.left
-        const yAxisTitleWidth = yAxisTitleX + margin.yAxisTitleRight;
+        const yAxisTitleWidth = yAxisTitleX + margin.yAxisTitleRight
         // compensate for the fact that the y axis label is rendered on the left outside of the main chart <g>
-        svg.select(".y-axis-label").attr("transform", `translate(${yAxisTitleX}, ${divHeight / 2}) rotate(-90)`);
+        svg.select(".y-axis-label").attr("transform", `translate(${yAxisTitleX}, ${divHeight / 2}) rotate(-90)`)
 
         // Set the y axis
-        const xAxisHeight = xAxis.node().getBBox().height + margin.bottom;
-        const yAxisHeight = divHeight - titleHeight - xAxisHeight;
-        y.range([yAxisHeight, 0]);
+        const xAxisHeight = xAxis.node().getBBox().height + margin.bottom
+        const yAxisHeight = divHeight - titleHeight - xAxisHeight
+        y.range([yAxisHeight, 0])
         yAxis.call(d3.axisLeft(y))
         // The y axis, when rendered, has a certain width. divWidth - yAxisSize will be the width of the chart (and x axis).
-        const yAxisWidth = yAxis.node().getBBox().width + yAxisTitleWidth;
+        const yAxisWidth = yAxis.node().getBBox().width + yAxisTitleWidth
         // compensate for the fact that the y axis is rendered on the left outside of the main chart <g>
-        yAxis.attr("transform", `translate(${yAxisWidth}, ${titleHeight})`);
+        yAxis.attr("transform", `translate(${yAxisWidth}, ${titleHeight})`)
 
         // legend
-        legend.attr("transform", `translate(${yAxisWidth + margin.legendLeft}, ${titleHeight})`);
+        legend.attr("transform", `translate(${yAxisWidth + margin.legendLeft}, ${titleHeight})`)
 
-        const xAxisWidth = divWidth - yAxisWidth - margin.right;
+        const xAxisWidth = divWidth - yAxisWidth - margin.right
 
-        x.range([0, xAxisWidth]);
+        x.range([0, xAxisWidth])
         xAxis
             .attr("transform", `translate(${yAxisWidth}, ${divHeight - xAxisHeight})`)
-            .call(d3.axisBottom(x).tickFormat(dateFormat).ticks(10));
+            .call(d3.axisBottom(x).tickFormat(dateFormat).ticks(10))
 
-        const graphRect = {
-            width: xAxisWidth,
-            height: yAxisHeight,
-            x: yAxisWidth,
-            y: titleHeight
-        }
+        const graphRect = { width: xAxisWidth, height: yAxisHeight, x: yAxisWidth, y: titleHeight }
         const clipOverflow = { x: 2, y: 10 }
 
-        graph.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`);
+        graph.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`)
 
-        clip
-            .attr("width", graphRect.width + 2 * clipOverflow.x)
+        clip.attr("width", graphRect.width + 2 * clipOverflow.x)
             .attr("height", graphRect.height + 2 * clipOverflow.y)
             .attr("x", -clipOverflow.x)
-            .attr("y", -clipOverflow.y);
+            .attr("y", -clipOverflow.y)
 
-        brushEl.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`);
-        brush.extent([[0, 0], [graphRect.width, graphRect.height]]).on("end", brushChart)
-        brushEl.call(brush);
+        brushEl.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`)
+        brush
+            .extent([
+                [0, 0],
+                [graphRect.width, graphRect.height],
+            ])
+            .on("end", brushChart)
+        brushEl.call(brush)
         // lines
-        svg.selectAll(".line").attr("d", d => lineGen(d))
+        svg.selectAll(".line").attr("d", (d) => lineGen(d))
         // dots
-        svg.selectAll(".dot")
-            .attr("transform", d => `translate(${x(d.x)}, ${y(d.y)})`);
-    });
-
-});
+        svg.selectAll(".dot").attr("transform", (d) => `translate(${x(d.x)}, ${y(d.y)})`)
+    })
+})
 
 // methods for external use
 function resetZoom() {
     // fake double click
-    const event = new MouseEvent("dblclick", {
-        bubbles: true,
-        cancelable: true,
-        view: window
-    });
-    document.getElementById("svg-graph").dispatchEvent(event);
-    document.getElementById("svg-graph").dispatchEvent(event);
+    const event = new MouseEvent("dblclick", { bubbles: true, cancelable: true, view: window })
+    document.getElementById("svg-graph").dispatchEvent(event)
+    document.getElementById("svg-graph").dispatchEvent(event)
 }
 </script>
 

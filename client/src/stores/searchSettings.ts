@@ -1,19 +1,15 @@
-// Libraries & Stores
-import { ref, watch } from 'vue'
-import { defineStore } from 'pinia'
 // Types & API
-import type { SearchSettings } from "@/types/Search"
-import type { SelectLabel } from '@/types/UI'
-import { isInternal } from '@/ts/internal'
-import { toMidnightUTC, toUTCDate } from '@/ts/date'
+import type { SearchSettings } from "@/types/search"
+import type { SelectLabel } from "@/types/ui"
+import { config } from "@/main"
 
-export const useSearchSettingsStore = defineStore('SearchSettings', () => {
+export const useSearchSettingsStore = defineStore("SearchSettings", () => {
     // Fields
     const searchSettings = ref<SearchSettings>({
         intervalType: initTimeBucket().type,
         intervalLength: initTimeBucket().size,
-        startDate: new Date('2000-01-01'),
-        endDate: toUTCDate(new Date()),
+        startDate: new Date(config.period.start),
+        endDate: new Date(config.period.end),
         frequencyType: "rel_freq",
         languageSplit: false,
     })
@@ -45,22 +41,24 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         }
     }
     function resetDates() {
-        searchSettings.value.startDate = new Date('2000-01-01')
-        searchSettings.value.endDate = toUTCDate(new Date())
+        searchSettings.value.startDate = new Date("1618-01-01")
+        searchSettings.value.endDate = new Date("1701-01-01")
     }
     function readUrlParams() {
         const params = new URLSearchParams(window.location.search)
-        const interval = params.get('i')
-        const legacyIntervalLength = params.get('il')
-        const startDate = params.get('start')
-        const endDate = params.get('end')
-        const frequencyType = params.get('f')
+        const interval = params.get("i")
+        const legacyIntervalLength = params.get("il")
+        const startDate = params.get("start")
+        const endDate = params.get("end")
+        const frequencyType = params.get("f")
 
         if (interval) {
-            if (interval.match(/\d/)) { // new format
+            if (interval.match(/\d/)) {
+                // new format
                 searchSettings.value.intervalType = interval.slice(-1)
                 searchSettings.value.intervalLength = parseInt(interval.slice(0, -1))
-            } else { // legacy format
+            } else {
+                // legacy format
                 searchSettings.value.intervalType = interval[0]
                 if (legacyIntervalLength) searchSettings.value.intervalLength = parseInt(legacyIntervalLength)
             }
@@ -74,32 +72,36 @@ export const useSearchSettingsStore = defineStore('SearchSettings', () => {
         if (startDate) searchSettings.value.startDate = toDate(startDate)
         if (endDate) searchSettings.value.endDate = toDate(endDate)
 
-        const freqMap = {
-            "rel": "rel_freq",
-            "abs": "abs_freq"
-        }
+        const freqMap = { rel: "rel_freq", abs: "abs_freq" }
         if (frequencyType) searchSettings.value.frequencyType = freqMap[frequencyType]
     }
-    function initTimeBucket(): { type: string, size: number } {
+    function initTimeBucket(): { type: string; size: number } {
         const desktop = { type: "m", size: 3 }
         const mobile = { type: "y", size: 1 }
         const isMobile = window.innerWidth < 768
         return isMobile ? mobile : desktop
     }
     // Lifecycle
-    watch(() => ({ ...searchSettings.value }), (newValue, oldValue) => {
-        const entries = Object.values(newValue)
-        if (entries.some(entry => entry == null || entry == undefined)) {
-            setTimeout(() => {
-                searchSettings.value = oldValue
-            }, 0)
-        }
-    })
+    watch(
+        () => ({ ...searchSettings.value }),
+        (newValue, oldValue) => {
+            const entries = Object.values(newValue)
+            if (entries.some((entry) => entry == null || entry == undefined)) {
+                setTimeout(() => {
+                    searchSettings.value = oldValue
+                }, 0)
+            }
+        },
+    )
     // Export
     return {
         // Fields
-        searchSettings, frequencyTypeOptions, timeBucketOptions,
+        searchSettings,
+        frequencyTypeOptions,
+        timeBucketOptions,
         // Methods
-        loadSearchSettings, resetDates, readUrlParams
+        loadSearchSettings,
+        resetDates,
+        readUrlParams,
     }
 })

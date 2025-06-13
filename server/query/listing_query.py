@@ -45,16 +45,7 @@ class ListingQuery(QueryBuilder):
         ).format(table=Literal(table))
 
     def rows(self, table: str, column: str) -> Composable:
-        if table == "words" and column == "poshead":
-            return SQL("SELECT DISTINCT poshead FROM posses")
-        elif table == "words" and column == "pos":
-            return SQL("SELECT pos FROM posses")
-        elif table == "sources" and column == "source":
-            return SQL(
-                "SELECT source FROM sources JOIN days_per_source ON source_id = id WHERE count > 1 ORDER BY source;"
-            )
-        else:
-            return SQL("SELECT DISTINCT {column} FROM {table}").format(
-                column=Identifier(column),
-                table=Identifier(table),
-            )
+        return SQL("SELECT DISTINCT {column} FROM {table}").format(
+            column=Identifier(column),
+            table=Identifier(table),
+        )

@@ -1,24 +1,18 @@
 import axios, { type AxiosResponse } from "axios"
 import { cleanParams } from "@/api/api"
-import { toMidnightUTC } from "@/ts/date"
 
 export type SearchRequest = {
-    wordform?: string;
-    lemma?: string;
-    pos?: string;
-    source?: string;
-    language?: string;
-    interval: string;
-    start: string;
-    end: string;
+    wordform?: string
+    lemma?: string
+    pos?: string
+    source?: string
+    language?: string
+    interval: string
+    start: string
+    end: string
 }
 
-export type SearchResult = {
-    time: number;
-    size: number;
-    abs_freq: number;
-    rel_freq: number;
-}
+export type SearchResult = { time: number; size: number; abs_freq: number; rel_freq: number }
 
 export type SearchResponse = AxiosResponse<SearchResult[]>
 

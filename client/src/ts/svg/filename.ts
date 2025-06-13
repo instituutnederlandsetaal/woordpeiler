@@ -1,4 +1,5 @@
-import { displayName, type GraphItem } from "@/types/Search"
+// Types
+import { displayName, type GraphItem } from "@/types/search"
 
 export function firstTruthyWord(words: GraphItem[]): string | null {
     return words.map((i) => displayName(i.searchItem)).find((i) => i) || null

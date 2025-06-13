@@ -1,21 +1,19 @@
 import axios from "axios"
-import { defineStore } from "pinia"
-import { ref } from "vue"
 
-export const useErrorsStore = defineStore('Errors', () => {
+export const useErrorsStore = defineStore("Errors", () => {
     // Fields
     const errors = ref<string[]>([])
     // Methods
     function setupErrorHandler() {
         axios.interceptors.response.use(
-            response => response,
-            error => {
+            (response) => response,
+            (error) => {
                 // ignore spotlight errors
                 if (error.config.url.includes("woordpeiler.json")) {
                     return Promise.reject(error)
                 }
 
-                let msg = `${error.config.url.slice(1)}: ${error.message}`
+                const msg = `${error.config.url.slice(1)}: ${error.message}`
                 // If we ever decide to use the detail, uncomment this:
                 // const detail = error.response?.data?.detail
                 // if (detail) {
@@ -23,7 +21,7 @@ export const useErrorsStore = defineStore('Errors', () => {
                 // }
                 errors.value.push(msg)
                 return Promise.reject(error)
-            }
+            },
         )
     }
     // export
@@ -31,6 +29,6 @@ export const useErrorsStore = defineStore('Errors', () => {
         // fields
         errors,
         // methods
-        setupErrorHandler
+        setupErrorHandler,
     }
 })

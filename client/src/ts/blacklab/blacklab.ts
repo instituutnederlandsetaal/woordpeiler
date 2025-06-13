@@ -1,26 +1,26 @@
-import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/Search";
-import { isInternal } from "@/ts/internal";
-import * as d3 from "d3";
-
-const titles = '("NRC" "Het Parool" "De Volkskrant" "Trouw" "Algemeen Dagblad" "Het Nieuwsblad" "De Standaard" "Het Belang van Limburg" "Gazet van Antwerpen" "Het Laatste Nieuws" "De Morgen" "Starnieuws" "Antilliaans Dagblad" "Bonaire.nu" "Bonaire.Nu")'
-const titleFilter = `titleLevel2_untokenized:${titles}`
+import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/search"
+import * as d3 from "d3"
+import { config } from "@/main"
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
     let group
     if (settings.intervalType == IntervalType.YEAR) {
-        group = "field:grouping_year:i"
+        group = "field:witness_year_from:i"
     } else if (settings.intervalType == IntervalType.MONTH) {
-        group = "field:grouping_year:i,field:grouping_month:i"
-    } else { // week or day
-        group = "field:grouping_year:i,field:grouping_month:i,field:grouping_day:i"
+        group = "field:witness_year_from:i,field:witness_month_from:i"
+    } else {
+        // week or day
+        group = "field:witness_year_from:i,field:witness_month_from:i,field:witness_day_from:i"
     }
 
     // optionally filter on language
-    let filter = `medium:newspaper`
-    if (item.language) {
-        filter += ` AND languageVariant:${item.language}`
-    }
+    const filterObj = { settingLocation_country: item.language, titleLevel2: item.source }
+    const filter =
+        Object.entries(filterObj)
+            .filter((i) => i[1])
+            .map(([key, value]) => `${key}:"${value}"`)
+            .join(" AND ") || null
 
     const params = {
         patt: constructBLPatt(item),
@@ -28,7 +28,9 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
         groupDisplayMode: "hits",
         group: group,
         sort: "-identity",
-        filter: filter,
+    }
+    if (filter) {
+        params["filter"] = filter
     }
     const base = getBaseURL()
 
@@ -42,7 +44,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
         filter: constructBLFilter(point, settings),
         interface: JSON.stringify({ form: "search", patternMode: "expert" }),
         groupDisplayMode: "relative hits",
-        group: "field:titleLevel2:i"
+        group: "field:titleLevel2:i",
     }
     const base = getBaseURL()
 
@@ -50,34 +52,53 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    const internalBase = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
-    const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
-    return isInternal() ? internalBase : externalBase;
+    return `${config.corpus.url}/hits`
 }
 
 function constructBLPatt(item: SearchItem) {
-    const pattTerms = {
-        lemma: item.lemma,
-        word: item.wordform,
+    // assume the number of n-grams in lemma, word is equal
+    const lemmas = item.lemma?.split(" ")
+    const words = item.wordform?.split(" ")
+    const n = lemmas?.length || words?.length
+
+    let patt = ""
+    for (let i = 0; i < n; i++) {
+        const singleItem: SearchItem = {
+            lemma: lemmas?.[i],
+            wordform: words?.[i],
+            pos: item.pos, // always same pos for now
+        }
+        patt += constructSingleBLPatt(singleItem)
     }
+    return patt
+}
+
+function constructSingleBLPatt(item: SearchItem) {
+    const pattTerms = { lemma: item.lemma, word: item.wordform }
     // Add pos separately because only one can be present
     if (item.pos?.includes("(")) {
-        pattTerms["pos_full"] = item.pos
-    }
-    else {
+        pattTerms["grouping_pos_full"] = item.pos
+    } else {
         pattTerms["pos"] = item.pos
     }
 
     // Remove falsy values, and blank strings (could be tabs and spaces)
     Object.keys(pattTerms).forEach(
-        (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key]
+        (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key],
     )
-    const isRegex = item.wordform?.includes("*") || item.wordform?.includes("?")
+    const isRegex = item.wordform?.includes("*") || item.lemma?.includes("*")
     if (isRegex) {
-        pattTerms["word"] = toBLRegex(item.wordform)
+        if (pattTerms["word"]) {
+            pattTerms["word"] = toBLRegex(item.wordform)
+        }
+        if (pattTerms["lemma"]) {
+            pattTerms["lemma"] = toBLRegex(item.lemma)
+        }
     }
-    const literal = (isInternal() && !isRegex) ? "l" : ""
-    const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
+    const literal = ""
+    const patt = Object.entries(pattTerms)
+        .map(([key, value]) => `${key}=${literal}"${value}"`)
+        .join("&")
     return `[${patt}]`
 }
 
@@ -87,16 +108,16 @@ function toBLRegex(s: string): string {
 
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     const filters = {
-        medium: "newspaper",
+        // medium: "newspaper",
     }
-    const bucketType = settings.intervalType;
-    const bucketSize = settings.intervalLength;
+    const bucketType = settings.intervalType
+    const bucketSize = settings.intervalLength
     const year: number = parseInt(d3.timeFormat("%Y")(point.x))
     const month: number = parseInt(d3.timeFormat("%m")(point.x))
     const day: number = parseInt(d3.timeFormat("%d")(point.x))
 
     const start = d3.timeFormat("%Y%m%d")(point.x)
-    let end;
+    let end
     // end depends on the bucket type and size.
     if (bucketType == IntervalType.YEAR) {
         // end is the last day of the year
@@ -110,18 +131,22 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
     } else if (bucketType == IntervalType.DAY) {
         // end is the last day of the period defined by the bucket size
-        const offset = bucketSize - 1;
-        end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset));
+        const offset = bucketSize - 1
+        end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
     }
-    filters["witnessDate_from"] = `[${start} TO ${end}]`
+    const dateRange = `[${start} TO ${end}]`
+    const dateFilter = `(date_to:${dateRange} AND date_from:${dateRange})`
 
     if (point.searchItem.source) {
         filters["titleLevel2"] = `"${point.searchItem.source}"`
     }
 
     if (point.searchItem.language) {
-        filters["languageVariant"] = `"${point.searchItem.language}"`
+        filters["settingLocation_country"] = `"${point.searchItem.language}"`
     }
 
-    return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
+    const otherFilters = Object.entries(filters)
+        .map(([key, value]) => `${key}:${value}`)
+        .join(" AND ")
+    return [dateFilter, otherFilters].filter((i) => i).join(" AND ")
 }

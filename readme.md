@@ -19,6 +19,10 @@ READER_PASSWORD=[fill in]
 # docker image tag for server and client docker container
 VERSION_LABEL=dev
 INTERNAL=[true | false]
+# proxy
+PROXY_PORT=80
+# client
+CLIENT_CONFIG=[fill in] # json file
 ```
 
 Because we want to rotate the database docker volume every week, we use separate .env files the database and builder that can be editted programatically.
@@ -46,7 +50,7 @@ A vscode workspace is available: `.code-workspace`.
 Debug configurations for client & server are available: `client/.vscode`, `server/.vscode`.
 
 ## Client
-First install npm. See `client/Dockerfile` for the version.
+First install node + npm. See `client/Dockerfile` for the version.
 
 `cd ./client`, `npm install`, `npm run dev`, go to `http://localhost:5173`.
 
