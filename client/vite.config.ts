@@ -17,6 +17,8 @@ export default defineConfig({
     ],
     server: { watch: { usePolling: true } },
     resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-    // remove initial slash
-    experimental: { renderBuiltUrl: (fileName: string, _) => fileName.slice(1) },
+    experimental: {
+        // remove initial slash
+        renderBuiltUrl: (fileName: string, _) => fileName.startsWith("/") ? fileName.slice(1) : fileName,
+    },
 })
