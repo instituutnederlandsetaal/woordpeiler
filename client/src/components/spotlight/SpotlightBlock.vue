@@ -96,6 +96,7 @@ section {
         flex-direction: column;
         position: relative;
         min-height: 0;
+        flex: 1; // needed on chrome
 
         p {
             font-size: 1rem;
