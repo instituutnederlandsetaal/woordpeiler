@@ -17,6 +17,7 @@ import * as SearchAPI from "@/api/search"
 // Utils
 import { toTimestamp } from "@/ts/date"
 import { plausibleWordsEvent } from "@/ts/plausible"
+import { config } from "@/main"
 
 export const useSearchResultsStore = defineStore("SearchResults", () => {
     // Fields
@@ -39,7 +40,7 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
         setSearchParamsInUrl()
         // set window title, but only if we are not on the trends page
         if (router.currentRoute.value.name != "trends")
-            document.title = "Courantenpeiler - " + validSearchItems.value.map((i) => displayName(i)).join(", ")
+            document.title = `${config.app.name} - ` + validSearchItems.value.map((i) => displayName(i)).join(", ")
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")

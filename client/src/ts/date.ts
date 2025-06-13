@@ -3,6 +3,13 @@ export function toTimestamp(date: Date): string {
     return date.toISOString().slice(0, 10)
 }
 
+export function toYear(date: string | Date): number {
+    if (typeof date === "string") {
+        date = new Date(date)
+    }
+    return date.getFullYear()
+}
+
 export function toUTCDate(date: Date): Date {
     const localYear = date.getFullYear()
     const localMonth = date.getMonth()

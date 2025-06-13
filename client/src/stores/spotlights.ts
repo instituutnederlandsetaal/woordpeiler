@@ -1,7 +1,7 @@
 // Types & API
 import type { Spotlight } from "@/types/spotlight"
-import * as DefaultSpotlights from "@/ts/defaultSpotlights"
 import * as SpotlightAPI from "@/api/spotlight"
+import { config } from "@/main"
 
 /**
  * Only fetch spotlights once and store them.
@@ -21,7 +21,17 @@ export const useSpotlightStore = defineStore("Spotlights", () => {
                 items.value = response.data
             })
             .catch(() => {
-                items.value = DefaultSpotlights.items
+                if (location.hostname === "localhost") {
+                    // fetch default spotlights from local config
+                    import("@/assets/config/spotlights.json").then((module) => {
+                        items.value = module.default as Spotlight[]
+                    })
+                } else {
+                    // fetch default spotlights
+                    fetch(config.spotlights.default).then((response) => response.json()).then((data) => {
+                        items.value = data as Spotlight[]
+                    })
+                }
             })
     }
     // Export

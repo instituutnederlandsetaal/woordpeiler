@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 // Stores
+import { config } from "@/main"
 import { useSpotlightStore } from "@/stores/spotlights"
 
 // Stores
@@ -18,7 +19,7 @@ const { fetchSpotlights } = spotlightStore
 // Lifecycle
 onMounted(() => {
     fetchSpotlights()
-    document.title = "Courantenpeiler"
+    document.title = config.app.name
 })
 </script>
 

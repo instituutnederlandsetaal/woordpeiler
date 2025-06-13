@@ -78,8 +78,10 @@
 </template>
 
 <script setup lang="ts">
+import { config } from "@/main"
+
 onMounted(() => {
-    document.title = "Courantenpeiler - Over"
+    document.title = `${config.app.name} - Over`
 })
 </script>
 

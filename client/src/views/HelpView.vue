@@ -239,10 +239,12 @@
 </template>
 
 <script setup lang="ts">
+import { config } from "@/main"
+
 const canShare = navigator.share != undefined
 
 onMounted(() => {
-    document.title = "Courantenpeiler - Help"
+    document.title = `${config.app.name} - Help`
 })
 </script>
 

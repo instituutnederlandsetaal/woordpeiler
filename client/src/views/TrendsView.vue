@@ -20,6 +20,7 @@
 import { storeToRefs } from "pinia"
 import { useTrendResultsStore } from "@/stores/trendResults"
 import { useSearchItemsStore } from "@/stores/searchItems"
+import { config } from "@/main"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore())
@@ -27,7 +28,7 @@ const { isValid } = storeToRefs(useSearchItemsStore())
 
 // Lifecycle
 onMounted(() => {
-    document.title = "Courantenpeiler - Trends"
+    document.title = `${config.app.name} - Trends`
 })
 </script>
 

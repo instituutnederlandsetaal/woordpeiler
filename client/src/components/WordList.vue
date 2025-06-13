@@ -110,7 +110,7 @@
                 target="_blank"
                 v-if="searchItem.wordform && !invalidSearchItem(searchItem)"
             >
-                Zoeken in Couranten (1618 &ndash; 1700)
+                {{ searchCorpusText }}
             </a>
         </Panel>
         <Button
@@ -135,6 +135,8 @@ import { useSearchResultsStore } from "@/stores/searchResults"
 import { displayName, invalidSearchItem, invalidInputText } from "@/types/search"
 import { randomColor } from "@/ts/color"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
+import { config } from "@/main"
+import { toYear } from "@/ts/date"
 
 // Store
 const searchItemsStore = useSearchItemsStore()
@@ -143,6 +145,11 @@ const { fetchOptions, readURLParams } = searchItemsStore
 const { search } = useSearchResultsStore()
 const searchSettingsStore = useSearchSettingsStore()
 const { loadSearchSettings } = searchSettingsStore
+
+// Computed
+const searchCorpusText = computed<string>(
+    () => `Zoeken in ${config.corpus.name} (${toYear(config.period.start)} – ${toYear(config.period.end)})`,
+)
 
 // Lifecycle
 onMounted(() => fetchOptions())

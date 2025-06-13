@@ -1,5 +1,6 @@
 import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/search"
 import * as d3 from "d3"
+import { config } from "@/main"
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
@@ -51,7 +52,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    return "http://svotmc10.ivdnt.loc/corpus-frontend/Couranten2024/search/hits"
+    return `${config.corpus.url}/hits`
 }
 
 function constructBLPatt(item: SearchItem) {

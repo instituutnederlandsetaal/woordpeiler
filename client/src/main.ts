@@ -47,30 +47,37 @@ app.use(createPinia())
 
 // global config
 export let config = {}
-fetch("assets/config/config.json")
-    .then((response) => response.json())
-    .then((conf) => {
-        app.config.globalProperties.$config = conf
-        config = conf
-        app.config.globalProperties.$internal = isInternal()
-        // set theme
-        document.documentElement.style.setProperty("--theme", config.theme.color)
-        // set app name
-        document.title = config.app.name
-        // set description
-        const desc = document.createElement("meta")
-        desc.name = "description"
-        desc.content = config.app.description
-        document.head.appendChild(desc)
-        // set favicon
-        const favicon = document.createElement("link")
-        favicon.rel = "icon"
-        favicon.href = config.theme.favicon
-        document.head.appendChild(favicon)
-        // set api
-        setAxiosBaseUrl()
-        // setup router
-        app.use(router())
-        // launch app
-        app.mount("#app")
+
+if (location.hostname === "localhost") {
+    import("@/assets/config/config.json").then((module) => {
+        setConfigAndMount(module.default)
     })
+} else {
+    fetch("assets/config/config.json")
+        .then((response) => response.json())
+        .then(setConfigAndMount)
+}
+
+function setConfigAndMount(conf: Record<string, any>) {
+    app.config.globalProperties.$config = conf
+    config = conf
+    app.config.globalProperties.$internal = isInternal()
+    // set theme
+    document.documentElement.style.setProperty("--theme", config.theme.color)
+    // set description
+    const desc = document.createElement("meta")
+    desc.name = "description"
+    desc.content = config.app.description
+    document.head.appendChild(desc)
+    // set favicon
+    const favicon = document.createElement("link")
+    favicon.rel = "icon"
+    favicon.href = config.theme.favicon
+    document.head.appendChild(favicon)
+    // set api
+    setAxiosBaseUrl()
+    // setup router
+    app.use(router())
+    // launch app
+    app.mount("#app")
+}

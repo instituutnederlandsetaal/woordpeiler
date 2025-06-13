@@ -26,7 +26,7 @@
             <RouterLink to="/grafiek">grafiek</RouterLink>
             <RouterLink to="/help">help</RouterLink>
             <RouterLink to="/over">over</RouterLink>
-            <a :href="$config.corpus.url" target="_blank">{{ $config.corpus.name }}</a>
+            <a :href="$config.corpus.url" target="_blank">{{ $config.corpus.name.toLowerCase() }}</a>
 
             <!-- hamburger menu -->
             <Button
