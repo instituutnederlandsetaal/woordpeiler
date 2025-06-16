@@ -55,10 +55,10 @@ function search(spotlight: SpotlightBlock) {
         return
     }
     const params = {
-        w: spotlight.word,
-        l: spotlight.lemma,
-        i: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
-        start: spotlight.start ?? spotlight.start_date,
+        w: spotlight.graph.word,
+        l: spotlight.graph.lemma,
+        i: spotlight.graph.interval,
+        start: spotlight.graph.start,
     }
     router.push({ path: "/grafiek", query: params })
 }
@@ -72,8 +72,8 @@ onMounted(() => {
     const request: API.SearchRequest = {
         wordform: graph.word?.toLowerCase()?.trim(),
         lemma: graph.lemma?.toLowerCase()?.trim(),
-        start: graph.start ?? graph.start_date,
-        interval: graph.interval ?? toIntervalStr(graph.period_type, graph.period_length),
+        start: graph.start,
+        interval: graph.interval,
     }
 
     API.getSVG(request).then((response) => {
