@@ -1,5 +1,5 @@
 [
-    { "word": "russisch", "color": "#FF8000", "start_date": "2021-01-01", "period_length": 1, "period_type": "day" },
+    { "word": "russisch", "color": "#FF8000", "start_date": "2021-01-01", "period_length": 1, "period_type": "month" },
     { "word": "corona", "color": "#FFF064", "start": "2020-01-01", "interval": "3w" },
     { "word": "europapa", "color": "#359FF0", "start": "2024-01-01", "interval": "1w" },
     { "word": "graaiflatie", "color": "#BD795D", "start": "2023-01-01", "interval": "1w" },

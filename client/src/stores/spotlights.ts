@@ -28,9 +28,11 @@ export const useSpotlightStore = defineStore("Spotlights", () => {
                     })
                 } else {
                     // fetch default spotlights
-                    fetch(config.spotlights.default).then((response) => response.json()).then((data) => {
-                        items.value = data as Spotlight[]
-                    })
+                    fetch(config.spotlights.default)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            items.value = data as Spotlight[]
+                        })
                 }
             })
     }

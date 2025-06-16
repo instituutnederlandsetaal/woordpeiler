@@ -19,6 +19,6 @@ export default defineConfig({
     resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
     experimental: {
         // remove initial slash
-        renderBuiltUrl: (fileName: string, _) => fileName.startsWith("/") ? fileName.slice(1) : fileName,
+        renderBuiltUrl: (fileName: string, _) => (fileName.startsWith("/") ? fileName.slice(1) : fileName),
     },
 })
