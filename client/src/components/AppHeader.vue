@@ -51,7 +51,7 @@
         <h2>{{ $config.app.slogan }}</h2>
         <InputGroup>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="search" />
-            <Button severity="secondary" @click="search">
+            <Button severity="secondary" @click="search" title="Zoeken">
                 <span class="pi pi-search"></span>
             </Button>
         </InputGroup>
