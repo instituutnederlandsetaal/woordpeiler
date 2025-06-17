@@ -18,8 +18,6 @@ services:
     database:
         <<: *defaults
         image: timescale/timescaledb:2.18.1-pg17
-        ports:
-            - ${POSTGRES_PORT}:5432
         volumes:
             - database:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
