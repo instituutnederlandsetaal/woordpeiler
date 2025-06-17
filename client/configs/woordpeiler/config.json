@@ -6,7 +6,7 @@
         "slogan": "woordtrends van 2000 tot nu",
         "description": "De Woordpeiler toont hoe vaak woorden voorkomen in Nederlandstalige kranten."
     },
-    "corpus": { "name": "woordpeiler", "url": "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search" },
+    "corpus": { "name": "CHN", "url": "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search" },
     "period": { "start": "2000-01-01", "end": "2025-01-01" },
     "theme": {
         "color": "#4488ee",

@@ -1,24 +1,32 @@
 <template>
     <section class="spotlight" :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
-        <header>
-            <h2>
+        <header class="spotlight-header">
+            <h2 class="spotlight-title">
                 {{ title }}
             </h2>
         </header>
-        <div>
+        <div class="spotlight-content">
             <p>
-                sinds
-                {{ (spotlight.start ?? spotlight.start_date).split("-")[0] }}
+                {{ subtitle }}
             </p>
-            <p v-if="spotlight.articleUrl">
-                <a :href="spotlight.articleUrl" target="_blank" @click="($event) => $event.stopPropagation()">
-                    artikel lezen
-                    <span class="pi pi-angle-double-right"></span>&nbsp;</a
+            <div class="spotlight-link">
+                <a
+                    v-if="spotlight.articleUrl"
+                    :href="spotlight.articleUrl"
+                    target="_blank"
+                    @click="($event) => $event.stopPropagation()"
                 >
-            </p>
-            <div>
-                <img v-if="svgBlob" :src="svgBlob" />
+                    artikel lezen <span class="pi pi-angle-double-right"></span>&nbsp;
+                </a>
             </div>
+            <article v-if="spotlight.content" class="spotlight-article">
+                <span v-for="(p, i) in spotlight.content" :key="i">
+                    {{ p }}
+                </span>
+            </article>
+            <figure v-if="spotlight.graph" class="spotlight-graph">
+                <img v-if="svgBlob" :src="svgBlob" />
+            </figure>
         </div>
     </section>
 </template>
@@ -27,38 +35,45 @@
 // API
 import * as API from "@/api/search"
 // Types
-import { type Spotlight } from "@/types/spotlight"
+import type { SpotlightBlock } from "@/types/spotlight"
 import { toIntervalStr } from "@/types/search"
 
 // Props
-const props = defineProps({ spotlight: { type: Object as PropType<Spotlight>, required: true } })
+const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
 
 // Fields
 const router = useRouter()
 const svgBlob = ref()
-const title = computed(() =>
-    (props.spotlight.title ?? props.spotlight.word ?? props.spotlight.lemma).toLowerCase().trim(),
-)
+const title = computed<string>(() => spotlight.title ?? spotlight.graph?.word ?? spotlight.graph?.lemma)
+const subtitle = computed<string>(() => spotlight.subtitle ?? `sinds ${spotlight.graph.start.split("-")[0]}`)
 
 // Methods
-function search(spotlight: Spotlight) {
+function search(spotlight: SpotlightBlock) {
+    if (spotlight.content) {
+        const params = { w: spotlight.content.join() }
+        router.push({ path: "/grafiek", query: params })
+        return
+    }
     const params = {
-        w: spotlight.word,
-        l: spotlight.lemma,
-        i: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
-        start: spotlight.start ?? spotlight.start_date,
+        w: spotlight.graph.word,
+        l: spotlight.graph.lemma,
+        i: spotlight.graph.interval,
+        start: spotlight.graph.start,
     }
     router.push({ path: "/grafiek", query: params })
 }
 
 // Lifecycle
 onMounted(() => {
-    const spotlight = props.spotlight
+    if (!spotlight.graph) {
+        return
+    }
+    const graph = spotlight.graph
     const request: API.SearchRequest = {
-        wordform: spotlight.word?.toLowerCase()?.trim(),
-        lemma: spotlight.lemma?.toLowerCase()?.trim(),
-        start: spotlight.start ?? spotlight.start_date,
-        interval: spotlight.interval ?? toIntervalStr(spotlight.period_type, spotlight.period_length),
+        wordform: graph.word?.toLowerCase()?.trim(),
+        lemma: graph.lemma?.toLowerCase()?.trim(),
+        start: graph.start,
+        interval: graph.interval,
     }
 
     API.getSVG(request).then((response) => {
@@ -69,16 +84,31 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-section {
+.spotlight {
     font-family: "Schoolboek";
     display: flex;
     flex-direction: column;
     padding: 1rem 2rem;
+    cursor: pointer;
+    // height
+    height: calc(250px + 10vw);
+    max-height: 400px;
+    max-width: 500px;
+    width: 100%;
+    // Without this, boxes with long text will grow to max-width, even if the screen is smaller
+    overflow: hidden;
 
-    header {
+    &:hover,
+    &:focus {
+        .spotlight-header .spotlight-title {
+            color: white;
+        }
+    }
+
+    .spotlight-header {
         border-bottom: 1px solid black;
 
-        h2 {
+        .spotlight-title {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -91,24 +121,17 @@ section {
         }
     }
 
-    div {
+    .spotlight-content {
         display: flex;
         flex-direction: column;
         position: relative;
         min-height: 0;
         flex: 1; // needed on chrome
 
-        p {
-            font-size: 1rem;
-            font-weight: normal;
-        }
-
-        /* second p */
-        p:nth-of-type(2) {
+        .spotlight-link {
             text-align: right;
             position: absolute;
             width: 100%;
-
             a {
                 color: inherit;
                 text-decoration: none;
@@ -123,26 +146,32 @@ section {
             }
         }
 
-        div {
+        .spotlight-article {
+            display: flex;
+            flex-wrap: wrap;
+            line-height: 1rem;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            overflow-y: scroll;
+
+            span {
+                border: 1px solid black;
+                padding: 0.5rem;
+            }
+        }
+
+        .spotlight-graph {
             flex: 1 0;
             min-height: 0;
             padding-top: 0.3rem;
 
             img {
+                user-select: none;
                 height: 100%;
                 // strech svg without keeping aspect ratio
                 width: 100%;
             }
         }
-    }
-}
-
-section:hover,
-section:focus {
-    cursor: pointer;
-
-    header h2 {
-        color: white;
     }
 }
 </style>

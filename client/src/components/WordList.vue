@@ -1,6 +1,7 @@
 <template>
     <div class="wordlist">
         <Panel
+            :collapsed="defaultCollapse"
             toggleable
             v-for="searchItem in searchItems"
             :key="searchItem"
@@ -145,6 +146,7 @@ const { fetchOptions, readURLParams } = searchItemsStore
 const { search } = useSearchResultsStore()
 const searchSettingsStore = useSearchSettingsStore()
 const { loadSearchSettings } = searchSettingsStore
+const defaultCollapse = ref<boolean>()
 
 // Computed
 const searchCorpusText = computed<string>(
@@ -167,6 +169,11 @@ onMounted(() => {
             loadSearchSettings()
             search()
         }
+    }
+    // if there are more than 3 search items
+    // default to collapsed panels
+    if (searchItems.value.length > 3) {
+        defaultCollapse.value = true
     }
 })
 </script>

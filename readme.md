@@ -16,13 +16,14 @@ POSTGRES_PASSWORD=[fill in]
 # user with read access, used by server
 READER_USER=reader
 READER_PASSWORD=[fill in]
-# docker image tag for server and client docker container
+# docker image tag for server and client
 VERSION_LABEL=dev
+# server settings
 INTERNAL=[true | false]
-# proxy
+# proxy settings
 PROXY_PORT=80
-# client
-CLIENT_CONFIG=[fill in] # json file
+# client settings
+CLIENT_CONFIG=[fill in] # folder with config.json and assets
 ```
 
 Because we want to rotate the database docker volume every week, we use separate .env files the database and builder that can be editted programatically.

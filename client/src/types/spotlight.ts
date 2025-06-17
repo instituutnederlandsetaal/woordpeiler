@@ -1,13 +1,21 @@
-export type Spotlight = {
+export type SpotlightSection = {
     title?: string
+    content?: string[]
+    blocks: SpotlightBlock[]
+}
+
+export type SpotlightBlock = {
+    title: string
+    subtitle?: string
     articleUrl?: string
+    color: string
+    graph?: SpotlightGraph
+    content?: string[]
+}
+
+export type SpotlightGraph = {
     word?: string
     lemma?: string
-    color: string
     start: string
     interval: string
-    // legacy
-    start_date?: string
-    period_type?: string
-    period_length?: number
 }

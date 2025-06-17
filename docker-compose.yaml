@@ -40,7 +40,7 @@ services:
             <<: *environment
             POSTGRES_HOST: database # Always refer to the database container
             POSTGRES_PORT: ${POSTGRES_PORT}
-            INTERNAL: ${INTERNAL}
+            INTERNAL: ${INTERNAL:-false}
         build:
             context: server
         restart: unless-stopped

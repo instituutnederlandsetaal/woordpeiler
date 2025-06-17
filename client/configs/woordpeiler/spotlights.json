@@ -1,14 +1,98 @@
 [
-    { "word": "russisch", "color": "#FF8000", "start_date": "2021-01-01", "period_length": 1, "period_type": "day" },
-    { "word": "corona", "color": "#FFF064", "start": "2020-01-01", "interval": "3w" },
-    { "word": "europapa", "color": "#359FF0", "start": "2024-01-01", "interval": "1w" },
-    { "word": "graaiflatie", "color": "#BD795D", "start": "2023-01-01", "interval": "1w" },
-    { "word": "smartphone", "color": "#89C24B", "start": "2006-01-01", "interval": "3m" },
-    { "word": "tiktok", "color": "#E8503D", "start": "2018-01-01", "interval": "1m" },
-    { "word": "knuffelcontact", "color": "#359FF0", "start": "2020-01-01", "interval": "1w" },
-    { "word": "vapen", "color": "#FF8000", "start": "2018-01-01", "interval": "1m" },
-    { "word": "knaldrang", "color": "#FFF064", "start": "2020-01-01", "interval": "2w" },
-    { "word": "menstruatieproducten", "color": "#E8503D", "start": "2018-01-01", "interval": "1m" },
-    { "word": "klimaatspijbelaars", "color": "#89C24B", "start": "2018-01-01", "interval": "1m" },
-    { "word": "stikstofcrisis", "color": "#BD795D", "start": "2018-01-01", "interval": "1m" }
+    {
+        "title": "mei 2025",
+        "blocks": [
+            { "color": "#FF8000", "graph": { "word": "kardinalen", "start": "2020-01-01", "interval": "3w" } },
+            { "color": "#DD66CC", "graph": { "word": "huurbevriezing", "start": "2020-01-01", "interval": "3w" } },
+            { "color": "#77CC66", "graph": { "word": "songfestival", "start": "2020-01-01", "interval": "3w" } },
+            { "color": "#EE5599", "graph": { "word": "alcoholslot", "start": "2020-01-01", "interval": "3w" } }
+        ]
+    },
+    {
+        "title": "woordpeilingen 2025",
+        "blocks": [
+            {
+                "title": "april 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/handelsoorlog-lintjes-en-bidongooier/",
+                "color": "#8c3",
+                "content": [
+                    "handelsoorlog",
+                    "importheffingen",
+                    "paasakkoord",
+                    "voorjaarsnota",
+                    "lintjes",
+                    "bidon",
+                    "kardinalen"
+                ]
+            },
+            {
+                "title": "1e kwartaal 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie-importheffingen-en-defensie-uitgaven/",
+                "color": "#F88",
+                "content": [
+                    "importheffingen",
+                    "meerwaardebelasting",
+                    "inauguratie",
+                    "defensie-uitgaven",
+                    "veiligheidsgaranties",
+                    "staakt-het-vuren",
+                    "tussenronde",
+                    "doorstroomtoets",
+                    "importtarieven",
+                    "vuurwerkverbod"
+                ]
+            },
+            {
+                "title": "februari 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/veiligheid/",
+                "color": "#F9F",
+                "content": [
+                    "veiligheidsconferentie",
+                    "veiligheidsgaranties",
+                    "schietpartijen",
+                    "patser",
+                    "asielwetten",
+                    "meerwaardebelasting",
+                    "doorstroomtoets"
+                ]
+            },
+            {
+                "title": "januari 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie/",
+                "color": "#E3E3E3",
+                "content": ["inauguratie", "doorstroomtoets", "vuurwerkverbod", "supernota", "tussenronde"]
+            },
+            { "color": "#FFF064", "graph": { "word": "smartphone", "start": "2025-01-01", "interval": "1d" } },
+            { "color": "#E8503D", "graph": { "word": "importheffingen", "start": "2025-01-01", "interval": "1d" } },
+            { "color": "#359FF0", "graph": { "word": "veiligheidsgaranties", "start": "2025-01-01", "interval": "1d" } }
+        ]
+    },
+    {
+        "title": "nieuwe woorden",
+        "content": ["Welke nieuwe woorden zijn er in de afgelopen jaren ontstaan?"],
+        "blocks": [
+            {
+                "color": "#AB80D6",
+                "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/statiegeldwinkel/",
+                "graph": { "word": "statiegeldwinkel", "start": "2025-01-01", "interval": "1d" }
+            },
+            { "color": "#33CC99", "graph": { "word": "focusfilter", "start": "2025-01-01", "interval": "1d" } },
+            { "color": "#359FF0", "graph": { "word": "manosfeer", "start": "2025-01-01", "interval": "1d" } },
+            { "color": "#FFF064", "graph": { "word": "ravijnjaar", "start": "2025-01-01", "interval": "1d" } }
+        ]
+    },
+    {
+        "title": "21e eeuw",
+        "content": ["Welke woorden kenmerken onze maatschappij in de 21e eeuw?"],
+        "blocks": [
+            { "color": "#FFF064", "graph": { "word": "smartphone", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#48C04D", "graph": { "word": "klimaatverandering", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#359FF0", "graph": { "word": "crisis", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#FF8000", "graph": { "word": "elektrisch", "start": "2000-01-01", "interval": "3m" } }
+        ]
+    }
 ]
