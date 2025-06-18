@@ -57,42 +57,6 @@
                 />
             </div>
 
-            <template v-if="$internal">
-                <div class="formSplit">
-                    <label for="lemma">Lemma</label>
-                    <InputText
-                        :invalid="invalidInputText(searchItem.lemma)"
-                        id="lemma"
-                        v-model.trim="searchItem.lemma"
-                        @keyup.enter="search"
-                    />
-                </div>
-                <div class="formSplit">
-                    <label for="pos">Woordsoort</label>
-                    <CascadeSelect
-                        :loading="!Object.entries(posOptions).length"
-                        id="pos"
-                        v-model="searchItem.pos"
-                        :options="posOptions"
-                        optionGroupLabel="label"
-                        optionGroupChildren="items"
-                        showClear
-                        placeholder="Woordsoort"
-                    />
-                </div>
-                <div class="formSplit">
-                    <label for="source">Krant</label>
-                    <Select
-                        id="source"
-                        v-model="searchItem.source"
-                        :options="sourceOptions"
-                        showClear
-                        placeholder="Krant"
-                        :loading="!sourceOptions.length"
-                    />
-                </div>
-            </template>
-
             <div class="formSplit">
                 <label for="variant">Locatie</label>
                 <Select
@@ -104,6 +68,58 @@
                     :loading="!languageOptions.length"
                 />
             </div>
+            <Accordion value="-1">
+                <AccordionPanel class="advanced">
+                    <AccordionHeader>Geavanceerd</AccordionHeader>
+                    <AccordionContent>
+                        <div class="formSplit">
+                            <label for="lemma">Lemma</label>
+                            <HelpButton>
+                                <p>
+                                    Het lemma is de woordenboekvorm van het woord.
+                                </p>
+                                <DataTable :value="[{ word: 'liep', lemma: 'lopen', pos: 'werkwoord'}, {word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord'}, {word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord'}]" size="small" style="max-width: fit-content">
+                                    <Column field="word" header="Woord"></Column>
+                                    <Column field="lemma" header="Lemma"></Column>
+                                    <Column field="pos" header="Woordsoort"></Column>
+                                </DataTable>
+                            </HelpButton>
+                            <InputText
+                                :invalid="invalidInputText(searchItem.lemma)"
+                                id="lemma"
+                                v-model.trim="searchItem.lemma"
+                                @keyup.enter="search"
+                            />
+                        </div>
+                        <div class="formSplit">
+                            <label for="pos">Woordsoort</label>
+                            <CascadeSelect
+                                :loading="!Object.entries(posOptions).length"
+                                id="pos"
+                                v-model="searchItem.pos"
+                                :options="posOptions"
+                                optionGroupLabel="label"
+                                optionGroupChildren="items"
+                                showClear
+                                placeholder="Woordsoort"
+                            />
+                        </div>
+                        <template v-if="$internal">
+                            <div class="formSplit">
+                                <label for="source">Krant</label>
+                                <Select
+                                    id="source"
+                                    v-model="searchItem.source"
+                                    :options="sourceOptions"
+                                    showClear
+                                    placeholder="Krant"
+                                    :loading="!sourceOptions.length"
+                                />
+                            </div>
+                        </template>
+                    </AccordionContent>
+                </AccordionPanel>
+            </Accordion>
 
             <a
                 class="searchCHN"

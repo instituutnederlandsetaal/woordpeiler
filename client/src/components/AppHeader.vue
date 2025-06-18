@@ -34,37 +34,22 @@
                 severity="secondary"
                 type="button"
                 icon="pi pi-bars"
-                @click="
-                    (event) => {
-                        menu.toggle(event)
-                    }
-                "
                 aria-haspopup="true"
                 aria-controls="overlayMenu"
                 id="hamburger"
                 title="Menu"
+                @click="toggleMenu"
             />
             <Menu ref="menu" id="overlayMenu" :model="menuItems" :popup="true" />
         </nav>
     </header>
-    <footer v-if="isHomePage">
-        <h2>{{ $config.app.slogan }}</h2>
-        <InputGroup>
-            <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="search" />
-            <Button severity="secondary" @click="search" title="Zoeken">
-                <span class="pi pi-search"></span>
-            </Button>
-        </InputGroup>
-    </footer>
 </template>
 
 <script setup lang="ts">
 // Util
-import { toTimestamp } from "@/ts/date"
 import { isInternal } from "@/ts/internal"
 
 // Fields
-const word = ref()
 const route = useRoute()
 const router = useRouter()
 const menu = ref()
@@ -116,9 +101,9 @@ const menuItems = computed(() => {
     return items
 })
 
-// Methods
-function search() {
-    router.push({ path: "/grafiek", query: { w: word.value, start: toTimestamp(new Date("1618-01-01")) } })
+// methods
+function toggleMenu(event: MouseEvent) {
+    menu.value.toggle(event)
 }
 </script>
 
@@ -142,7 +127,7 @@ header {
     .logo {
         display: flex;
         line-height: normal;
-        gap: 1rem;
+        gap: 0.5rem;
 
         .logo-img img {
             height: 65px;
@@ -168,10 +153,13 @@ header {
 
     nav {
         display: flex;
-        justify-content: space-between;
+        justify-content: end;
+        align-content: center;
         align-items: center;
-        margin-right: 36px;
+        flex-wrap: wrap;
+        padding-right: 36px;
         gap: 32px;
+        row-gap: 0;
 
         a {
             font-size: 16px;
@@ -181,58 +169,16 @@ header {
             }
         }
 
-        :deep(button#hamburger) span {
-            font-size: 1.5rem;
+        :deep(button#hamburger) {
+            width: 65px;
+            span {
+                font-size: 1.5rem;
+            }
         }
     }
 }
 
 #hamburger {
     display: none;
-}
-
-footer {
-    background-color: $theme;
-    width: 100%;
-    padding-bottom: 1rem;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    box-shadow: 0px 4px 5px 1px #ccc;
-    flex-direction: column;
-
-    h2 {
-        font-family: Schoolboek;
-        font-weight: normal;
-        font-size: 1.5rem;
-        color: white;
-        padding: 5px 0 14px 0;
-    }
-
-    :deep(.p-inputgroup) {
-        width: 90%;
-        height: 42px;
-        max-width: 400px;
-
-        .p-inputtext {
-            font-size: 1.1rem;
-            border: 0;
-        }
-
-        .p-button {
-            border: 0;
-            padding: 0 1.8rem;
-            background-color: #ddd;
-
-            &:hover,
-            &:active {
-                background-color: #ccc;
-            }
-
-            span {
-                font-size: 1.2rem;
-            }
-        }
-    }
 }
 </style>

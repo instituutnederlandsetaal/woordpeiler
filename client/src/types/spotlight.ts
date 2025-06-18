@@ -1,8 +1,4 @@
-export type SpotlightSection = {
-    title?: string
-    content?: string[]
-    blocks: SpotlightBlock[]
-}
+export type SpotlightSection = { title?: string; content?: string[]; blocks: SpotlightBlock[] }
 
 export type SpotlightBlock = {
     title: string
@@ -13,9 +9,4 @@ export type SpotlightBlock = {
     content?: string[]
 }
 
-export type SpotlightGraph = {
-    word?: string
-    lemma?: string
-    start: string
-    interval: string
-}
+export type SpotlightGraph = { word?: string; lemma?: string; start: string; interval: string }

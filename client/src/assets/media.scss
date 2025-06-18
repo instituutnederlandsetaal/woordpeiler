@@ -55,7 +55,6 @@
     header {
         .logo img {
             min-width: 50px !important;
-            margin: 0.5rem !important;
         }
 
         .logo-text {
@@ -80,11 +79,6 @@
         a {
             font-size: 1rem !important;
         }
-
-        flex: 1;
-        padding: 0.5rem;
-        justify-content: end !important;
-        flex-wrap: wrap;
     }
 
     .searchOptions {
@@ -111,6 +105,10 @@
 @media screen and (max-width: 500px) {
     // switch to hamburger menu
     nav {
+        padding: 0 !important;
+        align-content: stretch !important;
+        align-items: stretch !important;
+
         a {
             display: none;
         }

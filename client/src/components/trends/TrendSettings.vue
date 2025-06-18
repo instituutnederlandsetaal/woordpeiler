@@ -224,7 +224,6 @@ onMounted(() => {
 
     :deep(.p-panel-content) {
         .p-accordionpanel {
-            border: none;
 
             .p-accordionheader {
                 padding-bottom: 0;

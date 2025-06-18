@@ -1,4 +1,5 @@
 <template>
+    <SearchBar />
     <main>
         <SpotlightSection v-for="(section, i) in items" :key="i" :section />
     </main>

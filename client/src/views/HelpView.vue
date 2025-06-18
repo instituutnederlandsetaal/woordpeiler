@@ -122,10 +122,8 @@
                                         class="dummyNewWord"
                                         severity="secondary"
                                         title="Zoekterm toevoegen"
-                                        outlined
-                                    >
-                                        <span class="pi pi-plus"></span>
-                                    </Button>
+                                        outlined icon="pi pi-plus"
+                                    />
                                     om een nieuwe zoekterm toe te voegen aan de grafiek.
                                 </li>
                             </ul>

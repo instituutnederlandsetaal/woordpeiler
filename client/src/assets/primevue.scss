@@ -13,8 +13,10 @@ $theme: var(--theme); // Default theme color
     // --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
     --p-primary-active-color: color-mix(in srgb, var(--theme), #000 20%);
     --p-primary-hover-color: color-mix(in srgb, var(--theme), #000 10%);
-    --p-button-primary-background: #{$theme};
     --p-tabs-tab-active-color: #{$theme};
+    --p-button-primary-background: #{$theme};
+    // --p-button-text-primary-active-background: var(--p-button-text-secondary-active-background)
+    // --p-button-text-primary-color: var(--p-panel-color);
 
     // Dialog
     --p-dialog-header-padding: 1rem 1rem 0.3rem 1rem;
@@ -58,6 +60,10 @@ $theme: var(--theme); // Default theme color
         cursor: not-allowed;
         background-color: #ccc;
         border-color: #ccc;
+    }
+
+    .p-accordionpanel {
+        border: none;
     }
 }
 

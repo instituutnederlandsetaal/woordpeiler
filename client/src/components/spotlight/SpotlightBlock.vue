@@ -16,7 +16,7 @@
                     target="_blank"
                     @click="($event) => $event.stopPropagation()"
                 >
-                    artikel lezen <span class="pi pi-angle-double-right"></span>&nbsp;
+                    artikel lezen <span class="pi pi-angle-double-right"></span>
                 </a>
             </div>
             <article v-if="spotlight.content" class="spotlight-article">
@@ -36,7 +36,6 @@
 import * as API from "@/api/search"
 // Types
 import type { SpotlightBlock } from "@/types/spotlight"
-import { toIntervalStr } from "@/types/search"
 
 // Props
 const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
@@ -142,6 +141,7 @@ onMounted(() => {
 
                 span {
                     display: inline;
+                    font-size: 0.8rem;
                 }
             }
         }
