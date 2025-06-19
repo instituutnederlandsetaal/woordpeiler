@@ -1,6 +1,21 @@
 @use "sass:color";
 @import "./base.css";
 
+@font-face {
+    font-family: "Schoolboek";
+    src: url("@/assets/Schoolboek-Regular.woff") format("woff");
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: normal;
+    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: #f8f8f8;
@@ -71,12 +86,13 @@ p.invalid {
     margin-bottom: 0.5rem;
 }
 
-// Because #overlayMenu is a direct child of body
+// Because #hamburger-menu is a direct child of body
 // and therefore lives above the AppHeader component
 // it needs to be styled here.
-#overlayMenu {
+#hamburger-menu {
     font-size: 1.1rem;
     min-width: min-content;
+    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
     * {
         font-size: inherit;

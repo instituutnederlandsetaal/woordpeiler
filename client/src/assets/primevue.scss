@@ -67,14 +67,6 @@ $theme: var(--theme); // Default theme color
     }
 }
 
-.wordlist {
-    .p-select,
-    .p-inputtext,
-    .p-cascadeselect {
-        width: 200px;
-    }
-}
-
 // MultiSelect has on overlay on the global document level
 // Hence why we don't style it scoped
 .p-multiselect-header::after {

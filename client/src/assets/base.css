@@ -33,15 +33,7 @@ select {
     font: inherit;
 }
 
-p {
-    overflow-wrap: break-word;
-}
-
-@font-face {
-    font-family: "Schoolboek";
-    src: url("@/assets/Schoolboek-Regular.woff") format("woff");
-}
-
+p,
 h1,
 h2,
 h3,
@@ -49,5 +41,4 @@ h4,
 h5,
 h6 {
     overflow-wrap: break-word;
-    font-family: Schoolboek;
 }

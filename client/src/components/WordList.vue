@@ -221,6 +221,14 @@ onMounted(() => {
     }
 }
 
+.wordlist {
+    .p-select,
+    .p-inputtext,
+    .p-cascadeselect {
+        width: 200px;
+    }
+}
+
 .hidden {
     filter: brightness(0.9);
 }

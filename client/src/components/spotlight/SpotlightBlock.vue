@@ -84,7 +84,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .spotlight {
-    font-family: "Schoolboek";
     display: flex;
     flex-direction: column;
     padding: 1rem 2rem;
@@ -96,6 +95,10 @@ onMounted(() => {
     width: 100%;
     // Without this, boxes with long text will grow to max-width, even if the screen is smaller
     overflow: hidden;
+
+    p {
+        font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
 
     &:hover,
     &:focus {
@@ -152,7 +155,7 @@ onMounted(() => {
             line-height: 1rem;
             gap: 0.5rem;
             padding-top: 1rem;
-            overflow-y: scroll;
+            overflow-y: auto;
 
             span {
                 border: 1px solid black;

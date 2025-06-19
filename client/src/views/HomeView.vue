@@ -3,6 +3,7 @@
     <main>
         <SpotlightSection v-for="(section, i) in items" :key="i" :section />
     </main>
+    <AppFooter />
 </template>
 
 <script setup lang="ts">
@@ -24,7 +25,8 @@ onMounted(() => {
 
 <style scoped lang="scss">
 main {
-    display: flex;
     flex-direction: column;
+    min-height: initial;
+    align-items: center;
 }
 </style>

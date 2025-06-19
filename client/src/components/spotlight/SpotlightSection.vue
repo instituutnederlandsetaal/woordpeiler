@@ -1,7 +1,7 @@
 <template>
     <section class="spotlight-section">
         <hgroup class="spotlight-section-header">
-            <h2>{{ section.title }}</h2>
+            <h2 class="spotlight-section-title">{{ section.title }}</h2>
             <p v-for="(p, i) in section.content" :key="i">
                 {{ p }}
             </p>
@@ -23,13 +23,15 @@ const { section } = defineProps<{ section: SpotlightSection }>()
     flex-direction: column;
     gap: 0.5rem;
     max-width: calc(4 * 500px + 3 * 1rem);
+    width: 100%;
 
     .spotlight-section-header {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        h2 {
+
+        .spotlight-section-title {
             font-weight: normal;
         }
     }
@@ -38,6 +40,7 @@ const { section } = defineProps<{ section: SpotlightSection }>()
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
         grid-gap: 1rem;
+        justify-items: center;
     }
 }
 </style>

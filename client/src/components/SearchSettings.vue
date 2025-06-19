@@ -17,7 +17,7 @@
                     <div>
                         <label>Periode</label>
                         <Button severity="secondary" text label="Resetten" class="reset" @click="resetDates">
-                            <span class="pi pi-refresh"></span> 1600 &ndash; 1700
+                            <span class="pi pi-refresh"></span> {{ config.period.start }} &ndash; {{ config.period.end }}
                         </Button>
                     </div>
 
@@ -72,6 +72,7 @@ import { useSearchResultsStore } from "@/stores/searchResults"
 import { useSearchItemsStore } from "@/stores/searchItems"
 // Utils
 import { toUTCDate } from "@/ts/date"
+import { config } from "@/main"
 
 // Stores
 const searchSettingsStore = useSearchSettingsStore()

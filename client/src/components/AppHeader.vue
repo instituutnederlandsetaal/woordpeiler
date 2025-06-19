@@ -35,18 +35,19 @@
                 type="button"
                 icon="pi pi-bars"
                 aria-haspopup="true"
-                aria-controls="overlayMenu"
+                aria-controls="hamburger-menu"
                 id="hamburger"
                 title="Menu"
                 @click="toggleMenu"
             />
-            <Menu ref="menu" id="overlayMenu" :model="menuItems" :popup="true" />
+            <Menu ref="menu" id="hamburger-menu" :model="menuItems" :popup="true" />
         </nav>
     </header>
 </template>
 
 <script setup lang="ts">
 // Util
+import { config } from "@/main"
 import { isInternal } from "@/ts/internal"
 
 // Fields
@@ -55,7 +56,7 @@ const router = useRouter()
 const menu = ref()
 
 // Computed
-const isHomePage = computed(() => route.path == "/")
+const isHomePage = computed(() => route.path === "/")
 const headerStyle = computed(() => (isHomePage.value ? { boxShadow: "none" } : {}))
 const menuItems = computed(() => {
     const items = [
@@ -81,7 +82,7 @@ const menuItems = computed(() => {
             },
         },
         {
-            label: "chn",
+            label: config.corpus.name.toLowerCase(),
             icon: "pi pi-database",
             url: "https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/",
             target: "_blank",
@@ -111,15 +112,15 @@ function toggleMenu(event: MouseEvent) {
 @use "@/assets/primevue.scss" as *;
 
 header {
-    font-family: Schoolboek;
     height: 70px;
     border-bottom: 5px solid $theme;
     display: flex;
     justify-content: space-between;
     background-color: white;
-    z-index: 1;
-
+    box-shadow: 0px 4px 5px 1px #ccc;
+    
     a {
+        font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
         color: inherit;
         text-decoration: none;
     }
