@@ -43,7 +43,7 @@
                     Voor BlackLab:
                     <br />
                     Software beschikbaar op:
-                    <a href="https://github.com/INL/BlackLab">https://github.com/INL/BlackLab</a>
+                    <a href="https://github.com/instituutnederlandsetaal/BlackLab">https://github.com/instituutnederlandsetaal/BlackLab</a>
                     <br />
                     Does, Jesse de, Jan Niestadt en Katrien Depuydt (2017), Creating research environments with
                     BlackLab. In: Jan Odijk and Arjan van Hessen (eds.) CLARIN in the Low Countries, pp. 151-165.
@@ -54,7 +54,7 @@
                     Voor de corpus-frontend:
                     <br />
                     Software beschikbaar op:
-                    <a href="https://github.com/INL/corpus-frontend">https://github.com/INL/corpus-frontend</a>
+                    <a href="https://github.com/instituutnederlandsetaal/corpus-frontend">https://github.com/instituutnederlandsetaal/corpus-frontend</a>
                 </p>
             </section>
             <section>
