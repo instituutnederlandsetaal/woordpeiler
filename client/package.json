@@ -9,7 +9,7 @@
         "update": "npm-check-updates -u && npm install"
     },
     "dependencies": {
-        "@primeuix/themes": "^1.1.1",
+        "@primeuix/themes": "^1.1.2",
         "axios": "^1.10.0",
         "d3": "^7.9.0",
         "file-saver": "^2.0.5",
