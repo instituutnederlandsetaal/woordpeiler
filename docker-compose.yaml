@@ -24,6 +24,7 @@ services:
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
 
     builder:
+        <<: *defaults
         image: timescale/timescaledb:2.18.1-pg17
         ports:
             - ${BUILDER_PORT}:5432
