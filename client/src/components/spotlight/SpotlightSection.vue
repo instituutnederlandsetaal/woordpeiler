@@ -2,9 +2,7 @@
     <section class="spotlight-section">
         <hgroup class="spotlight-section-header">
             <h2 class="spotlight-section-title">{{ section.title }}</h2>
-            <p v-for="(p, i) in section.content" :key="i">
-                {{ p }}
-            </p>
+            <p v-for="(p, i) in section.content" :key="i" v-html="p"></p>
         </hgroup>
         <div class="spotlight-section-content">
             <SpotlightBlock v-for="(block, i) in section.blocks" :key="i" :spotlight="block" />
