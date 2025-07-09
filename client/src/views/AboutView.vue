@@ -20,8 +20,8 @@
                 <h3>Bronmateriaal</h3>
                 <p>
                     De gegevens in <i>Woordpeiler</i> komen uit het krantenmateriaal van het
-                    <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/">
-                        Corpus Hedendaags Nederlands </a
+                    <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/"
+                        >Corpus Hedendaags Nederlands</a
                     >. De teksten in het corpus worden automatisch verwerkt en taalkundig geanalyseerd. De
                     woordfrequenties kunnen daarom licht beïnvloed zijn door fouten in de woordsplitsing of
                     krantenartikelen die hernomen worden in kranten van dezelfde uitgeversgroep.

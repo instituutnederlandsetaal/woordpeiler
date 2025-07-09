@@ -28,5 +28,6 @@ main {
     flex-direction: column;
     min-height: initial;
     align-items: center;
+    gap: 1rem;
 }
 </style>

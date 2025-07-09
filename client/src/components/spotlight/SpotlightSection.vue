@@ -19,7 +19,7 @@ const { section } = defineProps<{ section: SpotlightSection }>()
 .spotlight-section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
     max-width: calc(4 * 500px + 3 * 1rem);
     width: 100%;
 
@@ -28,9 +28,13 @@ const { section } = defineProps<{ section: SpotlightSection }>()
         flex-direction: column;
         align-items: center;
         text-align: center;
+        padding: 0 1rem;
 
         .spotlight-section-title {
             font-weight: normal;
+        }
+        p {
+            max-width: 1000px;
         }
     }
 
