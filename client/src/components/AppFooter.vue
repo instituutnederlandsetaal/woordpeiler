@@ -1,14 +1,12 @@
 <template>
     <footer class="footer">
-        <p>
-            © 2025 Instituut voor de Nederlandse Taal, alle rechten voorbehouden	
-        </p>
+        <p>© 2025 Instituut voor de Nederlandse Taal, alle rechten voorbehouden</p>
     </footer>
 </template>
 
 <style scoped lang="scss">
 .footer {
-    border-top: #D9D9D9 solid 1px;
+    border-top: #d9d9d9 solid 1px;
     display: flex;
     justify-content: center;
     text-align: center;

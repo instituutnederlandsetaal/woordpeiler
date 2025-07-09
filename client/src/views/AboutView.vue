@@ -20,8 +20,8 @@
                 <h3>Bronmateriaal</h3>
                 <p>
                     De gegevens in <i>Woordpeiler</i> komen uit het krantenmateriaal van het
-                    <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/"
-                        >Corpus Hedendaags Nederlands</a
+                    <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/">
+                        Corpus Hedendaags Nederlands </a
                     >. De teksten in het corpus worden automatisch verwerkt en taalkundig geanalyseerd. De
                     woordfrequenties kunnen daarom licht beïnvloed zijn door fouten in de woordsplitsing of
                     krantenartikelen die hernomen worden in kranten van dezelfde uitgeversgroep.
@@ -43,7 +43,9 @@
                     Voor BlackLab:
                     <br />
                     Software beschikbaar op:
-                    <a href="https://github.com/instituutnederlandsetaal/BlackLab">https://github.com/instituutnederlandsetaal/BlackLab</a>
+                    <a href="https://github.com/instituutnederlandsetaal/BlackLab">
+                        https://github.com/instituutnederlandsetaal/BlackLab
+                    </a>
                     <br />
                     Does, Jesse de, Jan Niestadt en Katrien Depuydt (2017), Creating research environments with
                     BlackLab. In: Jan Odijk and Arjan van Hessen (eds.) CLARIN in the Low Countries, pp. 151-165.
@@ -54,7 +56,9 @@
                     Voor de corpus-frontend:
                     <br />
                     Software beschikbaar op:
-                    <a href="https://github.com/instituutnederlandsetaal/corpus-frontend">https://github.com/instituutnederlandsetaal/corpus-frontend</a>
+                    <a href="https://github.com/instituutnederlandsetaal/corpus-frontend"
+                        >https://github.com/instituutnederlandsetaal/corpus-frontend</a
+                    >
                 </p>
             </section>
             <section>

@@ -96,9 +96,8 @@ onMounted(() => {
     // Without this, boxes with long text will grow to max-width, even if the screen is smaller
     overflow: hidden;
 
-    p {
-        font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
+    // override non-header font
+    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
     &:hover,
     &:focus {

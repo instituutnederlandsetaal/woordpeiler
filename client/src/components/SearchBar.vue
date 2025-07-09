@@ -3,7 +3,7 @@
         <h2 class="slogan">{{ $config.app.slogan }}</h2>
         <InputGroup>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="doSearch" />
-            <Button severity="secondary" @click="doSearch" title="Zoeken"  icon="pi pi-search"/>
+            <Button severity="secondary" @click="doSearch" title="Zoeken" icon="pi pi-search" />
         </InputGroup>
     </search>
 </template>

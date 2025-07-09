@@ -118,7 +118,7 @@ header {
     justify-content: space-between;
     background-color: white;
     box-shadow: 0px 4px 5px 1px #ccc;
-    
+
     a {
         font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
         color: inherit;

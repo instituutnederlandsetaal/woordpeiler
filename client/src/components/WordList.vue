@@ -75,10 +75,16 @@
                         <div class="formSplit">
                             <label for="lemma">Lemma</label>
                             <HelpButton>
-                                <p>
-                                    Het lemma is de woordenboekvorm van het woord.
-                                </p>
-                                <DataTable :value="[{ word: 'liep', lemma: 'lopen', pos: 'werkwoord'}, {word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord'}, {word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord'}]" size="small" style="max-width: fit-content">
+                                <p>Het lemma is de woordenboekvorm van het woord.</p>
+                                <DataTable
+                                    :value="[
+                                        { word: 'liep', lemma: 'lopen', pos: 'werkwoord' },
+                                        { word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord' },
+                                        { word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord' },
+                                    ]"
+                                    size="small"
+                                    style="max-width: fit-content"
+                                >
                                     <Column field="word" header="Woord"></Column>
                                     <Column field="lemma" header="Lemma"></Column>
                                     <Column field="pos" header="Woordsoort"></Column>

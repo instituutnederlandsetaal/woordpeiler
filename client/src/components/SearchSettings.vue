@@ -17,7 +17,8 @@
                     <div>
                         <label>Periode</label>
                         <Button severity="secondary" text label="Resetten" class="reset" @click="resetDates">
-                            <span class="pi pi-refresh"></span> {{ config.period.start }} &ndash; {{ config.period.end }}
+                            <span class="pi pi-refresh"></span>
+                            {{ config.period.start }} &ndash; {{ config.period.end }}
                         </Button>
                     </div>
 
