@@ -2,6 +2,7 @@
 import type { SearchSettings } from "@/types/search"
 import type { SelectLabel } from "@/types/ui"
 import { config } from "@/main"
+import { toUTCDate } from "@/ts/date"
 
 export const useSearchSettingsStore = defineStore("SearchSettings", () => {
     // Fields
@@ -9,7 +10,7 @@ export const useSearchSettingsStore = defineStore("SearchSettings", () => {
         intervalType: initTimeBucket().type,
         intervalLength: initTimeBucket().size,
         startDate: new Date(config.period.start),
-        endDate: new Date(config.period.end),
+        endDate: config.period.end ? new Date(config.period.end) : toUTCDate(new Date()),
         frequencyType: "rel_freq",
         languageSplit: false,
     })
@@ -41,8 +42,8 @@ export const useSearchSettingsStore = defineStore("SearchSettings", () => {
         }
     }
     function resetDates() {
-        searchSettings.value.startDate = new Date("1618-01-01")
-        searchSettings.value.endDate = new Date("1701-01-01")
+        searchSettings.value.startDate = new Date(config.period.start)
+        searchSettings.value.endDate = config.period.end ? new Date(config.period.end) : toUTCDate(new Date())
     }
     function readUrlParams() {
         const params = new URLSearchParams(window.location.search)

@@ -172,8 +172,11 @@ const defaultCollapse = ref<boolean>()
 
 // Computed
 const searchCorpusText = computed<string>(
-    () => `Zoeken in ${config.corpus.name} (${toYear(config.period.start)} – ${toYear(config.period.end)})`,
+    () => `Zoeken in ${config.corpus.name} (${toYear(config.period.start)} – ${endYear.value})`,
 )
+const endYear = computed<string>(() => {
+    return config.period.end ? toYear(config.period.end) : "nu"
+})
 
 // Lifecycle
 onMounted(() => fetchOptions())

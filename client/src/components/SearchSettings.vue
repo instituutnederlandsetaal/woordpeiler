@@ -18,7 +18,7 @@
                         <label>Periode</label>
                         <Button severity="secondary" text label="Resetten" class="reset" @click="resetDates">
                             <span class="pi pi-refresh"></span>
-                            {{ config.period.start }} &ndash; {{ config.period.end }}
+                            <span v-html="periodSpan"></span>
                         </Button>
                     </div>
 
@@ -72,7 +72,7 @@ import { useSearchSettingsStore } from "@/stores/searchSettings"
 import { useSearchResultsStore } from "@/stores/searchResults"
 import { useSearchItemsStore } from "@/stores/searchItems"
 // Utils
-import { toUTCDate } from "@/ts/date"
+import { toUTCDate, toYear } from "@/ts/date"
 import { config } from "@/main"
 
 // Stores
@@ -88,11 +88,32 @@ const tab = ref()
 const startDate = ref(searchSettings.value.startDate)
 const endDate = ref(searchSettings.value.endDate)
 
+// computed
+const periodSpan = computed<string>(() => {
+    return `${toYear(config.period.start)} &ndash; ${endYear.value}`
+})
+const endYear = computed<string>(() => {
+    return config.period.end ? toYear(config.period.end) : "nu"
+})
+
 // Watchers
 watch([startDate, endDate], () => {
+    // nothing to update
+    if (startDate.value === searchSettings.value.startDate && endDate.value === searchSettings.value.endDate) {
+        return
+    }
     searchSettings.value.startDate = toUTCDate(startDate.value)
     searchSettings.value.endDate = toUTCDate(endDate.value)
 })
+
+// reverse
+watch(
+    () => searchSettingsStore.searchSettings.endDate,
+    () => {
+        startDate.value = searchSettingsStore.searchSettings.startDate
+        endDate.value = searchSettingsStore.searchSettings.endDate
+    },
+)
 </script>
 
 <style scoped lang="scss">

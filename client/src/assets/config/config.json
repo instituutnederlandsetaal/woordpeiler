@@ -6,9 +6,19 @@
         "slogan": "woordtrends van 2000 tot nu",
         "description": "De Woordpeiler toont hoe vaak woorden voorkomen in Nederlandstalige kranten."
     },
-    "ngram": 1,
-    "languages": { "NN": "F6C141", "BN": "DC050C", "SN": "4EB265", "AN": "1965B0" },
+    "searchItems": {
+        "ngram": 1,
+        "filters": [
+            { "name": "Taalvariëteit", "api": "language", "advanced": false },
+            { "name": "Krant", "api": "source", "advanced": true }
+        ],
+        "autosplit": { "on": "language", "colors": { "NN": "F6C141", "BN": "DC050C", "SN": "4EB265", "AN": "1965B0" } }
+    },
     "corpus": { "name": "CHN", "url": "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search" },
-    "period": { "start": "2000-01-01", "end": "2025-01-01" },
-    "theme": { "color": "#4488ee", "logo": "/woordpeiler-logo.svg", "favicon": "assets/config/woordpeiler-logo.svg" }
+    "period": { "start": "2000-01-01" },
+    "theme": {
+        "color": "#4488ee",
+        "logo": "assets/config/woordpeiler-logo.svg",
+        "favicon": "assets/config/woordpeiler-logo.svg"
+    }
 }
