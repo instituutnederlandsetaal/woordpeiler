@@ -2,12 +2,12 @@ import axios, { type AxiosResponse } from "axios"
 import { cleanParams } from "@/api/api"
 
 export type SearchRequest = {
-    wordform?: string
-    lemma?: string
-    pos?: string
-    source?: string
-    language?: string
-    interval: string
+    w?: string
+    l?: string
+    p?: string
+    s?: string
+    v?: string
+    i: string
     start: string
     end: string
 }
@@ -17,7 +17,7 @@ export type SearchResult = { time: number; size: number; abs_freq: number; rel_f
 export type SearchResponse = AxiosResponse<SearchResult[]>
 
 export function getSearch(request: SearchRequest): Promise<SearchResponse> {
-    return axios.get("/word_frequency", { params: cleanParams(request) })
+    return axios.get("/frequency", { params: cleanParams(request) })
 }
 
 export function getSVG(request: SearchRequest): Promise<AxiosResponse<string>> {

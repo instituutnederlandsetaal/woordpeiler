@@ -10,7 +10,7 @@ from server.util.datatypes import DataSeries, Interval, IntervalType
 from server.query.query_builder import ExecutableQuery, QueryBuilder, BaseCursor
 
 
-class WordFrequencyQuery(QueryBuilder):
+class FrequencyQuery(QueryBuilder):
     interval: Literal
     word_filter: Composable
     source_filter: Composable
@@ -41,15 +41,15 @@ class WordFrequencyQuery(QueryBuilder):
                 poshead = pos
                 pos = None
 
-        self.ngram = WordFrequencyQuery.get_ngram(wordform, lemma, pos, poshead)
+        self.ngram = FrequencyQuery.get_ngram(wordform, lemma, pos, poshead)
 
         self.words_table = Identifier(f"words_{self.ngram}")
         self.freq_table = Identifier(f"frequencies_{self.ngram}")
-        self.word_filter = WordFrequencyQuery.get_word_filter(
+        self.word_filter = FrequencyQuery.get_word_filter(
             id, wordform, lemma, pos, poshead
         )
-        self.source_filter = WordFrequencyQuery.get_source_filter(source, language)
-        self.corpus_size_table = WordFrequencyQuery.get_corpus_size_table(
+        self.source_filter = FrequencyQuery.get_source_filter(source, language)
+        self.corpus_size_table = FrequencyQuery.get_corpus_size_table(
             self.source_filter, self.ngram
         )
         self.date_filter = QueryBuilder.get_date_filter(

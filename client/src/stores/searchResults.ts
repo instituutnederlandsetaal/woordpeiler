@@ -88,15 +88,15 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
         // construct search request, partly from unsanitized user input
         const searchRequest: SearchAPI.SearchRequest = {
             // unsanitized user input
-            wordform: item.wordform?.trim()?.toLowerCase(),
-            lemma: item.lemma?.trim()?.toLowerCase(),
+            w: item.wordform?.trim()?.toLowerCase(),
+            l: item.lemma?.trim()?.toLowerCase(),
             // fixed values
-            pos: item.pos,
-            source: item.source,
-            language: item.language,
-            interval: toIntervalStr(searchSettings.value.intervalType, searchSettings.value.intervalLength),
-            start: searchSettings.value.startDate,
-            end: searchSettings.value.endDate,
+            p: item.pos,
+            s: item.source,
+            v: item.language,
+            i: toIntervalStr(searchSettings.value.intervalType, searchSettings.value.intervalLength),
+            start: toTimestamp(searchSettings.value.startDate),
+            end: toTimestamp(searchSettings.value.endDate),
         }
         // loading icon per item
         item.loading = true

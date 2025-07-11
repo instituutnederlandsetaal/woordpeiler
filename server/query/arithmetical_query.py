@@ -8,7 +8,7 @@ from psycopg import AsyncCursor
 from PolStringConvertor import infixToPostfix
 
 # local
-from server.query.word_frequency_query import WordFrequencyQuery
+from server.query.frequency_query import FrequencyQuery
 from server.util.datatypes import DataSeries
 
 
@@ -46,7 +46,7 @@ class ArithmeticalQuery:
                 operands.append(result)
             else:
                 await (
-                    WordFrequencyQuery(
+                    FrequencyQuery(
                         wordform=token,
                         source=self.source,
                         language=self.language,

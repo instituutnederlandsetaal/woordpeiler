@@ -5,13 +5,13 @@ import unittest
 import psycopg
 
 # local
-from server.query.word_frequency_query import WordFrequencyQuery
+from server.query.frequency_query import FrequencyQuery
 from server.config.connection import get_reader_conn_str
 from server.util.datatypes import DataSeries
 from server.util.dataseries_row_factory import DataSeriesRowFactory
 
 
-class WordFrequencyQueryTest(unittest.IsolatedAsyncioTestCase):
+class FrequencyQueryTest(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.connection = await psycopg.AsyncConnection.connect(get_reader_conn_str())
         self.cursor = self.connection.cursor(row_factory=DataSeriesRowFactory)
@@ -22,7 +22,7 @@ class WordFrequencyQueryTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_init_default(self):
         result: list[DataSeries] = (
-            await WordFrequencyQuery(
+            await FrequencyQuery(
                 wordform="de",
                 bucket_type="year",
                 bucket_size=1,

@@ -69,10 +69,10 @@ onMounted(() => {
     }
     const graph = spotlight.graph
     const request: API.SearchRequest = {
-        wordform: graph.word?.toLowerCase()?.trim(),
-        lemma: graph.lemma?.toLowerCase()?.trim(),
+        w: graph.word?.toLowerCase()?.trim(),
+        l: graph.lemma?.toLowerCase()?.trim(),
         start: graph.start,
-        interval: graph.interval,
+        i: graph.interval,
     }
 
     API.getSVG(request).then((response) => {

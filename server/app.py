@@ -21,7 +21,7 @@ import uvicorn
 from server.query.arithmetical_query import ArithmeticalQuery
 from server.query.listing_query import ListingQuery
 from server.query.trends_query import TrendsQuery
-from server.query.word_frequency_query import WordFrequencyQuery
+from server.query.frequency_query import FrequencyQuery
 from server.config.config import FastAPI, create_app_with_config
 from server.util.dataseries_row_factory import (
     DataSeriesRowFactory,
@@ -109,26 +109,26 @@ async def get_trends(
 @app.get("/svg")
 async def get_svg(
     request: Request,
-    wordform: Optional[str] = None,
-    lemma: Optional[str] = None,
-    pos: Optional[str] = None,
-    source: Optional[str] = None,
-    language: Optional[str] = None,
-    interval: str = "y",
+    w: Optional[str] = None,
+    l: Optional[str] = None,
+    p: Optional[str] = None,
+    s: Optional[str] = None,
+    v: Optional[str] = None,
+    i: str = "y",
     start: Optional[datetime] = None,
     end: Optional[datetime] = None,
 ) -> str:
-    # get the word as a regular WordFrequencyQuery
+    # get the word as a regular FrequencyQuery
     data = await get_freq(
         request,
-        wordform,
-        lemma,
-        pos,
-        source,
-        language,
+        w,
+        l,
+        p,
+        s,
+        v,
         start,
         end,
-        interval,
+        i,
     )
     # create a <svg> and <polyline> element
     svg = f'<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 100 100">'
@@ -174,41 +174,41 @@ async def get_math(
             ).execute(cur)
 
 
-@app.get("/word_frequency")
+@app.get("/frequency")
 async def get_freq(
     request: Request,
-    wordform: Optional[str] = None,
-    lemma: Optional[str] = None,
-    pos: Optional[str] = None,
-    source: Optional[str] = None,
-    language: Optional[str] = None,
+    w: Optional[str] = None,
+    l: Optional[str] = None,
+    p: Optional[str] = None,
+    s: Optional[str] = None,
+    v: Optional[str] = None,
     start: Optional[datetime] = None,
     end: Optional[datetime] = None,
-    interval: str = "1y",
+    i: str = "1y",
 ) -> list[DataSeries]:
     # permission check
-    if any([source, lemma, pos]) and not request.app.internal:
+    if any([s, l, p]) and not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
     # send to math, but only internally
-    if wordform and ("+" in wordform or "/" in wordform) and request.app.internal:
+    if w and ("+" in w or "/" in w) and request.app.internal:
         return await get_math(
             request,
-            wordform,
-            source,
-            language,
-            interval,
+            w,
+            s,
+            v,
+            i,
             start,
             end,
         )
 
-    query = WordFrequencyQuery(
-        wordform=wordform,
-        lemma=lemma,
-        pos=pos,
-        source=source,
-        language=language,
-        interval=interval,
+    query = FrequencyQuery(
+        wordform=w,
+        lemma=l,
+        pos=p,
+        source=s,
+        language=v,
+        interval=i,
         start_date=start,
         end_date=end,
     )
