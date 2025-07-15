@@ -53,11 +53,11 @@
                     <a href="https://doi.org/10.5334/bbi">https://doi.org/10.5334/bbi</a>
                 </p>
                 <p>
-                    Voor de corpus-frontend:
+                    Voor de blacklab-frontend:
                     <br />
                     Software beschikbaar op:
-                    <a href="https://github.com/instituutnederlandsetaal/corpus-frontend"
-                        >https://github.com/instituutnederlandsetaal/corpus-frontend</a
+                    <a href="https://github.com/instituutnederlandsetaal/blacklab-frontend"
+                        >https://github.com/instituutnederlandsetaal/blacklab-frontend</a
                     >
                 </p>
             </section>
