@@ -18,6 +18,7 @@ class PsqlCopy:
             host = os.getenv("POSTGRES_HOST")
             db = os.getenv("POSTGRES_DB")
             port = os.getenv("BUILDER_PORT")
+            password = os.getenv("POSTGRES_PASSWORD")
             query = f"\"\\copy {table} FROM '{path}'\""
-            command = f"psql -d {db} -U {user} -h {host} -p {port} -c {query}"
+            command = f"PGPASSWORD={password} psql -d {db} -U {user} -h {host} -p {port} -c {query}"
             os.system(command)
