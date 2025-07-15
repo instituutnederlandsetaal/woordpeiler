@@ -27,8 +27,8 @@ def initialize(
         create_table_posses(pos_path)
         create_table_sources(source_path)
 
-    FrequencyTableBuilder(freq_path, ngram).create()
-    WordsTableBuilder(words_path, ngram).create()
     CorpusSizeTableBuilder(size_path, ngram).create()
+    WordsTableBuilder(words_path, ngram).create()
+    FrequencyTableBuilder(freq_path, ngram).create()
 
     exit()

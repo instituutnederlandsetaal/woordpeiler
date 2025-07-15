@@ -11,14 +11,12 @@ from database.util.psql_copy import PsqlCopy
 create_table = SQL("""
     CREATE TABLE posses (
         id INTEGER,
-        pos TEXT,
-        poshead TEXT
+        pos TEXT
     )
 """)
 
 create_indices = SQL("""
     CREATE INDEX ON posses (pos) INCLUDE (id);
-    CREATE INDEX ON posses (poshead) INCLUDE (id);
 """)
 
 
