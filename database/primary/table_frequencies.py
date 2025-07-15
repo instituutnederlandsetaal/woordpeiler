@@ -4,7 +4,7 @@ from psycopg.sql import SQL
 # local
 from database.util.query import execute_query, time_query
 from database.util.table_builder import TableBuilder
-from util.psql_copy import PsqlCopy
+from database.util.psql_copy import PsqlCopy
 
 
 class FrequencyTableBuilder(TableBuilder):
