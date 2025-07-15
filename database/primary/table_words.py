@@ -2,32 +2,24 @@
 from psycopg.sql import SQL, Composed
 
 # local
-from database.util.query import time_query, analyze_vacuum
+from database.util.query import time_query, execute_query
 from database.util.table_builder import TableBuilder
+from util.psql_copy import PsqlCopy
 
 
 class WordsTableBuilder(TableBuilder):
+    def __init__(self, path: str, ngram: int):
+        self.path = path
+        super().__init__(ngram)
+
     def _build_queries(self):
         self.create_table = SQL("""
-            SELECT 
-                wordform_ids,
-                lemma_ids,
-                pos_ids
-            INTO
-                {words}
-            FROM
-                {frequencies}
-            GROUP BY
-                wordform_ids,
-                lemma_ids,
-                pos_ids;
-        """).format(words=self.words, frequencies=self.frequencies)
-
-        self.add_primary_key = SQL("""
-            ALTER TABLE 
-                {words} 
-            ADD 
-                COLUMN id SERIAL PRIMARY KEY;
+            CREATE TABLE {words} (
+                id INTEGER,
+                wordform_ids INTEGER[],
+                lemma_ids INTEGER[],
+                pos_ids INTEGER[]
+            )                    
         """).format(words=self.words)
 
         self.add_indices: list[Composed] = []
@@ -40,10 +32,6 @@ class WordsTableBuilder(TableBuilder):
             )
 
     def create(self):
-        time_query(
-            f"Creating table {self.words}",
-            self.create_table,
-            self.add_primary_key,
-            *self.add_indices,
-        )
-        analyze_vacuum()
+        execute_query(self.create_table)
+        PsqlCopy.from_file(self.path, self.words.as_string())
+        time_query(f"Creating indices for table {self.words}", *self.add_indices)

@@ -2,9 +2,8 @@
 from psycopg.sql import SQL
 
 # local
-from database.util.query import analyze_vacuum, time_query, execute_query
-from database.util.timer import timer
-from database.util.uploader import Uploader
+from database.util.query import time_query, execute_query
+from database.util.psql_copy import PsqlCopy
 
 create_table = SQL("""
     CREATE TABLE lemmas (
@@ -13,29 +12,12 @@ create_table = SQL("""
     )
 """)
 
-add_primary_key = SQL("""
-    ALTER TABLE
-        lemmas 
-    ADD CONSTRAINT lemmas_pkey PRIMARY KEY (id);
-""")
-
 create_indices = SQL("""
     CREATE INDEX ON lemmas (lemma text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100);
 """)
 
 
-class LemmaUploader(Uploader):
-    def _insert_rows(self, rows: list[list[str]]) -> None:
-        with self.cursor.copy("COPY lemmas (id, lemma) FROM STDIN") as copy:
-            for r in rows:
-                copy.write_row(r)
-
-
 def create_table_lemmas(path: str):
     execute_query(create_table)
-    with timer("Creating table lemmas"):
-        with LemmaUploader(path, columns=2) as uploader:
-            uploader.upload()
-    time_query("Adding lemmas primary key", add_primary_key)
+    PsqlCopy.from_file(path, "lemmas")
     time_query("Creating lemma indices", create_indices)
-    analyze_vacuum()

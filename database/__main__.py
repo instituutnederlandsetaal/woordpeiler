@@ -12,6 +12,9 @@ def initialize(folder: str, config_name: str, ngram: int) -> None:
     word_path = f"{folder}/{config_name}_word_lookup.tsv.gz"
     lemma_path = f"{folder}/{config_name}_lemma_lookup.tsv.gz"
     pos_path = f"{folder}/{config_name}_pos_full_lookup.tsv.gz"
+    words_path = f"{folder}/{config_name}_annotations.tsv.gz"
+    source_path = f"{folder}/{config_name}_metadata_group.tsv.gz"
+    size_path = f"{folder}/{config_name}_size.tsv.gz"
     freq_path = f"{folder}/{config_name}.tsv.gz"
 
     primary.initialize(
@@ -20,6 +23,9 @@ def initialize(folder: str, config_name: str, ngram: int) -> None:
         word_path=word_path,
         lemma_path=lemma_path,
         pos_path=pos_path,
+        source_path=source_path,
+        words_path=words_path,
+        size_path=size_path,
     )
     if ngram == 1:
         secondary.initialize()

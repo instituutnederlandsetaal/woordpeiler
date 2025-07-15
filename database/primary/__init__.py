@@ -15,30 +15,20 @@ def initialize(
     word_path: Optional[str] = None,
     lemma_path: Optional[str] = None,
     pos_path: Optional[str] = None,
+    source_path: Optional[str] = None,
+    words_path: Optional[str] = None,
+    size_path: Optional[str] = None,
 ):
     if ngram == 1:
-        if not all([word_path, lemma_path, pos_path]):
-            raise ValueError("Word, lemma, and pos paths must be provided.")
+        if not all([word_path, lemma_path, pos_path, source_path]):
+            raise ValueError("Word, lemma, pos, and source paths must be provided.")
         create_table_wordforms(word_path)
         create_table_lemmas(lemma_path)
         create_table_posses(pos_path)
+        create_table_sources(source_path)
 
-    freq_table = FrequencyTableBuilder(freq_path, ngram)
-    freq_table.create()
+    FrequencyTableBuilder(freq_path, ngram).create()
+    WordsTableBuilder(words_path, ngram).create()
+    CorpusSizeTableBuilder(size_path, ngram).create()
 
-    if ngram == 1:
-        create_table_sources()
-    freq_table.add_source_id_column()
-
-    words_table = WordsTableBuilder(ngram)
-    words_table.create()
-    freq_table.add_word_id_column()
-
-    freq_table.deduplicate()
-    freq_table.add_frequencies_indices()
-
-    corpus_size_table = CorpusSizeTableBuilder(ngram)
-    corpus_size_table.create()
-
-    source_size = SourceSizeTableBuilder(ngram)
-    source_size.create()
+    exit()
