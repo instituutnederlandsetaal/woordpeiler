@@ -19,6 +19,6 @@ class PsqlCopy:
             db = os.getenv("POSTGRES_DB")
             port = os.getenv("BUILDER_PORT")
             password = os.getenv("POSTGRES_PASSWORD")
-            query = f"\"\\copy {table} FROM '{path}'\""
+            query = f"\"\\copy {table} FROM '{path}' WITH CSV DELIMITER E'\t'\""
             command = f"PGPASSWORD={password} psql -d {db} -U {user} -h {host} -p {port} -c {query}"
             os.system(command)
