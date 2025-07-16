@@ -18,7 +18,6 @@ class FrequencyQuery(QueryBuilder):
 
     def __init__(
         self,
-        id: Optional[int] = None,
         wordform: Optional[str] = None,
         lemma: Optional[str] = None,
         pos: Optional[str] = None,
@@ -27,6 +26,7 @@ class FrequencyQuery(QueryBuilder):
         start_date: Optional[int] = None,
         end_date: Optional[int] = None,
         interval: str = "1y",
+        id: Optional[int] = None,
     ) -> None:
         # trimming and unicode normalization for non-fixed user input
         if wordform is not None:
@@ -173,9 +173,8 @@ class FrequencyQuery(QueryBuilder):
             ) 
             -- merge with corpus_size to get the full timeline
             SELECT 
-                EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP) AS time, 
-                SUM(COALESCE(frequency, 0))::INTEGER AS frequency, 
-                SUM(cs.{size}) AS size, 
+                EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP)::INTEGER AS time, 
+                SUM(COALESCE(frequency, 0))::INTEGER AS abs_freq, 
                 CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) * 1000000 END AS rel_freq
             FROM {corpus_size_table} cs 
                 LEFT JOIN frequencies_data f 

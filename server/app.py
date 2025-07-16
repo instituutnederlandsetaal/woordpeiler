@@ -7,10 +7,7 @@ That class may raise exceptions, which are caught and returned as HTTPExceptions
 
 # standard
 from datetime import datetime
-from decimal import Decimal
-from math import trunc
 from typing import Annotated, Any, Optional
-import base64
 
 # third party
 from psycopg.rows import dict_row
@@ -18,6 +15,7 @@ from fastapi import Request, HTTPException, Query
 import uvicorn
 
 # local
+from query.svg_query import SvgQuery
 from server.query.arithmetical_query import ArithmeticalQuery
 from server.query.listing_query import ListingQuery
 from server.query.trends_query import TrendsQuery
@@ -114,43 +112,14 @@ async def get_svg(
     p: Optional[str] = None,
     s: Optional[str] = None,
     v: Optional[str] = None,
-    i: str = "y",
     start: Optional[datetime] = None,
     end: Optional[datetime] = None,
+    i: str = "1y",
 ) -> str:
-    # get the word as a regular FrequencyQuery
-    data = await get_freq(
-        request,
-        w,
-        l,
-        p,
-        s,
-        v,
-        start,
-        end,
-        i,
-    )
-    # create a <svg> and <polyline> element
-    svg = f'<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 100 100">'
-    svg += f'<polyline points="'
-
-    # normalize the data between 0 and 100
-    max_freq = max([d.rel_freq for d in data])
-    max_time = max([d.time for d in data])
-    min_time = min([d.time for d in data])
-    for d in data:
-        d.rel_freq = (d.rel_freq / max_freq * 100) if max_freq > 0 else Decimal(0)
-        d.time = (d.time - min_time) / (max_time - min_time) * 100
-
-    for d in data:
-        # convert 12.66666 to 12.66
-        trunc_freq = trunc(d.rel_freq * 100) / 100
-        trunc_time = trunc(d.time * 100) / 100
-        svg += f"{trunc_time},{100 - trunc_freq} "
-    svg += f'" fill="none" stroke="black" stroke-width="0.5" />'
-    svg += f"</svg>"
-    svg_base64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
-    return svg_base64
+    async with request.app.async_pool.connection() as conn:
+        async with conn.cursor() as cur:
+            freq = FrequencyQuery(w, l, p, s, v, start, end, i)
+            return await SvgQuery(freq).execute(cur)
 
 
 async def get_math(

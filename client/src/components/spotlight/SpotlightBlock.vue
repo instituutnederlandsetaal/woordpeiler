@@ -24,9 +24,7 @@
                     {{ p }}
                 </span>
             </article>
-            <figure v-if="spotlight.graph" class="spotlight-graph">
-                <img v-if="svgBlob" :src="svgBlob" />
-            </figure>
+            <figure v-if="spotlight.graph" class="spotlight-graph" v-html="svgBlob" />
         </div>
     </section>
 </template>
@@ -77,7 +75,7 @@ onMounted(() => {
 
     API.getSVG(request).then((response) => {
         const blob = response.data
-        svgBlob.value = `data:image/svg+xml;base64,${blob}`
+        svgBlob.value = `${blob}`
     })
 })
 </script>
@@ -167,11 +165,14 @@ onMounted(() => {
             min-height: 0;
             padding-top: 0.3rem;
 
-            img {
+            :deep(svg) {
                 user-select: none;
                 height: 100%;
                 // strech svg without keeping aspect ratio
                 width: 100%;
+                fill: none;
+                stroke: black;
+                stroke-width: 0.005;
             }
         }
     }

@@ -107,8 +107,8 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
                     searchItem: JSON.parse(JSON.stringify(item)),
                     uuid: uuidv4(),
                     data: {
-                        abs_freq: response.data.map((i) => ({ x: i.time * 1000, y: parseFloat(i.abs_freq) })),
-                        rel_freq: response.data.map((i) => ({ x: i.time * 1000, y: parseFloat(i.rel_freq) })),
+                        abs_freq: response.data.map((i) => ({ x: i[0] * 1000, y: i[1] })),
+                        rel_freq: response.data.map((i) => ({ x: i[0] * 1000, y: i[2] })),
                     },
                 }
                 searchResults.value.push(dataset)
