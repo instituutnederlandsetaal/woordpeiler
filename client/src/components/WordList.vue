@@ -58,13 +58,13 @@
             </div>
 
             <div class="formSplit">
-                <label for="variant">Locatie</label>
+                <label for="variant">{{ config.searchItems.filters[0].name }}</label>
                 <Select
                     id="variant"
                     v-model="searchItem.language"
                     :options="languageOptions"
                     showClear
-                    placeholder="Locatie"
+                    :placeholder="config.searchItems.filters[0].name"
                     :loading="!languageOptions.length"
                 />
             </div>
@@ -92,7 +92,7 @@
                             </HelpButton>
                             <InputText
                                 :invalid="invalidInputText(searchItem.lemma)"
-                                id="lemma"
+                                id="lemma" placeholder="Lemma"
                                 v-model.trim="searchItem.lemma"
                                 @keyup.enter="search"
                             />
@@ -112,13 +112,13 @@
                         </div>
                         <template v-if="$internal">
                             <div class="formSplit">
-                                <label for="source">Krant</label>
+                                <label for="source">{{ config.searchItems.filters[1].name }}</label>
                                 <Select
                                     id="source"
                                     v-model="searchItem.source"
                                     :options="sourceOptions"
                                     showClear
-                                    placeholder="Krant"
+                                    :placeholder="config.searchItems.filters[1].name"
                                     :loading="!sourceOptions.length"
                                 />
                             </div>
