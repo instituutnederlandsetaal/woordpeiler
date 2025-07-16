@@ -163,7 +163,7 @@ class FrequencyQuery(QueryBuilder):
             frequencies_data AS (
                 SELECT 
                     time, 
-                    SUM(frequency) as frequency
+                    SUM(frequency) AS frequency
                 FROM
                     word_ids
                     LEFT JOIN {freq_table} ON word_id = id
@@ -173,10 +173,10 @@ class FrequencyQuery(QueryBuilder):
             ) 
             -- merge with corpus_size to get the full timeline
             SELECT 
-                time_bucket({time_bucket},cs.time) as time, 
-                SUM(COALESCE(frequency, 0)) as abs_freq, 
-                SUM(cs.{size}) as size, 
-                CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) END as rel_freq
+                EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP) AS time, 
+                SUM(COALESCE(frequency, 0))::INTEGER AS frequency, 
+                SUM(cs.{size}) AS size, 
+                CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) * 1000000 END AS rel_freq
             FROM {corpus_size_table} cs 
                 LEFT JOIN frequencies_data f 
                     ON cs.time = f.time 
@@ -193,7 +193,11 @@ class FrequencyQuery(QueryBuilder):
             corpus_size_table=self.corpus_size_table,
             words_table=self.words_table,
             freq_table=self.freq_table,
-            source_filter=SQL("WHERE {source_filter}").format(source_filter=self.source_filter) if self.source_filter != SQL("") else SQL(""),
+            source_filter=SQL("WHERE {source_filter}").format(
+                source_filter=self.source_filter
+            )
+            if self.source_filter != SQL("")
+            else SQL(""),
             date_filter=self.date_filter,
             time_bucket=self.interval,
             word_filter=self.word_filter,

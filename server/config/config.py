@@ -10,6 +10,8 @@ from datetime import datetime
 # third party
 from fastapi import FastAPI, Request, Response
 from psycopg_pool import AsyncConnectionPool
+from psycopg import AsyncConnection
+from psycopg.types.numeric import FloatLoader
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.logging import ColourizedFormatter
 from dotenv import load_dotenv
@@ -34,6 +36,10 @@ class FastAPI(FastAPI):
     internal: bool = False
 
 
+async def set_float_loader(conn: AsyncConnection) -> None:
+    conn.adapters.register_loader("numeric", FloatLoader)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Logging
@@ -53,6 +59,7 @@ async def lifespan(app: FastAPI):
         kwargs={"prepare_threshold": 0},
         check=AsyncConnectionPool.check_connection,
         max_size=12,
+        configure=set_float_loader,
     )
     await app.async_pool.open()
     await app.async_pool.wait()

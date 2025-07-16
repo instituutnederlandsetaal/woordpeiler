@@ -185,7 +185,7 @@ async def get_freq(
     start: Optional[datetime] = None,
     end: Optional[datetime] = None,
     i: str = "1y",
-) -> list[DataSeries]:
+) -> list[Any]:
     # permission check
     if any([s, l, p]) and not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
@@ -214,7 +214,7 @@ async def get_freq(
     )
     # execute
     async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
+        async with conn.cursor() as cur:
             return await query.build(cur).execute_fetchall()
 
 
