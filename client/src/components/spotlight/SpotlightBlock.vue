@@ -66,6 +66,9 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
         return
     }
     const graph = spotlight.graph
+    if (!graph) {
+        return // not a graph spotlight
+    }
     const request: API.SearchRequest = {
         w: graph.word?.toLowerCase()?.trim(),
         l: graph.lemma?.toLowerCase()?.trim(),
