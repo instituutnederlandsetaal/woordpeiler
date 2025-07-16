@@ -25,6 +25,7 @@ declare module 'vue' {
     DataTable: typeof import('primevue/datatable')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    ErrorDialog: typeof import('./src/components/ErrorDialog.vue')['default']
     GraphWrapper: typeof import('./src/components/graph/GraphWrapper.vue')['default']
     HelpButton: typeof import('./src/components/HelpButton.vue')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']

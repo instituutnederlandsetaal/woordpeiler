@@ -9,7 +9,7 @@ export const useErrorsStore = defineStore("Errors", () => {
             (response) => response,
             (error) => {
                 // ignore spotlight errors
-                if (error.config.url.includes("woordpeiler.json")) {
+                if (error.config.url.includes(".json")) {
                     return Promise.reject(error)
                 }
 
@@ -24,11 +24,7 @@ export const useErrorsStore = defineStore("Errors", () => {
             },
         )
     }
-    // export
-    return {
-        // fields
-        errors,
-        // methods
-        setupErrorHandler,
-    }
+    // Setup the error handler when the store is created
+    setupErrorHandler()
+    return { errors }
 })
