@@ -1,5 +1,5 @@
 <template>
-    <section class="spotlight" :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
+    <section class="spotlight" :style="{ backgroundColor: spotlight.color }" v-intersection-observer="loadSvg" @click="search(spotlight)">
         <header class="spotlight-header">
             <h2 class="spotlight-title">
                 {{ title }}
@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { vIntersectionObserver } from '@vueuse/components'
 // API
 import * as API from "@/api/search"
 // Types
@@ -60,9 +61,8 @@ function search(spotlight: SpotlightBlock) {
     router.push({ path: "/grafiek", query: params })
 }
 
-// Lifecycle
-onMounted(() => {
-    if (!spotlight.graph) {
+function loadSvg([entry]: IntersectionObserverEntry[]) {
+    if (!entry?.isIntersecting || svgBlob.value) {
         return
     }
     const graph = spotlight.graph
@@ -76,7 +76,7 @@ onMounted(() => {
     API.getSVG(request).then((response) => {
         svgBlob.value = response.data
     })
-})
+}
 </script>
 
 <style scoped lang="scss">
