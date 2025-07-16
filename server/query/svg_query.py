@@ -1,6 +1,4 @@
 # standard
-import base64
-from decimal import Decimal
 from math import trunc
 
 # local

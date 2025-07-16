@@ -74,8 +74,7 @@ onMounted(() => {
     }
 
     API.getSVG(request).then((response) => {
-        const blob = response.data
-        svgBlob.value = `${blob}`
+        svgBlob.value = response.data
     })
 })
 </script>

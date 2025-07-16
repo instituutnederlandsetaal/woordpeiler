@@ -15,7 +15,7 @@ from fastapi import Request, HTTPException, Query
 import uvicorn
 
 # local
-from query.svg_query import SvgQuery
+from server.query.svg_query import SvgQuery
 from server.query.arithmetical_query import ArithmeticalQuery
 from server.query.listing_query import ListingQuery
 from server.query.trends_query import TrendsQuery
