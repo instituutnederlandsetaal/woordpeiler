@@ -17,10 +17,17 @@ create_table = SQL("""
 
 create_indices = SQL("""
     CREATE INDEX ON posses (pos) INCLUDE (id);
+    CREATE INDEX ON posses (poshead) INCLUDE (id);
+""")
+
+add_pos_head = SQL("""
+    ALTER TABLE posses ADD COLUMN poshead TEXT;
+    UPDATE posses SET poshead = SPLIT_PART(pos, '(', 1);
 """)
 
 
 def create_table_posses(path: str):
     execute_query(create_table)
     PsqlCopy.from_file(path, "posses")
+    execute_query(add_pos_head)
     time_query("Creating pos indices", create_indices)
