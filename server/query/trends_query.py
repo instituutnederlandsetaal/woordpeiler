@@ -89,7 +89,7 @@ class TrendsQuery(QueryBuilder):
             WITH tc AS (
                 SELECT
                     word_id,
-                    SUM({abs_freq}) / (SELECT SUM(size) FROM {corpus_size} counts {date_filter}) 1e6 AS rel_freq
+                    SUM({abs_freq}) / (SELECT SUM(size) FROM {corpus_size} counts {date_filter}) * 1e6 AS rel_freq
                 FROM {counts_table} counts
                 {date_filter}
                 GROUP BY word_id
