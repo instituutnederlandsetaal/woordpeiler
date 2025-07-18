@@ -24,8 +24,10 @@ class WordsTableBuilder(TableBuilder):
 
         self.add_indices: list[Composed] = []
         for i in range(1, self.ngram + 1):
+            # TODO CREATE INDEX ON words_2 ((wordform_ids[1]), (wordform_ids[2])) INCLUDE (id);
             self.add_indices.append(
                 SQL("""
+                CREATE INDEX ON {words} (id); -- for trends
                 CREATE INDEX ON {words} ((wordform_ids[{i}]), (lemma_ids[{i}]), (pos_ids[{i}])) INCLUDE (id);
                 CREATE INDEX ON {words} ((lemma_ids[{i}]), (pos_ids[{i}])) INCLUDE (id);
             """).format(words=self.words, i=i)

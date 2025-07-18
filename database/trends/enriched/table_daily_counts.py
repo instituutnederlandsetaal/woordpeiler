@@ -9,14 +9,17 @@ from database.util.table_builder import TableBuilder
 class DailyCountsTableBuilder(TableBuilder):
     def _build_queries(self):
         self.create_table = SQL("""
+        -- TODO might have to create a hypertable
             SELECT 
-                total.time, 
-                total.word_id, 
-                total.abs_freq AS abs_freq
+                time, 
+                word_id, 
+                SUM(frequency)::INTEGER AS abs_freq
             INTO 
                 {daily_counts}
             FROM 
-                (SELECT time, word_id, SUM(frequency) AS abs_freq FROM {frequencies} GROUP BY time, word_id) total;
+                {frequencies}
+            GROUP BY
+                time, word_id;
         """).format(daily_counts=self.daily_counts, frequencies=self.frequencies)
 
         self.add_indices = SQL("""

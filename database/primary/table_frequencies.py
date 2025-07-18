@@ -26,7 +26,7 @@ class FrequencyTableBuilder(TableBuilder):
         self.add_indices = SQL("""
             CREATE INDEX ON {frequencies} (word_id, source_id) INCLUDE (time, frequency);
             CREATE INDEX ON {frequencies} (source_id) INCLUDE (time, frequency);
-            CREATE INDEX ON {frequencies} (time) INCLUDE (frequency);
+            CREATE INDEX ON {frequencies} (time) INCLUDE (frequency); -- TODO this can be removed? corpus size is created from tsv
         """).format(frequencies=self.frequencies)
 
     def create(self):
