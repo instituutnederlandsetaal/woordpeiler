@@ -89,7 +89,7 @@ class TrendsQuery(QueryBuilder):
             WITH tc AS (
                 SELECT
                     word_id,
-                    SUM({abs_freq}) / (SELECT SUM(size) FROM {corpus_size} counts {date_filter}) as rel_freq
+                    SUM({abs_freq}) / (SELECT SUM(size) FROM {corpus_size} counts {date_filter}) 1e6 AS rel_freq
                 FROM {counts_table} counts
                 {date_filter}
                 GROUP BY word_id
@@ -97,14 +97,14 @@ class TrendsQuery(QueryBuilder):
             keyness AS (
                 SELECT
                     tc.word_id,
-                    ({modifier} + tc.rel_freq) / ({modifier} + rc.{rel_freq}) as keyness
+                    ({modifier} + tc.rel_freq) / ({modifier} + rc.{rel_freq}) AS keyness
                 FROM tc
                 LEFT JOIN {total_counts} rc ON tc.word_id = rc.word_id
-                ORDER BY keyness {gradient}
+                ORDER BY keyness DESC
                 LIMIT 1000
             )
             SELECT
-                k.keyness,
+                k.keyness::REAL,
                 string_agg(wf.wordform, ' ' ORDER BY ord.n) AS wordform,
                 string_agg(l.lemma, ' ' ORDER BY ord.n) AS lemma,
                 string_agg(p.pos, ' ' ORDER BY ord.n) AS pos
