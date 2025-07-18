@@ -146,7 +146,7 @@ class TrendsQuery(QueryBuilder):
                 SELECT
                     word_id,
                     SUM({abs_freq}) as abs_freq
-                FROM {counts_table}
+                FROM {counts_table} counts
                 {date_filter}
                 GROUP BY word_id
             ),
