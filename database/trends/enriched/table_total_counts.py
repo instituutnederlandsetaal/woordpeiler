@@ -11,23 +11,23 @@ class TotalCountsTableBuilder(TableBuilder):
         self.create_table = SQL("""
             SELECT 
                 word_id, 
-                SUM(abs_freq) as abs_freq
+                SUM(abs_freq)::INTEGER as abs_freq
             INTO {total_counts}
-            FROM {yearly_counts}
+            FROM {daily_counts}
             GROUP BY 
                 word_id;
         """).format(total_counts=self.total_counts, yearly_counts=self.yearly_counts)
 
         self.add_relative_columns = SQL("""
             ALTER TABLE {total_counts}
-            ADD COLUMN rel_freq FLOAT;
+            ADD COLUMN rel_freq REAL;
         """).format(total_counts=self.total_counts)
 
         self.fill_relative_columns = SQL("""
             UPDATE
                 {total_counts} 
             SET 
-                rel_freq = abs_freq / (SELECT SUM(abs_freq) FROM {total_counts});
+                rel_freq = (abs_freq / (SELECT SUM(abs_freq) FROM {total_counts})::REAL * 1e6)::REAL;
         """).format(total_counts=self.total_counts)
 
         self.add_indices = SQL("""

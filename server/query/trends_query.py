@@ -42,6 +42,7 @@ class TrendsQuery(QueryBuilder):
         self.words_table = Identifier(f"words_{ngram}")
         self.daily_wordforms = Identifier(f"daily_wordforms_{ngram}")
         self.total_wordforms = Identifier(f"total_wordforms_{ngram}")
+        self.corpus_size = Identifier(f"corpus_size_{ngram}")
         self.enriched = enriched
         self.modifier = Literal(modifier)
         self.trend_type = TrendType(trend_type)
@@ -64,22 +65,7 @@ class TrendsQuery(QueryBuilder):
     def get_counts_table(
         start_date: Optional[int], end_date: Optional[int], ngram: int
     ) -> Identifier:
-        start = start_date
-        end = end_date
-        # yearly checks
-        starts_on_new_years_day = start.month == 1 and start.day == 1
-        ends_on_new_years_eve = end.month == 12 and end.day == 31
-        # monthly checks
-        starts_on_first_of_month = start.day == 1
-        days_in_month = calendar.monthrange(end.year, end.month)[1]
-        ends_on_last_of_month = end.day == days_in_month
-        # return
-        if starts_on_new_years_day and ends_on_new_years_eve:
-            return Identifier(f"yearly_counts_{ngram}")
-        elif starts_on_first_of_month and ends_on_last_of_month:
-            return Identifier(f"monthly_counts_{ngram}")
-        else:
-            return Identifier(f"daily_counts_{ngram}")
+        return Identifier(f"daily_counts_{ngram}")
 
     def build(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
         if self.enriched:
@@ -103,7 +89,7 @@ class TrendsQuery(QueryBuilder):
             WITH tc AS (
                 SELECT
                     word_id,
-                    SUM({abs_freq}) / SUM(SUM({abs_freq})) OVER () as rel_freq
+                    SUM({abs_freq})::REAL / (SELECT SUM(size) FROM {corpus_size} counts {date_filter}) * 1e6 AS rel_freq
                 FROM {counts_table} counts
                 {date_filter}
                 GROUP BY word_id
@@ -111,20 +97,29 @@ class TrendsQuery(QueryBuilder):
             keyness AS (
                 SELECT
                     tc.word_id,
-                    ({modifier} + tc.rel_freq * 1e6) / ({modifier} + rc.{rel_freq} * 1e6) as keyness
+                    ({modifier} + tc.rel_freq) / ({modifier} + rc.{rel_freq}) AS keyness
                 FROM tc
                 LEFT JOIN {total_counts} rc ON tc.word_id = rc.word_id
-                ORDER BY keyness {gradient}
+                ORDER BY keyness DESC
                 LIMIT 1000
             )
             SELECT
-                k.keyness,
-                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
-                (SELECT string_agg(l.lemma, ' ') FROM unnest(lemma_ids) WITH ORDINALITY u(lemma, ord) JOIN lemmas l ON u.lemma = l.id) AS lemma,
-                (SELECT string_agg(p.pos, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS pos,
-                (SELECT string_agg(p.poshead, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS poshead
-            FROM keyness k, {words_table} w
-            WHERE k.word_id = w.id;
+                k.keyness::REAL,
+                string_agg(wf.wordform, ' ' ORDER BY ord.n) AS wordform,
+                string_agg(l.lemma, ' ' ORDER BY ord.n) AS lemma,
+                string_agg(p.pos, ' ' ORDER BY ord.n) AS pos
+            FROM
+                keyness k, {words_table} w, wordforms wf, lemmas l, posses p,
+                unnest(wordform_ids, lemma_ids, pos_ids) WITH ORDINALITY AS ord(wid,lid,pid,n)
+            WHERE
+                k.word_id = w.id AND
+                ord.wid = wf.id AND
+                ord.lid = l.id AND
+                ord.pid = p.id
+            GROUP BY
+                k.word_id, k.keyness
+            ORDER BY
+                k.keyness DESC;
             """
         ).format(
             words_table=self.words_table,
@@ -135,6 +130,7 @@ class TrendsQuery(QueryBuilder):
             modifier=self.modifier,
             counts_table=self.counts_table,
             gradient=self.gradient,
+            corpus_size=self.corpus_size,
         )
 
         return ExecutableQuery(cursor, query)
@@ -153,28 +149,30 @@ class TrendsQuery(QueryBuilder):
             keyness AS (
                 SELECT
                     tc.word_id,
-                    tc.abs_freq AS tc_abs_freq,
-                    rc.{abs_freq} - tc.abs_freq AS keyness
+                    tc.abs_freq AS keyness
                 FROM tc
-                LEFT JOIN {total_counts} rc ON tc.word_id = rc.word_id
-            ),
-            filter AS (
-                SELECT
-                    k.word_id,
-                    tc_abs_freq
-                FROM keyness k
-                WHERE k.keyness <= {modifier}
-                ORDER BY k.tc_abs_freq DESC
+                JOIN {total_counts} rc
+                    ON tc.word_id = rc.word_id AND (rc.abs_freq - tc.abs_freq < {modifier})
+                ORDER BY tc.abs_freq DESC
                 LIMIT 1000
             )
             SELECT
-                f.tc_abs_freq as keyness,
-                (SELECT string_agg(wf.wordform, ' ') FROM unnest(wordform_ids) WITH ORDINALITY u(wordform, ord) JOIN wordforms wf ON u.wordform = wf.id) AS wordform,
-                (SELECT string_agg(l.lemma, ' ') FROM unnest(lemma_ids) WITH ORDINALITY u(lemma, ord) JOIN lemmas l ON u.lemma = l.id) AS lemma,
-                (SELECT string_agg(p.pos, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS pos,
-                (SELECT string_agg(p.poshead, ' ' ORDER BY u.ord) FROM unnest(pos_ids) WITH ORDINALITY u(pos, ord) JOIN posses p ON u.pos = p.id) AS poshead
-            FROM filter f, {words_table} w
-            WHERE f.word_id = w.id;
+                k.keyness,
+                string_agg(wf.wordform, ' ' ORDER BY ord.n) AS wordform,
+                string_agg(l.lemma, ' ' ORDER BY ord.n) AS lemma,
+                string_agg(p.pos, ' ' ORDER BY ord.n) AS pos
+            FROM
+                keyness k, {words_table} w, wordforms wf, lemmas l, posses p,
+                unnest(wordform_ids, lemma_ids, pos_ids) WITH ORDINALITY AS ord(wid,lid,pid,n)
+            WHERE
+                k.word_id = w.id AND
+                ord.wid = wf.id AND
+                ord.lid = l.id AND
+                ord.pid = p.id
+            GROUP BY
+                word_id, k.keyness
+            ORDER BY
+                k.keyness DESC;
             """
         ).format(
             words_table=self.words_table,
