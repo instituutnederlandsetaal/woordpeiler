@@ -92,7 +92,7 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
     height: calc(250px + 10vw);
     max-height: 400px;
     max-width: 500px;
-    width: 100%;
+    min-width: 100%;
     // Without this, boxes with long text will grow to max-width, even if the screen is smaller
     overflow: hidden;
 
