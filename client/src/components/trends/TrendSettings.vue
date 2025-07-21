@@ -25,20 +25,16 @@
                                     />
                                 </div>
 
-                                <!-- <div class="formSplit">
+                                <div class="formSplit">
                                     <label for="variant">Taalvariëteit</label>
                                     <Select id="variant" v-model="trendSettings.language" :options="languageOptions"
                                         showClear optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
-                                </div> -->
+                                </div>
 
                                 <div class="formSplit">
                                     <label>Verrijkt met woordsoort en lemma</label>
                                     <Checkbox v-model="trendSettings.enriched" binary />
                                 </div>
-
-                                <p v-if="!trendSettings.enriched">
-                                    <small><i>Wanwege historische spelling nemen we het lemma ipv het token</i></small>
-                                </p>
                             </TabPanel>
 
                             <!-- Period tab -->
@@ -211,7 +207,9 @@ function setWeekCorrectly() {
 // Lifecycle
 onMounted(() => {
     // set initial week
-    week.value = [new Date("1618-01-01"), null]
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    week.value = [oneWeekAgo, null]
     setWeekCorrectly()
 })
 </script>

@@ -5,6 +5,7 @@ import * as TrendAPI from "@/api/trends"
 import type { TrendRequest } from "@/api/trends"
 // Types
 import { type TrendSettings, type TrendResult, type DateRange } from "@/types/trends"
+import { toTimestamp } from "@/ts/date"
 
 export const useTrendResultsStore = defineStore("TrendResults", () => {
     // Fields
@@ -21,8 +22,8 @@ export const useTrendResultsStore = defineStore("TrendResults", () => {
         const trendRequest: TrendRequest = {
             trend_type: trendSettings.value.trendType,
             modifier: trendSettings.value.modifier,
-            start: selectedPeriod.start,
-            end: selectedPeriod.end,
+            start: toTimestamp(selectedPeriod.start),
+            end: toTimestamp(selectedPeriod.end),
             enriched: trendSettings.value.enriched,
             language: trendSettings.value.language,
             ascending: trendSettings.value.ascending,

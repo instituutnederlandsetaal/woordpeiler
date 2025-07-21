@@ -1,14 +1,14 @@
-import { toFirstDayOfMonth, toLastDayOfMonth } from "@/ts/date"
+import { getNewYearsDay, getNewYearsEve, toFirstDayOfMonth, toLastDayOfMonth } from "@/ts/date"
 import type { TrendSettings } from "@/types/trends"
 import type { SelectLabel } from "@/types/ui"
 
 export const useTrendSettingsStore = defineStore("TrendSettings", () => {
     // Fields
     const trendSettings = ref<TrendSettings>({
-        year: { start: new Date("1618-01-01"), end: new Date("1618-12-31") },
-        month: { start: toFirstDayOfMonth(new Date("1618-01-01")), end: toLastDayOfMonth(new Date("1618-01-01")) },
-        week: { start: new Date("1618-01-01"), end: new Date("1618-01-01") },
-        other: { start: new Date("1690-01-01"), end: new Date("1701-01-01") },
+        year: { start: getNewYearsDay(), end: getNewYearsEve() },
+        month: { start: toFirstDayOfMonth(new Date()), end: toLastDayOfMonth(new Date()) },
+        week: { start: new Date(), end: new Date() },
+        other: { start: new Date(), end: new Date() },
         trendType: "absolute",
         modifier: 1,
         period: "year",
