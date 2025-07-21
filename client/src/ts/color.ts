@@ -11,26 +11,27 @@ function hsl2rgb(h: number, s: number, l: number): string {
     return `${(16777216 | b | (g << 8) | (r << 16)).toString(16).slice(1)}`
 }
 
-/** Random safe colors: not too light */
+let lastUsedIndex = -1
 export function randomColor(): string {
-    return colorScheme[Math.floor(Math.random() * colorScheme.length)]
+    const color = colorScheme[lastUsedIndex++ % colorScheme.length]
+    return color
 }
 
-// https://sronpersonalpages.nl/~pault/#fig:scheme_rainbow_discrete
 export const colorScheme = [
-    "D1BBD7", // no. 3
-    "AE76A3", // no. 6
-    "882E72", // no. 9
-    "1965B0", // no. 10
-    "5289C7", // no. 12
-    "7BAFDE", // no. 14
-    "4EB265", // no. 15
-    "90C987", // no. 16
-    "CAE0AB", // no. 17
-    "F7F056", // no. 18
-    "F6C141", // no. 20
-    "F1932D", // no. 22
-    "E8601C", // no. 24
-    "DC050C", // no. 26
-    "000000", // custom
+    "000000",
+    "DD0000",
+    "00DD00",
+    "0000DD",
+    "DDDD00",
+    "DD00DD",
+    "00DDDD",
+    "888888",
+    "880000",
+    "000088",
+    "008800",
+    "DD8800",
+    "DD0088",
+    "88DD88",
+    "8800DD",
+    "0088DD"
 ]
