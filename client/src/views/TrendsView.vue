@@ -11,7 +11,7 @@
 
             <SearchSettings v-if="isValid" />
         </aside>
-        <D3Graph />
+        <GraphWrapper />
     </main>
 </template>
 
