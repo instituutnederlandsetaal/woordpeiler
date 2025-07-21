@@ -1,17 +1,18 @@
 import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/search"
 import * as d3 from "d3"
 import { config } from "@/main"
+import { isInternal } from "@/ts/internal"
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
     let group
     if (settings.intervalType == IntervalType.YEAR) {
-        group = "field:witness_year_from:i"
+        group = `field:${config.blacklab.grouping.year}:i`
     } else if (settings.intervalType == IntervalType.MONTH) {
-        group = "field:witness_year_from:i,field:witness_month_from:i"
+        group = `field:${config.blacklab.grouping.year}:i,field:${config.blacklab.grouping.month}:i`
     } else {
         // week or day
-        group = "field:witness_year_from:i,field:witness_month_from:i,field:witness_day_from:i"
+        group = `field:${config.blacklab.grouping.year}:i,field:${config.blacklab.grouping.month}:i,field:${config.blacklab.grouping.day}:i`
     }
 
     // optionally filter on language
@@ -52,7 +53,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    return `${config.corpus.url}/hits`
+    return isInternal() ? config.blacklab.url.internal : config.blacklab.url.external;
 }
 
 function constructBLPatt(item: SearchItem) {
@@ -77,9 +78,9 @@ function constructSingleBLPatt(item: SearchItem) {
     const pattTerms = { lemma: item.lemma, word: item.wordform }
     // Add pos separately because only one can be present
     if (item.pos?.includes("(")) {
-        pattTerms["grouping_pos_full"] = item.pos
+        pattTerms[config.blacklab.annotations.pos] = item.pos
     } else {
-        pattTerms["pos"] = item.pos
+        pattTerms[config.blacklab.annotations.poshead] = item.pos
     }
 
     // Remove falsy values, and blank strings (could be tabs and spaces)
@@ -95,7 +96,7 @@ function constructSingleBLPatt(item: SearchItem) {
             pattTerms["lemma"] = toBLRegex(item.lemma)
         }
     }
-    const literal = ""
+    const literal = isRegex ? "" : "l"
     const patt = Object.entries(pattTerms)
         .map(([key, value]) => `${key}=${literal}"${value}"`)
         .join("&")
@@ -107,9 +108,7 @@ function toBLRegex(s: string): string {
 }
 
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
-    const filters = {
-        // medium: "newspaper",
-    }
+    const filters = config.blacklab.filter || {}
     const bucketType = settings.intervalType
     const bucketSize = settings.intervalLength
     const year: number = parseInt(d3.timeFormat("%Y")(point.x))
@@ -135,10 +134,10 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
     }
     const dateRange = `[${start} TO ${end}]`
-    const dateFilter = `(date_to:${dateRange} AND date_from:${dateRange})`
+    const dateFilter = `${config.blacklab.date}:${dateRange}`
 
     if (point.searchItem.source) {
-        filters["titleLevel2"] = `"${point.searchItem.source}"`
+        filters[config.blacklab.title] = `"${point.searchItem.source}"`
     }
 
     if (point.searchItem.language) {
