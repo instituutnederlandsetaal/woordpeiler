@@ -173,7 +173,7 @@ class FrequencyQuery(QueryBuilder):
             ) 
             -- merge with corpus_size to get the full timeline
             SELECT 
-                EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP)::INTEGER AS time,
+                EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP)::BIGINT AS time,
                 SUM(COALESCE(frequency, 0))::INTEGER AS abs_freq,
                 COALESCE(
                     SUM(COALESCE(frequency, 0)) / NULLIF(SUM(cs.{size}), 0) * 1e6,
