@@ -161,8 +161,8 @@ class FrequencyQuery(QueryBuilder):
             ),
             -- get corresponding frequencies
             frequencies_data AS (
-                SELECT 
-                    time, 
+                SELECT
+                    time,
                     SUM(frequency) AS frequency
                 FROM
                     word_ids
@@ -173,16 +173,19 @@ class FrequencyQuery(QueryBuilder):
             ) 
             -- merge with corpus_size to get the full timeline
             SELECT 
-                EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP)::INTEGER AS time, 
-                SUM(COALESCE(frequency, 0))::INTEGER AS abs_freq, 
-                CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) * 1e6 END AS rel_freq
-            FROM {corpus_size_table} cs 
-                LEFT JOIN frequencies_data f 
-                    ON cs.time = f.time 
+                EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP)::INTEGER AS time,
+                SUM(COALESCE(frequency, 0))::INTEGER AS abs_freq,
+                COALESCE(
+                    SUM(COALESCE(frequency, 0)) / NULLIF(SUM(cs.{size}), 0) * 1e6,
+                    0 -- avoid division by zero
+                )::REAL AS rel_freq
+            FROM {corpus_size_table} cs
+                LEFT JOIN frequencies_data f
+                    ON cs.time = f.time
             -- filter the timeline
             {date_filter}
             -- aggregate
-            GROUP BY 
+            GROUP BY
                 time_bucket({time_bucket},cs.time)
             ORDER BY
                 time_bucket({time_bucket},cs.time);
