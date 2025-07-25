@@ -16,7 +16,11 @@ class TotalCountsTableBuilder(TableBuilder):
             FROM {daily_counts}
             GROUP BY 
                 word_id;
-        """).format(total_counts=self.total_counts, yearly_counts=self.yearly_counts)
+        """).format(
+            total_counts=self.total_counts,
+            yearly_counts=self.yearly_counts,
+            daily_counts=self.daily_counts,
+        )
 
         self.add_relative_columns = SQL("""
             ALTER TABLE {total_counts}
