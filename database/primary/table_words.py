@@ -39,4 +39,4 @@ class WordsTableBuilder(TableBuilder):
     def create(self):
         execute_query(self.create_table)
         PsqlCopy.from_file(self.path, self.words.as_string())
-        time_query(f"Creating indices for table {self.words}", *self.add_indices)
+        time_query(f"Creating indices for table {self.words}", self.add_indices)
