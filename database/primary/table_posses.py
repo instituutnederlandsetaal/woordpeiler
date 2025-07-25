@@ -23,7 +23,7 @@ add_pos_head = SQL("""
 create_indices = SQL("""
     CREATE INDEX ON posses (pos) INCLUDE (id); -- for frequency queries
     CREATE INDEX ON posses (poshead) INCLUDE (id); -- for frequency queries
-    CREATE INDEX ON (id) INCLUDE (pos, poshead); -- for trend queries (unnesting)
+    CREATE INDEX ON posses (id) INCLUDE (pos, poshead); -- for trend queries (unnesting)
 """)
 
 
