@@ -34,8 +34,8 @@ class WordsTableBuilder(TableBuilder):
             """).format(
                     words=self.words,
                     i=i,
-                    wordform_ids=wordform_ids,
-                    lemma_ids=lemma_ids,
+                    wordform_ids=SQL(wordform_ids),
+                    lemma_ids=SQL(lemma_ids),
                 )
             )
 
