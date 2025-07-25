@@ -175,7 +175,7 @@ class FrequencyQuery(QueryBuilder):
             SELECT 
                 EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP)::INTEGER AS time, 
                 SUM(COALESCE(frequency, 0))::INTEGER AS abs_freq, 
-                CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) * 1000000 END AS rel_freq
+                CASE WHEN SUM(cs.{size}) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.{size}) * 1e6 END AS rel_freq
             FROM {corpus_size_table} cs 
                 LEFT JOIN frequencies_data f 
                     ON cs.time = f.time 

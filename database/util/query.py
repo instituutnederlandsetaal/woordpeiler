@@ -34,8 +34,8 @@ def analyze():
         autocommit_session("ANALYZE")
 
 
-def analyze_vacuum():
-    with timer("Analyze & Vacuum"):
+def vacuum_analyze():
+    with timer("Vacuum & Analyze"):
         autocommit_session("VACUUM ANALYZE")
 
 

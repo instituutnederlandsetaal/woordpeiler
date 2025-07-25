@@ -13,7 +13,8 @@ create_table = SQL("""
 """)
 
 create_indices = SQL("""
-    CREATE INDEX ON wordforms (wordform text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100);
+    CREATE INDEX ON wordforms (wordform text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100); -- for frequency queries
+    CREATE INDEX ON wordforms (id) INCLUDE (wordform); -- for trend queries (unnesting)
 """)
 
 

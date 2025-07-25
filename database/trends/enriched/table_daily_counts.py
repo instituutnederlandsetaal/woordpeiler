@@ -2,7 +2,7 @@
 from psycopg.sql import SQL
 
 # local
-from database.util.query import time_query, analyze_vacuum
+from database.util.query import time_query
 from database.util.table_builder import TableBuilder
 
 
@@ -32,4 +32,3 @@ class DailyCountsTableBuilder(TableBuilder):
             self.create_table,
             self.add_indices,
         )
-        analyze_vacuum()

@@ -6,6 +6,13 @@
         "slogan": "woordtrends in de 17de eeuw",
         "description": "De Courantenpeiler toont hoe vaak woorden voorkwamen in Nederlandstalige kranten uit de 17de eeuw."
     },
+    "searchItems": {
+        "ngram": 4,
+        "filters": [
+            { "name": "Locatie", "api": "language", "advanced": true },
+            { "name": "Krant", "api": "source", "advanced": false }
+        ]
+    },
     "corpus": { "name": "Couranten", "url": "https://ivdnt.org/corpora-lexica/courantencorpus" },
     "period": { "start": "1600-01-01", "end": "1700-01-01" },
     "theme": {

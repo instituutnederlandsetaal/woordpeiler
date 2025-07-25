@@ -22,11 +22,10 @@ class FrequencyTableBuilder(TableBuilder):
             )
         """).format(frequencies=self.frequencies)
 
-        # TODO: should we really include the second index here?
         self.add_indices = SQL("""
             CREATE INDEX ON {frequencies} (word_id, source_id) INCLUDE (time, frequency);
-            CREATE INDEX ON {frequencies} (source_id) INCLUDE (time, frequency);
-            CREATE INDEX ON {frequencies} (time) INCLUDE (frequency); -- TODO this can be removed? corpus size is created from tsv
+            -- CREATE INDEX ON {frequencies} (source_id) INCLUDE (time, frequency); -- TODO source_frequencies table?
+            -- CREATE INDEX ON {frequencies} (time) INCLUDE (frequency); -- TODO this can be removed? corpus size is created from tsv
         """).format(frequencies=self.frequencies)
 
     def create(self):

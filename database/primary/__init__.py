@@ -6,7 +6,6 @@ from database.primary.table_frequencies import FrequencyTableBuilder
 from database.primary.table_sources import create_table_sources
 from database.primary.table_words import WordsTableBuilder
 from database.primary.table_corpus_size import CorpusSizeTableBuilder
-from database.primary.table_source_size import SourceSizeTableBuilder
 
 
 def initialize(
@@ -27,8 +26,8 @@ def initialize(
         create_table_posses(pos_path)
         create_table_sources(source_path)
 
+    if not all([words_path, size_path, freq_path]):
+        raise ValueError("Words, size, and frequency paths must be provided.")
     CorpusSizeTableBuilder(size_path, ngram).create()
     WordsTableBuilder(words_path, ngram).create()
     FrequencyTableBuilder(freq_path, ngram).create()
-
-    exit()

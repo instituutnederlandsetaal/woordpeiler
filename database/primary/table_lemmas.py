@@ -13,7 +13,8 @@ create_table = SQL("""
 """)
 
 create_indices = SQL("""
-    CREATE INDEX ON lemmas (lemma text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100);
+    CREATE INDEX ON lemmas (lemma text_pattern_ops) INCLUDE (id) WITH (fillfactor = 100); -- for frequency queries
+    CREATE INDEX ON lemmas (id) INCLUDE (lemma); -- for trend queries (unnesting)
 """)
 
 

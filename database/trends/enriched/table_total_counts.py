@@ -2,7 +2,7 @@
 from psycopg.sql import SQL
 
 # local
-from database.util.query import time_query, analyze_vacuum
+from database.util.query import time_query
 from database.util.table_builder import TableBuilder
 
 
@@ -27,7 +27,7 @@ class TotalCountsTableBuilder(TableBuilder):
             UPDATE
                 {total_counts} 
             SET 
-                rel_freq = (abs_freq / (SELECT SUM(abs_freq) FROM {total_counts})::REAL * 1e6)::REAL;
+                rel_freq = (abs_freq / (SELECT SUM(abs_freq) FROM {total_counts})::REAL * 1e6);
         """).format(total_counts=self.total_counts)
 
         self.add_indices = SQL("""
@@ -42,4 +42,3 @@ class TotalCountsTableBuilder(TableBuilder):
             self.fill_relative_columns,
             self.add_indices,
         )
-        analyze_vacuum()

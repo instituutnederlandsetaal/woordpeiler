@@ -24,13 +24,21 @@ class WordsTableBuilder(TableBuilder):
 
         self.add_indices: list[Composed] = []
         for i in range(1, self.ngram + 1):
-            # TODO CREATE INDEX ON words_2 ((wordform_ids[1]), (wordform_ids[2])) INCLUDE (id);
+            wordform_ids: str = [f"(wordform_ids[{j + 1}])" for j in range(i)].join(
+                ", "
+            )
+            lemma_ids: str = [f"(lemma_ids[{j + 1}])" for j in range(i)].join(", ")
             self.add_indices.append(
                 SQL("""
                 CREATE INDEX ON {words} (id); -- for trends
-                CREATE INDEX ON {words} ((wordform_ids[{i}]), (lemma_ids[{i}]), (pos_ids[{i}])) INCLUDE (id);
-                CREATE INDEX ON {words} ((lemma_ids[{i}]), (pos_ids[{i}])) INCLUDE (id);
-            """).format(words=self.words, i=i)
+                CREATE INDEX ON {words} ({wordform_ids}) INCLUDE (id); -- for frequency queries
+                CREATE INDEX ON {words} ({lemma_ids}) INCLUDE (id); -- for frequency queries
+            """).format(
+                    words=self.words,
+                    i=i,
+                    wordform_ids=wordform_ids,
+                    lemma_ids=lemma_ids,
+                )
             )
 
     def create(self):
