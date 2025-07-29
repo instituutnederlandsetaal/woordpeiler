@@ -2,7 +2,7 @@
 from psycopg.sql import SQL
 
 # local
-from query.trends.trends_query import TrendsQuery
+from server.query.trends.trends_query import TrendsQuery
 from server.query.query_builder import ExecutableQuery, BaseCursor
 from server.util.datatypes import TrendItem
 
