@@ -18,7 +18,7 @@ import uvicorn
 from server.query.svg_query import SvgQuery
 from server.query.arithmetical_query import ArithmeticalQuery
 from server.query.listing_query import ListingQuery
-from server.query.trends_query import TrendsQuery
+from server.query.trends.trends_query import TrendsQuery
 from server.query.frequency_query import FrequencyQuery
 from server.config.config import FastAPI, create_app_with_config
 from server.util.dataseries_row_factory import (
@@ -37,19 +37,19 @@ def read_root():
 
 @app.get("/health")
 def health():
-    return app.async_pool.get_stats()
+    return app.pool.get_stats()
 
 
 @app.get("/sources")
 async def get_sources(request: Request) -> list[str]:
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
             return await ListingQuery("sources", "source").build(cur).execute_fetchall()
 
 
 @app.get("/languages")
 async def get_languages(request: Request) -> list[str]:
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
             return (
                 await ListingQuery("sources", "language").build(cur).execute_fetchall()
@@ -58,14 +58,14 @@ async def get_languages(request: Request) -> list[str]:
 
 @app.get("/posses")
 async def get_posses(request: Request) -> list[str]:
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
             return await ListingQuery("posses", "pos").build(cur).execute_fetchall()
 
 
 @app.get("/posheads")
 async def get_posheads(request: Request) -> list[str]:
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
             return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
 
@@ -86,10 +86,10 @@ async def get_trends(
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             return (
-                await TrendsQuery(
+                await TrendsQuery.create(
                     trend_type,
                     modifier,
                     start,
@@ -97,7 +97,7 @@ async def get_trends(
                     enriched,
                     language,
                     ascending,
-                    ngram=ngram,
+                    ngram,
                 )
                 .build(cur)
                 .execute_fetchall()
@@ -116,7 +116,7 @@ async def get_svg(
     end: Optional[datetime] = None,
     i: str = "1y",
 ) -> str:
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor() as cur:
             freq = FrequencyQuery(w, l, p, s, v, start, end, i)
             return await SvgQuery(freq).execute(cur)
@@ -131,7 +131,7 @@ async def get_math(
     start_date: Optional[int] = None,
     end_date: Optional[int] = None,
 ) -> list[DataSeries]:
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
             return await ArithmeticalQuery(
                 formula,
@@ -182,7 +182,7 @@ async def get_freq(
         end_date=end,
     )
     # execute
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor() as cur:
             return await query.build(cur).execute_fetchall()
 

@@ -32,7 +32,7 @@ logger.setLevel(logging.getLevelName(logging_level))
 
 
 class FastAPI(FastAPI):
-    async_pool: AsyncConnectionPool
+    pool: AsyncConnectionPool
     internal: bool = False
 
 
@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
 
     # Connection pool
     conn_str = get_reader_conn_str()
-    app.async_pool = AsyncConnectionPool(
+    app.pool = AsyncConnectionPool(
         conninfo=conn_str,
         open=False,
         kwargs={"prepare_threshold": 0},
@@ -61,15 +61,15 @@ async def lifespan(app: FastAPI):
         max_size=12,
         configure=set_float_loader,
     )
-    await app.async_pool.open()
-    await app.async_pool.wait()
+    await app.pool.open()
+    await app.pool.wait()
     logger.info("Connection pool opened")
 
     # internal or external?
     app.internal = os.getenv("INTERNAL", "false").lower() == "true"
 
     yield
-    await app.async_pool.close()
+    await app.pool.close()
 
 
 origins = [
