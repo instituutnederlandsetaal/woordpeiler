@@ -1,4 +1,4 @@
-FROM node:24.3.0-bookworm-slim AS build
+FROM node:24.4.1-bookworm-slim AS build
 COPY . .
 RUN npm ci && npm run build && mv /dist/*.* /dist/assets && mv /dist/assets/index.html /dist/assets/robots.txt /dist/
 
