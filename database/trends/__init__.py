@@ -1,3 +1,4 @@
+# local
 from database.trends.enriched.table_daily_counts import DailyCountsTableBuilder
 from database.trends.enriched.table_total_counts import TotalCountsTableBuilder
 

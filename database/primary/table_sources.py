@@ -1,3 +1,6 @@
+# standard
+from pathlib import Path
+
 # third party
 from psycopg.sql import SQL
 
@@ -19,7 +22,7 @@ add_indices = SQL("""
 """)
 
 
-def create_table_sources(path: str):
+def create_table_sources(path: Path):
     execute_query(create_table)
     PsqlCopy.from_file(path, "sources")
     time_query("Creating source indices", add_indices)

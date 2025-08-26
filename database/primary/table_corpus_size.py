@@ -1,3 +1,6 @@
+# standard
+from pathlib import Path
+
 # third party
 from psycopg.sql import SQL
 
@@ -8,7 +11,7 @@ from database.util.psql_copy import PsqlCopy
 
 
 class CorpusSizeTableBuilder(TableBuilder):
-    def __init__(self, path: str, ngram: int):
+    def __init__(self, path: Path, ngram: int):
         self.path = path
         super().__init__(ngram)
 

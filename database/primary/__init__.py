@@ -1,4 +1,8 @@
+# standard
+from pathlib import Path
 from typing import Optional
+
+# local
 from database.primary.table_wordforms import create_table_wordforms
 from database.primary.table_lemmas import create_table_lemmas
 from database.primary.table_posses import create_table_posses
@@ -9,25 +13,27 @@ from database.primary.table_corpus_size import CorpusSizeTableBuilder
 
 
 def initialize(
-    freq_path: str,
     ngram: int,
-    word_path: Optional[str] = None,
-    lemma_path: Optional[str] = None,
-    pos_path: Optional[str] = None,
-    source_path: Optional[str] = None,
-    words_path: Optional[str] = None,
-    size_path: Optional[str] = None,
+    frequency: Path,
+    annotations: Path,
+    size: Path,
+    metadata: Optional[Path] = None,
+    word: Optional[Path] = None,
+    lemma: Optional[Path] = None,
+    pos: Optional[Path] = None,
 ):
     if ngram == 1:
-        if not all([word_path, lemma_path, pos_path, source_path]):
-            raise ValueError("Word, lemma, pos, and source paths must be provided.")
-        create_table_wordforms(word_path)
-        create_table_lemmas(lemma_path)
-        create_table_posses(pos_path)
-        create_table_sources(source_path)
+        for path in [metadata, word, lemma, pos]:
+            if path is None or not path.exists():
+                raise ValueError(f"{path} does not exist.")
+        create_table_wordforms(word)
+        create_table_lemmas(lemma)
+        create_table_posses(pos)
+        create_table_sources(metadata)
 
-    if not all([words_path, size_path, freq_path]):
-        raise ValueError("Words, size, and frequency paths must be provided.")
-    CorpusSizeTableBuilder(size_path, ngram).create()
-    WordsTableBuilder(words_path, ngram).create()
-    FrequencyTableBuilder(freq_path, ngram).create()
+    for path in [annotations, size, frequency]:
+        if not path.exists():
+            raise ValueError(f"{path} does not exist.")
+    CorpusSizeTableBuilder(size, ngram).create()
+    WordsTableBuilder(annotations, ngram).create()
+    FrequencyTableBuilder(frequency, ngram).create()

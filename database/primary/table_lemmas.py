@@ -1,3 +1,6 @@
+# standard
+from pathlib import Path
+
 # third party
 from psycopg.sql import SQL
 
@@ -18,7 +21,7 @@ create_indices = SQL("""
 """)
 
 
-def create_table_lemmas(path: str):
+def create_table_lemmas(path: Path):
     execute_query(create_table)
     PsqlCopy.from_file(path, "lemmas")
     time_query("Creating lemma indices", create_indices)

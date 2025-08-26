@@ -1,5 +1,8 @@
+# standard
+from pathlib import Path
+
 # third party
-from psycopg.sql import SQL, Composed
+from psycopg.sql import SQL
 
 # local
 from database.util.query import time_query, execute_query
@@ -8,7 +11,7 @@ from database.util.psql_copy import PsqlCopy
 
 
 class WordsTableBuilder(TableBuilder):
-    def __init__(self, path: str, ngram: int):
+    def __init__(self, path: Path, ngram: int):
         self.path = path
         super().__init__(ngram)
 

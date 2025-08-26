@@ -1,5 +1,6 @@
 # standard
 import os
+from pathlib import Path
 
 # third party
 from dotenv import load_dotenv
@@ -12,7 +13,7 @@ load_dotenv()
 
 class PsqlCopy:
     @staticmethod
-    def from_file(path: str, table: str):
+    def from_file(path: Path, table: str):
         with timer(f"Copying data from {path} to table {table}"):
             user = os.getenv("POSTGRES_USER")
             host = os.getenv("POSTGRES_HOST")

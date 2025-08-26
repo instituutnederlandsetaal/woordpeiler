@@ -1,3 +1,6 @@
+# standard
+from pathlib import Path
+
 # third party
 from psycopg.sql import SQL
 
@@ -27,7 +30,7 @@ create_indices = SQL("""
 """)
 
 
-def create_table_posses(path: str):
+def create_table_posses(path: Path):
     execute_query(create_table)
     PsqlCopy.from_file(path, "posses")
     execute_query(add_pos_head)

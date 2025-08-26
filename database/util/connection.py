@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 host = os.getenv("POSTGRES_HOST")
-print(f"Connecting to {host}.")
 
 
 def get_reader_conn_str():
