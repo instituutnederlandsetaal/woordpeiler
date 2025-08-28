@@ -32,6 +32,10 @@ export const useTrendResultsStore = defineStore("TrendResults", () => {
 
         TrendAPI.getTrends(trendRequest)
             .then((response) => {
+                // add posheads
+                response.data.forEach((item) => {
+                    item.poshead = item.pos.split("(")[0]
+                })
                 trendResults.value = response.data
             })
             .finally(() => {

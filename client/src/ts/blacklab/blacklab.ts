@@ -53,7 +53,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    return isInternal() ? config.blacklab.url.internal : config.blacklab.url.external;
+    return isInternal() ? config.blacklab.url.internal : config.blacklab.url.external
 }
 
 function constructBLPatt(item: SearchItem) {

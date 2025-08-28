@@ -33,5 +33,5 @@ export const colorScheme = [
     "DD0088",
     "88DD88",
     "8800DD",
-    "0088DD"
+    "0088DD",
 ]

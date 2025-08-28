@@ -489,7 +489,7 @@ function resetZoom() {
     border-radius: 3px;
     pointer-events: none;
     visibility: hidden;
-    z-index: 1000;
+    z-index: 2;
     pointer-events: all;
 
     a {

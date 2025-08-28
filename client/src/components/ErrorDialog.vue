@@ -6,9 +6,7 @@
             </li>
         </ul>
         <p>Blijft dit probleem zich voordoen?</p>
-        <p>
-            Neem contact op met <a href="mailto:servicedesk@ivdnt.org">servicedesk@ivdnt.org</a>.
-        </p>
+        <p>Neem contact op met <a href="mailto:servicedesk@ivdnt.org">servicedesk@ivdnt.org</a>.</p>
     </Dialog>
 </template>
 
@@ -17,9 +15,13 @@ import { useErrorsStore } from "@/stores/errors"
 const { errors } = storeToRefs(useErrorsStore())
 const visible = ref<boolean>(false)
 
-watch(errors, () => {
-    visible.value = errors.value.length > 0
-}, { deep: true })
+watch(
+    errors,
+    () => {
+        visible.value = errors.value.length > 0
+    },
+    { deep: true },
+)
 </script>
 
 <style scoped lang="scss">

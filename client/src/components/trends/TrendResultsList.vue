@@ -1,6 +1,6 @@
 <template>
     <Panel :header="`Trendresultaten: ${displayName(lastTrendSettings)}`" class="trendlist">
-        <div class="formSplit" v-if="trendResults[0].poshead">
+        <div class="formSplit">
             <label>Uitsluiten</label>
             <MultiSelect
                 v-model="selectedPosHead"
@@ -57,16 +57,12 @@ const { search } = useSearchResultsStore()
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
-const selectedPosHead = ref([])
+const selectedPosHead = ref(["nou-p","res"])
 const posHeadOptions = ref<string[]>([])
 const posHeadLoading = ref(true)
 
 // Computed
-const filteredTrends = computed(() => {
-    return trendResults.value?.filter(
-        (i) => i.poshead?.split(" ")?.every((j) => !selectedPosHead.value.includes(j)) || true,
-    )
-})
+const filteredTrends = computed(() => trendResults.value?.filter((i) => !selectedPosHead.value.includes(i.poshead)))
 const badgeName = computed(() => {
     // key for keyness, freq for frequency
     return lastTrendSettings.value.trendType === "keyness" ? "key" : "freq"

@@ -1,22 +1,19 @@
 <template>
-    <footer class="footer">
-        <p>
-            De gegevens in <i>Woordpeiler</i> komen uit het krantenmateriaal van het
-            <a href="https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/">Corpus Hedendaags Nederlands</a>.
-            De teksten in het corpus worden automatisch verwerkt en taalkundig geanalyseerd. De woordfrequenties kunnen
-            daarom licht beïnvloed zijn door fouten in de woordsplitsing of krantenartikelen die hernomen worden in
-            kranten van dezelfde uitgeversgroep.
-        </p>
+    <footer>
         <p>© 2025 Instituut voor de Nederlandse Taal, alle rechten voorbehouden</p>
+        <div>
+            <a href="https://ivdnt.org/privacyverklaring">privacyverklaring</a>
+            <a href="https://ivdnt.org/gebruiksvoorwaarden/">gebruiksvoorwaarden</a>
+        </div>
     </footer>
 </template>
 
 <style scoped lang="scss">
-.footer {
+footer {
     border-top: #d9d9d9 solid 1px;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -25,6 +22,10 @@
     font-size: 0.9rem;
     p {
         max-width: 1000px;
+    }
+    div {
+        display: flex;
+        gap: 1rem;
     }
 }
 </style>

@@ -10,7 +10,7 @@
             <template #header>
                 <div>
                     <ColorPicker id="color" v-model="searchItem.color" title="Kleur in grafiek" />
-                    <Button text severity="secondary" @click="searchItem.visible = !searchItem.visible">
+                    <Button class="visibleBtn" text severity="secondary" @click="searchItem.visible = !searchItem.visible">
                         <span v-if="searchItem.visible" class="pi pi-eye" title="Getoond in grafiek"></span>
                         <span v-else class="pi pi-eye-slash" title="Verborgen in grafiek"></span>
                     </Button>
@@ -73,7 +73,7 @@
                     <AccordionHeader>Geavanceerd</AccordionHeader>
                     <AccordionContent>
                         <div class="formSplit">
-                            <label for="lemma">Lemma</label>
+                            <label for="lemma">Lemma
                             <HelpButton>
                                 <p>Het lemma is de woordenboekvorm van het woord.</p>
                                 <DataTable
@@ -90,9 +90,11 @@
                                     <Column field="pos" header="Woordsoort"></Column>
                                 </DataTable>
                             </HelpButton>
+                            </label>
                             <InputText
                                 :invalid="invalidInputText(searchItem.lemma)"
-                                id="lemma" placeholder="Lemma"
+                                id="lemma"
+                                placeholder="Lemma"
                                 v-model.trim="searchItem.lemma"
                                 @keyup.enter="search"
                             />
@@ -118,6 +120,7 @@
                                     v-model="searchItem.source"
                                     :options="sourceOptions"
                                     showClear
+                                    :clearIconProps="{tabindex: 0}"
                                     :placeholder="config.searchItems.filters[1].name"
                                     :loading="!sourceOptions.length"
                                 />
@@ -137,7 +140,7 @@
             </a>
         </Panel>
         <Button
-            style="border: 2px dashed #ccc; background: #eee; min-height: 40px"
+            style=""
             class="newWord"
             severity="secondary"
             title="Zoekterm toevoegen"
@@ -214,10 +217,16 @@ onMounted(() => {
 
     .newWord {
         width: 100%;
+        border: 2px dashed #ccc !important; 
+        background: #eee; 
+        min-height: 40px;
 
         &:hover,
         &:active {
             background: #e0e0e0 !important;
+        }
+        &:focus-visible {
+            outline-offset: -1px;
         }
     }
 
@@ -240,6 +249,11 @@ onMounted(() => {
 
 .hidden {
     filter: brightness(0.9);
+}
+
+.visibleBtn:focus {
+    outline: 1px solid black;
+    outline-offset: -3px;
 }
 
 :deep(.p-panel-header-actions) > * {

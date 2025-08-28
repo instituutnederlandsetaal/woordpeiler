@@ -1,5 +1,11 @@
 <template>
-    <section class="spotlight" :style="{ backgroundColor: spotlight.color }" v-intersection-observer="loadSvg" @click="search(spotlight)">
+    <router-link
+        :to="getGraphUrl(spotlight)"
+        class="spotlight"
+        :style="{ backgroundColor: spotlight.color }"
+        v-intersection-observer="loadSvg"
+        @click="search(spotlight)"
+    >
         <header class="spotlight-header">
             <h2 class="spotlight-title">
                 {{ title }}
@@ -26,11 +32,11 @@
             </article>
             <figure v-if="spotlight.graph" class="spotlight-graph" v-html="svgBlob" />
         </div>
-    </section>
+    </router-link>
 </template>
 
 <script setup lang="ts">
-import { vIntersectionObserver } from '@vueuse/components'
+import { vIntersectionObserver } from "@vueuse/components"
 // API
 import * as API from "@/api/search"
 // Types
@@ -46,11 +52,10 @@ const title = computed<string>(() => spotlight.title ?? spotlight.graph?.word ??
 const subtitle = computed<string>(() => spotlight.subtitle ?? `sinds ${spotlight.graph.start.split("-")[0]}`)
 
 // Methods
-function search(spotlight: SpotlightBlock) {
+function getGraphUrl(spotlight: SpotlightBlock): string {
     if (spotlight.content) {
-        const params = { w: spotlight.content.join() }
-        router.push({ path: "/grafiek", query: params })
-        return
+        const params = new URLSearchParams({ w: spotlight.content.join() }).toString()
+        return `/grafiek?${params}`
     }
     const params = {
         w: spotlight.graph.word,
@@ -58,7 +63,13 @@ function search(spotlight: SpotlightBlock) {
         i: spotlight.graph.interval,
         start: spotlight.graph.start,
     }
-    router.push({ path: "/grafiek", query: params })
+    Object.keys(params).forEach((k) => params[k] === undefined && delete params[k])
+    return `/grafiek?${new URLSearchParams(params)}`
+}
+
+function search(spotlight: SpotlightBlock) {
+    const url = getGraphUrl(spotlight)
+    router.push(url)
 }
 
 function loadSvg([entry]: IntersectionObserverEntry[]) {
@@ -84,6 +95,8 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
 
 <style scoped lang="scss">
 .spotlight {
+    color: initial;
+    text-decoration: initial;
     display: flex;
     flex-direction: column;
     padding: 1rem 2rem;

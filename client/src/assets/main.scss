@@ -16,6 +16,15 @@ h6 {
     font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+a {
+    &:visited {
+        color: blue;
+    }
+    &:focus {
+        color: red;
+    }
+}
+
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: #f8f8f8;

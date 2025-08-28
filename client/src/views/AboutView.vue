@@ -68,17 +68,9 @@
                     <a href="mailto:servicedesk@ivdnt.org">servicedesk@ivdnt.org</a>.
                 </p>
             </section>
-            <div class="logos">
-                <a href="https://www.ivdnt.org">
-                    <img
-                        src="@/assets/ivdNt-logo-3regels.svg"
-                        alt="Logo Instituut voor de Nederlandse taal"
-                        title="Instituut voor de Nederlandse taal"
-                    />
-                </a>
-            </div>
         </Panel>
     </main>
+    <AppFooter />
 </template>
 
 <script setup lang="ts">
@@ -90,6 +82,9 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+main {
+    min-height: initial;
+}
 .logos {
     display: flex;
     justify-content: center;

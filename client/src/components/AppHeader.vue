@@ -8,7 +8,7 @@
             </div>
             <div class="logo-text">
                 <h2>
-                    <a href="https://ivdnt.org/" target="_blank" tabindex="-1" rel="noopener noreferrer">
+                    <a href="https://ivdnt.org/" target="_blank" rel="noopener noreferrer">
                         /&nbsp;instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal&nbsp;/
                     </a>
                 </h2>
@@ -112,6 +112,7 @@ function toggleMenu(event: MouseEvent) {
 @use "@/assets/primevue.scss" as *;
 
 header {
+    z-index: 1;
     height: 70px;
     border-bottom: 5px solid $theme;
     display: flex;

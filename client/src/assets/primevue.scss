@@ -8,6 +8,9 @@ $theme: var(--theme); // Default theme color
     --p-highlight-color: #000;
     --p-highlight-focus-color: #000;
 
+    --p-highlight-background: color-mix(in srgb, var(--theme), #fff 30%);
+    --p-highlight-focus-background: color-mix(in srgb, var(--theme), #fff 20%);
+
     // colors
     // --p-highlight-focus-background: #{color.adjust($theme, $lightness: 20%)};
     // --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
@@ -44,10 +47,6 @@ $theme: var(--theme); // Default theme color
 
     .p-button-rounded {
         border-radius: 0;
-    }
-
-    *:focus-visible {
-        outline: 0;
     }
 
     .p-cascadeselect-list {

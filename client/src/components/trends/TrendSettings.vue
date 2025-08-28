@@ -27,8 +27,15 @@
 
                                 <div class="formSplit">
                                     <label for="variant">Taalvariëteit</label>
-                                    <Select id="variant" v-model="trendSettings.language" :options="languageOptions"
-                                        showClear optionLabel="label" optionValue="value" placeholder="Taalvariëteit" />
+                                    <Select
+                                        id="variant"
+                                        v-model="trendSettings.language"
+                                        :options="languageOptions"
+                                        showClear
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Taalvariëteit"
+                                    />
                                 </div>
 
                                 <div class="formSplit">

@@ -50,16 +50,26 @@ function doSearch() {
         .p-inputtext {
             font-size: 1.1rem;
             border: 0;
+            outline: 0;
+            &:focus {
+                outline: 1px solid black;
+                outline-offset: 0;
+            }
         }
 
         .p-button {
             border: 0;
+            outline: 0;
             padding: 0 1.8rem;
             background-color: #ddd;
 
             &:hover,
             &:active {
                 background-color: #ccc;
+            }
+            &:focus {
+                outline: 1px solid black;
+                outline-offset: 0;
             }
 
             span {

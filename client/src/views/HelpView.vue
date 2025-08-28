@@ -7,7 +7,7 @@
                     <Tab value="1">Basiszoeken</Tab>
                 </TabList>
                 <TabPanels>
-                    <TabPanel value="0">
+                    <TabPanel value="0" tabindex="-1">
                         <section>
                             <h2>Algemeen</h2>
                             <p>
@@ -71,7 +71,7 @@
                             />
                         </div>
                     </TabPanel>
-                    <TabPanel value="1">
+                    <TabPanel value="1" tabindex="-1">
                         <section>
                             <h2>Basiszoeken</h2>
                             <ul>
@@ -235,6 +235,7 @@
             </Tabs>
         </div>
     </main>
+    <AppFooter />
 </template>
 
 <script setup lang="ts">
