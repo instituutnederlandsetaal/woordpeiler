@@ -19,12 +19,14 @@ class CorpusSizeTableBuilder(TableBuilder):
         self.create_table = SQL("""
             CREATE TABLE {corpus_size} (
                 time DATE,
+                source_id INTEGER,
                 size INTEGER
             )
         """).format(corpus_size=self.corpus_size)
 
         self.add_indices = SQL("""
             CREATE INDEX ON {corpus_size} (time) INCLUDE (size);
+            CREATE INDEX ON {corpus_size} (source_id) INCLUDE (time, size); -- TODO check performance of this one
         """).format(corpus_size=self.corpus_size)
 
     def create(self):

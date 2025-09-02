@@ -1,0 +1,40 @@
+runConfig:
+    docsInParallel: 500_000
+    groupsPerChunk: 50_000_000
+    compressed: true
+    databaseFormat: true
+
+frequencyLists:
+    -   name: "unigram"
+        ngramSize: 1
+        annotations:
+            -   name: word
+            -   name: lemma
+            -   name: pos_full
+                prettyName: pos
+        metadata:
+            -   name: witnessDate_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: languageVariant
+                required: true
+                outputAsId: true
+        filter: "medium:newspaper"
+        cutoff:
+            count: 2
+            annotation: word
+
+    -   name: "unigram_size"
+        ngramSize: 1
+        metadata:
+            -   name: witnessDate_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: languageVariant
+                required: true
+                outputAsId: true
+        filter: "medium:newspaper"
