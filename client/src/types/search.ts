@@ -1,3 +1,5 @@
+import { config } from "@/main"
+
 export enum IntervalType {
     DAY = "d",
     WEEK = "w",
@@ -70,7 +72,7 @@ export function displayName(i: SearchItem): string {
 
 export function invalidInputText(text?: string): boolean {
     const num_words = text?.trim().split(" ").length ?? 0
-    return num_words > 4 // 5-grams not supported
+    return num_words > config.searchItems.ngram // 5-grams not supported
 }
 
 export function invalidSearchItem(item: SearchItem): boolean {

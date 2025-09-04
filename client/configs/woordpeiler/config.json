@@ -7,7 +7,7 @@
         "description": "De Woordpeiler toont hoe vaak woorden voorkomen in Nederlandstalige kranten."
     },
     "searchItems": {
-        "ngram": 1,
+        "ngram": 2,
         "filters": [
             { "name": "Taalvariëteit", "api": "language", "advanced": false },
             { "name": "Krant", "api": "source", "advanced": true }

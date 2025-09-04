@@ -7,3 +7,5 @@ node_modules
 *.tsv
 *.lz4
 dist
+logs
+client/src/assets/config

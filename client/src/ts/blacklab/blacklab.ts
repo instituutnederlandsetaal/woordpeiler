@@ -108,7 +108,10 @@ function toBLRegex(s: string): string {
 }
 
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
-    const filters = config.blacklab.filter || {}
+    let filters = {}
+    if (config.blacklab.filter) {
+        filters = structuredClone(config.blacklab.filter)
+    }
     const bucketType = settings.intervalType
     const bucketSize = settings.intervalLength
     const year: number = parseInt(d3.timeFormat("%Y")(point.x))

@@ -44,7 +44,7 @@
             </template>
 
             <p class="invalid" v-if="invalidInputText(searchItem.lemma) || invalidInputText(searchItem.wordform)">
-                Zoeken op woordgroepen is niet mogelijk.
+                Zoek op een woordgroep van maximaal {{ config.searchItems.ngram }} woorden.
             </p>
 
             <div class="formSplit">

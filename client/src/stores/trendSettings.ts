@@ -1,6 +1,7 @@
 import { getNewYearsDay, getNewYearsEve, toFirstDayOfMonth, toLastDayOfMonth } from "@/ts/date"
 import type { TrendSettings } from "@/types/trends"
 import type { SelectLabel } from "@/types/ui"
+import { config } from "@/main"
 
 export const useTrendSettingsStore = defineStore("TrendSettings", () => {
     // Fields
@@ -30,12 +31,15 @@ export const useTrendSettingsStore = defineStore("TrendSettings", () => {
         { label: "jaar", value: "year" },
         { label: "anders", value: "other" },
     ]
-    const ngramOptions: SelectLabel[] = [
-        { label: "1-gram", value: 1 },
-        { label: "2-gram", value: 2 },
-        { label: "3-gram", value: 3 },
-        { label: "4-gram", value: 4 },
-    ]
+    const ngramOptions: SelectLabel[] = generateNGramOptions()
+    // Methods
+    function generateNGramOptions(): SelectLabel[] {
+        const options: SelectLabel[] = []
+        for (let n = 1; n <= config.searchItems.ngram; n++) {
+            options.push({ label: `${n}-gram`, value: n })
+        }
+        return options
+    }
     // Lifecycle
     watch(
         () => ({ ...trendSettings.value }),
