@@ -45,7 +45,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
         filter: constructBLFilter(point, settings),
         interface: JSON.stringify({ form: "search", patternMode: "expert" }),
         groupDisplayMode: "relative hits",
-        group: "field:titleLevel2:i",
+        group: `field:${config.blacklab.title}:i`,
     }
     const base = getBaseURL()
 
@@ -141,7 +141,7 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
     }
 
     if (point.searchItem.language) {
-        filters["settingLocation_country"] = `"${point.searchItem.language}"`
+        filters[config.blacklab.language] = `"${point.searchItem.language}"`
     }
 
     const otherFilters = Object.entries(filters)

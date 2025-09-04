@@ -30,6 +30,7 @@
         "annotations": { "word": "word", "lemma": "lemma", "pos": "pos_full", "poshead": "pos" },
         "grouping": { "year": "grouping_year", "month": "grouping_month", "day": "grouping_day" },
         "date": "witnessDate_from",
-        "title": "titleLevel2"
+        "title": "titleLevel2",
+        "language": "languageVariant"
     }
 }

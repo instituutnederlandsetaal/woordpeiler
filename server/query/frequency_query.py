@@ -85,7 +85,7 @@ class FrequencyQuery(QueryBuilder):
                     {corpus_size}
                 GROUP BY
                     time
-            """).format(corpus_size=corpus_size)
+            )""").format(corpus_size=corpus_size)
         else:
             # get from source_frequencies table
             return SQL("""(
@@ -184,7 +184,7 @@ class FrequencyQuery(QueryBuilder):
                     SUM(COALESCE(frequency, 0)) / NULLIF(SUM(cs.{size}), 0) * 1e6,
                     0 -- avoid division by zero
                 )::REAL AS rel_freq
-            FROM (SELECT time, SUM(size) AS size FROM {corpus_size_table} GROUP BY time) cs
+            FROM {corpus_size_table} cs
                 LEFT JOIN frequencies_data f
                     ON cs.time = f.time
             -- filter the timeline
