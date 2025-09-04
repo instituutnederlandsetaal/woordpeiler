@@ -4,7 +4,8 @@ set -e # Exit on error
 TSV_DIR=/vol1/tsv/
 ENV_FILE=".env"
 TODAY=`date +"%Y-%m-%d"` # database version control
-BUILDER_VOLUME="woordpeiler-$TODAY"
+CURRENT_DIR=`basename $pwd`
+BUILDER_VOLUME="$CURRENT_DIR-$TODAY"
 
 # terminal colours
 RED='\033[0;31m'
