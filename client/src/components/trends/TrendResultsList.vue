@@ -3,7 +3,7 @@
         <div class="formSplit">
             <label>Uitsluiten</label>
             <MultiSelect
-                v-model="selectedPosHead"
+                v-model="excludedPosHead"
                 display="chip"
                 :options="posHeadOptions"
                 placeholder="Woordsoort"
@@ -43,6 +43,7 @@
 import { useTrendResultsStore } from "@/stores/trendResults"
 import { useSearchResultsStore } from "@/stores/searchResults"
 import { useSearchItemsStore } from "@/stores/searchItems"
+import { useTrendSettingsStore } from "@/stores/trendSettings"
 // Types & API
 import { type TrendResult, displayName } from "@/types/trends"
 import * as ListingAPI from "@/api/listing"
@@ -52,17 +53,17 @@ import { randomColor } from "@/ts/color"
 // Stores
 const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore())
 const { searchItems } = storeToRefs(useSearchItemsStore())
+const { excludedPosHead } = storeToRefs(useTrendSettingsStore())
 const { search } = useSearchResultsStore()
 
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
-const selectedPosHead = ref(["nou-p","res"])
 const posHeadOptions = ref<string[]>([])
 const posHeadLoading = ref(true)
 
 // Computed
-const filteredTrends = computed(() => trendResults.value?.filter((i) => !selectedPosHead.value.includes(i.poshead)))
+const filteredTrends = computed(() => trendResults.value?.filter((i) => !excludedPosHead.value.includes(i.poshead)))
 const badgeName = computed(() => {
     // key for keyness, freq for frequency
     return lastTrendSettings.value.trendType === "keyness" ? "key" : "freq"

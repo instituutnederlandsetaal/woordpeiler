@@ -32,6 +32,7 @@ export const useTrendSettingsStore = defineStore("TrendSettings", () => {
         { label: "anders", value: "other" },
     ]
     const ngramOptions: SelectLabel[] = generateNGramOptions()
+    const excludedPosHead = ref<string[]>(["nou-p", "res", "num"])
     // Methods
     function generateNGramOptions(): SelectLabel[] {
         const options: SelectLabel[] = []
@@ -55,5 +56,5 @@ export const useTrendSettingsStore = defineStore("TrendSettings", () => {
         },
     )
     // Export
-    return { trendSettings, trendTypeOptions, modifierOptions, periodOptions, ngramOptions }
+    return { trendSettings, trendTypeOptions, modifierOptions, periodOptions, ngramOptions, excludedPosHead }
 })

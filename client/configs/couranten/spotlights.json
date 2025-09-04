@@ -1,5 +1,9 @@
 [
     {
+        "title": "terug in de taal",
+        "content": [
+            "In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/'>Terug in de taal</a> bespreken we woorden of betekenissen die ooit in het Nederlands bestonden, maar nu verdwenen zijn."
+        ],
         "blocks": [
             {
                 "color": "#FFF064",
@@ -12,7 +16,11 @@
                 "title": "kinderpokjes",
                 "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/kinderpokjes/",
                 "graph": { "word": "kinder*po*", "start": "1650-01-01", "interval": "1y" }
-            },
+            }
+        ]
+    },
+    {
+        "blocks": [
             { "color": "#F3F3F3", "graph": { "lemma": "zilvervloot", "start": "1618-01-01", "interval": "2y" } },
             {
                 "color": "#E8503D",
@@ -34,7 +42,12 @@
                 "graph": { "lemma": "het frans leger", "start": "1618-01-01", "interval": "3y" }
             },
             { "color": "#F3F3F3", "graph": { "lemma": "de raad van state", "start": "1660-01-01", "interval": "3m" } },
-            { "color": "#FFF064", "graph": { "lemma": "een aanslag op", "start": "1618-01-01", "interval": "1y" } }
+            { "color": "#FFF064", "graph": { "lemma": "een aanslag op", "start": "1618-01-01", "interval": "1y" } },
+            {
+                "color": "#FFF064",
+                "title": "Z.K.M van Denemarken",
+                "graph": { "lemma": "koninklijk majesteit van denemarken", "start": "1618-01-01", "interval": "1y" }
+            }
         ]
     }
 ]
