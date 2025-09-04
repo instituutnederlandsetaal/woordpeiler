@@ -38,3 +38,37 @@ frequencyLists:
                 required: true
                 outputAsId: true
         filter: "medium:newspaper"
+
+    -   name: "bigram"
+        ngramSize: 2
+        annotations:
+            -   name: word
+            -   name: lemma
+            -   name: pos_full
+                prettyName: pos
+        metadata:
+            -   name: witnessDate_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: languageVariant
+                required: true
+                outputAsId: true
+        filter: "medium:newspaper"
+        cutoff:
+            count: 2
+            annotation: word
+
+    -   name: "bigram_size"
+        ngramSize: 2
+        metadata:
+            -   name: witnessDate_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: languageVariant
+                required: true
+                outputAsId: true
+        filter: "medium:newspaper"

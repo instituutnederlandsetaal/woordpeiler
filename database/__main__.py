@@ -16,7 +16,7 @@ def initialize(folder: Path, config_name: str, ngram: int) -> None:
     metadata = folder / f"{config_name}_metadata.tsv"
     word = folder / f"{config_name}_word.tsv"
     lemma = folder / f"{config_name}_lemma.tsv"
-    pos = folder / f"{config_name}_pos_full.tsv"
+    pos = folder / f"{config_name}_pos.tsv"
 
     primary.initialize(ngram, frequency, annotations, size, metadata, word, lemma, pos)
     trends.initialize(ngram)

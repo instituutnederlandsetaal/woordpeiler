@@ -5,4 +5,5 @@ node_modules
 .vscode
 *.env
 *.tsv
-*.gz
+*.lz4
+dist
