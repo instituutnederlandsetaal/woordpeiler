@@ -74,27 +74,32 @@ class FrequencyQuery(QueryBuilder):
     @staticmethod
     def get_corpus_size_table(source_filter: Composable, ngram: int) -> Composable:
         corpus_size = Identifier(f"corpus_size_{ngram}")
-        source_size = Identifier(f"source_size_{ngram}")
 
         if source_filter == SQL(""):
             # get from regular frequencies table
-            return corpus_size
+            return SQL("""(
+                SELECT
+                    time,
+                    SUM(size) AS size
+                FROM
+                    {corpus_size}
+                GROUP BY
+                    time
+            """).format(corpus_size=corpus_size)
         else:
             # get from source_frequencies table
             return SQL("""(
                 SELECT 
-                    {corpus_size}.time,
-                    SUM(COALESCE({source_size}.frequency,0)) AS size 
-                FROM 
+                    time,
+                    SUM(size) AS size
+                FROM
                     {corpus_size}
-                LEFT JOIN
-                    {source_size}
-                    ON {corpus_size}.time = {source_size}.time AND {source_filter} 
+                WHERE
+                    {source_filter}
                 GROUP BY
-                    {corpus_size}.time -- needed for combining e.g. locations over different sources
+                    time
             )""").format(
                 corpus_size=corpus_size,
-                source_size=source_size,
                 source_filter=source_filter,
             )
 
