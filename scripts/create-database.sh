@@ -78,7 +78,7 @@ nohup bash -c "
 
     # script finished. Down builder.
     docker compose down builder
-    echo "Created docker volume '$BUILDER_VOLUME'"
+    echo Created docker volume $BUILDER_VOLUME"
 " > logs/$BUILDER_VOLUME.log 2>&1 &
 
 echo -e "${GREEN}Creating database in docker volume $BUILDER_VOLUME.${NC}"
