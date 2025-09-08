@@ -1,0 +1,144 @@
+[
+    {
+        "title": "woordpeilingen 2025",
+        "content": [
+            "Welke woorden zijn het meest kenmerkend voor een bepaalde periode? Elke maand brengen we een <a target='_blank' href='https://ivdnt.org/actueel/woordpeiling/'>Woordpeiling</a> uit op basis van een data-analyse van zo’n tien miljoen krantenartikelen uit het Corpus Hedendaags Nederlands (CHN)."
+        ],
+        "blocks": [
+            {
+                "title": "april 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/handelsoorlog-lintjes-en-bidongooier/",
+                "color": "#2ecc71",
+                "content": [
+                    "handelsoorlog",
+                    "importheffingen",
+                    "paasakkoord",
+                    "voorjaarsnota",
+                    "lintjes",
+                    "bidon",
+                    "kardinalen"
+                ]
+            },
+            {
+                "title": "1e kwartaal 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie-importheffingen-en-defensie-uitgaven/",
+                "color": "#e67e22",
+                "content": [
+                    "importheffingen",
+                    "meerwaardebelasting",
+                    "inauguratie",
+                    "defensie-uitgaven",
+                    "veiligheidsgaranties",
+                    "staakt-het-vuren",
+                    "tussenronde",
+                    "doorstroomtoets",
+                    "importtarieven",
+                    "vuurwerkverbod"
+                ]
+            },
+            {
+                "title": "februari 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/veiligheid/",
+                "color": "#f368e0",
+                "content": [
+                    "veiligheidsconferentie",
+                    "veiligheidsgaranties",
+                    "schietpartijen",
+                    "patser",
+                    "asielwetten",
+                    "meerwaardebelasting",
+                    "doorstroomtoets"
+                ]
+            },
+            {
+                "title": "januari 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie/",
+                "color": "#ecf0f1",
+                "content": ["inauguratie", "doorstroomtoets", "vuurwerkverbod", "supernota", "tussenronde"]
+            }
+        ]
+    },
+    {
+        "title": "nieuwe woorden",
+        "content": [
+            "Kijksluiter, toetsenbordterrorist en weigerpensionado: dagelijks komen er nieuwe woorden bij in het Nederlands.",
+            "In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/'>Nieuw woord van de week</a> bespreken we elke week een actueel nieuw woord."
+        ],
+        "blocks": [
+            {
+                "color": "#ecf0f1",
+                "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/zelfscansamenleving/",
+                "graph": { "word": "zelfscankassa", "start": "2013-01-01", "interval": "3m" }
+            },
+            {
+                "color": "#f1c40f",
+                "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/zonnecremepunt/",
+                "graph": { "word": "zonnebrandpaal", "start": "2021-01-01", "interval": "2m" }
+            },
+            {
+                "color": "#2ecc71",
+                "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/womanosphere/",
+                "graph": { "word": "manosfeer", "start": "2024-01-01", "interval": "1w" }
+            },
+            {
+                "color": "#f368e0",
+                "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/statiegeldwinkel/",
+                "graph": { "word": "statiegeldwinkel", "start": "2025-01-01", "interval": "1w" }
+            }
+        ]
+    },
+    {
+        "title": "politiek",
+        "blocks": [
+            { "color": "#f368e0", "graph": { "word": "angela merkel", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#ecf0f1", "graph": { "word": "desi bouterse", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#e67e22", "graph": { "word": "mark rutte", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#f1c40f", "graph": { "word": "guy verhofstadt", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#3498db", "graph": { "word": "geert wilders", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#2ecc71", "graph": { "word": "donald trump", "start": "2014-01-01", "interval": "1m" } },
+            { "color": "#1abc9c", "graph": { "word": "jennifer simons", "start": "2008-01-01", "interval": "3m" } },
+            { "color": "#e74c3c", "graph": { "word": "les engagés", "start": "2022-01-01", "interval": "1m" } }
+        ]
+    },
+    {
+        "title": "woorden in verval",
+        "content": ["Welke woorden worden vandaag de dag minder gebruikt?"],
+        "blocks": [
+            { "color": "#ecf0f1", "graph": { "word": "blanke man", "start": "2015-01-01", "interval": "6m" } },
+            { "color": "#1abc9c", "graph": { "word": "allochtonen", "start": "2000-01-01", "interval": "6m" } },
+            { "color": "#e74c3c", "graph": { "word": "weekeinde", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#e67e22", "graph": { "word": "verscheidene", "start": "2000-01-01", "interval": "3m" } }
+        ]
+    },
+    {
+        "title": "21e eeuw",
+        "content": ["Welke woorden kenmerken onze maatschappij in de 21e eeuw?"],
+        "blocks": [
+            {
+                "color": "#95a5a6",
+                "graph": { "word": "kunstmatige intelligentie", "start": "2010-01-01", "interval": "6m" }
+            },
+            { "color": "#ecf0f1", "graph": { "word": "smartphone", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#2ecc71", "graph": { "word": "klimaatverandering", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#f368e0", "graph": { "word": "sociale media", "start": "2010-01-01", "interval": "3m" } },
+            { "color": "#1abc9c", "graph": { "word": "elektrische fiets", "start": "2004-01-01", "interval": "3m" } },
+            { "color": "#e74c3c", "graph": { "word": "russische troepen", "start": "2008-01-01", "interval": "3m" } },
+            { "color": "#f1c40f", "graph": { "word": "vluchtelingencrisis", "start": "2014-01-01", "interval": "3m" } },
+            { "color": "#3498db", "graph": { "word": "corona", "start": "2019-01-01", "interval": "1m" } }
+        ]
+    },
+    {
+        "title": "periodieke woorden",
+        "content": ["Welke woorden komen jaarlijks of om de paar jaar terug?"],
+        "blocks": [
+            { "color": "#ecf0f1", "graph": { "word": "olympische spelen", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#f1c40f", "graph": { "word": "hittegolf", "start": "2000-01-01", "interval": "2m" } },
+            { "color": "#2ecc71", "graph": { "word": "schrikkeljaar", "start": "2000-01-01", "interval": "6m" } },
+            { "color": "#95a5a6", "graph": { "word": "zwarte piet", "start": "2008-01-01", "interval": "2m" } }
+        ]
+    }
+]
