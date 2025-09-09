@@ -141,10 +141,10 @@
                                     />
                                 </div>
 
-                                <div class="formSplit" v-if="trendSettings.trendType == 'keyness'">
+                                <!-- <div class="formSplit" v-if="trendSettings.trendType == 'keyness'">
                                     <label>Verdwijnwoorden</label>
                                     <Checkbox v-model="trendSettings.ascending" binary />
-                                </div>
+                                </div> -->
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
