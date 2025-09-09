@@ -103,6 +103,8 @@ onMounted(() => {
     const y = d3.scaleLinear()
     const yAxis = svg.append("g").attr("class", "y-axis").style("font-size", "calc(0.5vw + 0.4rem)")
 
+    const grid = svg.append("g").attr("class", "grid")
+
     // y axis label
     svg.append("text")
         .style("text-anchor", "middle")
@@ -432,6 +434,16 @@ onMounted(() => {
             .attr("height", graphRect.height + 2 * clipOverflow.y)
             .attr("x", -clipOverflow.x)
             .attr("y", -clipOverflow.y)
+
+        // grid
+        grid.call(d3.axisLeft(y).tickFormat(""))
+            .attr("transform", `translate(${yAxisWidth}, ${titleHeight})`)
+            .selectAll("g.tick line")
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", graphRect.width)
+            .attr("y2", 0)
+            .attr("stroke", "#00000011")
 
         brushEl.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`)
         brush
