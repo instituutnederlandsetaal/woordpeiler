@@ -80,7 +80,8 @@
         ]
     },
     {
-        "title": "woorden in verval",
+        "title": "verdwijnwoorden",
+        "id": "verdwijnwoorden",
         "content": ["Welke woorden worden vandaag de dag minder gebruikt?"],
         "blocks": [
             { "color": "#ecf0f1", "graph": { "word": "blanke man", "start": "2015-01-01", "interval": "6m" } },

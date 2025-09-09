@@ -104,7 +104,7 @@
 
 @media screen and (max-width: 500px) {
     // switch to hamburger menu
-    nav {
+    header nav {
         padding: 0 !important;
         align-content: stretch !important;
         align-items: stretch !important;
@@ -118,8 +118,13 @@
         }
     }
 
-    footer h2 {
-        font-size: 1.2rem !important;
+    search {
+        h2 {
+            font-size: 1.2rem !important;
+        }
+        nav a {
+            font-size: 0.9rem !important;
+        }
     }
 
     main div.wrapper section.spotlight header h2 {

@@ -30,18 +30,18 @@ function doSearch() {
 .search {
     background-color: $theme;
     width: 100%;
-    padding-bottom: 1rem;
+    padding-bottom: .75rem;
     display: flex;
     justify-content: start;
     align-items: center;
     box-shadow: 0px 4px 5px 1px #ccc;
     flex-direction: column;
+    gap: .5rem;
 
     .slogan {
         font-weight: normal;
         font-size: 1.5rem;
         color: white;
-        padding: 5px 0 14px 0;
     }
 
     :deep(.p-inputgroup) {

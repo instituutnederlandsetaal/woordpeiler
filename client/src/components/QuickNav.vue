@@ -15,7 +15,6 @@ const itemsWithIds = computed(() => items.value?.filter(i => Boolean(i.id)))
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
-        padding-top: .5rem;
         a {
             color: white;
             &:hover {
