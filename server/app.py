@@ -19,6 +19,7 @@ from server.query.svg_query import SvgQuery
 from server.query.listing_query import ListingQuery
 from server.query.trends.trends_query import TrendsQuery
 from server.query.frequency_query import FrequencyQuery
+from server.query.words_query import WordsQuery
 from server.config.config import FastAPI, create_app_with_config
 from server.util.dataseries_row_factory import (
     SingleValueRowFactory,
@@ -151,6 +152,19 @@ async def get_freq(
                 .build(cur)
                 .execute_fetchall()
             )
+
+
+# Get all words that match the given parameters, can be regex
+@app.get("/words")
+async def get_words(
+    request: Request,
+    w: Optional[str] = None,
+    l: Optional[str] = None,
+    p: Optional[str] = None,
+) -> list[Any]:
+    async with request.app.pool.connection() as conn:
+        async with conn.cursor(row_factory=dict_row) as cur:
+            return await WordsQuery(w, l, p).build(cur).execute_fetchall()
 
 
 if __name__ == "__main__":
