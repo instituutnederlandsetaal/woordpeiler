@@ -47,6 +47,10 @@
                 Zoek op een woordgroep van maximaal {{ config.searchItems.ngram }} woorden.
             </p>
 
+            <p class="invalid" v-if="invalidRegexUsage(searchItem.lemma) || invalidRegexUsage(searchItem.wordform)">
+                Voer minimaal 4 andere tekens in dan een *-joker.
+            </p>
+
             <div class="formSplit">
                 <label for="word">Woord</label><br />
                 <InputText
@@ -158,7 +162,7 @@ import { useSearchItemsStore } from "@/stores/searchItems"
 import { useSearchSettingsStore } from "@/stores/searchSettings"
 import { useSearchResultsStore } from "@/stores/searchResults"
 // Util
-import { displayName, invalidSearchItem, invalidInputText } from "@/types/search"
+import { displayName, invalidSearchItem, invalidInputText, invalidRegexUsage } from "@/types/search"
 import { randomColor } from "@/ts/color"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
 import { config } from "@/main"

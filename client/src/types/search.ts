@@ -75,14 +75,24 @@ export function invalidInputText(text?: string): boolean {
     return num_words > config.searchItems.ngram // 5-grams not supported
 }
 
+export function invalidRegexUsage(text?: string): boolean {
+    // regex only allowed with at least 4 characters
+    if (text && text.includes("*")) {
+        if (text.replaceAll("*", "").length < 4) {
+            return true // invalid
+        }
+    }
+    return false // not invalid
+}
+
 export function invalidSearchItem(item: SearchItem): boolean {
     if (displayName(item) == "") {
         // An empty item is invalid
         return true
     } else {
         // not empty
-        // no spaces in wordform or lemma
-        if (invalidInputText(item.lemma) || invalidInputText(item.wordform)) {
+        // check ngram length and regex usage
+        if (invalidInputText(item.lemma) || invalidInputText(item.wordform) || invalidRegexUsage(item.lemma) || invalidRegexUsage(item.wordform)) {
             return true // invalid
         }
     }

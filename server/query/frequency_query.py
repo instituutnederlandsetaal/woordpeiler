@@ -132,6 +132,8 @@ class FrequencyQuery(QueryBuilder):
         pos: Optional[str],
         poshead: Optional[str],
     ) -> Composable:
+        # verify regex usage
+        FrequencyQuery.limit_regex(wordform, lemma, pos, poshead)
         filters: list[Composable] = []
         for table, ids, column, values in [
             ("wordforms", "wordform_ids", "wordform", wordform),
@@ -141,8 +143,11 @@ class FrequencyQuery(QueryBuilder):
         ]:
             if values is not None:
                 for i, value in enumerate(values.strip().split(" ")):
+                    equals_like = (
+                        SQL("LIKE") if ("*" in value or "?" in value) else SQL("=")
+                    )
                     value = value.replace("*", "%")
-                    equals_like = SQL("LIKE") if "%" in value else SQL("=")
+                    value = value.replace("?", "_")
                     filter = SQL(
                         "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} {equals_like} {value})"
                     ).format(
@@ -156,6 +161,22 @@ class FrequencyQuery(QueryBuilder):
                     filters.append(filter)
 
         return SQL("WHERE ") + SQL(" AND ").join(filters)
+
+    @staticmethod
+    def limit_regex(
+        wordform: Optional[str],
+        lemma: Optional[str],
+        pos: Optional[str],
+        poshead: Optional[str],
+    ) -> None:
+        # make sure at least 4 characters are specified when using regex
+        for values in [wordform, lemma, pos, poshead]:
+            if values is not None:
+                for value in values.strip().split(" "):  # note ngram split
+                    if "*" in value and len(value.replace("*", "")) < 4:
+                        raise ValueError(
+                            "When using wildcards, at least 4 characters must be specified"
+                        )
 
     def build(self, cursor: BaseCursor) -> ExecutableQuery[DataSeries]:
         query = SQL(
