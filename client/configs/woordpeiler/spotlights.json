@@ -1,64 +1,38 @@
 [
     {
-        "title": "woordpeilingen 2025",
+        "title": "woordpeiling juni 2025",
         "content": [
-            "Welke woorden zijn het meest kenmerkend voor een bepaalde periode? Elke maand brengen we een <a target='_blank' href='https://ivdnt.org/actueel/woordpeiling/'>Woordpeiling</a> uit op basis van een data-analyse van zo’n tien miljoen krantenartikelen uit het Corpus Hedendaags Nederlands (CHN)."
+            "De meest kenmerkende woorden van juni 2025: <a target='_blank' href='https://ivdnt.org/actueel/woordpeiling/navo-top-kabinetsval-en-donorschandaal/'>NAVO-top, kabinetsval en donor(schandaal)</a>."
         ],
         "blocks": [
             {
-                "title": "april 2025",
-                "subtitle": "woordpeiling",
-                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/handelsoorlog-lintjes-en-bidongooier/",
-                "color": "#2ecc71",
-                "content": [
-                    "handelsoorlog",
-                    "importheffingen",
-                    "paasakkoord",
-                    "voorjaarsnota",
-                    "lintjes",
-                    "bidon",
-                    "kardinalen"
-                ]
+                "color": "#e74c3c",
+                "graph": { "word": "rode lijn-demonstratie", "start": "2025-01-01", "interval": "1d" }
             },
+            { "color": "#ecf0f1", "graph": { "word": "ereloonsupplementen", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#e67e22", "graph": { "word": "huurbevriezing", "start": "2025-01-01", "interval": "1w" } },
+            { "color": "#f1c40f", "graph": { "word": "meerwaardebelasting", "start": "2014-01-01", "interval": "1m" } },
+            { "color": "#3498db", "graph": { "word": "kabinetsval", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#2ecc71", "graph": { "word": "drones", "start": "2000-01-01", "interval": "3m" } },
+            { "color": "#1abc9c", "graph": { "word": "navo-norm", "start": "2023-01-01", "interval": "1w" } },
             {
-                "title": "1e kwartaal 2025",
+                "title": "juni 2025",
                 "subtitle": "woordpeiling",
-                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie-importheffingen-en-defensie-uitgaven/",
-                "color": "#e67e22",
-                "content": [
-                    "importheffingen",
-                    "meerwaardebelasting",
-                    "inauguratie",
-                    "defensie-uitgaven",
-                    "veiligheidsgaranties",
-                    "staakt-het-vuren",
-                    "tussenronde",
-                    "doorstroomtoets",
-                    "importtarieven",
-                    "vuurwerkverbod"
-                ]
-            },
-            {
-                "title": "februari 2025",
-                "subtitle": "woordpeiling",
-                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/veiligheid/",
-                "color": "#f368e0",
-                "content": [
-                    "veiligheidsconferentie",
-                    "veiligheidsgaranties",
-                    "schietpartijen",
-                    "patser",
-                    "asielwetten",
-                    "meerwaardebelasting",
-                    "doorstroomtoets"
-                ]
-            },
-            {
-                "title": "januari 2025",
-                "subtitle": "woordpeiling",
-                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie/",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/navo-top-kabinetsval-en-donorschandaal/",
                 "color": "#ecf0f1",
-                "content": ["inauguratie", "doorstroomtoets", "vuurwerkverbod", "supernota", "tussenronde"]
+                "content": [
+                    "rode lijn-demonstratie",
+                    "ereloonsupplementen",
+                    "huurbevriezing",
+                    "meerwaardebelasting",
+                    "kabinetsval",
+                    "drones",
+                    "navo-norm",
+                    "navo-top",
+                    "asielwetten",
+                    "donors",
+                    "donorschandaal"
+                ]
             }
         ]
     },
@@ -139,6 +113,69 @@
             { "color": "#f1c40f", "graph": { "word": "hittegolf", "start": "2000-01-01", "interval": "2m" } },
             { "color": "#2ecc71", "graph": { "word": "schrikkeljaar", "start": "2000-01-01", "interval": "6m" } },
             { "color": "#95a5a6", "graph": { "word": "zwarte piet", "start": "2008-01-01", "interval": "2m" } }
+        ]
+    },
+    {
+        "title": "woordpeilingen 2025",
+        "content": [
+            "Welke woorden zijn het meest kenmerkend voor een bepaalde periode? Elke maand brengen we een <a target='_blank' href='https://ivdnt.org/actueel/woordpeiling/'>Woordpeiling</a> uit op basis van een data-analyse van zo’n tien miljoen krantenartikelen uit het Corpus Hedendaags Nederlands (CHN)."
+        ],
+        "blocks": [
+            {
+                "title": "april 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/handelsoorlog-lintjes-en-bidongooier/",
+                "color": "#2ecc71",
+                "content": [
+                    "handelsoorlog",
+                    "importheffingen",
+                    "paasakkoord",
+                    "voorjaarsnota",
+                    "lintjes",
+                    "bidon",
+                    "kardinalen"
+                ]
+            },
+            {
+                "title": "1e kwartaal 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie-importheffingen-en-defensie-uitgaven/",
+                "color": "#e67e22",
+                "content": [
+                    "importheffingen",
+                    "meerwaardebelasting",
+                    "inauguratie",
+                    "defensie-uitgaven",
+                    "veiligheidsgaranties",
+                    "staakt-het-vuren",
+                    "tussenronde",
+                    "doorstroomtoets",
+                    "importtarieven",
+                    "vuurwerkverbod"
+                ]
+            },
+            {
+                "title": "februari 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/veiligheid/",
+                "color": "#f368e0",
+                "content": [
+                    "veiligheidsconferentie",
+                    "veiligheidsgaranties",
+                    "schietpartijen",
+                    "patser",
+                    "asielwetten",
+                    "meerwaardebelasting",
+                    "doorstroomtoets"
+                ]
+            },
+            {
+                "title": "januari 2025",
+                "subtitle": "woordpeiling",
+                "articleUrl": "https://ivdnt.org/actueel/woordpeiling/inauguratie/",
+                "color": "#ecf0f1",
+                "content": ["inauguratie", "doorstroomtoets", "vuurwerkverbod", "supernota", "tussenronde"]
+            }
         ]
     }
 ]
