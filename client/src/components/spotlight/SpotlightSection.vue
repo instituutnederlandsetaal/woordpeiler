@@ -13,6 +13,23 @@
 <script setup lang="ts">
 import type { SpotlightSection } from "@/types/spotlight"
 const { section } = defineProps<{ section: SpotlightSection }>()
+
+// only navigate to the current anchor after next tick
+onMounted(() => {
+    nextTick(() => {
+        scrollToAnchor()
+    })
+})
+
+function scrollToAnchor() {
+    const hash = window.location.hash
+    if (hash) {
+        const el = document.querySelector(hash) as HTMLElement
+        if (el) {
+            el.scrollIntoView()
+        }
+    }
+}
 </script>
 
 <style scoped lang="scss">
