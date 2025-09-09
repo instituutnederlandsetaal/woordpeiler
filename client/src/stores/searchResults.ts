@@ -65,8 +65,9 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
         toBeSearched.forEach((ds) => {
             if (searchSettings.value.languageSplit && !(ds.language || ds.source)) {
                 // split by language, but only if language or source is not set
+                const colors = config.searchItems.autosplit.colors
                 languageOptions.value.forEach((lang) => {
-                    getFrequency({ ...ds, language: lang.value, color: lang.color })
+                    getFrequency({ ...ds, language: lang, color: colors[lang] })
                 })
                 // also add the original search item
                 // time out to add it last
