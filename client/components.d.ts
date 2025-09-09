@@ -35,6 +35,7 @@ declare module 'vue' {
     MultiSelect: typeof import('primevue/multiselect')['default']
     Panel: typeof import('primevue/panel')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
+    QuickNav: typeof import('./src/components/QuickNav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./src/components/SearchBar.vue')['default']

@@ -5,12 +5,14 @@
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="doSearch" />
             <Button severity="secondary" @click="doSearch" title="Zoeken" icon="pi pi-search" />
         </InputGroup>
+        <QuickNav />
     </search>
 </template>
 
 <script setup lang="ts">
 // Util
 import { toTimestamp } from "@/ts/date"
+
 
 // Fields
 const word = ref()

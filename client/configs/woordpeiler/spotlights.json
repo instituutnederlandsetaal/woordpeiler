@@ -38,6 +38,7 @@
     },
     {
         "title": "nieuwe woorden",
+        "id": "nieuwe-woorden",
         "content": [
             "Kijksluiter, toetsenbordterrorist en weigerpensionado: dagelijks komen er nieuwe woorden bij in het Nederlands.",
             "In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/'>Nieuw woord van de week</a> bespreken we elke week een actueel nieuw woord."
@@ -117,6 +118,7 @@
     },
     {
         "title": "woordpeilingen 2025",
+        "id": "woordpeilingen-2025",
         "content": [
             "Welke woorden zijn het meest kenmerkend voor een bepaalde periode? Elke maand brengen we een <a target='_blank' href='https://ivdnt.org/actueel/woordpeiling/'>Woordpeiling</a> uit op basis van een data-analyse van zo’n tien miljoen krantenartikelen uit het Corpus Hedendaags Nederlands (CHN)."
         ],

@@ -1,7 +1,7 @@
 <template>
     <section class="spotlight-section">
         <hgroup class="spotlight-section-header">
-            <h2 class="spotlight-section-title">{{ section.title }}</h2>
+            <h2 class="spotlight-section-title" :id="section.id">{{ section.title }}</h2>
             <p v-for="(p, i) in section.content" :key="i" v-html="p"></p>
         </hgroup>
         <div class="spotlight-section-content">
