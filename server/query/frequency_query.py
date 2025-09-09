@@ -23,8 +23,8 @@ class FrequencyQuery(QueryBuilder):
         pos: Optional[str] = None,
         source: Optional[str] = None,
         language: Optional[str] = None,
-        start_date: Optional[int] = None,
-        end_date: Optional[int] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
         interval: str = "1y",
         id: Optional[int] = None,
     ) -> None:
@@ -53,7 +53,7 @@ class FrequencyQuery(QueryBuilder):
             self.source_filter, self.ngram
         )
         self.date_filter = QueryBuilder.get_date_filter(
-            Identifier("cs", "time"), start_date, end_date
+            Identifier("cs", "time"), start, end
         )
         self.interval = Literal(Interval.from_string(interval).to_timescaledb_str())
         self.size = Identifier("size")

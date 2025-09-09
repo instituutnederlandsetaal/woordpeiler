@@ -51,8 +51,8 @@ class ArithmeticalQuery:
                         source=self.source,
                         language=self.language,
                         interval=self.interval,
-                        start_date=self.start_date,
-                        end_date=self.end_date,
+                        start=self.start_date,
+                        end=self.end_date,
                     )
                     .build(cursor)
                     .execute()

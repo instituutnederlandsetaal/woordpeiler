@@ -16,16 +16,13 @@ import uvicorn
 
 # local
 from server.query.svg_query import SvgQuery
-from server.query.arithmetical_query import ArithmeticalQuery
 from server.query.listing_query import ListingQuery
 from server.query.trends.trends_query import TrendsQuery
 from server.query.frequency_query import FrequencyQuery
 from server.config.config import FastAPI, create_app_with_config
 from server.util.dataseries_row_factory import (
-    DataSeriesRowFactory,
     SingleValueRowFactory,
 )
-from server.util.datatypes import DataSeries
 
 app: FastAPI = create_app_with_config()
 
@@ -122,27 +119,6 @@ async def get_svg(
             return await SvgQuery(freq).execute(cur)
 
 
-async def get_math(
-    request: Request,
-    formula: str,
-    source: Optional[str] = None,
-    language: Optional[str] = None,
-    interval: str = "y",
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
-) -> list[DataSeries]:
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
-            return await ArithmeticalQuery(
-                formula,
-                source,
-                language,
-                interval,
-                start_date,
-                end_date,
-            ).execute(cur)
-
-
 @app.get("/frequency")
 async def get_freq(
     request: Request,
@@ -155,36 +131,26 @@ async def get_freq(
     end: Optional[datetime] = None,
     i: str = "1y",
 ) -> list[Any]:
-    # permission check
-    if any([s, l, p]) and not request.app.internal:
+    # permission check for source
+    if s is not None and not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    # send to math, but only internally
-    if w and ("+" in w or "/" in w) and request.app.internal:
-        return await get_math(
-            request,
-            w,
-            s,
-            v,
-            i,
-            start,
-            end,
-        )
-
-    query = FrequencyQuery(
-        wordform=w,
-        lemma=l,
-        pos=p,
-        source=s,
-        language=v,
-        interval=i,
-        start_date=start,
-        end_date=end,
-    )
-    # execute
     async with request.app.pool.connection() as conn:
         async with conn.cursor() as cur:
-            return await query.build(cur).execute_fetchall()
+            return (
+                await FrequencyQuery(
+                    wordform=w,
+                    lemma=l,
+                    pos=p,
+                    source=s,
+                    language=v,
+                    interval=i,
+                    start=start,
+                    end=end,
+                )
+                .build(cur)
+                .execute_fetchall()
+            )
 
 
 if __name__ == "__main__":
