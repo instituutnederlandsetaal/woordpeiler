@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 // Util
+import { config } from "@/main"
 import { toTimestamp } from "@/ts/date"
 
 
@@ -20,7 +21,7 @@ const router = useRouter()
 
 // Methods
 function doSearch() {
-    router.push({ path: "/grafiek", query: { w: word.value, start: toTimestamp(new Date("1618-01-01")) } })
+    router.push({ path: "/grafiek", query: { w: word.value, start: toTimestamp(new Date(config.period.start)) } })
 }
 </script>
 
