@@ -67,6 +67,8 @@
                     id="variant"
                     v-model="searchItem.language"
                     :options="languageOptions"
+                    optionLabel="label"
+                    optionValue="value"
                     showClear
                     :placeholder="config.searchItems.filters[0].name"
                     :loading="!languageOptions.length"
@@ -104,14 +106,18 @@
                             />
                         </div>
                         <div class="formSplit">
-                            <label for="pos">Woordsoort</label>
-                            <CascadeSelect
+                            <label for="pos">Woordsoort
+                            <HelpButton>
+                                <p>De woordsoorten komen uit de <a target="_blank" href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf">Tagset Diachroon Nederlands (TDN)</a></p>
+                            </HelpButton>
+                            </label>
+                            <Select
                                 :loading="!Object.entries(posOptions).length"
                                 id="pos"
                                 v-model="searchItem.pos"
                                 :options="posOptions"
-                                optionGroupLabel="label"
-                                optionGroupChildren="items"
+                                optionLabel="label"
+                                optionValue="value"
                                 showClear
                                 placeholder="Woordsoort"
                             />

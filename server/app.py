@@ -58,7 +58,7 @@ async def get_languages(request: Request) -> list[str]:
 async def get_posses(request: Request) -> list[str]:
     async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("posses", "pos").build(cur).execute_fetchall()
+            return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
 
 
 @app.get("/posheads")

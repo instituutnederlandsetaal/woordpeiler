@@ -45,7 +45,7 @@ class AbsoluteTrendsQuery(TrendsQuery):
                 k.keyness,
                 string_agg(wf.wordform, ' ' ORDER BY ord.n) AS wordform,
                 string_agg(l.lemma, ' ' ORDER BY ord.n) AS lemma,
-                string_agg(p.pos, ' ' ORDER BY ord.n) AS pos
+                string_agg(p.poshead, ' ' ORDER BY ord.n) AS pos
             FROM
                 keyness k, {words_table} w, wordforms wf, lemmas l, posses p,
                 unnest(wordform_ids, lemma_ids, pos_ids) WITH ORDINALITY AS ord(wid,lid,pid,n)

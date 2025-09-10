@@ -14,6 +14,24 @@
         ],
         "autosplit": { "on": "language", "colors": { "NN": "F6C141", "BN": "DC050C", "SN": "4EB265", "AN": "1965B0" } }
     },
+    "tagset": {
+        "aa": "Bijvoeglijk naamwoord",
+        "adp": "Voorzetsel, achterzetsel, omzetsel",
+        "adv": "Bijwoord",
+        "conj": "Voegwoord",
+        "int": "Tussenwerpsel",
+        "nou-c": "Zelfstandig naamwoord",
+        "nou-p": "Eigennaam",
+        "num": "Telwoord",
+        "pd": "Voornaamwoord, lidwoord",
+        "vrb": "Werkwoord"
+    },
+    "language": {
+        "NN": "Nederlands-Nederlands",
+        "BN": "Belgisch-Nederlands",
+        "SN": "Surinaams-Nederlands",
+        "AN": "Antilliaans-Nederlands"
+    },
     "corpus": { "name": "CHN", "url": "https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands" },
     "period": { "start": "2000-01-01" },
     "theme": {

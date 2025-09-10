@@ -2,7 +2,8 @@
 import { displayName, invalidSearchItem, type SearchItem } from "@/types/search"
 import * as ListingAPI from "@/api/listing"
 import { randomColor } from "@/ts/color"
-import { isInternal } from "@/ts/internal"
+import { type SelectLabel } from "@/types/ui"
+import { config } from "@/main"
 
 /**
  * Used to manage the list of words that will be used as search items when querying frequency data.
@@ -15,8 +16,8 @@ export const useSearchItemsStore = defineStore("SearchItems", () => {
     /** Source options, to be fetched */
     const sourceOptions = ref<string[]>([])
     /** Part of Speech options, to be fetched */
-    const posOptions = ref([])
-    const languageOptions = ref<string[]>([])
+    const posOptions = ref<SelectLabel[]>([])
+    const languageOptions = ref<SelectLabel[]>([])
     // computed
     const isValid = computed<boolean>(() => {
         // empty array
@@ -42,52 +43,28 @@ export const useSearchItemsStore = defineStore("SearchItems", () => {
     // Methods
     /** Fetch all unique sources and parts of speech */
     async function fetchOptions() {
-        if (!isInternal()) return
-
         // Dont keep refetching
-        if (sourceOptions.value.length > 0 && posOptions.value.length > 0) {
+        if (sourceOptions.value.length > 0 && posOptions.value.length > 0 && languageOptions.value.length > 0) {
             return
         }
 
         ListingAPI.getLanguages().then((response) => {
-            languageOptions.value = response.data
+            const labelMapping = config.language ? (i) => (`${config.language[i]} (${i})`) : (i) => i
+            languageOptions.value = response.data.map((i) => ({ label: labelMapping(i), value: i }))
         })
 
         ListingAPI.getSources().then((response) => {
             sourceOptions.value = response.data
         })
 
-        let posses: string[] = []
-        await ListingAPI.getPosses().then((response) => {
-            posses = response.data
+        ListingAPI.getPosheads().then((response) => {
+            const labelMapping = config.tagset ? (i) => (`${config.tagset[i]} (${i})`) : (i) => i
+            posOptions.value = response.data
+                .filter((i) => !["punct", "__eos__", "res"].includes(i))
+                .map((i) => ({ label: labelMapping(i), value: i }))
         })
-
-        let posHeads: string[] = []
-        await ListingAPI.getPosheads().then((response) => {
-            posHeads = response.data
-        })
-
-        posOptions.value = transformPos(posses, posHeads)
     }
-    /** Transform the pos and poshead listing into a combined object, grouped by poshead */
-    function transformPos(posses: string[], posHeads: string[]) {
-        // posses is now in the form [NOU(num=sg), NOU(num=pl), AA, ...]
-        // We want to transform this into [{label: "NOU", items: [{label: "NOU(num=sg)", value: "NOU(num=sg)"}]}, {label: "AA", items: ...]}, ...]
-        return posHeads
-            .filter((posHead) => !["punct", "__eos__"].includes(posHead))
-            .map((posHead) => {
-                return {
-                    label: posHead,
-                    items: [posHead].concat(
-                        posses
-                            .filter((pos) => pos.startsWith(posHead) && pos.includes("(") && !pos.includes("()"))
-                            .map((pos) => {
-                                return pos
-                            }),
-                    ),
-                }
-            })
-    }
+
     function readURLParams() {
         const split = ","
 
