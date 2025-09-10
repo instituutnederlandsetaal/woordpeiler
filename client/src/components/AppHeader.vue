@@ -1,5 +1,5 @@
 <template>
-    <header role="banner" :style="headerStyle">
+    <header :style="headerStyle">
         <div class="logo">
             <div class="logo-img">
                 <RouterLink to="/">

@@ -1,13 +1,14 @@
 <template>
-    <section class="spotlight-section">
-        <hgroup class="spotlight-section-header">
-            <h2 class="spotlight-section-title" :id="section.id">{{ section.title }}</h2>
+    <section :id="section.id">
+        <header v-if="section.title || section.content">
+            <h2>{{ section.title }}</h2>
             <p v-for="(p, i) in section.content" :key="i" v-html="p"></p>
-        </hgroup>
-        <div class="spotlight-section-content">
+        </header>
+        <div>
             <SpotlightBlock v-for="(block, i) in section.blocks" :key="i" :spotlight="block" />
         </div>
     </section>
+    <hr/>
 </template>
 
 <script setup lang="ts">
@@ -17,37 +18,33 @@ const { section } = defineProps<{ section: SpotlightSection }>()
 // only navigate to the current anchor after next tick
 onMounted(() => {
     nextTick(() => {
-        scrollToAnchor()
+        const hash = window.location.hash
+        if (hash) {
+            const el = document.querySelector(hash) as HTMLElement
+            if (el) {
+                el.scrollIntoView()
+            }
+        }
     })
 })
-
-function scrollToAnchor() {
-    const hash = window.location.hash
-    if (hash) {
-        const el = document.querySelector(hash) as HTMLElement
-        if (el) {
-            el.scrollIntoView()
-        }
-    }
-}
 </script>
 
 <style scoped lang="scss">
-.spotlight-section {
+section {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     max-width: calc(4 * 500px + 3 * 1rem);
     width: 100%;
+    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    gap: 1rem;
 
-    .spotlight-section-header {
+    header {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 0 1rem;
 
-        .spotlight-section-title {
+        h2 {
             font-weight: normal;
         }
         p {
@@ -55,11 +52,17 @@ function scrollToAnchor() {
         }
     }
 
-    .spotlight-section-content {
+    div {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
         grid-gap: 1rem;
         justify-items: center;
     }
+}
+
+hr {
+    width: 100%;
+    border: none;
+    border-top: 1px solid #ccc;
 }
 </style>

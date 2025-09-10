@@ -8,13 +8,13 @@
             {
                 "color": "#FFF064",
                 "title": "geldsnoeier",
-                "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/geldsnoeier/",
+                "url": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/geldsnoeier/",
                 "graph": { "word": "gel*snoey*", "start": "1685-01-01", "interval": "6m" }
             },
             {
                 "color": "#FF8000",
                 "title": "kinderpokjes",
-                "articleUrl": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/kinderpokjes/",
+                "url": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/kinderpokjes/",
                 "graph": { "word": "kinder*po*", "start": "1650-01-01", "interval": "1y" }
             }
         ]

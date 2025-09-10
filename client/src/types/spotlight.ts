@@ -2,11 +2,13 @@ export type SpotlightSection = { title?: string; content?: string[]; blocks: Spo
 
 export type SpotlightBlock = {
     title: string
+    id: string
     subtitle?: string
-    articleUrl?: string
+    url?: string
     color: string
-    graph?: SpotlightGraph
     content?: string[]
+    words?: string[]; 
+    graph?: SpotlightGraph
 }
 
 export type SpotlightGraph = { word?: string; lemma?: string; start: string; interval: string }

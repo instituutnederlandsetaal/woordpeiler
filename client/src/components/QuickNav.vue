@@ -1,6 +1,6 @@
 <template>
     <nav>
-        <a v-for="item in itemsWithIds" :key="item.id" :href="`#${item.id}`">{{ item.title }}</a>
+        <a v-for="item in itemsWithIds" :key="item.id" :href="`#${item.id}`">{{ item.id.replace("-"," ") }}</a>
     </nav>
 </template>
 
@@ -11,15 +11,20 @@ const itemsWithIds = computed(() => items.value?.filter(i => Boolean(i.id)))
 </script>
 
 <style scoped lang="scss">
-    nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        a {
-            color: white;
-            &:hover {
-                text-decoration: none;
-            }
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: center;
+    a {
+        color: white;
+        
+        background-color: #444;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
         }
     }
+}
 </style>

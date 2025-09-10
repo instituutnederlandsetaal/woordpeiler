@@ -1,60 +1,48 @@
 <template>
-    <router-link
-        :to="getGraphUrl(spotlight)"
-        class="spotlight"
-        :style="{ backgroundColor: spotlight.color }"
-        v-intersection-observer="loadSvg"
-        @click="search(spotlight)"
-    >
-        <header class="spotlight-header">
-            <h2 class="spotlight-title">
-                {{ title }}
-            </h2>
-        </header>
-        <div class="spotlight-content">
-            <p>
-                {{ subtitle }}
-            </p>
-            <div class="spotlight-link">
-                <a
-                    v-if="spotlight.articleUrl"
-                    :href="spotlight.articleUrl"
-                    target="_blank"
-                    @click="($event) => $event.stopPropagation()"
-                >
+    <article :style="{ backgroundColor: spotlight.color }"  v-intersection-observer="loadSvg">
+        <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)"/>
+        <a v-else-if="spotlight.url" :href="spotlight.url" target="_blank" class="spotlight-link"/>
+        <header>
+            <h2>{{ title }}</h2>
+            <div>
+                <p>{{ subtitle }}</p>
+                <a v-if="spotlight.url" :href="spotlight.url" target="_blank" @click="(e) => e.stopPropagation()">
                     artikel lezen <span class="pi pi-angle-double-right"></span>
                 </a>
             </div>
-            <article v-if="spotlight.content" class="spotlight-article">
-                <span v-for="(p, i) in spotlight.content" :key="i">
-                    {{ p }}
-                </span>
-            </article>
-            <figure v-if="spotlight.graph" class="spotlight-graph" v-html="svgBlob" />
+        </header>
+        <div class="spotlight-content">
+            <div>
+                <p v-for="(c, i) in spotlight.content" :key="i" v-html="c" />
+            </div>
+            <hr v-if="spotlight.graph && spotlight.content"/>
+            <figure v-if="spotlight.graph" v-html="svgBlob" />
+            <ul v-if="spotlight.words">
+                <li v-for="(w, i) in spotlight.words" :key="i">
+                    {{ w }}
+                </li>
+            </ul>
         </div>
-    </router-link>
+    </article>
 </template>
 
 <script setup lang="ts">
 import { vIntersectionObserver } from "@vueuse/components"
-// API
 import * as API from "@/api/search"
-// Types
 import type { SpotlightBlock } from "@/types/spotlight"
 
 // Props
 const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
 
 // Fields
-const router = useRouter()
 const svgBlob = ref()
-const title = computed<string>(() => spotlight.title ?? spotlight.graph?.word ?? spotlight.graph?.lemma)
-const subtitle = computed<string>(() => spotlight.subtitle ?? `sinds ${spotlight.graph.start.split("-")[0]}`)
+const title = spotlight.title ?? spotlight.graph?.word ?? spotlight.graph?.lemma
+const subtitle = spotlight.subtitle ?? (spotlight.graph ? `sinds ${spotlight.graph.start.split("-")[0]}` : "")
 
 // Methods
 function getGraphUrl(spotlight: SpotlightBlock): string {
-    if (spotlight.content) {
-        const params = new URLSearchParams({ w: spotlight.content.join() }).toString()
+    if (spotlight.words) {
+        const params = new URLSearchParams({ w: spotlight.words.join() }).toString()
         return `/grafiek?${params}`
     }
     const params = {
@@ -65,11 +53,6 @@ function getGraphUrl(spotlight: SpotlightBlock): string {
     }
     Object.keys(params).forEach((k) => params[k] === undefined && delete params[k])
     return `/grafiek?${new URLSearchParams(params)}`
-}
-
-function search(spotlight: SpotlightBlock) {
-    const url = getGraphUrl(spotlight)
-    router.push(url)
 }
 
 function loadSvg([entry]: IntersectionObserverEntry[]) {
@@ -94,7 +77,13 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
 </script>
 
 <style scoped lang="scss">
-.spotlight {
+article {
+    .spotlight-link {
+        position: absolute;
+        top: 0; left: 0; bottom: 0; right: 0;
+        outline-offset: -3px;
+    }
+    position: relative;
     color: initial;
     text-decoration: initial;
     display: flex;
@@ -108,21 +97,20 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
     min-width: 100%;
     // Without this, boxes with long text will grow to max-width, even if the screen is smaller
     overflow: hidden;
-
-    // override non-header font
-    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    gap: 0.5rem;
 
     &:hover,
     &:focus {
-        .spotlight-header .spotlight-title {
-            color: white;
+        header h2 {
+            text-decoration: underline;
         }
     }
 
-    .spotlight-header {
-        border-bottom: 1px solid black;
-
-        .spotlight-title {
+    header {
+        position: relative;
+        pointer-events: none;
+        h2 {
+            border-bottom: 1px solid black;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -133,22 +121,13 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
             padding-bottom: 0.5rem;
             width: 100%;
         }
-    }
-
-    .spotlight-content {
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        min-height: 0;
-        flex: 1; // needed on chrome
-
-        .spotlight-link {
-            text-align: right;
-            position: absolute;
-            width: 100%;
+        div {
+            display: flex;
+            justify-content: space-between;
             a {
                 color: inherit;
                 text-decoration: none;
+                pointer-events: all;
 
                 &:hover {
                     text-decoration: underline;
@@ -160,22 +139,48 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
                 }
             }
         }
+    }
 
-        .spotlight-article {
+    .spotlight-content {
+        display: flex;
+        flex-direction: column;
+        
+        min-height: 0;
+        flex: 1; // needed on chrome
+        gap: 0.5rem;
+        justify-content: space-between;
+        position: relative;
+        pointer-events: none;
+
+        :deep(a) {
+            color: black;
+            text-decoration: underline;
+            pointer-events: all;
+
+            &:hover {
+                text-decoration: none;
+            }
+        }
+
+        ul {
             display: flex;
             flex-wrap: wrap;
-            line-height: 1rem;
             gap: 0.5rem;
+            padding: 0;
+            border-top: 1px solid black;
             padding-top: 1rem;
             overflow-y: auto;
 
-            span {
+
+            li {
+                list-style: none;
+                line-height: 1;
                 border: 1px solid black;
                 padding: 0.5rem;
             }
         }
 
-        .spotlight-graph {
+        figure {
             flex: 1 0;
             min-height: 0;
             padding-top: 0.3rem;
@@ -189,6 +194,12 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
                 stroke: black;
                 stroke-width: 0.005;
             }
+        }
+
+        hr {
+            width: 100%;
+            border: none;
+            border-top: 1px solid black;
         }
     }
 }

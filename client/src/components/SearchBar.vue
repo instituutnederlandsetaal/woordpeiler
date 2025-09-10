@@ -1,6 +1,6 @@
 <template>
-    <search class="search">
-        <h2 class="slogan">{{ $config.app.slogan }}</h2>
+    <search>
+        <h2>{{ $config.app.slogan }}</h2>
         <InputGroup>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="doSearch" />
             <Button severity="secondary" @click="doSearch" title="Zoeken" icon="pi pi-search" />
@@ -28,7 +28,7 @@ function doSearch() {
 <style scoped lang="scss">
 @use "@/assets/primevue.scss" as *;
 
-.search {
+search {
     background-color: $theme;
     width: 100%;
     padding-bottom: .75rem;
@@ -38,8 +38,9 @@ function doSearch() {
     box-shadow: 0px 4px 5px 1px #ccc;
     flex-direction: column;
     gap: .5rem;
+    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-    .slogan {
+    h2 {
         font-weight: normal;
         font-size: 1.5rem;
         color: white;
