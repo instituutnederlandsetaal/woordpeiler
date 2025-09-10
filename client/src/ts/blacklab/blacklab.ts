@@ -60,6 +60,7 @@ function constructBLPatt(item: SearchItem) {
     // assume the number of n-grams in lemma, word is equal
     const lemmas = item.lemma?.split(" ")
     const words = item.wordform?.split(" ")
+    const posses = item.pos?.split(" ")
     const n = lemmas?.length || words?.length
 
     let patt = ""
@@ -67,7 +68,7 @@ function constructBLPatt(item: SearchItem) {
         const singleItem: SearchItem = {
             lemma: lemmas?.[i],
             wordform: words?.[i],
-            pos: item.pos, // always same pos for now
+            pos: posses?.[i],
         }
         patt += constructSingleBLPatt(singleItem)
     }
