@@ -1,15 +1,16 @@
 <template>
     <main>
         <aside>
-            <TrendSettings />
-
+            
             <TrendResultsList v-if="trendResults?.length > 0" />
-            <Skeleton class="trendlist" v-else-if="trendsLoading" />
-            <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
-                <p>Probeer een andere zoekopdracht.</p>
-            </Panel>
-
-            <SearchSettings v-if="isValid" />
+                <Skeleton class="trendlist" v-else-if="trendsLoading" />
+                <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
+                    <p>Probeer een andere zoekopdracht.</p>
+                </Panel>
+            <div class="settings">
+                <TrendSettings />
+                <SearchSettings v-if="isValid" />
+            </div>
         </aside>
         <GraphWrapper />
     </main>
@@ -26,50 +27,36 @@ import { config } from "@/main"
 const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore())
 const { isValid } = storeToRefs(useSearchItemsStore())
 
-// Lifecycle
-onMounted(() => {
-    document.title = `${config.app.name} - Trends`
-})
+document.title = `${config.app.name} - Trends`
 </script>
 
 <style scoped lang="scss">
 :deep(.trendlist) {
     flex: 1;
-    min-height: 0;
-    overflow: hidden;
+}
+
+.settings {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+}
 
-    .p-panel-content-container {
+@media screen and (max-width: 1024px) {
+    .trendlist {
+        min-height: 500px;
+    }
+    .settings {
         flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-
-        .p-panel-content {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-
-            .formSplit {
-                margin-bottom: 0.5rem;
-            }
-
-            .p-listbox {
-                flex: 1;
-                min-height: 0;
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-
-                .p-listbox-list-container {
-                    flex: 1;
-                    max-height: none !important;
-                    min-height: 0 !important;
-                }
-            }
-        }
+    }
+}
+@media screen and (max-width: 768px) {
+    .settings {
+        flex: auto;
+    }
+}
+@media screen and (max-width: 480px) {
+    .settings {
+        gap: 0.5rem;
     }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <Panel class="searchOptions">
+    <Panel class="trend-settings">
         <Accordion :value="tab" ref="trendAccordion">
             <AccordionPanel value="0">
                 <AccordionHeader>Trendinstellingen</AccordionHeader>
@@ -13,7 +13,7 @@
                         <TabPanels>
                             <!-- Word tab -->
                             <TabPanel value="0">
-                                <div class="formSplit">
+                                <fieldset>
                                     <label for="ngram">N-gram</label>
                                     <Select
                                         id="ngram"
@@ -23,9 +23,9 @@
                                         optionValue="value"
                                         placeholder="N-gram"
                                     />
-                                </div>
+                                </fieldset>
 
-                                <div class="formSplit">
+                                <fieldset>
                                     <label for="variant">Taalvariëteit</label>
                                     <Select
                                         id="variant"
@@ -36,17 +36,17 @@
                                         optionValue="value"
                                         placeholder="Taalvariëteit"
                                     />
-                                </div>
+                                </fieldset>
 
-                                <div class="formSplit">
+                                <fieldset>
                                     <label>Verrijkt met woordsoort en lemma</label>
                                     <Checkbox v-model="trendSettings.enriched" binary />
-                                </div>
+                                </fieldset>
                             </TabPanel>
 
                             <!-- Period tab -->
                             <TabPanel value="1">
-                                <div class="formSplit">
+                                <fieldset>
                                     <label>Periode</label>
                                     <SelectButton
                                         v-model="trendSettings.period"
@@ -54,10 +54,10 @@
                                         optionValue="value"
                                         optionLabel="label"
                                     />
-                                </div>
+                                </fieldset>
 
                                 <template v-if="trendSettings.period == 'other'">
-                                    <div class="formSplit">
+                                    <fieldset>
                                         <label>Vanaf</label>
                                         <DatePicker
                                             v-model="trendSettings.other.start"
@@ -66,8 +66,8 @@
                                             iconDisplay="input"
                                             dateFormat="dd-M-yy"
                                         />
-                                    </div>
-                                    <div class="formSplit">
+                                    </fieldset>
+                                    <fieldset>
                                         <label>Tot en met</label>
                                         <DatePicker
                                             v-model="trendSettings.other.end"
@@ -76,10 +76,10 @@
                                             iconDisplay="input"
                                             dateFormat="dd-M-yy"
                                         />
-                                    </div>
+                                    </fieldset>
                                 </template>
                                 <template v-else-if="trendSettings.period == 'year'">
-                                    <div class="formSplit">
+                                    <fieldset>
                                         <label>Jaar</label>
                                         <DatePicker
                                             v-model="trendSettings.year.start"
@@ -87,10 +87,10 @@
                                             dateFormat="yy"
                                             v-on:date-select="setYearEndDate()"
                                         />
-                                    </div>
+                                    </fieldset>
                                 </template>
                                 <template v-else-if="trendSettings.period == 'month'">
-                                    <div class="formSplit">
+                                    <fieldset>
                                         <label>Maand</label>
                                         <DatePicker
                                             v-model="trendSettings.month.start"
@@ -98,10 +98,10 @@
                                             dateFormat="MM yy"
                                             v-on:date-select="setMonthEndDate()"
                                         />
-                                    </div>
+                                    </fieldset>
                                 </template>
                                 <template v-else-if="trendSettings.period == 'week'">
-                                    <div class="formSplit">
+                                    <fieldset>
                                         <label>Week</label>
                                         <DatePicker
                                             v-model="week"
@@ -115,13 +115,13 @@
                                             v-on:date-select="setWeekCorrectly()"
                                         >
                                         </DatePicker>
-                                    </div>
+                                    </fieldset>
                                 </template>
                             </TabPanel>
 
                             <!-- Trend tab -->
                             <TabPanel value="2">
-                                <div class="formSplit">
+                                <fieldset>
                                     <label>Trendsoort</label>
                                     <SelectButton
                                         v-model="trendSettings.trendType"
@@ -129,22 +129,22 @@
                                         optionValue="value"
                                         optionLabel="label"
                                     />
-                                </div>
+                                </fieldset>
 
-                                <div class="formSplit">
+                                <fieldset>
                                     <label>{{ modifierLabel }}</label>
                                     <input
                                         type="number"
-                                        class="modifierInput p-inputtext"
+                                        class="p-inputtext"
                                         v-model="trendSettings.modifier"
                                         min="0"
                                     />
-                                </div>
+                                </fieldset>
 
-                                <!-- <div class="formSplit" v-if="trendSettings.trendType == 'keyness'">
+                                <!-- <fieldset v-if="trendSettings.trendType == 'keyness'">
                                     <label>Verdwijnwoorden</label>
                                     <Checkbox v-model="trendSettings.ascending" binary />
-                                </div> -->
+                                </fieldset> -->
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
@@ -222,7 +222,9 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.searchOptions {
+.trend-settings {
+    height: fit-content;
+
     :deep(.p-panel-header) {
         display: none !important;
     }
@@ -248,24 +250,14 @@ onMounted(() => {
             }
         }
     }
-}
 
-.modifierInput {
-    flex: 1 1 0;
-    min-width: 0;
-    margin-left: 1rem;
-}
+    .week {
+        flex: 1;
+        margin-left: 6rem;
+    }
 
-.week {
-    flex: 1;
-    margin-left: 6rem;
-}
-
-.formSplit {
-    margin-bottom: 0.1rem;
-}
-
-.search-btn {
-    width: 100%;
+    .search-btn {
+        width: 100%;
+    }
 }
 </style>

@@ -65,11 +65,7 @@ function constructBLPatt(item: SearchItem) {
 
     let patt = ""
     for (let i = 0; i < n; i++) {
-        const singleItem: SearchItem = {
-            lemma: lemmas?.[i],
-            wordform: words?.[i],
-            pos: posses?.[i],
-        }
+        const singleItem: SearchItem = { lemma: lemmas?.[i], wordform: words?.[i], pos: posses?.[i] }
         patt += constructSingleBLPatt(singleItem)
     }
     return patt
@@ -88,7 +84,11 @@ function constructSingleBLPatt(item: SearchItem) {
     Object.keys(pattTerms).forEach(
         (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key],
     )
-    const isRegex = item.wordform?.includes("*") || item.lemma?.includes("*") || item.wordform?.includes("?") || item.lemma?.includes("?")
+    const isRegex =
+        item.wordform?.includes("*") ||
+        item.lemma?.includes("*") ||
+        item.wordform?.includes("?") ||
+        item.lemma?.includes("?")
     if (isRegex) {
         if (pattTerms["word"]) {
             pattTerms["word"] = toBLRegex(item.wordform)

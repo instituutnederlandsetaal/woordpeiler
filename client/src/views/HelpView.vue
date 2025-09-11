@@ -1,7 +1,7 @@
 <template>
     <main>
         <div class="fakePanel">
-            <Tabs value="0" class="textPanel">
+            <Tabs value="0" class="text-panel">
                 <TabList>
                     <Tab value="0">Algemeen</Tab>
                     <Tab value="1">Basiszoeken</Tab>
@@ -242,10 +242,7 @@
 import { config } from "@/main"
 
 const canShare = navigator.share != undefined
-
-onMounted(() => {
-    document.title = `${config.app.name} - Help`
-})
+document.title = `${config.app.name} - Help`
 </script>
 
 <style scoped lang="scss">

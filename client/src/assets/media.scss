@@ -1,138 +1,34 @@
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1024px) {
     main {
-        flex-direction: column;
-        justify-content: flex-end;
+        justify-content: stretch;
         flex-flow: column-reverse;
         min-height: auto;
         flex: 1;
         overflow-y: auto;
     }
 
-    #svg-graph,
-    .graph {
-        max-height: 500px !important;
-        min-height: 500px !important;
-    }
-
     aside {
-        width: 100%;
         flex-direction: row;
-    }
-
-    .searchOptions {
-        width: 400px;
-        height: fit-content;
+        flex: auto;
     }
 }
 
-@media screen and (max-width: 1000px) {
-    main .wrapper section {
-        width: 350px !important;
-    }
-}
-
-@media screen and (max-width: 800px) {
-    main {
-        padding: 0.3rem;
-        gap: 0.3rem;
-
-        .wrapper {
-            padding: 0.7rem;
-            width: 100%;
-            overflow-x: hidden;
-        }
-    }
-
+@media screen and (max-width: 768px) {
     aside {
-        gap: 0.3rem;
-
-        div.wordlist {
-            padding-bottom: 6rem !important;
-            gap: 0.3rem !important;
-        }
-    }
-
-    header {
-        .logo img {
-            min-width: 50px !important;
-        }
-
-        .logo-text {
-            h1 {
-                font-size: 1.5rem !important;
-            }
-
-            h2 {
-                font-size: 0.7rem !important;
-            }
-
-            align-self: center !important;
-        }
-    }
-
-    aside {
-        width: 100%;
         flex-flow: column-reverse;
     }
-
-    nav {
-        a {
-            font-size: 1rem !important;
-        }
-    }
-
-    .searchOptions {
-        width: 100%;
-    }
-
-    #svg-graph,
-    .graph {
-        max-height: 320px !important;
-        min-height: 320px !important;
-    }
-
-    main .helpPanel {
-        .p-panel-header {
-            padding: 0.3rem !important;
-        }
-
-        .p-panel-content {
-            padding: 0 1rem !important;
-        }
-    }
 }
 
-@media screen and (max-width: 500px) {
-    // switch to hamburger menu
-    header nav {
-        padding: 0 !important;
-        align-content: stretch !important;
-        align-items: stretch !important;
-
-        a {
-            display: none;
-        }
-
-        #hamburger {
-            display: inherit !important;
-        }
+@media screen and (max-width: 480px) {
+    main {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    aside {
+        gap: 0.5rem;
     }
 
-    search {
-        h2 {
-            font-size: 1.2rem !important;
-        }
-        nav a {
-            font-size: 0.9rem !important;
-        }
-    }
-
-    main div.wrapper section.spotlight header h2 {
-        font-size: 1.5rem !important;
-        padding-bottom: 0.3rem;
-    }
-
-    .textPanel {
+    .text-panel {
         font-size: 0.8rem;
 
         .p-panel-header {
@@ -141,28 +37,6 @@
 
         .p-panel-content {
             padding: 0 1rem !important;
-        }
-    }
-
-    .graph {
-        margin-top: 30px;
-
-        .p-panel {
-            .p-panel-header {
-                box-sizing: border-box !important;
-                background-color: white;
-                height: 30px !important;
-                margin-top: -30px;
-                position: static;
-                border: 1px solid #e2e8f0;
-                border-bottom: none;
-                margin-left: -1px !important;
-
-                .p-button {
-                    height: 100%;
-                    margin: 0 !important;
-                }
-            }
         }
     }
 }

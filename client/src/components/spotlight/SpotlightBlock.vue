@@ -1,7 +1,7 @@
 <template>
-    <article :style="{ backgroundColor: spotlight.color }"  v-intersection-observer="loadSvg">
-        <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)"/>
-        <a v-else-if="spotlight.url" :href="spotlight.url" target="_blank" class="spotlight-link"/>
+    <article :style="{ backgroundColor: spotlight.color }" v-intersection-observer="loadSvg">
+        <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)" />
+        <a v-else-if="spotlight.url" :href="spotlight.url" target="_blank" class="spotlight-link" />
         <header>
             <h2>{{ title }}</h2>
             <div>
@@ -15,7 +15,7 @@
             <div>
                 <p v-for="(c, i) in spotlight.content" :key="i" v-html="c" />
             </div>
-            <hr v-if="spotlight.graph && spotlight.content"/>
+            <hr v-if="spotlight.graph && spotlight.content" />
             <figure v-if="spotlight.graph" v-html="svgBlob" />
             <ul v-if="spotlight.words">
                 <li v-for="(w, i) in spotlight.words" :key="i">
@@ -70,9 +70,7 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
         i: graph.interval,
     }
 
-    API.getSVG(request).then((response) => {
-        svgBlob.value = response.data
-    })
+    API.getSVG(request).then((res) => (svgBlob.value = res.data))
 }
 </script>
 
@@ -91,10 +89,10 @@ article {
     padding: 1rem 2rem;
     cursor: pointer;
     // height
-    height: calc(250px + 10vw);
+    height: calc(300px + 10vw);
     max-height: 400px;
-    max-width: 500px;
-    min-width: 100%;
+    // max-width: 500px;
+    // min-width: 100%;
     // Without this, boxes with long text will grow to max-width, even if the screen is smaller
     overflow: hidden;
     gap: 0.5rem;
@@ -107,8 +105,6 @@ article {
     }
 
     header {
-        position: relative;
-        pointer-events: none;
         h2 {
             border-bottom: 1px solid black;
             overflow: hidden;
@@ -144,18 +140,16 @@ article {
     .spotlight-content {
         display: flex;
         flex-direction: column;
-        
         min-height: 0;
         flex: 1; // needed on chrome
         gap: 0.5rem;
         justify-content: space-between;
-        position: relative;
-        pointer-events: none;
+        // overflow-y: auto;
+        // overflow-x: hidden;
 
         :deep(a) {
             color: black;
             text-decoration: underline;
-            pointer-events: all;
 
             &:hover {
                 text-decoration: none;
@@ -169,8 +163,6 @@ article {
             padding: 0;
             border-top: 1px solid black;
             padding-top: 1rem;
-            overflow-y: auto;
-
 
             li {
                 list-style: none;
@@ -183,16 +175,24 @@ article {
         figure {
             flex: 1 0;
             min-height: 0;
-            padding-top: 0.3rem;
 
             :deep(svg) {
                 user-select: none;
                 height: 100%;
-                // strech svg without keeping aspect ratio
                 width: 100%;
                 fill: none;
                 stroke: black;
                 stroke-width: 0.005;
+            }
+            :deep(svg polyline) {
+                stroke-dasharray: 100;
+                stroke-dashoffset: 100;
+                animation: draw 10s forwards
+            }
+            @keyframes draw {
+                to {
+                    stroke-dashoffset: 0;
+                }
             }
         }
 
@@ -200,6 +200,38 @@ article {
             width: 100%;
             border: none;
             border-top: 1px solid black;
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    article header h2 {
+        font-size: 1.8rem;
+    }
+}
+@media screen and (max-width: 640px) {
+    article {
+        padding: .65rem 1.35rem;
+
+        header {
+            h2 {
+                font-size: 1.5rem;
+            }
+            p, a {
+                font-size: 0.9rem;
+            }
+        }
+        .spotlight-content {
+            p {
+                font-size: 0.9rem;
+            }
+            ul {
+                padding-top: 0.5rem;
+                gap: 0.35rem;
+                li {
+                    padding: 0.35rem;
+                }
+            }
         }
     }
 }

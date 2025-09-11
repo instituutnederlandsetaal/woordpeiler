@@ -1,6 +1,6 @@
 <template>
     <Panel :header="`Trendresultaten: ${displayName(lastTrendSettings)}`" class="trendlist">
-        <div class="formSplit">
+        <fieldset>
             <label>Uitsluiten</label>
             <MultiSelect
                 v-model="excludedPosHead"
@@ -8,9 +8,9 @@
                 :options="posHeadOptions"
                 placeholder="Woordsoort"
                 :loading="posHeadLoading"
-                class="posSelect"
+                class="pos-select"
             />
-        </div>
+        </fieldset>
 
         <Listbox
             multiple
@@ -21,7 +21,7 @@
             filterPlaceholder="Zoeken"
             optionLabel="wordform"
             :virtualScrollerOptions="{ itemSize: 45 }"
-            listStyle="height:100%"
+            listStyle="flex: 1; display: flex; flex-direction: column"
         >
             <template #option="{ option }">
                 <!-- index -->
@@ -116,13 +116,9 @@ watch(selectedTrend, () => {
     font-size: smaller;
 }
 
-.posSelect {
+.pos-select {
     flex: 1;
     min-width: 0;
-}
-
-.formSplit {
-    gap: 1rem;
 }
 
 .index {
@@ -130,22 +126,26 @@ watch(selectedTrend, () => {
 }
 
 .trendlist {
-    :deep(.p-panel-content) {
-        padding: 0 !important;
-
-        .formSplit {
-            padding: 0 1rem;
-        }
-
-        .p-listbox {
-            border: none;
-
-            .p-listbox-header {
-                padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    :deep(.p-panel-content-container) {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        .p-panel-content {
+            padding: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            fieldset {
+                gap: 0.5rem;
+                padding: 0 1rem 0.5rem 1rem;
             }
-
-            .p-listbox-list-container {
-                padding: 0 0 0 1rem;
+            .p-listbox {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                border: none;
             }
         }
     }

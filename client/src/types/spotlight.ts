@@ -7,7 +7,7 @@ export type SpotlightBlock = {
     url?: string
     color: string
     content?: string[]
-    words?: string[]; 
+    words?: string[]
     graph?: SpotlightGraph
 }
 

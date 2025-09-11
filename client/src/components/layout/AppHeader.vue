@@ -1,22 +1,22 @@
 <template>
     <header :style="headerStyle">
-        <div class="logo">
-            <div class="logo-img">
+        <figure>
+            <div>
                 <RouterLink to="/">
                     <img :src="$config.theme.logo" alt="logo" />
                 </RouterLink>
             </div>
-            <div class="logo-text">
+            <figcaption>
+                <h1>
+                    <RouterLink to="/">{{ $config.app.name.toLowerCase() }}</RouterLink>
+                </h1>
                 <h2>
                     <a href="https://ivdnt.org/" target="_blank" rel="noopener noreferrer">
                         /&nbsp;instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal&nbsp;/
                     </a>
                 </h2>
-                <h1>
-                    <RouterLink to="/">{{ $config.app.name.toLowerCase() }}</RouterLink>
-                </h1>
-            </div>
-        </div>
+            </figcaption>
+        </figure>
 
         <nav>
             <!-- regular links -->
@@ -126,28 +126,25 @@ header {
         text-decoration: none;
     }
 
-    .logo {
+    figure {
         display: flex;
         line-height: normal;
         gap: 0.5rem;
 
-        .logo-img img {
+        img {
             height: 65px;
         }
 
-        .logo-text {
-            padding: 5px 0;
-
+        figcaption {
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse;
+            justify-content: center;
 
             h1 {
-                font-weight: normal;
                 font-size: 1.7rem;
             }
 
             h2 {
-                font-weight: normal;
                 font-size: 0.8rem;
             }
         }
@@ -182,5 +179,37 @@ header {
 
 #hamburger {
     display: none;
+}
+
+@media screen and (max-width: 640px) {
+    // switch to hamburger menu
+    header nav {
+        padding: 0 !important;
+        align-content: stretch !important;
+        align-items: stretch !important;
+
+        a {
+            display: none;
+        }
+
+        #hamburger {
+            display: inherit !important;
+        }
+    }
+}
+@media screen and (max-width: 480px) {
+    header figure figcaption {
+        h1 {
+            font-size: 1.3rem;
+        }
+        h2 {
+            font-size: 0.6rem;
+        }
+    }
+}
+@media screen and (max-width: 320px) {
+    header figure img {
+        display: none;
+    }
 }
 </style>

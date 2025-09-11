@@ -14,7 +14,6 @@
 import { config } from "@/main"
 import { toTimestamp } from "@/ts/date"
 
-
 // Fields
 const word = ref()
 const router = useRouter()
@@ -31,13 +30,13 @@ function doSearch() {
 search {
     background-color: $theme;
     width: 100%;
-    padding-bottom: .75rem;
+    padding-bottom: 0.75rem;
     display: flex;
     justify-content: start;
     align-items: center;
     box-shadow: 0px 4px 5px 1px #ccc;
     flex-direction: column;
-    gap: .5rem;
+    gap: 0.5rem;
     font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
     h2 {
@@ -79,6 +78,14 @@ search {
             span {
                 font-size: 1.2rem;
             }
+        }
+    }
+}
+
+@media screen and (max-width: 480px) {
+    search {
+        h2 {
+            font-size: 1.3rem;
         }
     }
 }

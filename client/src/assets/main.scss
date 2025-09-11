@@ -8,10 +8,7 @@
 
 h1,
 h2,
-h3,
-h4,
-h5,
-h6 {
+h3 {
     font-weight: normal;
     font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -28,15 +25,7 @@ a {
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: #f8f8f8;
-}
-
-html,
-body,
-#app {
     overflow-x: hidden;
-}
-
-#app {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -52,47 +41,20 @@ main {
 }
 
 aside {
-    width: 430px;
     display: flex;
+    flex: 0 1 400px;
     flex-direction: column;
     min-height: 0;
     gap: 1rem;
+    justify-content: space-between;
 }
 
-.settings > div,
-.settings div.p-tabpanel {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.p-panel {
-    border: 1px solid #e2e8f0;
-    background: white;
-}
-
-.formSplit {
+fieldset {
+    border: none;
+    padding: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.panelHeader {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: left;
-    flex: 1 1 0;
-}
-
-div.invalid {
-    border-color: red;
-    border-width: 2px;
-}
-
-p.invalid {
-    color: red;
-    margin-bottom: 0.5rem;
 }
 
 // Because #hamburger-menu is a direct child of body
@@ -110,7 +72,7 @@ p.invalid {
 }
 
 // help & about
-.textPanel {
+.text-panel {
     width: 100%;
     min-height: 100%;
     height: fit-content;
@@ -139,7 +101,6 @@ p.invalid {
         .p-panel-content,
         .p-tabpanel {
             max-width: 1000px !important;
-            padding-bottom: 3rem !important;
         }
     }
 

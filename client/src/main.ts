@@ -10,6 +10,7 @@ import Aura from "@primeuix/themes/aura"
 
 import App from "@/App.vue"
 import { isInternal } from "@/ts/internal"
+import type { Config } from "@/ts/config"
 
 // create app
 const app = createApp(App)
@@ -46,7 +47,7 @@ app.use(PrimeVue, { unstyled: true })
 app.use(createPinia())
 
 // global config
-export let config = {}
+export let config: Config = {}
 
 if (location.hostname === "localhost") {
     import("@/assets/config/config.json").then((module) => {

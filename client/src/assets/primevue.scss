@@ -64,6 +64,10 @@ $theme: var(--theme); // Default theme color
     .p-accordionpanel {
         border: none;
     }
+
+    input.p-inputtext[type="number"] {
+        width: 80px;
+    }
 }
 
 // MultiSelect has on overlay on the global document level

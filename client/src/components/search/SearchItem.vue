@@ -1,6 +1,7 @@
 <template>
-    <div class="wordlist">
+    <div class="search-items">
         <Panel
+            class="search-item"
             :collapsed="defaultCollapse"
             toggleable
             v-for="searchItem in searchItems"
@@ -10,12 +11,17 @@
             <template #header>
                 <div>
                     <ColorPicker id="color" v-model="searchItem.color" title="Kleur in grafiek" />
-                    <Button class="visibleBtn" text severity="secondary" @click="searchItem.visible = !searchItem.visible">
+                    <Button
+                        class="visible-btn"
+                        text
+                        severity="secondary"
+                        @click="searchItem.visible = !searchItem.visible"
+                    >
                         <span v-if="searchItem.visible" class="pi pi-eye" title="Getoond in grafiek"></span>
                         <span v-else class="pi pi-eye-slash" title="Verborgen in grafiek"></span>
                     </Button>
                 </div>
-                <div class="panelHeader">
+                <div class="header">
                     <template v-if="displayName(searchItem)">
                         {{ displayName(searchItem) }}
                     </template>
@@ -44,14 +50,14 @@
             </template>
 
             <p class="invalid" v-if="invalidInputText(searchItem.lemma) || invalidInputText(searchItem.wordform)">
-                Zoek op een woordgroep van maximaal {{ config.searchItems.ngram }} woorden.
+                Zoek op maximaal {{ config.searchItems.ngram }} woorden.
             </p>
 
             <p class="invalid" v-if="invalidRegexUsage(searchItem.lemma) || invalidRegexUsage(searchItem.wordform)">
                 Voer minimaal 4 andere tekens in dan een *-joker.
             </p>
 
-            <div class="formSplit">
+            <fieldset>
                 <label for="word">Woord</label><br />
                 <InputText
                     :invalid="invalidInputText(searchItem.wordform)"
@@ -59,9 +65,9 @@
                     v-model.trim="searchItem.wordform"
                     @keyup.enter="search"
                 />
-            </div>
+            </fieldset>
 
-            <div class="formSplit">
+            <fieldset>
                 <label for="variant">{{ config.searchItems.filters[0].name }}</label>
                 <Select
                     id="variant"
@@ -73,29 +79,30 @@
                     :placeholder="config.searchItems.filters[0].name"
                     :loading="!languageOptions.length"
                 />
-            </div>
+            </fieldset>
             <Accordion value="-1">
                 <AccordionPanel class="advanced">
                     <AccordionHeader>Geavanceerd</AccordionHeader>
                     <AccordionContent>
-                        <div class="formSplit">
-                            <label for="lemma">Lemma
-                            <HelpButton>
-                                <p>Het lemma is de woordenboekvorm van het woord.</p>
-                                <DataTable
-                                    :value="[
-                                        { word: 'liep', lemma: 'lopen', pos: 'werkwoord' },
-                                        { word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord' },
-                                        { word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord' },
-                                    ]"
-                                    size="small"
-                                    style="max-width: fit-content"
-                                >
-                                    <Column field="word" header="Woord"></Column>
-                                    <Column field="lemma" header="Lemma"></Column>
-                                    <Column field="pos" header="Woordsoort"></Column>
-                                </DataTable>
-                            </HelpButton>
+                        <fieldset>
+                            <label for="lemma"
+                                >Lemma
+                                <HelpButton>
+                                    <p>Het lemma is de woordenboekvorm van het woord.</p>
+                                    <DataTable
+                                        :value="[
+                                            { word: 'liep', lemma: 'lopen', pos: 'werkwoord' },
+                                            { word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord' },
+                                            { word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord' },
+                                        ]"
+                                        size="small"
+                                        style="max-width: fit-content"
+                                    >
+                                        <Column field="word" header="Woord"></Column>
+                                        <Column field="lemma" header="Lemma"></Column>
+                                        <Column field="pos" header="Woordsoort"></Column>
+                                    </DataTable>
+                                </HelpButton>
                             </label>
                             <InputText
                                 :invalid="invalidInputText(searchItem.lemma)"
@@ -104,12 +111,20 @@
                                 v-model.trim="searchItem.lemma"
                                 @keyup.enter="search"
                             />
-                        </div>
-                        <div class="formSplit">
-                            <label for="pos">Woordsoort
-                            <HelpButton>
-                                <p>De woordsoorten komen uit de <a target="_blank" href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf">Tagset Diachroon Nederlands (TDN)</a></p>
-                            </HelpButton>
+                        </fieldset>
+                        <fieldset>
+                            <label for="pos"
+                                >Woordsoort
+                                <HelpButton>
+                                    <p>
+                                        De woordsoorten komen uit de
+                                        <a
+                                            target="_blank"
+                                            href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf"
+                                            >Tagset Diachroon Nederlands (TDN)</a
+                                        >
+                                    </p>
+                                </HelpButton>
                             </label>
                             <Select
                                 :loading="!Object.entries(posOptions).length"
@@ -121,27 +136,27 @@
                                 showClear
                                 placeholder="Woordsoort"
                             />
-                        </div>
+                        </fieldset>
                         <template v-if="$internal">
-                            <div class="formSplit">
+                            <fieldset>
                                 <label for="source">{{ config.searchItems.filters[1].name }}</label>
                                 <Select
                                     id="source"
                                     v-model="searchItem.source"
                                     :options="sourceOptions"
                                     showClear
-                                    :clearIconProps="{tabindex: 0}"
+                                    :clearIconProps="{ tabindex: 0 }"
                                     :placeholder="config.searchItems.filters[1].name"
                                     :loading="!sourceOptions.length"
                                 />
-                            </div>
+                            </fieldset>
                         </template>
                     </AccordionContent>
                 </AccordionPanel>
             </Accordion>
 
             <a
-                class="searchCHN"
+                class="search-corpus"
                 :href="constructSearchLink(searchItem, searchSettingsStore.searchSettings)"
                 target="_blank"
                 v-if="searchItem.wordform && !invalidSearchItem(searchItem)"
@@ -151,7 +166,7 @@
         </Panel>
         <Button
             style=""
-            class="newWord"
+            class="add-item-btn"
             severity="secondary"
             title="Zoekterm toevoegen"
             outlined
@@ -215,20 +230,62 @@ onMounted(() => {
     }
 })
 </script>
+
 <style scoped lang="scss">
-.wordlist {
-    flex: 1;
+.search-items {
     min-height: 0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     padding-bottom: 3rem;
     gap: 1rem;
+    flex: 5;
 
-    .newWord {
+    .search-item {
+        :deep(.p-panel-header) {
+            padding-right: 0.5rem !important;
+            .p-panel-header-actions > * {
+                padding: 0.5rem;
+            }
+        }
+        .header {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: left;
+            flex: 1 1 0;
+        }
+        .p-select,
+        .p-inputtext,
+        .p-cascadeselect {
+            width: 200px;
+        }
+        .search-corpus {
+            display: block;
+            color: blue;
+            margin: -.5rem 0;
+            font-size: 0.9rem;
+        }
+        &.hidden {
+            filter: brightness(0.9);
+        }
+        &.invalid {
+            border: 2px solid red;
+        }
+        p.invalid {
+            color: red;
+            margin-bottom: .25rem;
+        }
+        .visible-btn:focus {
+            outline: 1px solid black;
+            outline-offset: -3px;
+        }
+    }
+
+    .add-item-btn {
         width: 100%;
-        border: 2px dashed #ccc !important; 
-        background: #eee; 
+        border: 2px dashed #ccc !important;
+        background: #eee;
         min-height: 40px;
 
         &:hover,
@@ -239,41 +296,11 @@ onMounted(() => {
             outline-offset: -1px;
         }
     }
+}
 
-    .searchCHN {
-        display: block;
-        color: blue;
-        margin-top: 0.3em;
-        margin-bottom: -0.5rem;
-        font-size: 0.9rem;
+@media screen and (max-width: 480px) {
+    .search-items {
+        gap: 0.5rem;
     }
-}
-
-.wordlist {
-    .p-select,
-    .p-inputtext,
-    .p-cascadeselect {
-        width: 200px;
-    }
-}
-
-.hidden {
-    filter: brightness(0.9);
-}
-
-.visibleBtn:focus {
-    outline: 1px solid black;
-    outline-offset: -3px;
-}
-
-:deep(.p-panel-header-actions) > * {
-    display: inline-flex;
-    font-size: 16px;
-    padding: 0.5rem;
-    margin: 0;
-}
-
-:deep(.p-panel-header) {
-    padding-right: 0.5rem !important;
 }
 </style>

@@ -353,7 +353,10 @@ onMounted(() => {
         // Update axis and line position
         xAxis.transition().duration(animationDuration).call(d3.axisBottom(x).tickFormat(dateFormat).ticks(10))
         const fullHeight = y.domain()[1] - y.domain()[0]
-        xGrid.transition().duration(animationDuration).call(d3.axisBottom(x).tickFormat(""))
+        xGrid
+            .transition()
+            .duration(animationDuration)
+            .call(d3.axisBottom(x).tickFormat(""))
             .selectAll("g.tick line")
             .attr("x1", 0)
             .attr("y1", 0)
@@ -449,7 +452,8 @@ onMounted(() => {
             .attr("y", -clipOverflow.y)
 
         // grid lines
-        yGrid.call(d3.axisLeft(y).tickFormat(""))
+        yGrid
+            .call(d3.axisLeft(y).tickFormat(""))
             .attr("transform", `translate(${yAxisWidth}, ${titleHeight})`)
             .selectAll("g.tick line")
             .attr("x1", 0)
@@ -458,7 +462,8 @@ onMounted(() => {
             .attr("y2", 0)
             .attr("stroke", "#00000011")
 
-        xGrid.call(d3.axisBottom(x).tickFormat(""))
+        xGrid
+            .call(d3.axisBottom(x).tickFormat(""))
             .attr("transform", `translate(${yAxisWidth}, ${divHeight - xAxisHeight})`)
             .selectAll("g.tick line")
             .attr("x1", 0)
@@ -466,7 +471,6 @@ onMounted(() => {
             .attr("x2", 0)
             .attr("y2", -graphRect.height)
             .attr("stroke", "#00000011")
-        
 
         brushEl.attr("transform", `translate(${graphRect.x}, ${graphRect.y})`)
         brush

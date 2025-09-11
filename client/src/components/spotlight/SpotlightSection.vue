@@ -8,7 +8,7 @@
             <SpotlightBlock v-for="(block, i) in section.blocks" :key="i" :spotlight="block" />
         </div>
     </section>
-    <hr/>
+    <hr />
 </template>
 
 <script setup lang="ts">
@@ -33,7 +33,7 @@ onMounted(() => {
 section {
     display: flex;
     flex-direction: column;
-    max-width: calc(4 * 500px + 3 * 1rem);
+    // max-width: calc(4 * 500px + 3 * 1rem);
     width: 100%;
     font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
     gap: 1rem;
@@ -54,9 +54,9 @@ section {
 
     div {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         grid-gap: 1rem;
-        justify-items: center;
+        // justify-items: center;
     }
 }
 
@@ -64,5 +64,30 @@ hr {
     width: 100%;
     border: none;
     border-top: 1px solid #ccc;
+    margin: 0.5rem 0;
+}
+
+@media screen and (max-width: 1680px) {
+    section {
+        div {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    section {
+        div {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    section {
+        div {
+            grid-template-columns: 1fr;
+        }
+    }
 }
 </style>

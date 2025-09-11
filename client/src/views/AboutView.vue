@@ -1,6 +1,6 @@
 <template>
     <main>
-        <Panel class="textPanel">
+        <Panel class="text-panel">
             <section>
                 <h2>Over de applicatie</h2>
                 <p>
@@ -76,9 +76,7 @@
 <script setup lang="ts">
 import { config } from "@/main"
 
-onMounted(() => {
-    document.title = `${config.app.name} - Over`
-})
+document.title = `${config.app.name} - Over`
 </script>
 
 <style scoped lang="scss">

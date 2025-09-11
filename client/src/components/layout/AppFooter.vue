@@ -1,7 +1,9 @@
 <template>
     <footer>
         <p>
-            © 2025 Instituut voor de Nederlandse Taal, zie onze <a href="https://ivdnt.org/privacyverklaring">privacyverklaring</a> & <a href="https://ivdnt.org/gebruiksvoorwaarden">gebruiksvoorwaarden</a>.
+            © 2025 Instituut voor de Nederlandse Taal, zie onze
+            <a href="https://ivdnt.org/privacyverklaring">privacyverklaring</a> &
+            <a href="https://ivdnt.org/gebruiksvoorwaarden">gebruiksvoorwaarden</a>.
         </p>
     </footer>
 </template>

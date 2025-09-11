@@ -92,7 +92,12 @@ export function invalidSearchItem(item: SearchItem): boolean {
     } else {
         // not empty
         // check ngram length and regex usage
-        if (invalidInputText(item.lemma) || invalidInputText(item.wordform) || invalidRegexUsage(item.lemma) || invalidRegexUsage(item.wordform)) {
+        if (
+            invalidInputText(item.lemma) ||
+            invalidInputText(item.wordform) ||
+            invalidRegexUsage(item.lemma) ||
+            invalidRegexUsage(item.wordform)
+        ) {
             return true // invalid
         }
     }

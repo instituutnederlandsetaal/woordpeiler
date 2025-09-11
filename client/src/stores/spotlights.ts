@@ -1,46 +1,30 @@
-// Types & API
 import type { SpotlightSection } from "@/types/spotlight"
 import * as SpotlightAPI from "@/api/spotlight"
 import { config } from "@/main"
 
-/**
- * Only fetch spotlights once and store them.
- */
-export const useSpotlightStore = defineStore("Spotlights", () => {
-    // Fields
+/** Only fetch spotlights once and store them. */
+export const useSpotlightStore = defineStore("spotlights", () => {
     const items = ref<SpotlightSection[]>()
-    // Methods
-    function fetchSpotlights() {
-        // Dont keep refetching
-        if (items.value) {
-            return
-        }
-
+    function fetch() {
         SpotlightAPI.getSpotlights()
             .then((response) => {
                 items.value = response.data
             })
             .catch(() => {
+                // Could not connect to ivdnt
                 if (location.hostname === "localhost") {
                     // fetch default spotlights from local config
                     import("@/assets/config/spotlights.json").then((module) => {
                         items.value = module.default as SpotlightSection[]
                     })
                 } else {
-                    // fetch default spotlights
-                    fetch(config.spotlights.default)
+                    // fetch default spotlights as backup
+                    window.fetch(config.spotlights.default)
                         .then((response) => response.json())
-                        .then((data) => {
-                            items.value = data as SpotlightSection[]
-                        })
+                        .then((data) => (items.value = data))
                 }
             })
     }
-    // Export
-    return {
-        // Fields
-        items,
-        // Methods
-        fetchSpotlights,
-    }
+    fetch()
+    return { items, fetch }
 })

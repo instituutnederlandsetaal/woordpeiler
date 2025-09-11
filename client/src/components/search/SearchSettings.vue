@@ -1,10 +1,10 @@
 <template>
-    <Panel class="searchOptions">
+    <Panel class="search-settings">
         <Accordion :value="tab">
             <AccordionPanel value="0">
                 <AccordionHeader>Zoekinstellingen</AccordionHeader>
                 <AccordionContent class="settings">
-                    <div class="formSplit">
+                    <fieldset>
                         <label>Frequentie</label>
                         <SelectButton
                             v-model="searchSettings.frequencyType"
@@ -12,7 +12,7 @@
                             optionValue="value"
                             optionLabel="label"
                         />
-                    </div>
+                    </fieldset>
 
                     <div>
                         <label>Periode</label>
@@ -28,10 +28,10 @@
                     </div>
 
                     <label>Interval</label>
-                    <div class="formSplit">
+                    <fieldset>
                         <input
                             type="number"
-                            class="modifierInput p-inputtext"
+                            class="p-inputtext"
                             min="1"
                             v-model="searchSettings.intervalLength"
                         />
@@ -41,12 +41,12 @@
                             optionValue="value"
                             optionLabel="label"
                         />
-                    </div>
+                    </fieldset>
 
-                    <div class="formSplit" style="margin: 0.2rem 0 -0.2rem 0">
+                    <fieldset style="margin: 0.2rem 0 -0.2rem 0">
                         <label>Splits automatisch op taalvariëteit</label>
                         <Checkbox v-model="searchSettings.languageSplit" binary />
-                    </div>
+                    </fieldset>
                 </AccordionContent>
             </AccordionPanel>
         </Accordion>
@@ -117,33 +117,28 @@ watch(
 </script>
 
 <style scoped lang="scss">
-.searchOptions :deep(.p-panel-header) {
-    display: none !important;
-}
+.search-settings {
+    height: fit-content;
 
-.search-btn {
-    width: 100%;
-}
-
-.dateRange {
-    display: flex;
-}
-
-.reset {
-    display: inline;
-    width: fit-content;
-    line-height: 0;
-    font-size: 0.9rem;
-    margin: 0;
-    padding-left: 0.3rem;
-
-    span {
-        font-size: inherit;
+    :deep(.p-panel-header) {
+        display: none !important;
     }
-}
+    .search-btn {
+        width: 100%;
+    }
+    .dateRange {
+        display: flex;
+    }
+    .reset {
+        display: inline;
+        width: fit-content;
+        line-height: 0;
+        font-size: 0.9rem;
 
-.modifierInput {
-    flex: 0 1 80px;
-    min-width: 0;
+        span {
+            font-size: inherit;
+            margin-right: 0.25rem;
+        }
+    }
 }
 </style>

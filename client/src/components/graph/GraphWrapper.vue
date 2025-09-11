@@ -1,5 +1,5 @@
 <template>
-    <div class="graph">
+    <figure>
         <Panel class="p-panel">
             <!--icons-->
             <template #header v-if="visible.length > 0">
@@ -27,7 +27,7 @@
                 <div v-else>Zoek een woord</div>
             </template>
         </Panel>
-    </div>
+    </figure>
 </template>
 
 <script setup lang="ts">
@@ -62,7 +62,7 @@ function resetZoom() {
 </script>
 
 <style scoped lang="scss">
-.graph {
+figure {
     flex: 1 1 0;
 
     :deep(.p-panel) {
@@ -100,6 +100,45 @@ function resetZoom() {
             button {
                 z-index: 1;
                 margin-top: 34px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    figure {
+        max-height: 500px !important;
+        min-height: 500px !important;
+    }
+}
+@media screen and (max-width: 768px) {
+    figure {
+        max-height: 400px !important;
+        min-height: 400px !important;
+    }
+}
+@media screen and (max-width: 480px) {
+    figure {
+        max-height: 350px !important;
+        min-height: 350px !important;
+        margin-top: 30px;
+
+        :deep(.p-panel) {
+            .p-panel-header {
+                box-sizing: border-box !important;
+                background-color: white;
+                height: 30px !important;
+                margin-top: -30px;
+                position: static;
+                border: 1px solid #e2e8f0;
+                border-bottom: none;
+                margin-left: -1px !important;
+                position: absolute;
+
+                .p-button {
+                    height: 100%;
+                    margin: 0 !important;
+                }
             }
         }
     }

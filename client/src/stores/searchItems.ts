@@ -49,7 +49,7 @@ export const useSearchItemsStore = defineStore("SearchItems", () => {
         }
 
         ListingAPI.getLanguages().then((response) => {
-            const labelMapping = config.language ? (i) => (`${config.language[i]} (${i})`) : (i) => i
+            const labelMapping = config.language ? (i) => `${config.language[i]} (${i})` : (i) => i
             languageOptions.value = response.data.map((i) => ({ label: labelMapping(i), value: i }))
         })
 
@@ -58,7 +58,7 @@ export const useSearchItemsStore = defineStore("SearchItems", () => {
         })
 
         ListingAPI.getPosheads().then((response) => {
-            const labelMapping = config.tagset ? (i) => (`${config.tagset[i]} (${i})`) : (i) => i
+            const labelMapping = config.tagset ? (i) => `${config.tagset[i]} (${i})` : (i) => i
             posOptions.value = response.data
                 .filter((i) => !["punct", "__eos__", "res"].includes(i))
                 .map((i) => ({ label: labelMapping(i), value: i }))

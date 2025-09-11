@@ -1,8 +1,6 @@
-// Libraries
 import { createRouter, createWebHistory } from "vue-router"
 import { config } from "@/main"
-// Views
-import SearchView from "@/views/SearchView.vue"
+import GraphView from "@/views/GraphView.vue"
 import TrendsView from "@/views/TrendsView.vue"
 import HelpView from "@/views/HelpView.vue"
 import HomeView from "@/views/HomeView.vue"
@@ -15,7 +13,7 @@ const router = () =>
             { path: "/", component: HomeView },
             { path: "/trends", name: "trends", component: TrendsView },
             { path: "/help", component: HelpView },
-            { path: "/grafiek", component: SearchView },
+            { path: "/grafiek", component: GraphView },
             { path: "/over", component: AboutView },
         ],
     })
