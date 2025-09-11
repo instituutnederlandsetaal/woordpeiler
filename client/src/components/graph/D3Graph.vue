@@ -174,7 +174,8 @@ onMounted(() => {
         x.domain(d3.extent(flat, (d) => d.x))
         xAxis.call(d3.axisBottom(x).ticks(10))
         // y domain from 0 to max value
-        y.domain([0, d3.max(flat, (d) => d.y)])
+        const maxY = d3.max(flat, (d) => d.y) * 1.2
+        y.domain([0, maxY])
         yAxis.call(d3.axisLeft(y))
 
         // add empty g for each dataseries and data-label it
