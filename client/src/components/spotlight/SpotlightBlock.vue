@@ -1,5 +1,5 @@
 <template>
-    <article :style="{ backgroundColor: spotlight.color }" v-intersection-observer="loadSvg">
+    <article :style="{ backgroundColor: spotlight.color }">
         <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)" />
         <a v-else-if="spotlight.url" :href="spotlight.url" target="_blank" class="spotlight-link" />
         <header>
@@ -16,7 +16,7 @@
                 <p v-for="(c, i) in spotlight.content" :key="i" v-html="c" />
             </div>
             <hr v-if="spotlight.graph && spotlight.content" />
-            <figure v-if="spotlight.graph" v-html="svgBlob" />
+            <figure v-if="spotlight.graph" v-html="svgBlob" v-intersection-observer="loadSvg" />
             <ul v-if="spotlight.words">
                 <li v-for="(w, i) in spotlight.words" :key="i">
                     {{ w }}
@@ -76,10 +76,19 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
 
 <style scoped lang="scss">
 article {
+    pointer-events: none;
     .spotlight-link {
         position: absolute;
-        top: 0; left: 0; bottom: 0; right: 0;
+        inset: 0;
         outline-offset: -3px;
+    }
+    > :not(.spotlight-link) {
+        position: relative;
+        z-index: 1;
+    }
+    :deep(a) {
+        position: relative;
+        pointer-events: auto;
     }
     position: relative;
     color: initial;
@@ -89,8 +98,11 @@ article {
     padding: 1rem 2rem;
     cursor: pointer;
     // height
-    height: calc(300px + 10vw);
-    max-height: 400px;
+    min-height: calc(300px + 5vw);
+    height: auto;
+    // height: 400px;
+    // height: ;
+
     // max-width: 500px;
     // min-width: 100%;
     // Without this, boxes with long text will grow to max-width, even if the screen is smaller
@@ -123,7 +135,6 @@ article {
             a {
                 color: inherit;
                 text-decoration: none;
-                pointer-events: all;
 
                 &:hover {
                     text-decoration: underline;
@@ -144,8 +155,6 @@ article {
         flex: 1; // needed on chrome
         gap: 0.5rem;
         justify-content: space-between;
-        // overflow-y: auto;
-        // overflow-x: hidden;
 
         :deep(a) {
             color: black;
@@ -173,8 +182,11 @@ article {
         }
 
         figure {
-            flex: 1 0;
+            // flex: 1 0;
             min-height: 0;
+            flex: 1 0 calc(100px + 10vw);
+            // height: auto;
+            // max-height: calc(100px + 10vw);
 
             :deep(svg) {
                 user-select: none;

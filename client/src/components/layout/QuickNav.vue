@@ -32,8 +32,8 @@ nav {
     nav {
         gap: 0.35rem;
         a {
-            font-size: 0.9rem;
-            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            padding: 0.35rem 0.65rem;
         }
     }
 }

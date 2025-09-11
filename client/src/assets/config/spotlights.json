@@ -30,7 +30,7 @@
             { "color": "#f1c40f", "graph": { "word": "meerwaardebelasting", "start": "2014-01-01", "interval": "1m" } },
             { "color": "#3498db", "graph": { "word": "kabinetsval", "start": "2000-01-01", "interval": "3m" } },
             { "color": "#1abc9c", "graph": { "word": "navo-norm", "start": "2023-01-01", "interval": "1w" } },
-            { "color": "#2ecc71", "graph": { "word": "drones", "start": "2023-01-01", "interval": "1w" } }
+            { "color": "#2ecc71", "graph": { "word": "drones", "start": "2010-01-01", "interval": "3m" } }
         ]
     },
     {
