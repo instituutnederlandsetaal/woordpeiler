@@ -31,30 +31,50 @@ if [ -n "$2" ]; then
     ENV_FILE="$2"
 fi
 
-# check if the folder exists and is readable in terms of permissions
+# check if the folder exists and is readable
 if [ ! -d "$TSV_DIR" ] || [ ! -r "$TSV_DIR" ]; then
     echo -e "${RED}Error: TSV dir '$TSV_DIR' does not exist or is not readable.${NC}"
     exit 1
 fi
 
-# check if the env file exists and is readable in terms of permissions
+# check if the env file exists and is readable
 if [ ! -f "$ENV_FILE" ] || [ ! -r "$ENV_FILE" ]; then
     echo "Error: ENV file '$ENV_FILE' does not exist or is not readable."
     exit 1
 fi
 
-# check if builder is already running by running docker compose exec builder
-if [[ `docker compose ps -q builder 2>/dev/null` != "" ]]; then
+# check if builder is already running
+if [ -n "$(docker compose ps -q builder 2>/dev/null)" ]; then
     echo -e "${RED}Error: Builder is already running.${NC}"
     echo "Remove it:"
     echo "    docker compose down builder"
     exit 1
 fi
+
 # check if the docker volume already exists
 if docker volume ls | grep -q "$BUILDER_VOLUME"; then
     echo -e "${RED}Error: Docker volume '$BUILDER_VOLUME' already exists.${NC}"
     echo "Remove it:"
     echo "    docker volume rm $BUILDER_VOLUME"
+    exit 1
+fi
+
+# check if venv exists and is readable
+PY_VENV=database/venv/bin/activate
+if [ ! -f "$PY_VENV" ] || [ ! -r "$PY_VENV" ]; then
+    echo "Error: Python virtual environment '$PY_VENV' does not exist or is not readable."
+    exit 1
+fi
+
+# check if lz4 is installed
+if [ -z `command -v lz4` ]; then
+    echo -e "${RED}Error: lz4 is not installed.${NC}"
+    exit 1
+fi
+
+# check if psql is installed
+if [ -z `command -v psql` ]; then
+    echo -e "${RED}Error: psql is not installed.${NC}"
     exit 1
 fi
 
@@ -68,17 +88,23 @@ mkdir -p logs
 # background task
 nohup bash -c "
     set -e # Exit on error
+
+    # check if TSV_DIR contains lz4 files and extract them
+    if compgen -G $TSV_DIR/*.lz4 > /dev/null; then
+        lz4 --rm -m $TSV_DIR/*.lz4
+    fi
+
     # start up psql container
-    docker compose --env-file=.builder.env up builder -d --wait 
+    docker compose --env-file=.builder.env up builder -d --wait
 
     # insert tsv data into database
-    source database/venv/bin/activate
+    source $PY_VENV
     python -m database $TSV_DIR unigram 1
     python -m database $TSV_DIR bigram 2
 
     # script finished. Down builder.
     docker compose down builder
-    echo Created docker volume $BUILDER_VOLUME"
+    echo Created docker volume $BUILDER_VOLUME
 " > logs/$BUILDER_VOLUME.log 2>&1 &
 
 echo -e "${GREEN}Creating database in docker volume $BUILDER_VOLUME.${NC}"
