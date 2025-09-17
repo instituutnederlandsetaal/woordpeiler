@@ -12,7 +12,7 @@
             </div>
         </header>
         <div class="spotlight-content">
-            <div>
+            <div v-if="spotlight.content">
                 <p v-for="(c, i) in spotlight.content" :key="i" v-html="c" />
             </div>
             <hr v-if="spotlight.graph && spotlight.content" />
