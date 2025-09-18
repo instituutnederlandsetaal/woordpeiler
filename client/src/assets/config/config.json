@@ -1,5 +1,5 @@
 {
-    "basePath": "woordpeiler",
+    "basePath": "/woordpeiler",
     "spotlights": { "url": "https://ivdnt.org/woordpeiler.json", "default": "assets/config/spotlights.json" },
     "app": {
         "name": "Woordpeiler",

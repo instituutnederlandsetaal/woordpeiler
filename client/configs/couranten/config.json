@@ -1,5 +1,5 @@
 {
-    "basePath": "couranten",
+    "basePath": "/couranten",
     "spotlights": { "url": "https://ivdnt.org/courantenpeiler.json", "default": "assets/config/spotlights.json" },
     "app": {
         "name": "Courantenpeiler",
