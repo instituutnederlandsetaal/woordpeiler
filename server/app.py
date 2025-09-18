@@ -6,7 +6,7 @@ That class may raise exceptions, which are caught and returned as HTTPExceptions
 """
 
 # standard
-from datetime import datetime
+from datetime import date
 from typing import Annotated, Any, Optional
 
 # third party
@@ -73,8 +73,8 @@ async def get_trends(
     request: Request,
     trend_type: str = "absolute",
     modifier: float = 1,
-    start: Optional[datetime] = None,
-    end: Optional[datetime] = None,
+    start: Optional[date] = None,
+    end: Optional[date] = None,
     enriched: bool = True,
     language: Optional[str] = None,
     ascending: bool = False,
@@ -110,8 +110,8 @@ async def get_svg(
     p: Optional[str] = None,
     s: Optional[str] = None,
     v: Optional[str] = None,
-    start: Optional[datetime] = None,
-    end: Optional[datetime] = None,
+    start: Optional[date] = None,
+    end: Optional[date] = None,
     i: str = "1y",
 ) -> str:
     async with request.app.pool.connection() as conn:
@@ -128,8 +128,8 @@ async def get_freq(
     p: Optional[str] = None,
     s: Optional[str] = None,
     v: Optional[str] = None,
-    start: Optional[datetime] = None,
-    end: Optional[datetime] = None,
+    start: Optional[date] = None,
+    end: Optional[date] = None,
     i: str = "1y",
 ) -> list[Any]:
     # permission check for source

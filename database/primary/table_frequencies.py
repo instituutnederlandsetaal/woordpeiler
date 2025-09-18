@@ -26,7 +26,8 @@ class FrequencyTableBuilder(TableBuilder):
         """).format(frequencies=self.frequencies)
 
         self.add_indices = SQL("""
-            CREATE INDEX ON {frequencies} (word_id, source_id) INCLUDE (time, frequency);
+            -- index works for both trends and frequency queries; word_id second makes for speedy trend queries
+            CREATE INDEX ON {frequencies} (time, word_id, source_id) INCLUDE (frequency);
         """).format(frequencies=self.frequencies)
 
     def create(self):

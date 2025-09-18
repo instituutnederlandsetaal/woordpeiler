@@ -8,9 +8,6 @@ from server.util.datatypes import TrendItem
 
 
 class AbsoluteTrendsQuery(TrendsQuery):
-    def __init__(self, *args):
-        super().__init__(*args)
-
     def build(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
         query = SQL(
             """
@@ -64,7 +61,7 @@ class AbsoluteTrendsQuery(TrendsQuery):
             total_counts=self.total_counts,
             date_filter=self.date_filter,
             modifier=self.modifier,
-            counts_table=self.counts_table,
+            counts_table=self.frequencies,
             end_date=self.end_date,
         )
         return ExecutableQuery(cursor, query)

@@ -10,39 +10,26 @@ class TotalCountsTableBuilder(TableBuilder):
     def _build_queries(self):
         self.create_table = SQL("""
             SELECT 
-                word_id, 
+                word_id,
+                source_id,
                 SUM(abs_freq)::INTEGER as abs_freq
             INTO {total_counts}
-            FROM {daily_counts}
+            FROM {frequencies}
             GROUP BY 
-                word_id;
+                word_id, source_id;
         """).format(
             total_counts=self.total_counts,
             yearly_counts=self.yearly_counts,
-            daily_counts=self.daily_counts,
+            frequencies=self.frequencies,
         )
 
-        self.add_relative_columns = SQL("""
-            ALTER TABLE {total_counts}
-            ADD COLUMN rel_freq REAL;
-        """).format(total_counts=self.total_counts)
-
-        self.fill_relative_columns = SQL("""
-            UPDATE
-                {total_counts} 
-            SET 
-                rel_freq = (abs_freq / (SELECT SUM(abs_freq) FROM {total_counts})::REAL * 1e6);
-        """).format(total_counts=self.total_counts)
-
         self.add_indices = SQL("""
-            CREATE INDEX ON {total_counts} (word_id) INCLUDE (abs_freq, rel_freq);	
+            CREATE INDEX ON {total_counts} (word_id, source_id);
         """).format(total_counts=self.total_counts)
 
     def create(self):
         time_query(
             f"Creating table {self.total_counts}",
             self.create_table,
-            self.add_relative_columns,
-            self.fill_relative_columns,
             self.add_indices,
         )

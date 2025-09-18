@@ -8,35 +8,35 @@ from server.util.datatypes import TrendItem
 
 
 class KeynessTrendsQuery(TrendsQuery):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def build(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
         query = SQL(
             """
-            WITH tc AS (
+            -- calculate relative frequencies in target period
+            WITH target AS (
                 SELECT
                     word_id,
-                    SUM(abs_freq)::REAL / (SELECT SUM(size) FROM {corpus_size} counts {date_filter}) * 1e6 AS rel_freq
-                FROM {counts_table} counts
+                    SUM(frequency)::REAL / (SELECT SUM(size) FROM {corpus_size} {date_filter}) * 1e6 AS rel_freq
+                FROM {frequencies}
                 {date_filter}
                 GROUP BY word_id
             ),
-            ac AS (
+            -- calculate abs_freq frequencies in period after target
+            after AS (
                 SELECT
                     word_id,
-                    SUM(abs_freq)::REAL / (SELECT SUM(abs_freq) FROM {total_counts}) * 1e6 AS rel_freq
-                FROM {counts_table} counts
-                WHERE counts.time > {end_date}
+                    SUM(frequency) AS abs_freq
+                FROM {frequencies}
+                WHERE time > {end_date}
                 GROUP BY word_id
             ),
+            -- compare rel_freq of words in target period to rel_freq in total corpus, subtracting the abs_freq after period
             keyness AS (
                 SELECT
-                    tc.word_id,
-                    ({modifier} + tc.rel_freq) / ({modifier} + (rc.rel_freq - COALESCE(ac.rel_freq, 0))) AS keyness
-                FROM tc
-                LEFT JOIN {total_counts} rc ON tc.word_id = rc.word_id
-                LEFT JOIN ac ON tc.word_id = ac.word_id
+                    target.word_id,
+                    COALESCE(({modifier} + target.rel_freq) / ({modifier} + ((total.abs_freq - COALESCE(after.abs_freq, 0))::REAL / (SELECT SUM(size) FROM {corpus_size} WHERE time < {begin_date}) * 1e6)), 0) AS keyness
+                FROM target
+                LEFT JOIN {total_counts} total ON target.word_id = total.word_id
+                LEFT JOIN after ON target.word_id = after.word_id
                 ORDER BY keyness DESC
                 LIMIT 1000
             )
@@ -63,9 +63,10 @@ class KeynessTrendsQuery(TrendsQuery):
             total_counts=self.total_counts,
             date_filter=self.date_filter,
             modifier=self.modifier,
-            counts_table=self.counts_table,
+            frequencies=self.frequencies,
             gradient=self.gradient,
             corpus_size=self.corpus_size,
             end_date=self.end_date,
+            begin_date=self.begin_date,
         )
         return ExecutableQuery(cursor, query)

@@ -19,7 +19,7 @@ class TrendsQuery(QueryBuilder):
     modifier: Literal
     enriched: bool
     abs_freq: Identifier
-    counts_table: Identifier
+    frequencies: Identifier
     gradient: Composable
 
     def __init__(
@@ -37,14 +37,13 @@ class TrendsQuery(QueryBuilder):
         self.corpus_size = Identifier(f"corpus_size_{ngram}")
         self.enriched = enriched
         self.modifier = Literal(modifier)
-        self.date_filter = QueryBuilder.get_date_filter(
-            Identifier("counts", "time"), start, end
-        )
-        self.counts_table = Identifier(f"daily_counts_{ngram}")
+        self.date_filter = QueryBuilder.get_date_filter(Identifier("time"), start, end)
+        self.frequencies = Identifier(f"frequencies_{ngram}")
         self.gradient = SQL("ASC" if ascending_gradient else "DESC")
         self.abs_freq = Identifier("abs_freq")
         self.rel_freq = Identifier("rel_freq")
         self.end_date = end
+        self.begin_date = start
 
     @staticmethod
     def create(trend_type: str = "absolute", *args) -> "TrendsQuery":
