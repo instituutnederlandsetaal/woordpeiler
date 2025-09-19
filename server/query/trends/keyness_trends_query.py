@@ -33,7 +33,7 @@ class KeynessTrendsQuery(TrendsQuery):
             total AS (
                 SELECT
                     word_id,
-                    SUM(frequency) AS abs_freq
+                    SUM(abs_freq) AS abs_freq
                 FROM {counts}
                 WHERE TRUE {source_filter}
                 GROUP BY word_id
