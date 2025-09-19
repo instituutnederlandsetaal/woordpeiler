@@ -32,16 +32,13 @@
                                         v-model="trendSettings.language"
                                         :options="languageOptions"
                                         showClear
+                                        :loading="!languageOptions"
                                         optionLabel="label"
                                         optionValue="value"
                                         placeholder="Taalvariëteit"
                                     />
                                 </fieldset>
 
-                                <fieldset>
-                                    <label>Verrijkt met woordsoort en lemma</label>
-                                    <Checkbox v-model="trendSettings.enriched" binary />
-                                </fieldset>
                             </TabPanel>
 
                             <!-- Period tab -->
@@ -133,12 +130,7 @@
 
                                 <fieldset>
                                     <label>{{ modifierLabel }}</label>
-                                    <input
-                                        type="number"
-                                        class="p-inputtext"
-                                        v-model="trendSettings.modifier"
-                                        min="0"
-                                    />
+                                    <input type="number" class="p-inputtext" v-model="trendSettings.modifier" min="0" />
                                 </fieldset>
 
                                 <!-- <fieldset v-if="trendSettings.trendType == 'keyness'">
@@ -169,13 +161,13 @@
 // Stores
 import { useTrendSettingsStore } from "@/stores/trendSettings"
 import { useTrendResultsStore } from "@/stores/trendResults"
-import { useSearchItemsStore } from "@/stores/searchItems"
 // Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
+import { useLanguages } from "@/stores/fetch/languages"
 
 // Stores
 // search items store
-const { languageOptions } = useSearchItemsStore()
+const { options: languageOptions } = storeToRefs(useLanguages())
 // trend settings store
 const trendSettingsStore = useTrendSettingsStore()
 const { trendTypeOptions, modifierOptions, periodOptions, ngramOptions } = trendSettingsStore

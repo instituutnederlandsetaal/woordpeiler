@@ -29,12 +29,7 @@
 
                     <label>Interval</label>
                     <fieldset>
-                        <input
-                            type="number"
-                            class="p-inputtext"
-                            min="1"
-                            v-model="searchSettings.intervalLength"
-                        />
+                        <input type="number" class="p-inputtext" min="1" v-model="searchSettings.intervalLength" />
                         <SelectButton
                             v-model="searchSettings.intervalType"
                             :options="timeBucketOptions"

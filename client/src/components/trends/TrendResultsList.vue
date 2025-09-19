@@ -3,11 +3,11 @@
         <fieldset>
             <label>Uitsluiten</label>
             <MultiSelect
-                v-model="excludedPosHead"
+                v-model="excludedPos"
                 display="chip"
-                :options="posHeadOptions"
+                :options="posOptions"
                 placeholder="Woordsoort"
-                :loading="posHeadLoading"
+                :loading="!posOptions"
                 class="pos-select"
             />
         </fieldset>
@@ -30,7 +30,7 @@
                 &nbsp;
                 <span> {{ option.wordform }} </span>
                 &nbsp;
-                <Chip :label="option.poshead" v-if="option.poshead" />
+                <Chip :label="option.pos" />
                 &nbsp;
                 <Badge :value="`${badgeName}: ${formatNumber(option.keyness)}`" severity="secondary" />
             </template>
@@ -46,24 +46,23 @@ import { useSearchItemsStore } from "@/stores/searchItems"
 import { useTrendSettingsStore } from "@/stores/trendSettings"
 // Types & API
 import { type TrendResult, displayName } from "@/types/trends"
-import * as ListingAPI from "@/api/listing"
 // Util
 import { randomColor } from "@/ts/color"
+import { usePosses } from "@/stores/fetch/posses"
 
 // Stores
 const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore())
 const { searchItems } = storeToRefs(useSearchItemsStore())
-const { excludedPosHead } = storeToRefs(useTrendSettingsStore())
+const { excludedPosHead: excludedPos } = storeToRefs(useTrendSettingsStore())
 const { search } = useSearchResultsStore()
 
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
-const posHeadOptions = ref<string[]>([])
-const posHeadLoading = ref(true)
+const { options: posOptions } = storeToRefs(usePosses())
 
 // Computed
-const filteredTrends = computed(() => trendResults.value?.filter((i) => !excludedPosHead.value.includes(i.poshead)))
+const filteredTrends = computed(() => trendResults.value?.filter((i) => !excludedPos.value.includes(i.poshead)))
 const badgeName = computed(() => {
     // key for keyness, freq for frequency
     return lastTrendSettings.value.trendType === "keyness" ? "key" : "freq"
@@ -74,22 +73,6 @@ function formatNumber(num: number): number {
     if (num < 1) num = Math.abs(Math.log2(num))
     return Math.floor(num * 10) / 10
 }
-
-function getPosHeadOptions() {
-    posHeadLoading.value = true
-    ListingAPI.getPosheads()
-        .then((response) => {
-            posHeadOptions.value = response.data
-        })
-        .finally(() => {
-            posHeadLoading.value = false
-        })
-}
-
-// Lifecycle
-onMounted(() => {
-    getPosHeadOptions()
-})
 
 /** Insert selected trends into search items, and search them. */
 watch(selectedTrend, () => {

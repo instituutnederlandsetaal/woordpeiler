@@ -12,11 +12,7 @@ export type SearchRequest = {
     end: string
 }
 
-export type SearchResult = { time: number; size: number; abs_freq: number; rel_freq: number }
-
-export type SearchResponse = AxiosResponse<SearchResult[]>
-
-export function getSearch(request: SearchRequest): Promise<SearchResponse> {
+export function getSearch(request: SearchRequest): Promise<AxiosResponse<number[][]>> {
     return axios.get("/frequency", { params: cleanParams(request) })
 }
 

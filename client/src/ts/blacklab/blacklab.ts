@@ -1,7 +1,6 @@
 import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/search"
 import * as d3 from "d3"
 import { config } from "@/main"
-import { isInternal } from "@/ts/internal"
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
@@ -53,7 +52,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    return isInternal() ? config.blacklab.url.internal : config.blacklab.url.external
+    return config.internal ? config.blacklab.url.internal : config.blacklab.url.external
 }
 
 function constructBLPatt(item: SearchItem) {

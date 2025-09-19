@@ -199,7 +199,7 @@ article {
             :deep(svg polyline) {
                 stroke-dasharray: 100;
                 stroke-dashoffset: 100;
-                animation: draw 10s forwards
+                animation: draw 10s forwards;
             }
             @keyframes draw {
                 to {
@@ -223,13 +223,14 @@ article {
 }
 @media screen and (max-width: 640px) {
     article {
-        padding: .65rem 1.35rem;
+        padding: 0.65rem 1.35rem;
 
         header {
             h2 {
                 font-size: 1.5rem;
             }
-            p, a {
+            p,
+            a {
                 font-size: 0.9rem;
             }
         }

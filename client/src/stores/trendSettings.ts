@@ -36,7 +36,7 @@ export const useTrendSettingsStore = defineStore("TrendSettings", () => {
     // Methods
     function generateNGramOptions(): SelectLabel[] {
         const options: SelectLabel[] = []
-        for (let n = 1; n <= config.searchItems.ngram; n++) {
+        for (let n = 1; n <= config.search.ngram; n++) {
             options.push({ label: `${n}-gram`, value: n })
         }
         return options

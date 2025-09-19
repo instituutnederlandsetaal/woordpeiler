@@ -2,14 +2,13 @@ import "@/assets/main.scss"
 import "@/assets/primevue.scss"
 import "@/assets/media.scss"
 import "primeicons/primeicons.css"
-import { setAxiosBaseUrl } from "@/api/api"
+import { setAxiosBaseUrl } from "@/api"
 import router from "@/router"
 
 import PrimeVue from "primevue/config"
 import Aura from "@primeuix/themes/aura"
 
 import App from "@/App.vue"
-import { isInternal } from "@/ts/internal"
 import type { Config } from "@/ts/config"
 
 // create app
@@ -62,7 +61,7 @@ if (location.hostname === "localhost") {
 function setConfigAndMount(conf: Record<string, any>) {
     app.config.globalProperties.$config = conf
     config = conf
-    app.config.globalProperties.$internal = isInternal()
+    app.config.globalProperties.$internal = config.internal
     // set theme
     document.documentElement.style.setProperty("--theme", config.theme.color)
     // set description

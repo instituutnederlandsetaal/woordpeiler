@@ -24,19 +24,13 @@ export const useTrendResultsStore = defineStore("TrendResults", () => {
             modifier: trendSettings.value.modifier,
             start: toTimestamp(selectedPeriod.start),
             end: toTimestamp(selectedPeriod.end),
-            enriched: trendSettings.value.enriched,
             language: trendSettings.value.language,
-            ascending: trendSettings.value.ascending,
             ngram: trendSettings.value.ngram,
         }
 
         TrendAPI.getTrends(trendRequest)
-            .then((response) => {
-                // add posheads
-                response.data.forEach((item) => {
-                    item.poshead = item.pos.split("(")[0]
-                })
-                trendResults.value = response.data
+            .then((res) => {
+                trendResults.value = res.data
             })
             .finally(() => {
                 trendsLoading.value = false

@@ -5,7 +5,6 @@ export function getSpotlights(): Promise<AxiosResponse<SpotlightConfig>> {
     return axios.get("https://ivdnt.org/woordpeiler.json")
 }
 
-
 export function getProxiedSpotlights(): Promise<AxiosResponse<SpotlightConfig>> {
     return axios.get("/spotlights")
 }

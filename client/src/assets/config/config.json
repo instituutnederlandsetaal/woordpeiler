@@ -1,12 +1,14 @@
 {
+    "version": "2.0.0",
+    "internal": true,
     "basePath": "/woordpeiler",
     "spotlights": { "url": "https://ivdnt.org/woordpeiler.json", "default": "assets/config/spotlights.json" },
     "app": {
         "name": "Woordpeiler",
-        "slogan": "woordtrends van 2000 tot nu",
+        "slogan": "Woordtrends van 2000 tot nu",
         "description": "De Woordpeiler toont hoe vaak woorden voorkomen in Nederlandstalige kranten."
     },
-    "searchItems": {
+    "search": {
         "ngram": 2,
         "filters": [
             { "name": "Taalvariëteit", "api": "language", "advanced": false },
@@ -36,8 +38,8 @@
     "period": { "start": "2000-01-01" },
     "theme": {
         "color": "#4488ee",
-        "logo": "assets/config/woordpeiler-logo.svg",
-        "favicon": "assets/config/woordpeiler-logo.svg"
+        "logo": "../src/assets/config/woordpeiler-logo.png",
+        "favicon": "src/assets/config/woordpeiler-logo.svg"
     },
     "blacklab": {
         "url": {

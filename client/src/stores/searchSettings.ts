@@ -18,21 +18,12 @@ export const useSearchSettingsStore = defineStore("SearchSettings", () => {
         { label: "relatief", value: "rel_freq" },
         { label: "absoluut", value: "abs_freq" },
     ]
-    const timeBucketOptions: SelectLabel[] = initTimeBucketOpts()
-    // Methods
-    function initTimeBucketOpts(): SelectLabel[] {
-        const opts = [
+    const timeBucketOptions: SelectLabel[] = [
             { label: "week", value: "w" },
             { label: "maand", value: "m" },
             { label: "jaar", value: "y" },
+            { label: "dag", value: "d" }
         ]
-        // For now always true, could be set back to internal
-        const showDaySetting = true // isInternal()
-        if (showDaySetting) {
-            opts.unshift({ label: "dag", value: "d" })
-        }
-        return opts
-    }
     function loadSearchSettings() {
         if (localStorage.getItem("searchSettings")) {
             searchSettings.value = JSON.parse(localStorage.getItem("searchSettings"))

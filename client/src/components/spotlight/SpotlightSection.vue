@@ -16,16 +16,14 @@ import type { SpotlightSection } from "@/types/spotlight"
 const { section } = defineProps<{ section: SpotlightSection }>()
 
 // only navigate to the current anchor after next tick
-onMounted(() => {
-    nextTick(() => {
-        const hash = window.location.hash
-        if (hash) {
-            const el = document.querySelector(hash) as HTMLElement
-            if (el) {
-                el.scrollIntoView()
-            }
+nextTick(() => {
+    const hash = window.location.hash
+    if (hash) {
+        const el = document.querySelector(hash) as HTMLElement
+        if (el) {
+            el.scrollIntoView()
         }
-    })
+    }
 })
 </script>
 

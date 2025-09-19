@@ -1,5 +1,5 @@
 <template>
-    <Button type="button" icon="pi pi-question" variant="text" severity="secondary" @click="toggle" />
+    <Button type="button" icon="pi pi-question" severity="secondary" variant="text" @click="toggle" />
     <Popover ref="popup">
         <slot></slot>
     </Popover>

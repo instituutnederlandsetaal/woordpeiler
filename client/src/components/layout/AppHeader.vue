@@ -3,12 +3,12 @@
         <figure>
             <div>
                 <RouterLink to="/">
-                    <img :src="$config.theme.logo" alt="logo" />
+                    <img :src="config.theme.logo" alt="logo" />
                 </RouterLink>
             </div>
             <figcaption>
                 <h1>
-                    <RouterLink to="/">{{ $config.app.name.toLowerCase() }}</RouterLink>
+                    <RouterLink to="/">{{ config.app.name.toLowerCase() }}</RouterLink>
                 </h1>
                 <h2>
                     <a href="https://ivdnt.org/" target="_blank" rel="noopener noreferrer">
@@ -26,7 +26,7 @@
             <RouterLink to="/grafiek">grafiek</RouterLink>
             <RouterLink to="/help">help</RouterLink>
             <RouterLink to="/over">over</RouterLink>
-            <a :href="$config.corpus.url" target="_blank">{{ $config.corpus.name.toLowerCase() }}</a>
+            <a :href="config.corpus.url" target="_blank">{{ config.corpus.name.toLowerCase() }}</a>
 
             <!-- hamburger menu -->
             <Button
@@ -48,7 +48,6 @@
 <script setup lang="ts">
 // Util
 import { config } from "@/main"
-import { isInternal } from "@/ts/internal"
 
 // Fields
 const route = useRoute()
@@ -89,7 +88,7 @@ const menuItems = computed(() => {
         },
     ]
 
-    if (isInternal()) {
+    if (config.internal) {
         items.unshift({
             label: "trends",
             icon: "pi pi-sort-amount-up",

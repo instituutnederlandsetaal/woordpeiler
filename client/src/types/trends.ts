@@ -6,15 +6,13 @@ export type TrendSettings = {
     trendType: string
     modifier: number
     period: string
-    enriched: boolean
-    ascending: boolean
     language?: string
     ngram: number
 }
 
 export type DateRange = { start: Date; end: Date }
 
-export type TrendResult = { keyness: number; poshead: string; pos: string; lemma: string; wordform: string }
+export type TrendResult = { keyness: number; pos: string; lemma: string; wordform: string }
 
 /** format: 1 jan 2022 - 7 jan 2022 */
 function weekRangeStr(date: DateRange): string {

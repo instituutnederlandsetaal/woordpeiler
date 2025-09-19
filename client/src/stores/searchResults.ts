@@ -65,7 +65,7 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
         toBeSearched.forEach((ds) => {
             if (searchSettings.value.languageSplit && !(ds.language || ds.source)) {
                 // split by language, but only if language or source is not set
-                const colors = config.searchItems.autosplit.colors
+                const colors = config.search.autosplit.colors
                 languageOptions.value.forEach((lang) => {
                     getFrequency({ ...ds, language: lang, color: colors[lang] })
                 })
@@ -103,13 +103,13 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
         item.loading = true
 
         SearchAPI.getSearch(searchRequest)
-            .then((response: SearchResponse) => {
+            .then((res) => {
                 const dataset: GraphItem = {
                     searchItem: JSON.parse(JSON.stringify(item)),
                     uuid: uuidv4(),
                     data: {
-                        abs_freq: response.data.map((i) => ({ x: i[0] * 1000, y: i[1] })),
-                        rel_freq: response.data.map((i) => ({ x: i[0] * 1000, y: i[2] })),
+                        abs_freq: res.data.map((i) => ({ x: i[0] * 1000, y: i[1] })),
+                        rel_freq: res.data.map((i) => ({ x: i[0] * 1000, y: i[2] })),
                     },
                 }
                 searchResults.value.push(dataset)

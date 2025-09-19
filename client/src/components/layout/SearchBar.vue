@@ -1,6 +1,6 @@
 <template>
     <search>
-        <h2>{{ $config.app.slogan }}</h2>
+        <h2>{{ config.app.slogan.toLowerCase() }}</h2>
         <InputGroup>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="doSearch" />
             <Button severity="secondary" @click="doSearch" title="Zoeken" icon="pi pi-search" />

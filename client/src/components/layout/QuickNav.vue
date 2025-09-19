@@ -1,13 +1,15 @@
 <template>
     <nav>
-        <a v-for="item in itemsWithIds" :key="item.id" :href="`#${item.id}`">{{ item.id.replace("-", " ") }}</a>
+        <a v-for="item in itemsWithIds" :key="item.id" :href="`#${item.id}`">{{ item.id?.replace("-", " ") }}</a>
     </nav>
 </template>
 
 <script setup lang="ts">
-import { useSpotlightStore } from "@/stores/spotlights"
-const { items } = storeToRefs(useSpotlightStore())
-const itemsWithIds = computed(() => items.value?.filter((i) => Boolean(i.id)))
+import { useSpotlights } from "@/stores/fetch/spotlights"
+import type { SpotlightSection } from "@/types/spotlight"
+
+const { spotlight } = storeToRefs(useSpotlights())
+const itemsWithIds = computed<SpotlightSection[]>(() => spotlight.value?.sections.filter((s) => "id" in s) ?? [])
 </script>
 
 <style scoped lang="scss">
