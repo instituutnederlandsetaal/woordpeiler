@@ -13,6 +13,7 @@ from typing import Any, Optional
 from psycopg.rows import dict_row
 from fastapi import Request, HTTPException
 import uvicorn
+import httpx
 
 # local
 from server.query.svg_query import SvgQuery
@@ -30,14 +31,27 @@ app: FastAPI = create_app_with_config()
 
 
 @app.get("/")
-def read_root():
+async def read_root():
     return "woordpeiler.ivdnt.org"
 
 
+@app.get("/spotlights")
+async def get_spotlights(request: Request) -> str:
+    """A way for the client to get the spotlights without CORS issues."""
+    async with httpx.AsyncClient() as client:
+        r = await client.get("https://ivdnt.org/woordpeiler.json")
+        if r.status_code != 200:
+            raise HTTPException(
+                status_code=r.status_code, detail="Could not fetch spotlights"
+            )
+        return r.text
+
+
 @app.get("/health")
-def health():
+async def health():
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
+
     return app.pool.get_stats()
 
 
@@ -45,6 +59,7 @@ def health():
 async def get_sources(request: Request) -> list[str]:
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
+
     async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
             return await SourcesQuery().build(cur).execute_fetchall()
