@@ -10,7 +10,6 @@ from database.primary.table_frequencies import FrequencyTableBuilder
 from database.primary.table_sources import create_table_sources
 from database.primary.table_words import WordsTableBuilder
 from database.primary.table_corpus_size import CorpusSizeTableBuilder
-from database.primary.cutoff import Cutoff
 
 
 def initialize(
@@ -38,6 +37,3 @@ def initialize(
     CorpusSizeTableBuilder(size, ngram).create()
     WordsTableBuilder(annotations, ngram).create()
     FrequencyTableBuilder(frequency, ngram).create()
-
-    # Lastly, remove words below cutoff frequency
-    Cutoff(ngram, cutoff=2).apply()
