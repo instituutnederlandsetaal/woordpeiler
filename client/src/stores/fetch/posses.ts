@@ -7,11 +7,14 @@ export const usePosses = defineStore("posses", () => {
 
     function fetch() {
         API.getPosses().then((res) => {
-            options.value = res.data.filter((p) => !["punct", "__eos__", "res"].includes(p)).map(format).sort(sort)
+            options.value = res.data
+                .filter((p) => !["punct", "__eos__", "res"].includes(p))
+                .map(format)
+                .sort(sort)
         })
     }
 
-    function format(value: string): SelectLabel { 
+    function format(value: string): SelectLabel {
         const label = config.tagset ? `${config.tagset[value]} (${value})` : value
         return { label, value }
     }

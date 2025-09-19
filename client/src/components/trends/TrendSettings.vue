@@ -38,7 +38,6 @@
                                         placeholder="Taalvariëteit"
                                     />
                                 </fieldset>
-
                             </TabPanel>
 
                             <!-- Period tab -->

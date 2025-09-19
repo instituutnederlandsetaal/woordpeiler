@@ -11,7 +11,7 @@ export const useLanguages = defineStore("languages", () => {
         })
     }
 
-    function format(value: string): SelectLabel { 
+    function format(value: string): SelectLabel {
         const label = config.language ? `${config.language[value]} (${value})` : value
         return { label, value }
     }

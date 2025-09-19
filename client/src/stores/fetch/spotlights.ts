@@ -15,7 +15,7 @@ export const useSpotlights = defineStore("spotlights", () => {
                 spotlight.value = res.data
             })
             .catch(() => {
-                // Could not connect to ivdnt
+                // Could not connect to ivdnt or wrong version
                 if (location.hostname === "localhost") {
                     // fetch default spotlights from local config
                     import("@/assets/config/spotlights.json").then((module) => {

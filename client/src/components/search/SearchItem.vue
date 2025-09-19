@@ -119,30 +119,30 @@
                         <fieldset>
                             <label for="pos">Woordsoort</label>
                             <div>
-                            <InputGroup>
-                                <InputGroupAddon>
-                                    <HelpButton>
-                                        <p>
-                                            De woordsoorten komen uit de
-                                            <a
-                                                target="_blank"
-                                                href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf"
-                                                >Tagset Diachroon Nederlands (TDN)</a
-                                            >
-                                        </p>
-                                    </HelpButton>
-                                </InputGroupAddon>
-                                <Select
-                                    :loading="!posOptions"
-                                    id="pos"
-                                    v-model="searchItem.pos"
-                                    :options="posOptions"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    showClear
-                                    placeholder="Woordsoort"
-                                />
-                            </InputGroup>
+                                <InputGroup>
+                                    <InputGroupAddon>
+                                        <HelpButton>
+                                            <p>
+                                                De woordsoorten komen uit de
+                                                <a
+                                                    target="_blank"
+                                                    href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf"
+                                                    >Tagset Diachroon Nederlands (TDN)</a
+                                                >
+                                            </p>
+                                        </HelpButton>
+                                    </InputGroupAddon>
+                                    <Select
+                                        :loading="!posOptions"
+                                        id="pos"
+                                        v-model="searchItem.pos"
+                                        :options="posOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        showClear
+                                        placeholder="Woordsoort"
+                                    />
+                                </InputGroup>
                             </div>
                         </fieldset>
                         <template v-if="$internal">
@@ -275,7 +275,8 @@ onMounted(() => {
             width: 200px;
         }
         .p-inputgroup {
-            .p-select, .p-inputtext {
+            .p-select,
+            .p-inputtext {
                 width: 170px;
             }
         }

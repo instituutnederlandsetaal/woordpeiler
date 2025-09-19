@@ -2,7 +2,6 @@
 import { displayName, invalidSearchItem, type SearchItem } from "@/types/search"
 import { randomColor } from "@/ts/color"
 
-
 /**
  * Used to manage the list of words that will be used as search items when querying frequency data.
  * Requires fetchOptions to populate the Select options.
