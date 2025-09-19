@@ -59,7 +59,7 @@ const { search } = useSearchResultsStore()
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
-const { options: posOptions } = storeToRefs(usePosses())
+const { rawOptions: posOptions } = storeToRefs(usePosses())
 
 // Computed
 const filteredTrends = computed(() => {

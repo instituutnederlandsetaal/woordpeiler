@@ -29,13 +29,21 @@ class KeynessTrendsQuery(TrendsQuery):
                 WHERE time > {end_date}
                 GROUP BY word_id
             ),
+            -- calculate counts.abs_freq by summing the sources (grouping by word_id)
+            total AS (
+                SELECT
+                    word_id,
+                    SUM(frequency) AS abs_freq
+                FROM {counts}
+                GROUP BY word_id
+            ),
             -- compare rel_freq of words in target period to rel_freq in total corpus, subtracting the abs_freq after period
             keyness AS (
                 SELECT
                     target.word_id,
-                    COALESCE(({modifier} + target.rel_freq) / ({modifier} + ((total.abs_freq - COALESCE(after.abs_freq, 0))::REAL / (SELECT SUM(size) FROM {size} WHERE time < {begin_date}) * 1e6)), 0) AS keyness
+                    ({modifier} + target.rel_freq) / ({modifier} + ((total.abs_freq - COALESCE(after.abs_freq, 0))::REAL / (SELECT SUM(size) FROM {size} WHERE time < {begin_date}) * 1e6)) AS keyness
                 FROM target
-                LEFT JOIN {counts} total ON target.word_id = total.word_id
+                LEFT JOIN total ON target.word_id = total.word_id
                 LEFT JOIN after ON target.word_id = after.word_id
                 ORDER BY keyness DESC
                 LIMIT 1000

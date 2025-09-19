@@ -267,7 +267,7 @@ main {
 
         min-height: 100%;
 
-        .textPanel {
+        .text-panel {
             max-width: 1000px;
         }
     }

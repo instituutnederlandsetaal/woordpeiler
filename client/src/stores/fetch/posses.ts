@@ -4,9 +4,11 @@ import type { SelectLabel } from "@/types/ui"
 
 export const usePosses = defineStore("posses", () => {
     const options = ref<SelectLabel[]>()
+    const rawOptions = ref<string[]>()
 
     function fetch() {
         API.getPosses().then((res) => {
+            rawOptions.value = res.data
             options.value = res.data
                 .filter((p) => !["punct", "__eos__", "res"].includes(p))
                 .map(format)
@@ -25,5 +27,5 @@ export const usePosses = defineStore("posses", () => {
 
     fetch()
 
-    return { options }
+    return { options, rawOptions }
 })
