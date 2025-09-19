@@ -15,9 +15,9 @@ class KeynessTrendsQuery(TrendsQuery):
             WITH target AS (
                 SELECT
                     word_id,
-                    SUM(frequency)::REAL / (SELECT SUM(size) FROM {size} {date_filter}) * 1e6 AS rel_freq
+                    SUM(frequency)::REAL / (SELECT SUM(size) FROM {size} {date_filter} {source_filter}) * 1e6 AS rel_freq
                 FROM {frequencies}
-                {date_filter}
+                {date_filter} {source_filter}
                 GROUP BY word_id
             ),
             -- calculate abs_freq frequencies in period after target
@@ -26,7 +26,7 @@ class KeynessTrendsQuery(TrendsQuery):
                     word_id,
                     SUM(frequency) AS abs_freq
                 FROM {frequencies}
-                WHERE time > {end_date}
+                WHERE time > {end_date} {source_filter}
                 GROUP BY word_id
             ),
             -- calculate counts.abs_freq by summing the sources (grouping by word_id)
@@ -35,13 +35,14 @@ class KeynessTrendsQuery(TrendsQuery):
                     word_id,
                     SUM(frequency) AS abs_freq
                 FROM {counts}
+                WHERE TRUE {source_filter}
                 GROUP BY word_id
             ),
             -- compare rel_freq of words in target period to rel_freq in total corpus, subtracting the abs_freq after period
             keyness AS (
                 SELECT
                     target.word_id,
-                    ({modifier} + target.rel_freq) / ({modifier} + ((total.abs_freq - COALESCE(after.abs_freq, 0))::REAL / (SELECT SUM(size) FROM {size} WHERE time < {begin_date}) * 1e6)) AS keyness
+                    ({modifier} + target.rel_freq) / ({modifier} + ((total.abs_freq - COALESCE(after.abs_freq, 0))::REAL / (SELECT SUM(size) FROM {size} WHERE time < {begin_date} {source_filter}) * 1e6)) AS keyness
                 FROM target
                 LEFT JOIN total ON target.word_id = total.word_id
                 LEFT JOIN after ON target.word_id = after.word_id
@@ -75,5 +76,6 @@ class KeynessTrendsQuery(TrendsQuery):
             size=self.size,
             end_date=self.end_date,
             begin_date=self.begin_date,
+            source_filter=self.source_filter,
         )
         return ExecutableQuery(cursor, query)

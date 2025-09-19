@@ -110,7 +110,7 @@ class FrequencyQuery(QueryBuilder):
 
     @staticmethod
     def get_source_filter(source: Optional[str], language: Optional[str]) -> Composable:
-        # example: AND source_id = ANY (SELECT s.id FROM sources s WHERE s.language = 'BN')
+        # example: AND source_id = ANY (SELECT id FROM sources WHERE language = 'BN')
         source_where = QueryBuilder.where_and(
             ["source", "language"], [source, language]
         )

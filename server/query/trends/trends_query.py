@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 # third party
-from psycopg.sql import Literal, Identifier
+from psycopg.sql import Literal, Identifier, SQL, Composable
 
 # local
 from server.query.query_builder import QueryBuilder
@@ -28,11 +28,21 @@ class TrendsQuery(QueryBuilder):
         self.size = Identifier(f"size_{ngram}")
         self.modifier = Literal(modifier)
         self.date_filter = QueryBuilder.get_date_filter(Identifier("time"), start, end)
+        self.source_filter = TrendsQuery.get_source_filter(language)
         self.frequencies = Identifier(f"frequencies_{ngram}")
         self.abs_freq = Identifier("abs_freq")
         self.rel_freq = Identifier("rel_freq")
         self.end_date = end
         self.begin_date = start
+
+    @staticmethod
+    def get_source_filter(language: Optional[str]) -> Composable:
+        if language is not None:
+            return SQL(
+                "AND source_id = ANY (SELECT id FROM sources WHERE language = {language})"
+            ).format(language=Literal(language))
+        else:
+            return SQL("")
 
     @staticmethod
     def create(trend_type: str = "absolute", *args) -> "TrendsQuery":

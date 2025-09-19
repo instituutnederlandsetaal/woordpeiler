@@ -221,6 +221,10 @@ onMounted(() => {
     }
 
     :deep(.p-panel-content) {
+        .p-select {
+            width: 200px;
+        }
+
         .p-accordionpanel {
             .p-accordionheader {
                 padding-bottom: 0;
@@ -233,6 +237,7 @@ onMounted(() => {
             .p-accordioncontent {
                 .p-tab {
                     padding: 0.5rem 0.5rem;
+
                 }
 
                 .p-tabpanels {
