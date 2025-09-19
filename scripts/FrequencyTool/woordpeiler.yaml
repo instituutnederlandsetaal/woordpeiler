@@ -23,7 +23,7 @@ frequencyLists:
                 outputAsId: true
         filter: "medium:newspaper"
         cutoff:
-            count: 2
+            count: 3
             annotation: word
 
     -   name: "unigram_size"
@@ -57,7 +57,7 @@ frequencyLists:
                 outputAsId: true
         filter: "medium:newspaper"
         cutoff:
-            count: 2
+            count: 10
             annotation: word
 
     -   name: "bigram_size"

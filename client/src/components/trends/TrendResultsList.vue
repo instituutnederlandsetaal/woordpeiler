@@ -62,7 +62,13 @@ const selectedTrend = ref<TrendResult[]>([])
 const { options: posOptions } = storeToRefs(usePosses())
 
 // Computed
-const filteredTrends = computed(() => trendResults.value?.filter((i) => !excludedPos.value.includes(i.poshead)))
+const filteredTrends = computed(() => {
+    return trendResults.value?.filter((trend) => {
+        const union = new Set(excludedPos.value).union(new Set(trend.pos.split("")))
+        return union.size === 0
+    })
+})
+
 const badgeName = computed(() => {
     // key for keyness, freq for frequency
     return lastTrendSettings.value.trendType === "keyness" ? "key" : "freq"

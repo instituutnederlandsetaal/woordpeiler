@@ -21,6 +21,10 @@ export const useSpotlights = defineStore("spotlights", () => {
                     // Try via proxy
                     API.getProxiedSpotlights()
                         .then((res) => {
+                            // Could be old version
+                            if (res.data.version !== "2.0.0") {
+                                return Promise.reject("Wrong version")
+                            }
                             spotlight.value = res.data
                         })
                         .catch(() => {

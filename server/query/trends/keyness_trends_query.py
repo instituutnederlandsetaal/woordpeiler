@@ -64,7 +64,6 @@ class KeynessTrendsQuery(TrendsQuery):
             date_filter=self.date_filter,
             modifier=self.modifier,
             frequencies=self.frequencies,
-            gradient=self.gradient,
             size=self.size,
             end_date=self.end_date,
             begin_date=self.begin_date,
