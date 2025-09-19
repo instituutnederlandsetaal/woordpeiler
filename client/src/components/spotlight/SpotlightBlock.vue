@@ -1,12 +1,12 @@
 <template>
     <article :style="{ backgroundColor: spotlight.color }">
         <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)" />
-        <a v-else-if="spotlight.url" :href="spotlight.url" target="_blank" class="spotlight-link" />
+        <a v-else-if="spotlight.url" :href="spotlight.url + '?utm_source=woordpeiler'" target="_blank" class="spotlight-link" />
         <header>
             <h2>{{ title }}</h2>
             <div>
                 <p>{{ subtitle }}</p>
-                <a v-if="spotlight.url" :href="spotlight.url" target="_blank" @click="(e) => e.stopPropagation()">
+                <a v-if="spotlight.url" :href="spotlight.url + '?utm_source=woordpeiler'" target="_blank" @click="(e) => e.stopPropagation()">
                     artikel lezen <span class="pi pi-angle-double-right"></span>
                 </a>
             </div>
