@@ -68,6 +68,18 @@ $theme: var(--theme); // Default theme color
     input.p-inputtext[type="number"] {
         width: 80px;
     }
+
+    .p-inputgroupaddon {
+        min-width: 0;
+        width: 30px;
+        span {
+            font-size: 1.1rem;
+        }
+    }
+
+    .p-popover {
+        margin: 0 0.5rem;
+    }
 }
 
 // MultiSelect has on overlay on the global document level

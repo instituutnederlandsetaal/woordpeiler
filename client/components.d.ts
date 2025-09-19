@@ -29,6 +29,7 @@ declare module 'vue' {
     GraphWrapper: typeof import('./src/components/graph/GraphWrapper.vue')['default']
     HelpButton: typeof import('./src/components/HelpButton.vue')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
+    InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Listbox: typeof import('primevue/listbox')['default']
     Menu: typeof import('primevue/menu')['default']

@@ -50,7 +50,7 @@
             </template>
 
             <p class="invalid" v-if="invalidInputText(searchItem.lemma) || invalidInputText(searchItem.wordform)">
-                Zoek op maximaal {{ config.searchItems.ngram }} woorden.
+                Zoek op maximaal {{ config.search.ngram }} woorden.
             </p>
 
             <p class="invalid" v-if="invalidRegexUsage(searchItem.lemma) || invalidRegexUsage(searchItem.wordform)">
@@ -68,7 +68,7 @@
             </fieldset>
 
             <fieldset>
-                <label for="variant">{{ config.searchItems.filters[0].name }}</label>
+                <label for="variant">{{ config.search.filters[0].name }}</label>
                 <Select
                     id="variant"
                     v-model="searchItem.language"
@@ -76,8 +76,8 @@
                     optionLabel="label"
                     optionValue="value"
                     showClear
-                    :placeholder="config.searchItems.filters[0].name"
-                    :loading="!languageOptions.length"
+                    :placeholder="config.search.filters[0].name"
+                    :loading="!languageOptions"
                 />
             </fieldset>
             <Accordion value="-1">
@@ -85,69 +85,77 @@
                     <AccordionHeader>Geavanceerd</AccordionHeader>
                     <AccordionContent>
                         <fieldset>
-                            <label for="lemma"
-                                >Lemma
-                                <HelpButton>
-                                    <p>Het lemma is de woordenboekvorm van het woord.</p>
-                                    <DataTable
-                                        :value="[
-                                            { word: 'liep', lemma: 'lopen', pos: 'werkwoord' },
-                                            { word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord' },
-                                            { word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord' },
-                                        ]"
-                                        size="small"
-                                        style="max-width: fit-content"
-                                    >
-                                        <Column field="word" header="Woord"></Column>
-                                        <Column field="lemma" header="Lemma"></Column>
-                                        <Column field="pos" header="Woordsoort"></Column>
-                                    </DataTable>
-                                </HelpButton>
-                            </label>
-                            <InputText
-                                :invalid="invalidInputText(searchItem.lemma)"
-                                id="lemma"
-                                placeholder="Lemma"
-                                v-model.trim="searchItem.lemma"
-                                @keyup.enter="search"
-                            />
+                            <label for="lemma">Lemma</label>
+                            <div>
+                                <InputGroup>
+                                    <InputGroupAddon>
+                                        <HelpButton>
+                                            <p>Het lemma is de woordenboekvorm van het woord.</p>
+                                            <DataTable
+                                                :value="[
+                                                    { word: 'liep', lemma: 'lopen', pos: 'werkwoord' },
+                                                    { word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord' },
+                                                    { word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord' },
+                                                ]"
+                                                size="small"
+                                                style="max-width: fit-content"
+                                            >
+                                                <Column field="word" header="Woord"></Column>
+                                                <Column field="lemma" header="Lemma"></Column>
+                                                <Column field="pos" header="Woordsoort"></Column>
+                                            </DataTable>
+                                        </HelpButton>
+                                    </InputGroupAddon>
+                                    <InputText
+                                        :invalid="invalidInputText(searchItem.lemma)"
+                                        id="lemma"
+                                        placeholder="Lemma"
+                                        v-model.trim="searchItem.lemma"
+                                        @keyup.enter="search"
+                                    />
+                                </InputGroup>
+                            </div>
                         </fieldset>
                         <fieldset>
-                            <label for="pos"
-                                >Woordsoort
-                                <HelpButton>
-                                    <p>
-                                        De woordsoorten komen uit de
-                                        <a
-                                            target="_blank"
-                                            href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf"
-                                            >Tagset Diachroon Nederlands (TDN)</a
-                                        >
-                                    </p>
-                                </HelpButton>
-                            </label>
-                            <Select
-                                :loading="!Object.entries(posOptions).length"
-                                id="pos"
-                                v-model="searchItem.pos"
-                                :options="posOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                showClear
-                                placeholder="Woordsoort"
-                            />
+                            <label for="pos">Woordsoort</label>
+                            <div>
+                            <InputGroup>
+                                <InputGroupAddon>
+                                    <HelpButton>
+                                        <p>
+                                            De woordsoorten komen uit de
+                                            <a
+                                                target="_blank"
+                                                href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf"
+                                                >Tagset Diachroon Nederlands (TDN)</a
+                                            >
+                                        </p>
+                                    </HelpButton>
+                                </InputGroupAddon>
+                                <Select
+                                    :loading="!posOptions"
+                                    id="pos"
+                                    v-model="searchItem.pos"
+                                    :options="posOptions"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    showClear
+                                    placeholder="Woordsoort"
+                                />
+                            </InputGroup>
+                            </div>
                         </fieldset>
                         <template v-if="$internal">
                             <fieldset>
-                                <label for="source">{{ config.searchItems.filters[1].name }}</label>
+                                <label for="source">{{ config.search.filters[1].name }}</label>
                                 <Select
                                     id="source"
                                     v-model="searchItem.source"
                                     :options="sourceOptions"
                                     showClear
                                     :clearIconProps="{ tabindex: 0 }"
-                                    :placeholder="config.searchItems.filters[1].name"
-                                    :loading="!sourceOptions.length"
+                                    :placeholder="config.search.filters[1].name"
+                                    :loading="!sourceOptions"
                                 />
                             </fieldset>
                         </template>
@@ -188,15 +196,23 @@ import { randomColor } from "@/ts/color"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
 import { config } from "@/main"
 import { toYear } from "@/ts/date"
+import { usePosses } from "@/stores/fetch/posses"
+import { useLanguages } from "@/stores/fetch/languages"
+import { useSources } from "@/stores/fetch/sources"
 
 // Store
 const searchItemsStore = useSearchItemsStore()
-const { searchItems, posOptions, sourceOptions, languageOptions } = storeToRefs(searchItemsStore)
-const { fetchOptions, readURLParams } = searchItemsStore
+const { searchItems } = storeToRefs(searchItemsStore)
+const { readURLParams } = searchItemsStore
 const { search } = useSearchResultsStore()
 const searchSettingsStore = useSearchSettingsStore()
 const { loadSearchSettings } = searchSettingsStore
 const defaultCollapse = ref<boolean>()
+
+// Select options
+const { options: posOptions } = storeToRefs(usePosses())
+const { options: languageOptions } = storeToRefs(useLanguages())
+const { options: sourceOptions } = storeToRefs(useSources())
 
 // Computed
 const searchCorpusText = computed<string>(
@@ -207,8 +223,6 @@ const endYear = computed<string>(() => {
 })
 
 // Lifecycle
-onMounted(() => fetchOptions())
-
 onMounted(() => {
     // read wordform url parameter
     if (new URLSearchParams(window.location.search).size > 0) {
@@ -260,10 +274,15 @@ onMounted(() => {
         .p-cascadeselect {
             width: 200px;
         }
+        .p-inputgroup {
+            .p-select, .p-inputtext {
+                width: 170px;
+            }
+        }
         .search-corpus {
             display: block;
             color: blue;
-            margin: -.5rem 0;
+            margin: -0.5rem 0;
             font-size: 0.9rem;
         }
         &.hidden {
@@ -274,7 +293,7 @@ onMounted(() => {
         }
         p.invalid {
             color: red;
-            margin-bottom: .25rem;
+            margin-bottom: 0.25rem;
         }
         .visible-btn:focus {
             outline: 1px solid black;
