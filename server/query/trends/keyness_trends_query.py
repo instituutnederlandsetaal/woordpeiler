@@ -15,7 +15,7 @@ class KeynessTrendsQuery(TrendsQuery):
             WITH target AS (
                 SELECT
                     word_id,
-                    SUM(frequency)::REAL / (SELECT SUM(size) FROM {corpus_size} {date_filter}) * 1e6 AS rel_freq
+                    SUM(frequency)::REAL / (SELECT SUM(size) FROM {size} {date_filter}) * 1e6 AS rel_freq
                 FROM {frequencies}
                 {date_filter}
                 GROUP BY word_id
@@ -33,9 +33,9 @@ class KeynessTrendsQuery(TrendsQuery):
             keyness AS (
                 SELECT
                     target.word_id,
-                    COALESCE(({modifier} + target.rel_freq) / ({modifier} + ((total.abs_freq - COALESCE(after.abs_freq, 0))::REAL / (SELECT SUM(size) FROM {corpus_size} WHERE time < {begin_date}) * 1e6)), 0) AS keyness
+                    COALESCE(({modifier} + target.rel_freq) / ({modifier} + ((total.abs_freq - COALESCE(after.abs_freq, 0))::REAL / (SELECT SUM(size) FROM {size} WHERE time < {begin_date}) * 1e6)), 0) AS keyness
                 FROM target
-                LEFT JOIN {total_counts} total ON target.word_id = total.word_id
+                LEFT JOIN {counts} total ON target.word_id = total.word_id
                 LEFT JOIN after ON target.word_id = after.word_id
                 ORDER BY keyness DESC
                 LIMIT 1000
@@ -60,12 +60,12 @@ class KeynessTrendsQuery(TrendsQuery):
             """
         ).format(
             words_table=self.words_table,
-            total_counts=self.total_counts,
+            counts=self.counts,
             date_filter=self.date_filter,
             modifier=self.modifier,
             frequencies=self.frequencies,
             gradient=self.gradient,
-            corpus_size=self.corpus_size,
+            size=self.size,
             end_date=self.end_date,
             begin_date=self.begin_date,
         )

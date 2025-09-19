@@ -15,17 +15,9 @@ class TableBuilder:
         # primary
         self.frequencies = Identifier(f"frequencies_{self.ngram}")
         self.words = Identifier(f"words_{self.ngram}")
-        self.corpus_size = Identifier(f"corpus_size_{self.ngram}")
-        self.source_size = Identifier(f"source_size_{self.ngram}")
+        self.size = Identifier(f"size_{self.ngram}")
         # trends
-        # enriched
-        self.daily_counts = Identifier(f"daily_counts_{self.ngram}")
-        self.monthly_counts = Identifier(f"monthly_counts_{self.ngram}")
-        self.yearly_counts = Identifier(f"yearly_counts_{self.ngram}")
-        self.total_counts = Identifier(f"total_counts_{self.ngram}")
-        # unenriched
-        self.daily_wordforms = Identifier(f"daily_wordforms_{self.ngram}")
-        self.total_wordforms = Identifier(f"total_wordforms_{self.ngram}")
+        self.counts = Identifier(f"counts_{self.ngram}")
 
     def _build_queries(self) -> None:
         raise NotImplementedError

@@ -49,9 +49,7 @@ class FrequencyQuery(QueryBuilder):
             id, wordform, lemma, pos, poshead
         )
         self.source_filter = FrequencyQuery.get_source_filter(source, language)
-        self.corpus_size_table = FrequencyQuery.get_corpus_size_table(
-            self.source_filter, self.ngram
-        )
+        self.size_table = FrequencyQuery.get_size_table(self.source_filter, self.ngram)
         self.date_filter = QueryBuilder.get_date_filter(
             Identifier("cs", "time"), start, end
         )
@@ -72,8 +70,8 @@ class FrequencyQuery(QueryBuilder):
         return ngram
 
     @staticmethod
-    def get_corpus_size_table(source_filter: Composable, ngram: int) -> Composable:
-        corpus_size = Identifier(f"corpus_size_{ngram}")
+    def get_size_table(source_filter: Composable, ngram: int) -> Composable:
+        size = Identifier(f"size_{ngram}")
 
         if source_filter == SQL(""):
             # get from regular frequencies table
@@ -82,10 +80,10 @@ class FrequencyQuery(QueryBuilder):
                     time,
                     SUM(size) AS size
                 FROM
-                    {corpus_size}
+                    {size}
                 GROUP BY
                     time
-            )""").format(corpus_size=corpus_size)
+            )""").format(size=size)
         else:
             # get from source_frequencies table
             return SQL("""(
@@ -93,13 +91,13 @@ class FrequencyQuery(QueryBuilder):
                     time,
                     SUM(size) AS size
                 FROM
-                    {corpus_size}
+                    {size}
                 WHERE
                     {source_filter}
                 GROUP BY
                     time
             )""").format(
-                corpus_size=corpus_size,
+                size=size,
                 source_filter=source_filter,
             )
 
@@ -197,7 +195,7 @@ class FrequencyQuery(QueryBuilder):
                 GROUP BY
                     time
             ) 
-            -- merge with corpus_size to get the full timeline
+            -- merge with size to get the full timeline
             SELECT 
                 EXTRACT(EPOCH FROM time_bucket({time_bucket},cs.time)::TIMESTAMP)::BIGINT AS time,
                 SUM(COALESCE(frequency, 0))::INTEGER AS abs_freq,
@@ -205,7 +203,7 @@ class FrequencyQuery(QueryBuilder):
                     SUM(COALESCE(frequency, 0)) / NULLIF(SUM(cs.{size}), 0) * 1e6,
                     0 -- avoid division by zero
                 )::REAL AS rel_freq
-            FROM {corpus_size_table} cs
+            FROM {size_table} cs
                 LEFT JOIN frequencies_data f
                     ON cs.time = f.time
             -- filter the timeline
@@ -218,7 +216,7 @@ class FrequencyQuery(QueryBuilder):
         """
         ).format(
             size=self.size,
-            corpus_size_table=self.corpus_size_table,
+            size_table=self.size_table,
             words_table=self.words_table,
             freq_table=self.freq_table,
             source_filter=SQL("WHERE {source_filter}").format(

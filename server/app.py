@@ -7,11 +7,11 @@ That class may raise exceptions, which are caught and returned as HTTPExceptions
 
 # standard
 from datetime import date
-from typing import Annotated, Any, Optional
+from typing import Any, Optional
 
 # third party
 from psycopg.rows import dict_row
-from fastapi import Request, HTTPException, Query
+from fastapi import Request, HTTPException
 import uvicorn
 
 # local
@@ -20,6 +20,7 @@ from server.query.listing_query import ListingQuery
 from server.query.trends.trends_query import TrendsQuery
 from server.query.frequency_query import FrequencyQuery
 from server.query.words_query import WordsQuery
+from server.query.sources_query import SourcesQuery
 from server.config.config import FastAPI, create_app_with_config
 from server.util.dataseries_row_factory import (
     SingleValueRowFactory,
@@ -35,14 +36,18 @@ def read_root():
 
 @app.get("/health")
 def health():
+    if not request.app.internal:
+        raise HTTPException(status_code=403, detail="Permission denied")
     return app.pool.get_stats()
 
 
 @app.get("/sources")
 async def get_sources(request: Request) -> list[str]:
+    if not request.app.internal:
+        raise HTTPException(status_code=403, detail="Permission denied")
     async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("sources", "source").build(cur).execute_fetchall()
+            return await SourcesQuery().build(cur).execute_fetchall()
 
 
 @app.get("/languages")
@@ -61,13 +66,6 @@ async def get_posses(request: Request) -> list[str]:
             return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
 
 
-@app.get("/posheads")
-async def get_posheads(request: Request) -> list[str]:
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
-
-
 @app.get("/trends")
 async def get_trends(
     request: Request,
@@ -75,10 +73,7 @@ async def get_trends(
     modifier: float = 1,
     start: Optional[date] = None,
     end: Optional[date] = None,
-    enriched: bool = True,
     language: Optional[str] = None,
-    ascending: bool = False,
-    exclude: Annotated[Optional[list[str]], Query()] = None,
     ngram: int = 1,
 ) -> list[Any]:
     if not request.app.internal:
@@ -92,9 +87,7 @@ async def get_trends(
                     modifier,
                     start,
                     end,
-                    enriched,
                     language,
-                    ascending,
                     ngram,
                 )
                 .build(cur)
@@ -162,6 +155,9 @@ async def get_words(
     l: Optional[str] = None,
     p: Optional[str] = None,
 ) -> list[Any]:
+    if not request.app.internal:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
     async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             return await WordsQuery(w, l, p).build(cur).execute_fetchall()

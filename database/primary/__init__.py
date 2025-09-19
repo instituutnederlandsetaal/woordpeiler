@@ -9,7 +9,7 @@ from database.primary.table_posses import create_table_posses
 from database.primary.table_frequencies import FrequencyTableBuilder
 from database.primary.table_sources import create_table_sources
 from database.primary.table_words import WordsTableBuilder
-from database.primary.table_corpus_size import CorpusSizeTableBuilder
+from database.primary.table_size import SizeTableBuilder
 
 
 def initialize(
@@ -34,6 +34,6 @@ def initialize(
     for path in [annotations, size, frequency]:
         if not path.exists():
             raise ValueError(f"{path} does not exist.")
-    CorpusSizeTableBuilder(size, ngram).create()
+    SizeTableBuilder(size, ngram).create()
     WordsTableBuilder(annotations, ngram).create()
     FrequencyTableBuilder(frequency, ngram).create()

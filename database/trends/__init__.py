@@ -1,6 +1,6 @@
 # local
-from database.trends.table_total_counts import TotalCountsTableBuilder
+from database.trends.table_counts import CountsTableBuilder
 
 
 def initialize(ngram: int = 1):
-    TotalCountsTableBuilder(ngram).create()
+    CountsTableBuilder(ngram).create()

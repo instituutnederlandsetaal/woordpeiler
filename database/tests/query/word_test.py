@@ -26,7 +26,7 @@ class WordFrequencyTest(QueryTest):
                 SUM(COALESCE(frequency, 0)) as abs_freq,
                 SUM(cs.size) as size,
                 CASE WHEN SUM(cs.size) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.size) END as rel_freq
-            FROM corpus_size cs
+            FROM size cs
                 LEFT JOIN filter f
                     ON cs.time = f.time
             GROUP BY
@@ -55,7 +55,7 @@ class WordFrequencyTest(QueryTest):
                 SUM(COALESCE(frequency, 0)) as abs_freq,
                 SUM(cs.size) as size,
                 CASE WHEN SUM(cs.size) = 0 THEN 0 ELSE SUM(COALESCE(frequency, 0))/SUM(cs.size) END as rel_freq
-            FROM corpus_size cs
+            FROM size cs
                 LEFT JOIN filter f
                     ON cs.time = f.time
             GROUP BY

@@ -10,26 +10,26 @@ from database.util.table_builder import TableBuilder
 from database.util.psql_copy import PsqlCopy
 
 
-class CorpusSizeTableBuilder(TableBuilder):
+class SizeTableBuilder(TableBuilder):
     def __init__(self, path: Path, ngram: int):
         self.path = path
         super().__init__(ngram)
 
     def _build_queries(self):
         self.create_table = SQL("""
-            CREATE TABLE {corpus_size} (
+            CREATE TABLE {size} (
                 time DATE,
                 source_id INTEGER,
                 size INTEGER
             )
-        """).format(corpus_size=self.corpus_size)
+        """).format(size=self.size)
 
         self.add_indices = SQL("""
-            CREATE INDEX ON {corpus_size} (time) INCLUDE (size);
-            CREATE INDEX ON {corpus_size} (source_id) INCLUDE (time, size); -- TODO check performance of this one
-        """).format(corpus_size=self.corpus_size)
+            CREATE INDEX ON {size} (time) INCLUDE (size);
+            CREATE INDEX ON {size} (source_id) INCLUDE (time, size); -- TODO check performance of this one
+        """).format(size=self.size)
 
     def create(self):
         execute_query(self.create_table)
-        PsqlCopy.from_file(self.path, self.corpus_size.as_string())
-        time_query(f"Creating indices for {self.corpus_size}", self.add_indices)
+        PsqlCopy.from_file(self.path, self.size.as_string())
+        time_query(f"Creating indices for {self.size}", self.add_indices)

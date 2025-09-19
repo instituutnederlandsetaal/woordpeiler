@@ -13,9 +13,9 @@ class Cutoff(TableBuilder):
 
     def _build_queries(self):
         self.selection = SQL("""
-            SELECT word_id from {total_counts} WHERE abs_freq < {cutoff}
+            SELECT word_id from {counts} WHERE abs_freq < {cutoff}
         """).format(
-            total_counts=self.total_counts,
+            counts=self.counts,
             cutoff=self.cutoff,
         )
         self.trim_words = SQL("""
@@ -31,9 +31,9 @@ class Cutoff(TableBuilder):
             selection=self.selection,
         )
         self.trim_counts = SQL("""
-            DELETE FROM {total_counts} WHERE abs_freq < {cutoff}
+            DELETE FROM {counts} WHERE abs_freq < {cutoff}
         """).format(
-            total_counts=self.total_counts,
+            counts=self.counts,
             cutoff=self.cutoff,
         )
 

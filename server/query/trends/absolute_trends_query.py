@@ -33,7 +33,7 @@ class AbsoluteTrendsQuery(TrendsQuery):
                     tc.abs_freq AS keyness
                 FROM tc
                 LEFT JOIN ac ON tc.word_id = ac.word_id
-                JOIN {total_counts} rc
+                JOIN {counts} rc
                     ON tc.word_id = rc.word_id AND (rc.abs_freq - COALESCE(ac.abs_freq,0) - tc.abs_freq < {modifier})
                 ORDER BY tc.abs_freq DESC
                 LIMIT 1000
@@ -58,7 +58,7 @@ class AbsoluteTrendsQuery(TrendsQuery):
             """
         ).format(
             words_table=self.words_table,
-            total_counts=self.total_counts,
+            counts=self.counts,
             date_filter=self.date_filter,
             modifier=self.modifier,
             counts_table=self.frequencies,

@@ -50,7 +50,7 @@ class WordsQuery(QueryBuilder):
             JOIN wordforms ON words_1.wordform_ids[1] = wordforms.id
             JOIN lemmas ON words_1.lemma_ids[1] = lemmas.id
             JOIN posses ON words_1.pos_ids[1] = posses.id
-            JOIN total_counts_1 ON words_1.id = total_counts_1.word_id
+            JOIN counts_1 ON words_1.id = counts_1.word_id
             {filter}
             ORDER BY abs_freq DESC
             LIMIT 1000
