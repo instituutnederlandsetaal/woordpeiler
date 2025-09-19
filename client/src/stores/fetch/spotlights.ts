@@ -8,6 +8,10 @@ export const useSpotlights = defineStore("spotlights", () => {
     function fetch() {
         API.getSpotlights()
             .then((res) => {
+                // Could be old version
+                if (res.data.version !== "2.0.0") {
+                    return Promise.reject("Wrong version")
+                }
                 spotlight.value = res.data
             })
             .catch(() => {
