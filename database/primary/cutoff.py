@@ -8,8 +8,8 @@ from database.util.table_builder import TableBuilder
 
 class Cutoff(TableBuilder):
     def __init__(self, ngram: int, cutoff: int):
-        super().__init__(ngram)
         self.cutoff = cutoff
+        super().__init__(ngram)
 
     def _build_queries(self):
         self.selection = SQL("""
