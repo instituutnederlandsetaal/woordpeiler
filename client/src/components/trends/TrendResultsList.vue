@@ -64,7 +64,7 @@ const { rawOptions: posOptions } = storeToRefs(usePosses())
 // Computed
 const filteredTrends = computed(() => {
     return trendResults.value?.filter((trend) => {
-        const union = new Set(excludedPos.value).union(new Set(trend.pos.split("")))
+        const union = new Set(excludedPos.value).intersection(new Set(trend.pos.split("")))
         return union.size === 0
     })
 })
