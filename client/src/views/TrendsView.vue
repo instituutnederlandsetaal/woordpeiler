@@ -1,12 +1,11 @@
 <template>
     <main>
         <aside>
-            
             <TrendResultsList v-if="trendResults?.length > 0" />
-                <Skeleton class="trendlist" v-else-if="trendsLoading" />
-                <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
-                    <p>Probeer een andere zoekopdracht.</p>
-                </Panel>
+            <Skeleton class="trendlist" v-else-if="trendsLoading" />
+            <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
+                <p>Probeer een andere zoekopdracht.</p>
+            </Panel>
             <div class="settings">
                 <TrendSettings />
                 <SearchSettings v-if="isValid" />
@@ -21,13 +20,10 @@
 import { storeToRefs } from "pinia"
 import { useTrendResultsStore } from "@/stores/trendResults"
 import { useSearchItemsStore } from "@/stores/searchItems"
-import { config } from "@/main"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore())
 const { isValid } = storeToRefs(useSearchItemsStore())
-
-document.title = `${config.app.name} - Trends`
 </script>
 
 <style scoped lang="scss">

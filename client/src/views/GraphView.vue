@@ -8,12 +8,6 @@
     </main>
 </template>
 
-<script setup lang="ts">
-import { config } from "@/main"
-
-document.title = `${config.app.name} - Grafiek`
-</script>
-
 <style scoped lang="scss">
 @media screen and (max-width: 1024px) {
     :deep(.search-settings) {

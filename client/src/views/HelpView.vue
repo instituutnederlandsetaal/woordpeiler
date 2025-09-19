@@ -239,10 +239,7 @@
 </template>
 
 <script setup lang="ts">
-import { config } from "@/main"
-
 const canShare = navigator.share != undefined
-document.title = `${config.app.name} - Help`
 </script>
 
 <style scoped lang="scss">

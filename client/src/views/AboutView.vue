@@ -73,12 +73,6 @@
     <AppFooter />
 </template>
 
-<script setup lang="ts">
-import { config } from "@/main"
-
-document.title = `${config.app.name} - Over`
-</script>
-
 <style scoped lang="scss">
 main {
     min-height: initial;

@@ -1,17 +1,15 @@
 <template>
     <SearchBar />
     <main>
-        <SpotlightSection v-for="(section, i) in spotlight.items" :key="i" :section />
+        <SpotlightSection v-for="(section, i) in spotlight?.sections" :key="i" :section />
     </main>
     <AppFooter />
 </template>
 
 <script setup lang="ts">
-import { config } from "@/main"
-import { useSpotlightStore } from "@/stores/spotlights"
+import { useSpotlights } from "@/stores/fetch/spotlights"
 
-const spotlight = useSpotlightStore()
-document.title = config.app.name
+const { spotlight } = storeToRefs(useSpotlights())
 </script>
 
 <style scoped lang="scss">
