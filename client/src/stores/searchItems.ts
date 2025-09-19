@@ -1,9 +1,7 @@
 // Types & API
 import { displayName, invalidSearchItem, type SearchItem } from "@/types/search"
-import * as ListingAPI from "@/api/listing"
 import { randomColor } from "@/ts/color"
-import { type SelectLabel } from "@/types/ui"
-import { config } from "@/main"
+
 
 /**
  * Used to manage the list of words that will be used as search items when querying frequency data.
@@ -13,11 +11,6 @@ export const useSearchItemsStore = defineStore("SearchItems", () => {
     // Fields
     const searchItems = ref<SearchItem[]>([{ color: randomColor(), visible: true }])
     const validSearchItems = computed<SearchItem[]>(() => searchItems.value.filter((i) => !invalidSearchItem(i)))
-    /** Source options, to be fetched */
-    const sourceOptions = ref<string[]>([])
-    /** Part of Speech options, to be fetched */
-    const posOptions = ref<SelectLabel[]>([])
-    const languageOptions = ref<SelectLabel[]>([])
     // computed
     const isValid = computed<boolean>(() => {
         // empty array
@@ -41,30 +34,6 @@ export const useSearchItemsStore = defineStore("SearchItems", () => {
         return true
     })
     // Methods
-    /** Fetch all unique sources and parts of speech */
-    async function fetchOptions() {
-        // Dont keep refetching
-        if (sourceOptions.value.length > 0 && posOptions.value.length > 0 && languageOptions.value.length > 0) {
-            return
-        }
-
-        ListingAPI.getLanguages().then((response) => {
-            const labelMapping = config.language ? (i) => `${config.language[i]} (${i})` : (i) => i
-            languageOptions.value = response.data.map((i) => ({ label: labelMapping(i), value: i }))
-        })
-
-        ListingAPI.getSources().then((response) => {
-            sourceOptions.value = response.data
-        })
-
-        ListingAPI.getPosheads().then((response) => {
-            const labelMapping = config.tagset ? (i) => `${config.tagset[i]} (${i})` : (i) => i
-            posOptions.value = response.data
-                .filter((i) => !["punct", "__eos__", "res"].includes(i))
-                .map((i) => ({ label: labelMapping(i), value: i }))
-        })
-    }
-
     function readURLParams() {
         const split = ","
 
@@ -109,13 +78,9 @@ export const useSearchItemsStore = defineStore("SearchItems", () => {
     return {
         // Fields
         searchItems,
-        sourceOptions,
-        languageOptions,
-        posOptions,
         isValid,
         validSearchItems,
         // Methods
-        fetchOptions,
         readURLParams,
     }
 })

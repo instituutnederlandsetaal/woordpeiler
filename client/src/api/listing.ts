@@ -8,10 +8,6 @@ export function getPosses(): Promise<AxiosResponse<string[]>> {
     return axios.get(`/posses`)
 }
 
-export function getPosheads(): Promise<AxiosResponse<string[]>> {
-    return axios.get(`/posheads`)
-}
-
 export function getLanguages(): Promise<AxiosResponse<string[]>> {
     return axios.get(`/languages`)
 }

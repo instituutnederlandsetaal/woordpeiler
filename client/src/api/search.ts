@@ -1,5 +1,5 @@
 import axios, { type AxiosResponse } from "axios"
-import { cleanParams } from "@/api/api"
+import { cleanParams } from "@/api"
 
 export type SearchRequest = {
     w?: string
