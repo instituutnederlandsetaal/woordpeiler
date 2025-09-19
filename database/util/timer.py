@@ -17,4 +17,6 @@ class timer(ContextDecorator):
 
     def __exit__(self, type, value, traceback):
         elapsed = perf_counter() - self.time
-        print(f"    Took {elapsed:.3f} seconds", flush=True)
+        minutes = int(elapsed // 60)
+        seconds = elapsed % 60
+        print(f"    Took {minutes}m{seconds:.3f}s", flush=True)

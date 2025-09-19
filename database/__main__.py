@@ -7,7 +7,6 @@ import database.primary as primary
 import database.trends as trends
 from database.util.timer import timer
 from database.util.query import vacuum_analyze
-from database.primary.cutoff import Cutoff
 
 
 def initialize(folder: Path, config_name: str, ngram: int) -> None:
@@ -21,7 +20,6 @@ def initialize(folder: Path, config_name: str, ngram: int) -> None:
 
     primary.initialize(ngram, frequency, annotations, size, metadata, word, lemma, pos)
     trends.initialize(ngram)
-    Cutoff(ngram, 3).apply()
     vacuum_analyze()
 
 
