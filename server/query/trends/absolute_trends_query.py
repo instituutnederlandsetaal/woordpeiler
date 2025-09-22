@@ -11,35 +11,49 @@ class AbsoluteTrendsQuery(TrendsQuery):
     def build(self, cursor: BaseCursor) -> ExecutableQuery[TrendItem]:
         query = SQL(
             """
-            WITH tc AS (
+            -- calculate absolute frequencies in target period
+            WITH target AS (
                 SELECT
                     word_id,
-                    SUM(abs_freq) as abs_freq
-                FROM {counts_table} counts
-                {date_filter}
+                    SUM(frequency) as abs_freq
+                FROM {frequencies}
+                {date_filter} {source_filter}
                 GROUP BY word_id
             ),
-            ac AS (
+            -- calculate abs_freq frequencies in period after target, needed to subtract from total counts
+            after AS (
                 SELECT
                     word_id,
-                    SUM(abs_freq) as abs_freq
-                FROM {counts_table} counts
-                WHERE counts.time > {end_date}
+                    SUM(frequency) AS abs_freq
+                FROM {frequencies}
+                WHERE time > {end_date} {source_filter}
                 GROUP BY word_id
             ),
+            -- calculate new total, taking into account target.abs_freq and after.abs_freq
+            total AS (
+                SELECT
+                    word_id,
+                    SUM(abs_freq) - COALESCE(SUM(target.abs_freq),0) - COALESCE(SUM(after.abs_freq),0) AS abs_freq
+                FROM {counts}
+                JOIN target ON {counts}.word_id = target.word_id
+                JOIN after ON {counts}.word_id = after.word_id
+                WHERE TRUE {source_filter}
+                GROUP BY word_id
+            ),
+            -- select most frequent words in target period that are not too frequent in total corpus
             keyness AS (
                 SELECT
-                    tc.word_id,
-                    tc.abs_freq AS keyness
-                FROM tc
-                LEFT JOIN ac ON tc.word_id = ac.word_id
-                JOIN {counts} rc
-                    ON tc.word_id = rc.word_id AND (rc.abs_freq - COALESCE(ac.abs_freq,0) - tc.abs_freq < {modifier})
-                ORDER BY tc.abs_freq DESC
+                    target.word_id,
+                    target.abs_freq AS keyness
+                FROM target
+                LEFT JOIN total
+                    ON target.word_id = total.word_id
+                    AND total.abs_freq < {modifier}
+                ORDER BY target.abs_freq DESC
                 LIMIT 1000
             )
             SELECT
-                k.keyness,
+                k.keyness::INTEGER,
                 string_agg(wf.wordform, ' ' ORDER BY ord.n) AS wordform,
                 string_agg(l.lemma, ' ' ORDER BY ord.n) AS lemma,
                 string_agg(p.poshead, ' ' ORDER BY ord.n) AS pos
@@ -53,8 +67,6 @@ class AbsoluteTrendsQuery(TrendsQuery):
                 ord.pid = p.id
             GROUP BY
                 word_id, k.keyness
-            ORDER BY
-                k.keyness DESC;
             """
         ).format(
             words_table=self.words_table,

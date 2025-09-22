@@ -20,7 +20,7 @@ class KeynessTrendsQuery(TrendsQuery):
                 {date_filter} {source_filter}
                 GROUP BY word_id
             ),
-            -- calculate abs_freq frequencies in period after target
+            -- calculate abs_freq frequencies in period after target, needed to subtract from total counts
             after AS (
                 SELECT
                     word_id,
@@ -64,8 +64,6 @@ class KeynessTrendsQuery(TrendsQuery):
                 ord.pid = p.id
             GROUP BY
                 k.word_id, k.keyness
-            ORDER BY
-                k.keyness DESC;
             """
         ).format(
             words_table=self.words_table,
