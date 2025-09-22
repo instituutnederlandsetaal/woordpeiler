@@ -3,7 +3,7 @@
         <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)" />
         <a
             v-else-if="spotlight.url"
-            :href="spotlight.url + '?utm_source=woordpeiler'"
+            :href="utmUrl"
             target="_blank"
             class="spotlight-link"
         />
@@ -13,7 +13,7 @@
                 <p>{{ subtitle }}</p>
                 <a
                     v-if="spotlight.url"
-                    :href="spotlight.url + '?utm_source=woordpeiler'"
+                    :href="utmUrl"
                     target="_blank"
                     @click="(e) => e.stopPropagation()"
                 >
@@ -40,6 +40,7 @@
 import { vIntersectionObserver } from "@vueuse/components"
 import * as API from "@/api/search"
 import type { SpotlightBlock } from "@/types/spotlight"
+import { config } from "@/main";
 
 // Props
 const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
@@ -48,6 +49,8 @@ const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
 const svgBlob = ref()
 const title = spotlight.title ?? spotlight.graph?.word ?? spotlight.graph?.lemma
 const subtitle = spotlight.subtitle ?? (spotlight.graph ? `sinds ${spotlight.graph.start.split("-")[0]}` : "")
+
+const utmUrl = computed(() =>  `${spotlight.url}?utm_source=${config.app.name.toLowerCase()}&utm_medium=referral&utm_campaign=article_link`)
 
 // Methods
 function getGraphUrl(spotlight: SpotlightBlock): string {
