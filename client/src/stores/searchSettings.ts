@@ -68,10 +68,7 @@ export const useSearchSettingsStore = defineStore("SearchSettings", () => {
         if (frequencyType) searchSettings.value.frequencyType = freqMap[frequencyType]
     }
     function initTimeBucket(): { type: string; size: number } {
-        const desktop = { type: "m", size: 3 }
-        const mobile = { type: "y", size: 1 }
-        const isMobile = window.innerWidth < 768
-        return isMobile ? mobile : desktop
+        return window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
     }
     // Lifecycle
     watch(

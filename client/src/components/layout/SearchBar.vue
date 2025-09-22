@@ -10,17 +10,16 @@
 </template>
 
 <script setup lang="ts">
-// Util
 import { config } from "@/main"
 import { toTimestamp } from "@/ts/date"
 
-// Fields
 const word = ref()
 const router = useRouter()
 
-// Methods
 function doSearch() {
-    router.push({ path: "/grafiek", query: { w: word.value, start: toTimestamp(new Date(config.period.start)) } })
+    const interval = window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
+    const intervalStr: string = interval.size + interval.type
+    router.push({ path: "/grafiek", query: { i: intervalStr, w: word.value, start: toTimestamp(new Date(config.period.start)) } })
 }
 </script>
 

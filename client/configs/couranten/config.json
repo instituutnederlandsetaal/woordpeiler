@@ -10,6 +10,7 @@
     },
     "search": {
         "ngram": 4,
+        "interval": { "desktop": { "type": "y", "size": 1 }, "mobile": { "type": "y", "size": 2 } },
         "filters": [
             { "name": "Locatie", "api": "language", "advanced": true },
             { "name": "Krant", "api": "source", "advanced": false }

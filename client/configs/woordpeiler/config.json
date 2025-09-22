@@ -10,6 +10,7 @@
     },
     "search": {
         "ngram": 2,
+        "interval": { "desktop": { "type": "m", "size": 3 }, "mobile": { "type": "y", "size": 1 } },
         "filters": [
             { "name": "Taalvariëteit", "api": "language", "advanced": false },
             { "name": "Krant", "api": "source", "advanced": true }
