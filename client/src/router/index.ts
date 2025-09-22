@@ -13,12 +13,14 @@ const router = (): Router => {
             { path: "/", component: HomeView, meta: { title: config.app.slogan } },
             { path: "/trends", name: "trends", component: TrendsView, meta: { title: "Trends" } },
             { path: "/help", component: HelpView, meta: { title: "Help" } },
-            { path: "/grafiek", component: GraphView, meta: { title: "Grafiek" } },
+            { path: "/grafiek", component: GraphView },
             { path: "/over", component: AboutView, meta: { title: "Over" } },
         ],
     })
     r.afterEach((to) => {
-        document.title = `${config.app.name} - ${to.meta.title}`
+        if (to.meta.title) {
+            document.title = `${config.app.name} - ${to.meta.title}`
+        }
     })
     return r
 }

@@ -137,7 +137,7 @@ function constructBLFilter(point: GraphItem, settings: SearchSettings) {
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
     }
     const dateRange = `[${start} TO ${end}]`
-    const dateFilter = `${config.blacklab.date.from}:${dateRange} ${config.blacklab.date.to}:${dateRange}`
+    const dateFilter = `(${config.blacklab.date.from}:${dateRange} AND ${config.blacklab.date.to}:${dateRange})`
 
     if (point.searchItem.source) {
         filters[config.blacklab.title] = `"${point.searchItem.source}"`
