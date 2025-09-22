@@ -33,10 +33,8 @@ class AbsoluteTrendsQuery(TrendsQuery):
             total AS (
                 SELECT
                     word_id,
-                    SUM(abs_freq) - COALESCE(SUM(target.abs_freq),0) - COALESCE(SUM(after.abs_freq),0) AS abs_freq
+                    SUM(abs_freq) AS abs_freq
                 FROM {counts}
-                JOIN target ON {counts}.word_id = target.word_id
-                JOIN after ON {counts}.word_id = after.word_id
                 WHERE TRUE {source_filter}
                 GROUP BY word_id
             ),
@@ -46,9 +44,9 @@ class AbsoluteTrendsQuery(TrendsQuery):
                     target.word_id,
                     target.abs_freq AS keyness
                 FROM target
-                LEFT JOIN total
-                    ON target.word_id = total.word_id
-                    AND total.abs_freq < {modifier}
+                JOIN total ON target.word_id = total.word_id
+                JOIN after ON target.word_id = after.word_id
+                WHERE (total.abs_freq - after.abs_freq - target.abs_freq) < {modifier}
                 ORDER BY target.abs_freq DESC
                 LIMIT 1000
             )
@@ -67,13 +65,16 @@ class AbsoluteTrendsQuery(TrendsQuery):
                 ord.pid = p.id
             GROUP BY
                 word_id, k.keyness
+            ORDER BY
+                k.keyness DESC
             """
         ).format(
             words_table=self.words_table,
             counts=self.counts,
             date_filter=self.date_filter,
             modifier=self.modifier,
-            counts_table=self.frequencies,
+            frequencies=self.frequencies,
             end_date=self.end_date,
+            source_filter=self.source_filter,
         )
         return ExecutableQuery(cursor, query)

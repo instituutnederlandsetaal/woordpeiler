@@ -64,6 +64,8 @@ class KeynessTrendsQuery(TrendsQuery):
                 ord.pid = p.id
             GROUP BY
                 k.word_id, k.keyness
+            ORDER BY
+                k.keyness DESC
             """
         ).format(
             words_table=self.words_table,

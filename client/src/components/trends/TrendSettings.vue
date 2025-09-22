@@ -26,7 +26,7 @@
                                 </fieldset>
 
                                 <fieldset>
-                                    <label for="variant">Taalvariëteit</label>
+                                    <label for="variant">{{ config.search.filters[0].name }}</label>
                                     <Select
                                         id="variant"
                                         v-model="trendSettings.language"
@@ -35,7 +35,7 @@
                                         :loading="!languageOptions"
                                         optionLabel="label"
                                         optionValue="value"
-                                        placeholder="Taalvariëteit"
+                                        :placeholder="config.search.filters[0].name"
                                     />
                                 </fieldset>
                             </TabPanel>
@@ -163,6 +163,7 @@ import { useTrendResultsStore } from "@/stores/trendResults"
 // Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 import { useLanguages } from "@/stores/fetch/languages"
+import { config } from "@/main"
 
 // Stores
 // search items store
