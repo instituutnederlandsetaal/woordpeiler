@@ -14,6 +14,12 @@ class SvgQuery:
         # get the word as a regular FrequencyQuery
         data = await self.freq.build(cursor).execute_fetchall()
 
+        flat_line = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 1 1'><polyline points='0,1 1,1'/></svg>"
+
+        if len(data) == 0:
+            # no data
+            return flat_line
+
         # extremes for normalization
         max_freq = max([d[2] for d in data])
         min_time = data[0][0]
@@ -21,7 +27,7 @@ class SvgQuery:
 
         if max_freq == 0:
             # flat line
-            return "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 1 1'><polyline points='0,1 1,1'/></svg>"
+            return flat_line
 
         # construct polyline points
         points = ""
