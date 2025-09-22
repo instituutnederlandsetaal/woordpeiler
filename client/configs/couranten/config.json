@@ -5,7 +5,7 @@
     "spotlights": { "url": "https://ivdnt.org/courantenpeiler.json", "default": "assets/config/spotlights.json" },
     "app": {
         "name": "Courantenpeiler",
-        "slogan": "woordtrends in de 17de eeuw",
+        "slogan": "Woordtrends in de 17de eeuw",
         "description": "De Courantenpeiler toont hoe vaak woorden voorkwamen in Nederlandstalige kranten uit de 17de eeuw."
     },
     "search": {

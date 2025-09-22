@@ -1,6 +1,8 @@
 <template>
     <nav>
-        <a v-for="item in itemsWithIds" :key="item.id" :href="`#${item.id}`">{{ item.id?.replace("-", " ") }}</a>
+        <a v-for="item in itemsWithIds" :key="item.id" :href="`#${item.id}`">
+            {{ item.id?.replace(/-/g, " ") }}
+        </a>
     </nav>
 </template>
 
@@ -20,7 +22,6 @@ nav {
     justify-content: center;
     a {
         color: white;
-
         background-color: #444;
         padding: 0.5rem 1rem;
         text-decoration: none;
