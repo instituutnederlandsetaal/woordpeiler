@@ -3,11 +3,15 @@
     "sections": [
         {
             "id": "terug-in-de-taal",
-            "title": "terug in de taal",
-            "content": [
-                "In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/'>Terug in de taal</a> bespreken we woorden of betekenissen die ooit in het Nederlands bestonden, maar nu verdwenen zijn."
-            ],
             "blocks": [
+                {
+                    "color": "#89C24B",
+                    "title": "terug in de taal",
+                    "content": [
+                        "In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/'>Terug in de taal</a> bespreken we woorden of betekenissen die ooit in het Nederlands bestonden, maar nu verdwenen zijn."
+                    ],
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/"
+                },
                 {
                     "color": "#FFF064",
                     "title": "geldsnoeier",
