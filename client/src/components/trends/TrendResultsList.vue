@@ -128,6 +128,7 @@ watch(selectedTrend, () => {
             fieldset {
                 gap: 0.5rem;
                 padding: 0 1rem 0.5rem 1rem;
+                min-width: 0;
             }
             .p-listbox {
                 flex: 1;
