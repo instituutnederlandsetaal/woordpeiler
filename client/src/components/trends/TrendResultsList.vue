@@ -43,7 +43,6 @@
 import { useTrendResultsStore } from "@/stores/trendResults"
 import { useSearchResultsStore } from "@/stores/searchResults"
 import { useSearchItemsStore } from "@/stores/searchItems"
-import { useTrendSettingsStore } from "@/stores/trendSettings"
 // Types & API
 import { type TrendResult, displayName } from "@/types/trends"
 // Util
@@ -53,18 +52,18 @@ import { usePosses } from "@/stores/fetch/posses"
 // Stores
 const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore())
 const { searchItems } = storeToRefs(useSearchItemsStore())
-const { excludedPosHead: excludedPos } = storeToRefs(useTrendSettingsStore())
 const { search } = useSearchResultsStore()
 
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
 const { rawOptions: posOptions } = storeToRefs(usePosses())
+const excludedPos = ref<string[]>(["nou-p", "res", "num"])
 
 // Computed
 const filteredTrends = computed(() => {
     return trendResults.value?.filter((trend) => {
-        const union = new Set(excludedPos.value).intersection(new Set(trend.pos.split("")))
+        const union = new Set(excludedPos.value).intersection(new Set(trend.pos.split(" ")))
         return union.size === 0
     })
 })
