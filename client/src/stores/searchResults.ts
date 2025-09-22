@@ -138,10 +138,13 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
             start: toTimestamp(searchSettings.value.startDate),
             end: toTimestamp(searchSettings.value.endDate),
         }
-        // router without history (needs timeout to avoid too many history calls error)
-        setTimeout(() => {
-            router.replace({ query: { ...router.currentRoute.value.query, ...paramsObj } })
-        }, 300)
+        // Replace the browser URL without using the history API
+        const queryString = Object.entries(paramsObj)
+            .filter(([_, v]) => v !== undefined)
+            .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+            .join("&")
+        const newUrl = `${window.location.pathname}${queryString ? "?" + queryString : ""}`
+        window.history.replaceState({}, "", newUrl)
     }
     // Lifecycle
     /** ensure that color and visibility updates to search items also update the result items */
