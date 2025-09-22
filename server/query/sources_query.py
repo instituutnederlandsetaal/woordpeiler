@@ -12,12 +12,8 @@ class SourcesQuery(QueryBuilder):
                 source
             FROM
                 sources
-            JOIN
-                size_1
-                    ON
-                        id = source_id
+            JOIN size_1 ON id = source_id
             GROUP BY 
-                source_id,
                 source
             HAVING
                 sum(size) > 1e5
