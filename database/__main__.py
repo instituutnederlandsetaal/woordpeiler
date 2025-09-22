@@ -3,8 +3,7 @@ from pathlib import Path
 import sys
 
 # local
-import database.primary as primary
-import database.trends as trends
+import database.tables as tables
 from database.util.timer import timer
 from database.util.query import vacuum_analyze
 
@@ -18,8 +17,7 @@ def initialize(folder: Path, config_name: str, ngram: int) -> None:
     lemma = folder / f"{config_name}_lemma.tsv"
     pos = folder / f"{config_name}_pos.tsv"
 
-    primary.initialize(ngram, frequency, annotations, size, metadata, word, lemma, pos)
-    trends.initialize(ngram)
+    tables.initialize(ngram, frequency, annotations, size, metadata, word, lemma, pos)
     vacuum_analyze()
 
 

@@ -3,13 +3,14 @@ from pathlib import Path
 from typing import Optional
 
 # local
-from database.primary.table_wordforms import create_table_wordforms
-from database.primary.table_lemmas import create_table_lemmas
-from database.primary.table_posses import create_table_posses
-from database.primary.table_frequencies import FrequencyTableBuilder
-from database.primary.table_sources import create_table_sources
-from database.primary.table_words import WordsTableBuilder
-from database.primary.table_size import SizeTableBuilder
+from database.tables.table_wordforms import create_table_wordforms
+from database.tables.table_lemmas import create_table_lemmas
+from database.tables.table_posses import create_table_posses
+from database.tables.table_frequencies import FrequencyTableBuilder
+from database.tables.table_sources import create_table_sources
+from database.tables.table_words import WordsTableBuilder
+from database.tables.table_size import SizeTableBuilder
+from database.tables.table_counts import CountsTableBuilder
 
 
 def initialize(
@@ -37,3 +38,4 @@ def initialize(
     SizeTableBuilder(size, ngram).create()
     WordsTableBuilder(annotations, ngram).create()
     FrequencyTableBuilder(frequency, ngram).create()
+    CountsTableBuilder(ngram).create()
