@@ -41,7 +41,7 @@
         },
         "annotations": { "word": "word", "lemma": "lemma", "pos": "grouping_pos_full", "poshead": "pos" },
         "grouping": { "year": "witness_year_from", "month": "witness_month_from", "day": "witness_day_from" },
-        "date": "date_from",
+        "date": { "from": "date_from", "to": "date_to" },
         "title": "titleLevel2",
         "language": "settingLocation_country"
     }

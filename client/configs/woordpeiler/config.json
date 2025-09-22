@@ -49,7 +49,7 @@
         "filter": { "medium": "newspaper" },
         "annotations": { "word": "word", "lemma": "lemma", "pos": "pos_full", "poshead": "pos" },
         "grouping": { "year": "grouping_year", "month": "grouping_month", "day": "grouping_day" },
-        "date": "witnessDate_from",
+        "date": ["witnessDate_from", "witnessDate_to"],
         "title": "titleLevel2",
         "language": "languageVariant"
     }

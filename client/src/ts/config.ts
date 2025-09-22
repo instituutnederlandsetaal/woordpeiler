@@ -6,6 +6,7 @@ export type Config = {
     app: { name: string; slogan: string; description: string }
     search: {
         ngram: number
+        interval: { desktop: { type: string; size: number }; mobile: { type: string; size: number } }
         filters: { name: string; api: string; advanced: boolean }[]
         autosplit: { on: string; colors: Record<string, string> }
     }
@@ -19,7 +20,7 @@ export type Config = {
         filter: { medium: string }
         annotations: { word: string; lemma: string; pos: string; poshead: string }
         grouping: { year: string; month: string; day: string }
-        date: string
+        date: string[]
         title: string
         language: string
     }
