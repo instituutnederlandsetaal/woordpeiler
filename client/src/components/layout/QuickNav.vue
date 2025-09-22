@@ -9,7 +9,7 @@ import { useSpotlights } from "@/stores/fetch/spotlights"
 import type { SpotlightSection } from "@/types/spotlight"
 
 const { spotlight } = storeToRefs(useSpotlights())
-const itemsWithIds = computed<SpotlightSection[]>(() => spotlight.value?.sections.filter((s) => "id" in s) ?? [])
+const itemsWithIds = computed<SpotlightSection[]>(() => spotlight.value?.sections?.filter((s) => "id" in s) ?? [])
 </script>
 
 <style scoped lang="scss">
