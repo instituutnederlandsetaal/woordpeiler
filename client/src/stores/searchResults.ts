@@ -12,7 +12,6 @@ import {
     displayName,
     toIntervalStr,
 } from "@/types/search"
-import type { SearchResponse } from "@/api/search"
 import * as SearchAPI from "@/api/search"
 // Utils
 import { toTimestamp } from "@/ts/date"
@@ -139,9 +138,10 @@ export const useSearchResultsStore = defineStore("SearchResults", () => {
             start: toTimestamp(searchSettings.value.startDate),
             end: toTimestamp(searchSettings.value.endDate),
         }
-
-        // router without history
-        router.replace({ query: { ...router.currentRoute.value.query, ...paramsObj } })
+        // router without history (needs timeout to avoid too many history calls error)
+        setTimeout(() => {
+            router.replace({ query: { ...router.currentRoute.value.query, ...paramsObj } })
+        }, 300)
     }
     // Lifecycle
     /** ensure that color and visibility updates to search items also update the result items */
