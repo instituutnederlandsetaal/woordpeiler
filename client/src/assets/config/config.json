@@ -1,6 +1,6 @@
 {
     "version": "2.0.0",
-    "internal": true,
+    "internal": false,
     "basePath": "/woordpeiler",
     "spotlights": { "url": "https://ivdnt.org/woordpeiler.json", "default": "assets/config/spotlights.json" },
     "app": {
@@ -10,6 +10,7 @@
     },
     "search": {
         "ngram": 2,
+        "interval": { "desktop": { "type": "m", "size": 3 }, "mobile": { "type": "y", "size": 1 } },
         "filters": [
             { "name": "Taalvariëteit", "api": "language", "advanced": false },
             { "name": "Krant", "api": "source", "advanced": true }
@@ -38,8 +39,8 @@
     "period": { "start": "2000-01-01" },
     "theme": {
         "color": "#4488ee",
-        "logo": "../src/assets/config/woordpeiler-logo.png",
-        "favicon": "src/assets/config/woordpeiler-logo.svg"
+        "logo": "assets/config/woordpeiler-logo.svg",
+        "favicon": "assets/config/woordpeiler-logo.svg"
     },
     "blacklab": {
         "url": {
@@ -49,7 +50,7 @@
         "filter": { "medium": "newspaper" },
         "annotations": { "word": "word", "lemma": "lemma", "pos": "pos_full", "poshead": "pos" },
         "grouping": { "year": "grouping_year", "month": "grouping_month", "day": "grouping_day" },
-        "date": "witnessDate_from",
+        "date": { "from": "witnessDate_from", "to": "witnessDate_to" },
         "title": "titleLevel2",
         "language": "languageVariant"
     }

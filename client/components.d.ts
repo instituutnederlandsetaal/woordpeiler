@@ -16,7 +16,6 @@ declare module 'vue' {
     AppHeader: typeof import('./src/components/layout/AppHeader.vue')['default']
     Badge: typeof import('primevue/badge')['default']
     Button: typeof import('primevue/button')['default']
-    CascadeSelect: typeof import('primevue/cascadeselect')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Chip: typeof import('primevue/chip')['default']
     ColorPicker: typeof import('primevue/colorpicker')['default']
@@ -41,6 +40,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchBar: typeof import('./src/components/layout/SearchBar.vue')['default']
     SearchItem: typeof import('./src/components/search/SearchItem.vue')['default']
+    SearchItemList: typeof import('./src/components/search/SearchItemList.vue')['default']
     SearchSettings: typeof import('./src/components/search/SearchSettings.vue')['default']
     Select: typeof import('primevue/select')['default']
     SelectButton: typeof import('primevue/selectbutton')['default']
@@ -54,6 +54,5 @@ declare module 'vue' {
     Tabs: typeof import('primevue/tabs')['default']
     TrendResultsList: typeof import('./src/components/trends/TrendResultsList.vue')['default']
     TrendSettings: typeof import('./src/components/trends/TrendSettings.vue')['default']
-    WordList: typeof import('./src/components/WordList.vue')['default']
   }
 }

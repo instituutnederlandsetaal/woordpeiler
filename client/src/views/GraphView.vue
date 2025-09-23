@@ -1,7 +1,7 @@
 <template>
     <main>
         <aside>
-            <SearchItem />
+            <SearchItemList />
             <SearchSettings />
         </aside>
         <GraphWrapper />
