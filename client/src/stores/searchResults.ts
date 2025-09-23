@@ -1,7 +1,7 @@
 // Libraries & Stores
 import { v4 as uuidv4 } from "uuid"
-import { useSearchSettingsStore } from "@/stores/searchSettings"
-import { useSearchItemsStore } from "@/stores/searchItems"
+import { useSearchSettings } from "@/stores/searchSettings"
+import { useSearchItems } from "@/stores/searchItems"
 // Types & API
 import {
     type SearchItem,
@@ -17,13 +17,15 @@ import * as SearchAPI from "@/api/search"
 import { toTimestamp } from "@/ts/date"
 import { plausibleWordsEvent } from "@/ts/plausible"
 import { config } from "@/main"
+import { useLanguages } from "./fetch/languages"
 
-export const useSearchResultsStore = defineStore("SearchResults", () => {
+export const useSearchResults = defineStore("searchResults", () => {
     // Fields
     const router = useRouter()
     const searchResults = ref<GraphItem[]>([])
-    const { searchSettings } = storeToRefs(useSearchSettingsStore())
-    const { validSearchItems, languageOptions } = storeToRefs(useSearchItemsStore())
+    const { searchSettings } = storeToRefs(useSearchSettings())
+    const { validSearchItems } = storeToRefs(useSearchItems())
+    const { rawOptions: languageOptions } = storeToRefs(useLanguages())
     const isSearching = ref(false)
     const lastSearchSettings = ref<SearchSettings>()
     function search() {

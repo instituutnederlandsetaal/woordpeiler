@@ -63,19 +63,19 @@
 
 <script setup lang="ts">
 // Stores
-import { useSearchSettingsStore } from "@/stores/searchSettings"
-import { useSearchResultsStore } from "@/stores/searchResults"
-import { useSearchItemsStore } from "@/stores/searchItems"
+import { useSearchSettings } from "@/stores/searchSettings"
+import { useSearchResults } from "@/stores/searchResults"
+import { useSearchItems } from "@/stores/searchItems"
 // Utils
 import { toUTCDate, toYear } from "@/ts/date"
 import { config } from "@/main"
 
 // Stores
-const searchSettingsStore = useSearchSettingsStore()
+const searchSettingsStore = useSearchSettings()
 const { frequencyTypeOptions, timeBucketOptions, resetDates } = searchSettingsStore
 const { searchSettings } = storeToRefs(searchSettingsStore)
-const { isValid } = storeToRefs(useSearchItemsStore())
-const { search } = useSearchResultsStore()
+const { isValid } = storeToRefs(useSearchItems())
+const { search } = useSearchResults()
 
 // Fields
 const tab = ref()

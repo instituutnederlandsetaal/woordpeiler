@@ -6,7 +6,7 @@ import { randomColor } from "@/ts/color"
  * Used to manage the list of words that will be used as search items when querying frequency data.
  * Requires fetchOptions to populate the Select options.
  */
-export const useSearchItemsStore = defineStore("SearchItems", () => {
+export const useSearchItems = defineStore("SearchItems", () => {
     // Fields
     const searchItems = ref<SearchItem[]>([{ color: randomColor(), visible: true }])
     const validSearchItems = computed<SearchItem[]>(() => searchItems.value.filter((i) => !invalidSearchItem(i)))

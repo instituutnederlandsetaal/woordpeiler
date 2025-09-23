@@ -32,13 +32,13 @@
 
 <script setup lang="ts">
 // Stores
-import { useSearchResultsStore } from "@/stores/searchResults"
+import { useSearchResults } from "@/stores/searchResults"
 // Util
 import { share } from "@/ts/svg/share"
 import { download } from "@/ts/svg/download"
 
 // Stores
-const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore())
+const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResults())
 
 // Fields
 const graph = ref(null)

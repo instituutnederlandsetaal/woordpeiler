@@ -4,7 +4,7 @@ import type { SelectLabel } from "@/types/ui"
 import { config } from "@/main"
 import { toUTCDate } from "@/ts/date"
 
-export const useSearchSettingsStore = defineStore("SearchSettings", () => {
+export const useSearchSettings = defineStore("searchSettings", () => {
     // Fields
     const searchSettings = ref<SearchSettings>({
         intervalType: initTimeBucket().type,

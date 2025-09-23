@@ -41,8 +41,8 @@
 <script setup lang="ts">
 // Stores
 import { useTrendResultsStore } from "@/stores/trendResults"
-import { useSearchResultsStore } from "@/stores/searchResults"
-import { useSearchItemsStore } from "@/stores/searchItems"
+import { useSearchResults } from "@/stores/searchResults"
+import { useSearchItems } from "@/stores/searchItems"
 // Types & API
 import { type TrendResult, displayName } from "@/types/trends"
 // Util
@@ -51,8 +51,8 @@ import { usePosses } from "@/stores/fetch/posses"
 
 // Stores
 const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore())
-const { searchItems } = storeToRefs(useSearchItemsStore())
-const { search } = useSearchResultsStore()
+const { searchItems } = storeToRefs(useSearchItems())
+const { search } = useSearchResults()
 
 // Fields
 const selectedTrend = ref<TrendResult[]>([])

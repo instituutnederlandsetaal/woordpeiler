@@ -7,7 +7,7 @@
 // Libraries
 import * as d3 from "d3"
 // Stores
-import { useSearchResultsStore } from "@/stores/searchResults"
+import { useSearchResults } from "@/stores/searchResults"
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, IntervalType, type GraphItem } from "@/types/search"
@@ -15,7 +15,7 @@ import { tooltipHtml } from "@/ts/tooltip"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
 
 // Stores
-const { searchResults, lastSearchSettings } = storeToRefs(useSearchResultsStore())
+const { searchResults, lastSearchSettings } = storeToRefs(useSearchResults())
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter((d) => d.searchItem.visible))

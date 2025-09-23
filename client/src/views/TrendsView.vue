@@ -19,11 +19,11 @@
 // Libraries & Stores
 import { storeToRefs } from "pinia"
 import { useTrendResultsStore } from "@/stores/trendResults"
-import { useSearchItemsStore } from "@/stores/searchItems"
+import { useSearchItems } from "@/stores/searchItems"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore())
-const { isValid } = storeToRefs(useSearchItemsStore())
+const { isValid } = storeToRefs(useSearchItems())
 </script>
 
 <style scoped lang="scss">
