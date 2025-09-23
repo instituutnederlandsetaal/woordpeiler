@@ -26,7 +26,6 @@ class FrequencyQuery(QueryBuilder):
         start: Optional[int] = None,
         end: Optional[int] = None,
         interval: str = "1y",
-        id: Optional[int] = None,
     ) -> None:
         # trimming and unicode normalization for non-fixed user input
         if wordform is not None:
@@ -45,9 +44,7 @@ class FrequencyQuery(QueryBuilder):
 
         self.words_table = Identifier(f"words_{self.ngram}")
         self.freq_table = Identifier(f"frequencies_{self.ngram}")
-        self.word_filter = FrequencyQuery.get_word_filter(
-            id, wordform, lemma, pos, poshead
-        )
+        self.word_filter = FrequencyQuery.get_word_filter(wordform, lemma, pos, poshead)
         self.source_filter = FrequencyQuery.get_source_filter(source, language)
         self.size_table = FrequencyQuery.get_size_table(self.source_filter, self.ngram)
         self.date_filter = QueryBuilder.get_date_filter(
@@ -75,7 +72,8 @@ class FrequencyQuery(QueryBuilder):
 
         if source_filter == SQL(""):
             # get from regular frequencies table
-            return SQL("""(
+            return SQL(
+                """(
                 SELECT
                     time,
                     SUM(size) AS size
@@ -83,10 +81,12 @@ class FrequencyQuery(QueryBuilder):
                     {size}
                 GROUP BY
                     time
-            )""").format(size=size)
+            )"""
+            ).format(size=size)
         else:
             # get from source_frequencies table
-            return SQL("""(
+            return SQL(
+                """(
                 SELECT 
                     time,
                     SUM(size) AS size
@@ -96,7 +96,8 @@ class FrequencyQuery(QueryBuilder):
                     {source_filter}
                 GROUP BY
                     time
-            )""").format(
+            )"""
+            ).format(
                 size=size,
                 source_filter=source_filter,
             )
@@ -124,7 +125,6 @@ class FrequencyQuery(QueryBuilder):
 
     @staticmethod
     def get_word_filter(
-        id: Optional[int],
         wordform: Optional[str],
         lemma: Optional[str],
         pos: Optional[str],
@@ -219,11 +219,11 @@ class FrequencyQuery(QueryBuilder):
             size_table=self.size_table,
             words_table=self.words_table,
             freq_table=self.freq_table,
-            source_filter=SQL("WHERE {source_filter}").format(
-                source_filter=self.source_filter
-            )
-            if self.source_filter != SQL("")
-            else SQL(""),
+            source_filter=(
+                SQL("WHERE {source_filter}").format(source_filter=self.source_filter)
+                if self.source_filter != SQL("")
+                else SQL("")
+            ),
             date_filter=self.date_filter,
             time_bucket=self.interval,
             word_filter=self.word_filter,

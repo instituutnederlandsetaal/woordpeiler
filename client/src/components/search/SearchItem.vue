@@ -1,16 +1,14 @@
 <template>
-        <Panel class="search-item" :collapsed toggleable
+    <Panel
+        class="search-item"
+        :collapsed
+        toggleable
         :class="{ invalid: invalidSearchItem(item), hidden: !item.visible }"
     >
         <template #header>
             <div>
                 <ColorPicker id="color" v-model="item.color" title="Kleur in grafiek" />
-                <Button
-                    class="visible-btn"
-                    text
-                    severity="secondary"
-                    @click="item.visible = !item.visible"
-                >
+                <Button class="visible-btn" text severity="secondary" @click="item.visible = !item.visible">
                     <span v-if="item.visible" class="pi pi-eye" title="Getoond in grafiek"></span>
                     <span v-else class="pi pi-eye-slash" title="Verborgen in grafiek"></span>
                 </Button>
@@ -51,11 +49,15 @@
             Voer minimaal 4 andere tekens in dan een *-joker.
         </p>
 
+        <p class="invalid" v-if="invalidPos(item)">Voer maximaal {{ config.search.ngram }} woordsoorten in.</p>
+        <p class="invalid" v-if="invalidTermsForPos(item)">Voer evenveel woorden als woordsoorten in.</p>
+
         <fieldset>
             <label for="word">Woord</label><br />
             <InputText
                 :invalid="invalidInputText(item.wordform)"
                 id="word"
+                placeholder="Woord"
                 v-model.trim="item.wordform"
                 @keyup.enter="search"
             />
@@ -110,35 +112,7 @@
                             </InputGroup>
                         </div>
                     </fieldset>
-                    <fieldset>
-                        <label for="pos">Woordsoort</label>
-                        <div>
-                            <InputGroup>
-                                <InputGroupAddon>
-                                    <HelpButton>
-                                        <p>
-                                            De woordsoorten komen uit de
-                                            <a
-                                                target="_blank"
-                                                href="https://ivdnt.org/wp-content/uploads/2024/11/TDNV2_combi.pdf"
-                                                >Tagset Diachroon Nederlands (TDN)</a
-                                            >
-                                        </p>
-                                    </HelpButton>
-                                </InputGroupAddon>
-                                <Select
-                                    :loading="!posOptions"
-                                    id="pos"
-                                    v-model="item.pos"
-                                    :options="posOptions"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    showClear
-                                    placeholder="Woordsoort"
-                                />
-                            </InputGroup>
-                        </div>
-                    </fieldset>
+                    <PosSelect v-model="item.pos" />
                     <template v-if="$internal">
                         <fieldset>
                             <label for="source">{{ config.search.filters[1].name }}</label>
@@ -157,7 +131,11 @@
             </AccordionPanel>
         </Accordion>
 
-        <a v-if="item.wordform && !invalidSearchItem(item)" :href="constructSearchLink(item, searchSettings)" target="_blank">
+        <a
+            v-if="item.wordform && !invalidSearchItem(item)"
+            :href="constructSearchLink(item, searchSettings)"
+            target="_blank"
+        >
             {{ searchCorpusText }}
         </a>
     </Panel>
@@ -165,7 +143,6 @@
 
 <script setup lang="ts">
 import { config } from "@/main"
-import { usePosses } from "@/stores/fetch/posses"
 import { useLanguages } from "@/stores/fetch/languages"
 import { useSources } from "@/stores/fetch/sources"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
@@ -173,22 +150,31 @@ import { useSearchSettings } from "@/stores/search/searchSettings"
 import { useSearchResults } from "@/stores/search/searchResults"
 import { useSearchItems } from "@/stores/search/searchItems"
 import { toYear } from "@/ts/date"
-import { displayName, invalidSearchItem, invalidInputText, invalidRegexUsage, type SearchItem } from "@/types/search"
+import {
+    displayName,
+    invalidSearchItem,
+    invalidInputText,
+    invalidRegexUsage,
+    type SearchItem,
+    invalidPos,
+    invalidTermsForPos,
+} from "@/types/search"
 
 // Props
-const { item, collapsed } = defineProps<{ item: SearchItem, collapsed: boolean }>()
+const { item, collapsed } = defineProps<{ item: SearchItem; collapsed: boolean }>()
 
 // Stores
 const { searchItems } = useSearchItems()
 const { search } = useSearchResults()
 const { searchSettings } = storeToRefs(useSearchSettings())
-const { options: posOptions } = storeToRefs(usePosses())
 const { options: languageOptions } = storeToRefs(useLanguages())
 const { options: sourceOptions } = storeToRefs(useSources())
 
 // Computed
 const endYear = computed<string>(() => (config.period.end ? ` ${toYear(config.period.end)}` : "nu"))
-const searchCorpusText = computed<string>(() => `Zoeken in ${config.corpus.name} (${toYear(config.period.start)} – ${endYear.value})`)
+const searchCorpusText = computed<string>(
+    () => `Zoeken in ${config.corpus.name} (${toYear(config.period.start)} – ${endYear.value})`,
+)
 </script>
 
 <style scoped lang="scss">
@@ -211,23 +197,17 @@ const searchCorpusText = computed<string>(() => `Zoeken in ${config.corpus.name}
     .p-cascadeselect {
         width: 200px;
     }
-    .p-inputgroup {
+    :deep(.p-inputgroup) {
         .p-select,
         .p-inputtext {
             width: 170px;
         }
     }
-    .p-inputgroup .p-select {
-        align-items: center;
-        :deep(span:not(.p-placeholder)) {
-            font-size: 0.9rem;
-        }
-    }
     .p-accordionheader {
-        padding: .65rem 0;
+        padding: 0.65rem 0;
     }
     :deep(.p-accordioncontent-content) {
-        padding: 0 0 .65rem 0;
+        padding: 0 0 0.65rem 0;
     }
     a {
         display: block;

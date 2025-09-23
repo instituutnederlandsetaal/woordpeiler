@@ -144,6 +144,17 @@ async def get_freq(
     if s is not None and not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
+    # at least a lemma or wordform should be defined
+    if not any([l, w]):
+        raise HTTPException(status_code=400, detail="No wordform or lemma provided")
+
+    # does the number of pos match the number of lemmas or wordforms
+    num_pos = len(p.strip().split(" ")) if p else 0
+    num_lemma = len(l.strip().split(" ")) if l else 0
+    num_words = len(w.strip().split(" ")) if w else 0
+    if num_pos > num_lemma and num_pos > num_words:
+        raise HTTPException(status_code=400, detail="Provide as many posses as words")
+
     async with request.app.pool.connection() as conn:
         async with conn.cursor() as cur:
             return (

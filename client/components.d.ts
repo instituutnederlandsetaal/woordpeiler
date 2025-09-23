@@ -34,6 +34,7 @@ declare module 'vue' {
     Menu: typeof import('primevue/menu')['default']
     MultiSelect: typeof import('primevue/multiselect')['default']
     Panel: typeof import('primevue/panel')['default']
+    PosSelect: typeof import('./src/components/search/PosSelect.vue')['default']
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     QuickNav: typeof import('./src/components/layout/QuickNav.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

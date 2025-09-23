@@ -76,13 +76,29 @@ export function invalidInputText(text?: string): boolean {
 }
 
 export function invalidRegexUsage(text?: string): boolean {
-    // regex only allowed with at least 4 characters
-    if (text && text.includes("*")) {
-        if (text.replaceAll("*", "").length < 4) {
-            return true // invalid
+    const split = text?.trim()?.split(" ") ?? []
+    for (const word of split) {
+        console.log(word)
+        // regex only allowed with at least 4 characters
+        if (word.includes("*")) {
+            if (word.replaceAll("*", "").length < 4) {
+                return true // invalid
+            }
         }
     }
     return false // not invalid
+}
+
+export function invalidPos(item: SearchItem): boolean {
+    const num_posses = item.pos?.split(" ").length ?? 0
+    return num_posses > config.search.ngram
+}
+
+export function invalidTermsForPos(item: SearchItem): boolean {
+    const num_posses = item.pos?.split(" ").length ?? 0
+    const num_words = item.wordform?.trim().split(" ").length ?? 0
+    const num_lemmas = item.lemma?.trim().split(" ").length ?? 0
+    return num_posses > num_words && num_posses > num_lemmas
 }
 
 export function invalidSearchItem(item: SearchItem): boolean {
@@ -96,7 +112,9 @@ export function invalidSearchItem(item: SearchItem): boolean {
             invalidInputText(item.lemma) ||
             invalidInputText(item.wordform) ||
             invalidRegexUsage(item.lemma) ||
-            invalidRegexUsage(item.wordform)
+            invalidRegexUsage(item.wordform) ||
+            invalidPos(item) ||
+            invalidTermsForPos(item)
         ) {
             return true // invalid
         }
