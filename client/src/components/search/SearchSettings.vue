@@ -52,7 +52,7 @@
             label="Zoeken"
             @click="
                 () => {
-                    tab += 1
+                    closeTab()
                     search()
                 }
             "
@@ -71,9 +71,8 @@ import { toUTCDate, toYear } from "@/ts/date"
 import { config } from "@/main"
 
 // Stores
-const searchSettingsStore = useSearchSettings()
-const { frequencyTypeOptions, timeBucketOptions, resetDates } = searchSettingsStore
-const { searchSettings } = storeToRefs(searchSettingsStore)
+const { searchSettings } = storeToRefs(useSearchSettings())
+const { resetDates, timeBucketOptions, frequencyTypeOptions } = useSearchSettings()
 const { isValid } = storeToRefs(useSearchItems())
 const { search } = useSearchResults()
 
@@ -103,12 +102,18 @@ watch([startDate, endDate], () => {
 
 // reverse
 watch(
-    () => searchSettingsStore.searchSettings.endDate,
+    () => [searchSettings.value.endDate, searchSettings.value.startDate],
     () => {
-        startDate.value = searchSettingsStore.searchSettings.startDate
-        endDate.value = searchSettingsStore.searchSettings.endDate
+        startDate.value = searchSettings.value.startDate
+        endDate.value = searchSettings.value.endDate
     },
 )
+
+function closeTab() {
+    // primevue is buggy. next tick seems to work.
+    tab.value = 0
+    nextTick(() => (tab.value = 1))
+}
 </script>
 
 <style scoped lang="scss">
