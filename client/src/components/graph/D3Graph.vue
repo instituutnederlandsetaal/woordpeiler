@@ -7,7 +7,7 @@
 // Libraries
 import * as d3 from "d3"
 // Stores
-import { useSearchResults } from "@/stores/searchResults"
+import { useSearchResults } from "@/stores/search/searchResults"
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
 import { displayName, IntervalType, type GraphItem } from "@/types/search"

@@ -1,7 +1,7 @@
 // Libraries & Stores
 import { v4 as uuidv4 } from "uuid"
-import { useSearchSettings } from "@/stores/searchSettings"
-import { useSearchItems } from "@/stores/searchItems"
+import { useSearchSettings } from "@/stores/search/searchSettings"
+import { useSearchItems } from "@/stores/search/searchItems"
 // Types & API
 import {
     type SearchItem,
@@ -17,7 +17,7 @@ import * as SearchAPI from "@/api/search"
 import { toTimestamp } from "@/ts/date"
 import { plausibleWordsEvent } from "@/ts/plausible"
 import { config } from "@/main"
-import { useLanguages } from "./fetch/languages"
+import { useLanguages } from "@/stores/fetch/languages"
 
 export const useSearchResults = defineStore("searchResults", () => {
     // Fields

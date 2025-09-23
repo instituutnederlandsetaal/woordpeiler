@@ -169,9 +169,9 @@ import { usePosses } from "@/stores/fetch/posses"
 import { useLanguages } from "@/stores/fetch/languages"
 import { useSources } from "@/stores/fetch/sources"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
-import { useSearchSettings } from "@/stores/searchSettings"
-import { useSearchResults } from "@/stores/searchResults"
-import { useSearchItems } from "@/stores/searchItems"
+import { useSearchSettings } from "@/stores/search/searchSettings"
+import { useSearchResults } from "@/stores/search/searchResults"
+import { useSearchItems } from "@/stores/search/searchItems"
 import { toYear } from "@/ts/date"
 import { displayName, invalidSearchItem, invalidInputText, invalidRegexUsage, type SearchItem } from "@/types/search"
 
@@ -220,7 +220,7 @@ const searchCorpusText = computed<string>(() => `Zoeken in ${config.corpus.name}
     .p-inputgroup .p-select {
         align-items: center;
         :deep(span:not(.p-placeholder)) {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
         }
     }
     .p-accordionheader {

@@ -153,8 +153,8 @@
 
 <script setup lang="ts">
 // Stores
-import { useTrendSettings } from "@/stores/trendSettings"
-import { useTrendResults } from "@/stores/trendResults"
+import { useTrendSettings } from "@/stores/trends/trendSettings"
+import { useTrendResults } from "@/stores/trends/trendResults"
 // Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 import { useLanguages } from "@/stores/fetch/languages"

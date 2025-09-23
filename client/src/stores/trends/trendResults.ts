@@ -1,5 +1,5 @@
 // Stores
-import { useTrendSettings } from "@/stores/trendSettings"
+import { useTrendSettings } from "@/stores/trends/trendSettings"
 // API
 import * as TrendAPI from "@/api/trends"
 import type { TrendRequest } from "@/api/trends"

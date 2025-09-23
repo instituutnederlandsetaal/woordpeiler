@@ -18,8 +18,8 @@
 <script setup lang="ts">
 // Libraries & Stores
 import { storeToRefs } from "pinia"
-import { useTrendResults } from "@/stores/trendResults"
-import { useSearchItems } from "@/stores/searchItems"
+import { useTrendResults } from "@/stores/trends/trendResults"
+import { useSearchItems } from "@/stores/search/searchItems"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResults())

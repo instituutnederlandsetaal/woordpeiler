@@ -8,9 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import { useSearchItems } from "@/stores/searchItems"
-import { useSearchSettings } from "@/stores/searchSettings"
-import { useSearchResults } from "@/stores/searchResults"
+import { useSearchItems } from "@/stores/search/searchItems"
+import { useSearchSettings } from "@/stores/search/searchSettings"
+import { useSearchResults } from "@/stores/search/searchResults"
 import { randomColor } from "@/ts/color"
 
 const searchItemsStore = useSearchItems()

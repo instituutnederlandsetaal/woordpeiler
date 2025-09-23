@@ -40,9 +40,9 @@
 
 <script setup lang="ts">
 // Stores
-import { useTrendResults } from "@/stores/trendResults"
-import { useSearchResults } from "@/stores/searchResults"
-import { useSearchItems } from "@/stores/searchItems"
+import { useTrendResults } from "@/stores/trends/trendResults"
+import { useSearchResults } from "@/stores/search/searchResults"
+import { useSearchItems } from "@/stores/search/searchItems"
 // Types & API
 import { type TrendResult, displayName } from "@/types/trends"
 // Util

@@ -63,9 +63,9 @@
 
 <script setup lang="ts">
 // Stores
-import { useSearchSettings } from "@/stores/searchSettings"
-import { useSearchResults } from "@/stores/searchResults"
-import { useSearchItems } from "@/stores/searchItems"
+import { useSearchSettings } from "@/stores/search/searchSettings"
+import { useSearchResults } from "@/stores/search/searchResults"
+import { useSearchItems } from "@/stores/search/searchItems"
 // Utils
 import { toUTCDate, toYear } from "@/ts/date"
 import { config } from "@/main"

@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 // Stores
-import { useSearchResults } from "@/stores/searchResults"
+import { useSearchResults } from "@/stores/search/searchResults"
 // Util
 import { share } from "@/ts/svg/share"
 import { download } from "@/ts/svg/download"

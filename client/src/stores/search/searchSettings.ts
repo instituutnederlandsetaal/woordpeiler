@@ -19,10 +19,10 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         { label: "absoluut", value: "abs_freq" },
     ]
     const timeBucketOptions: SelectLabel[] = [
+        { label: "dag", value: "d" },
         { label: "week", value: "w" },
         { label: "maand", value: "m" },
         { label: "jaar", value: "y" },
-        { label: "dag", value: "d" },
     ]
     function loadSearchSettings() {
         if (localStorage.getItem("searchSettings")) {
