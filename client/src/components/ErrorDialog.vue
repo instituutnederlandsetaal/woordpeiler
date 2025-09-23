@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { useErrorsStore } from "@/stores/errors"
-const { errors } = storeToRefs(useErrorsStore())
+import { useErrors } from "@/stores/errors"
+const { errors } = storeToRefs(useErrors())
 const visible = ref<boolean>(false)
 
 watch(

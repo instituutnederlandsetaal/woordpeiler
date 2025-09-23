@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const useErrorsStore = defineStore("Errors", () => {
+export const useErrors = defineStore("errors", () => {
     // Fields
     const errors = ref<string[]>([])
     // Methods
