@@ -11,7 +11,7 @@ from typing import Any, Optional
 
 # third party
 from psycopg.rows import dict_row
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, Response
 import uvicorn
 import httpx
 
@@ -36,15 +36,15 @@ async def read_root():
 
 
 @app.get("/spotlights")
-async def get_spotlights(request: Request) -> str:
+async def get_spotlights(request: Request):
     """A way for the client to get the spotlights without CORS issues."""
     async with httpx.AsyncClient() as client:
-        r = await client.get("https://ivdnt.org/woordpeiler.json")
+        r = await client.get("https://ivdnt.org/woordpeiler-intern.json")
         if r.status_code != 200:
             raise HTTPException(
                 status_code=r.status_code, detail="Could not fetch spotlights"
             )
-        return r.text
+        return Response(content=r.content, media_type="application/json")
 
 
 @app.get("/health")
