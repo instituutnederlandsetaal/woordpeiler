@@ -161,13 +161,9 @@ import { useLanguages } from "@/stores/fetch/languages"
 import { config } from "@/main"
 
 // Stores
-// search items store
 const { options: languageOptions } = storeToRefs(useLanguages())
-// trend settings store
-const trendSettingsStore = useTrendSettings()
-const { trendTypeOptions, modifierOptions, periodOptions, ngramOptions } = trendSettingsStore
-const { trendSettings } = storeToRefs(trendSettingsStore)
-// trend results store
+const { trendSettings } = storeToRefs(useTrendSettings())
+const { trendTypeOptions, modifierOptions, periodOptions, ngramOptions } = useTrendSettings()
 const { getTrends } = useTrendResults()
 
 // Fields

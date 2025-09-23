@@ -1,6 +1,6 @@
 <template>
     <div class="search-items">
-        <SearchItem v-for="(item, i) in searchItems" :key="i" :item :collapsed/>
+        <SearchItem v-for="(item, i) in searchItems" :key="i" :item :collapsed />
         <Button outlined class="add-btn" severity="secondary" title="Zoekterm toevoegen" @click="add">
             <span class="pi pi-plus"></span>
         </Button>
@@ -13,9 +13,8 @@ import { useSearchSettings } from "@/stores/search/searchSettings"
 import { useSearchResults } from "@/stores/search/searchResults"
 import { randomColor } from "@/ts/color"
 
-const searchItemsStore = useSearchItems()
-const { searchItems } = storeToRefs(searchItemsStore)
-const { readURLParams } = searchItemsStore
+const { searchItems } = storeToRefs(useSearchItems())
+const { readURLParams } = useSearchItems()
 const { search } = useSearchResults()
 const searchSettingsStore = useSearchSettings()
 const { loadSearchSettings } = searchSettingsStore

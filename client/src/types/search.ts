@@ -78,7 +78,6 @@ export function invalidInputText(text?: string): boolean {
 export function invalidRegexUsage(text?: string): boolean {
     const split = text?.trim()?.split(" ") ?? []
     for (const word of split) {
-        console.log(word)
         // regex only allowed with at least 4 characters
         if (word.includes("*")) {
             if (word.replaceAll("*", "").length < 4) {
