@@ -41,9 +41,8 @@ async def get_spotlights(request: Request):
     async with httpx.AsyncClient() as client:
         r = await client.get("https://ivdnt.org/woordpeiler-intern.json")
         if r.status_code != 200:
-            raise HTTPException(
-                status_code=r.status_code, detail="Could not fetch spotlights"
-            )
+            # that's ok, the client has a backup spotlights.json
+            return ""
         return Response(content=r.content, media_type="application/json")
 
 
