@@ -3,7 +3,7 @@ import type { TrendSettings } from "@/types/trends"
 import type { SelectLabel } from "@/types/ui"
 import { config } from "@/main"
 
-export const useTrendSettingsStore = defineStore("TrendSettings", () => {
+export const useTrendSettings = defineStore("trendSettings", () => {
     // Fields
     const trendSettings = ref<TrendSettings>({
         year: { start: getNewYearsDay(), end: getNewYearsEve() },
@@ -13,8 +13,6 @@ export const useTrendSettingsStore = defineStore("TrendSettings", () => {
         trendType: "keyness",
         modifier: 1,
         period: "month",
-        enriched: true,
-        ascending: false,
         ngram: 1,
     })
     const trendTypeOptions: SelectLabel[] = [
@@ -45,7 +43,7 @@ export const useTrendSettingsStore = defineStore("TrendSettings", () => {
         () => ({ ...trendSettings.value }),
         (newValue, oldValue) => {
             const copy = { ...newValue }
-            delete copy.language // langauge is allowed to be null
+            delete copy.language // language is allowed to be null
             const entries = Object.values(copy)
             if (entries.some((entry) => entry == null || entry == undefined)) {
                 setTimeout(() => {

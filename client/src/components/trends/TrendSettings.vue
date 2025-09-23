@@ -131,11 +131,6 @@
                                     <label>{{ modifierLabel }}</label>
                                     <input type="number" class="p-inputtext" v-model="trendSettings.modifier" min="0" />
                                 </fieldset>
-
-                                <!-- <fieldset v-if="trendSettings.trendType == 'keyness'">
-                                    <label>Verdwijnwoorden</label>
-                                    <Checkbox v-model="trendSettings.ascending" binary />
-                                </fieldset> -->
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
@@ -158,8 +153,8 @@
 
 <script setup lang="ts">
 // Stores
-import { useTrendSettingsStore } from "@/stores/trendSettings"
-import { useTrendResultsStore } from "@/stores/trendResults"
+import { useTrendSettings } from "@/stores/trendSettings"
+import { useTrendResults } from "@/stores/trendResults"
 // Utils
 import { toLastDayOfMonth, toLastDayOfYear } from "@/ts/date"
 import { useLanguages } from "@/stores/fetch/languages"
@@ -169,11 +164,11 @@ import { config } from "@/main"
 // search items store
 const { options: languageOptions } = storeToRefs(useLanguages())
 // trend settings store
-const trendSettingsStore = useTrendSettingsStore()
+const trendSettingsStore = useTrendSettings()
 const { trendTypeOptions, modifierOptions, periodOptions, ngramOptions } = trendSettingsStore
 const { trendSettings } = storeToRefs(trendSettingsStore)
 // trend results store
-const { getTrends } = useTrendResultsStore()
+const { getTrends } = useTrendResults()
 
 // Fields
 const tab = ref("0")

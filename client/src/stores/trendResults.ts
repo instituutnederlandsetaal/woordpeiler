@@ -1,5 +1,5 @@
 // Stores
-import { useTrendSettingsStore } from "@/stores/trendSettings"
+import { useTrendSettings } from "@/stores/trendSettings"
 // API
 import * as TrendAPI from "@/api/trends"
 import type { TrendRequest } from "@/api/trends"
@@ -7,9 +7,9 @@ import type { TrendRequest } from "@/api/trends"
 import { type TrendSettings, type TrendResult, type DateRange } from "@/types/trends"
 import { toTimestamp } from "@/ts/date"
 
-export const useTrendResultsStore = defineStore("TrendResults", () => {
+export const useTrendResults = defineStore("trendResults", () => {
     // Fields
-    const { trendSettings } = storeToRefs(useTrendSettingsStore())
+    const { trendSettings } = storeToRefs(useTrendSettings())
     const trendResults = ref<TrendResult[]>(null)
     const trendsLoading = ref(false)
     const lastTrendSettings = ref<TrendSettings>(null)

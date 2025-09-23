@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 // Stores
-import { useTrendResultsStore } from "@/stores/trendResults"
+import { useTrendResults } from "@/stores/trendResults"
 import { useSearchResults } from "@/stores/searchResults"
 import { useSearchItems } from "@/stores/searchItems"
 // Types & API
@@ -50,7 +50,7 @@ import { randomColor } from "@/ts/color"
 import { usePosses } from "@/stores/fetch/posses"
 
 // Stores
-const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore())
+const { trendResults, lastTrendSettings } = storeToRefs(useTrendResults())
 const { searchItems } = storeToRefs(useSearchItems())
 const { search } = useSearchResults()
 
@@ -82,13 +82,11 @@ function formatNumber(num: number): number {
 /** Insert selected trends into search items, and search them. */
 watch(selectedTrend, () => {
     searchItems.value = []
-    const isWordform = lastTrendSettings.value.enriched
-
-    for (const trendItem of selectedTrend.value) {
+    for (const item of selectedTrend.value) {
         searchItems.value.push({
-            wordform: isWordform ? trendItem.wordform : undefined,
-            pos: trendItem.pos,
-            lemma: isWordform ? trendItem.lemma : trendItem.wordform,
+            wordform: item.wordform,
+            pos: item.pos,
+            lemma: item.lemma,
             color: randomColor(),
             visible: true,
         })

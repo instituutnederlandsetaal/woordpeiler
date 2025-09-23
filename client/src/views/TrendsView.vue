@@ -18,11 +18,11 @@
 <script setup lang="ts">
 // Libraries & Stores
 import { storeToRefs } from "pinia"
-import { useTrendResultsStore } from "@/stores/trendResults"
+import { useTrendResults } from "@/stores/trendResults"
 import { useSearchItems } from "@/stores/searchItems"
 
 // Stores
-const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore())
+const { trendResults, trendsLoading } = storeToRefs(useTrendResults())
 const { isValid } = storeToRefs(useSearchItems())
 </script>
 
