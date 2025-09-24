@@ -87,7 +87,12 @@
                     "words": ["allochtoon", "weekeinde", "verscheidene keren", "televisie", "telefonie"]
                 },
                 { "color": "#1abc9c", "graph": { "word": "allochtonen", "start": "2000-01-01", "interval": "6m" } },
-                { "color": "#e74c3c", "graph": { "word": "weekeinde", "start": "2000-01-01", "interval": "3m" } },
+                {
+                    "color": "#e74c3c",
+                    "content": ["‘Weekeinde’ moet het afleggen tegen ‘weekend’."],
+                    "graph": { "word": "weekeinde", "start": "2000-01-01", "interval": "3m" },
+                    "words": ["weekend", "weekeinde"]
+                },
                 {
                     "color": "#e67e22",
                     "graph": { "word": "verscheidene keren", "start": "2000-01-01", "interval": "6m" }
