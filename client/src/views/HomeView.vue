@@ -1,4 +1,8 @@
 <template>
+    <p class="event-banner">
+        Meer leren over de functionaliteiten van Woordpeiler, over hoe je de grafieken interpreteert en op wat voor manieren je het kunt gebruiken? 
+        Schrijf je in voor het <a href="https://ivdnt.org/evenement/webinar-woordpeiler/?utm_source=woordpeiler&utm_medium=referral&utm_campaign=banner">gratis webinar op 7 oktober</a>!
+    </p>
     <main>
         <div class="wrapper">
             <SpotlightBlock v-for="spotlight in items" :key="spotlight.word" :spotlight />
@@ -53,6 +57,27 @@ body {
         max-width: 500px;
         // Without this, boxes with long text will grow to max-width, even if the screen is smaller
         overflow: hidden;
+    }
+}
+
+.event-banner {
+    margin: 0 auto;
+    padding: 1rem 2rem 0 2rem;
+    max-width: 865px;
+    text-align: center;
+    font-size: 1.2rem;
+    a {
+        color: black;
+        
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .event-banner {
+        font-size: 1rem;
     }
 }
 </style>
