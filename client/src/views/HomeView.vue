@@ -63,7 +63,7 @@ body {
 .event-banner {
     margin: 0 auto;
     padding: 1rem 2rem 0 2rem;
-    max-width: 850px;
+    max-width: 865px;
     text-align: center;
     font-size: 1.2rem;
     a {
