@@ -22,7 +22,7 @@ nav {
     justify-content: center;
     a {
         color: white;
-        background-color: #444;
+        background-color: #274374;
         padding: 0.5rem 1rem;
         text-decoration: none;
         &:hover {
