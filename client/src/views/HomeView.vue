@@ -14,9 +14,10 @@ const { spotlight } = storeToRefs(useSpotlights())
 
 <style scoped lang="scss">
 main {
+    padding: 0 1rem;
+    gap: 0;
     flex-direction: column;
     min-height: initial;
     align-items: center;
-    gap: 1rem;
 }
 </style>

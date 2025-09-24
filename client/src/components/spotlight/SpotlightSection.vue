@@ -8,7 +8,6 @@
             <SpotlightBlock v-for="(block, i) in section.blocks" :key="i" :spotlight="block" />
         </div>
     </section>
-    <hr />
 </template>
 
 <script setup lang="ts">
@@ -35,6 +34,8 @@ section {
     width: 100%;
     font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
     gap: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid #ccc;
 
     header {
         display: flex;
