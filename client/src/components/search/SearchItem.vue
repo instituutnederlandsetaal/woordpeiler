@@ -44,92 +44,26 @@
         <p class="invalid" v-if="invalidInputText(item.lemma) || invalidInputText(item.wordform)">
             Zoek op maximaal {{ config.search.ngram }} woorden.
         </p>
-
         <p class="invalid" v-if="invalidRegexUsage(item.lemma) || invalidRegexUsage(item.wordform)">
             Voer minimaal 4 andere tekens in dan een *-joker.
         </p>
-
         <p class="invalid" v-if="invalidPos(item)">Voer maximaal {{ config.search.ngram }} woordsoorten in.</p>
         <p class="invalid" v-if="invalidTermsForPos(item)">Voer evenveel woorden als woordsoorten in.</p>
 
-        <fieldset>
-            <label for="word">Woord</label><br />
-            <InputText
-                :invalid="invalidInputText(item.wordform)"
-                id="word"
-                placeholder="Woord"
-                v-model.trim="item.wordform"
-                @keyup.enter="search"
-            />
-        </fieldset>
-
-        <fieldset>
-            <label for="variant">{{ config.search.filters[0].name }}</label>
-            <Select
-                id="variant"
-                v-model="item.language"
-                :options="languageOptions"
-                optionLabel="label"
-                optionValue="value"
-                showClear
-                :placeholder="config.search.filters[0].name"
-                :loading="!languageOptions"
-            />
-        </fieldset>
-        <Accordion value="-1">
-            <AccordionPanel class="advanced">
-                <AccordionHeader>Geavanceerd</AccordionHeader>
-                <AccordionContent>
-                    <fieldset>
-                        <label for="lemma">Lemma</label>
-                        <div>
-                            <InputGroup>
-                                <InputGroupAddon>
-                                    <HelpButton>
-                                        <p>Het lemma is de woordenboekvorm van het woord.</p>
-                                        <DataTable
-                                            :value="[
-                                                { word: 'liep', lemma: 'lopen', pos: 'werkwoord' },
-                                                { word: 'blauwe', lemma: 'blauw', pos: 'bijvoeglijk naamwoord' },
-                                                { word: 'huizen', lemma: 'huis', pos: 'zelfstandig naamwoord' },
-                                            ]"
-                                            size="small"
-                                            style="max-width: fit-content"
-                                        >
-                                            <Column field="word" header="Woord"></Column>
-                                            <Column field="lemma" header="Lemma"></Column>
-                                            <Column field="pos" header="Woordsoort"></Column>
-                                        </DataTable>
-                                    </HelpButton>
-                                </InputGroupAddon>
-                                <InputText
-                                    :invalid="invalidInputText(item.lemma)"
-                                    id="lemma"
-                                    placeholder="Lemma"
-                                    v-model.trim="item.lemma"
-                                    @keyup.enter="search"
-                                />
-                            </InputGroup>
-                        </div>
-                    </fieldset>
-                    <PosSelect v-model="item.pos" />
-                    <template v-if="$internal">
-                        <fieldset>
-                            <label for="source">{{ config.search.filters[1].name }}</label>
-                            <Select
-                                id="source"
-                                v-model="item.source"
-                                :options="sourceOptions"
-                                showClear
-                                :clearIconProps="{ tabindex: 0 }"
-                                :placeholder="config.search.filters[1].name"
-                                :loading="!sourceOptions"
-                            />
-                        </fieldset>
-                    </template>
-                </AccordionContent>
-            </AccordionPanel>
-        </Accordion>
+        <Tabs value="0">
+            <TabList>
+                <Tab value="0">Basiszoeken</Tab>
+                <Tab value="1">Geavanceerd</Tab>
+            </TabList>
+            <TabPanels>
+                <TabPanel value="0" tabindex="-1">
+                    <BasicSearchTab :item />
+                </TabPanel>
+                <TabPanel value="1" tabindex="-1">
+                    <AdvancedSearchTab :item />
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
 
         <a
             v-if="item.wordform && !invalidSearchItem(item)"
@@ -143,8 +77,6 @@
 
 <script setup lang="ts">
 import { config } from "@/main"
-import { useLanguages } from "@/stores/fetch/languages"
-import { useSources } from "@/stores/fetch/sources"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
 import { useSearchSettings } from "@/stores/search/searchSettings"
 import { useSearchResults } from "@/stores/search/searchResults"
@@ -167,8 +99,6 @@ const { item, collapsed } = defineProps<{ item: SearchItem; collapsed: boolean }
 const { searchItems } = useSearchItems()
 const { search } = useSearchResults()
 const { searchSettings } = storeToRefs(useSearchSettings())
-const { options: languageOptions } = storeToRefs(useLanguages())
-const { options: sourceOptions } = storeToRefs(useSources())
 
 // Computed
 const endYear = computed<string>(() => (config.period.end ? ` ${toYear(config.period.end)}` : "nu"))
@@ -192,9 +122,7 @@ const searchCorpusText = computed<string>(
         text-align: left;
         flex: 1 1 0;
     }
-    .p-select,
-    .p-inputtext,
-    .p-cascadeselect {
+    :deep(.p-select) {
         width: 200px;
     }
     :deep(.p-inputgroup) {
@@ -206,8 +134,11 @@ const searchCorpusText = computed<string>(
     .p-accordionheader {
         padding: 0.65rem 0;
     }
-    :deep(.p-accordioncontent-content) {
-        padding: 0 0 0.65rem 0;
+    :deep(.p-tabpanels) {
+        padding: 0.5rem 0 0.65rem 0;
+    }
+    button.p-tab {
+        padding: 0.5rem;
     }
     a {
         display: block;

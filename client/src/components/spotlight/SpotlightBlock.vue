@@ -1,22 +1,12 @@
 <template>
     <article :style="{ backgroundColor: spotlight.color }">
         <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)" />
-        <a
-            v-else-if="spotlight.url"
-            :href="utmUrl"
-            target="_blank"
-            class="spotlight-link"
-        />
+        <a v-else-if="spotlight.url" :href="utmUrl" target="_blank" class="spotlight-link" />
         <header>
             <h2>{{ title }}</h2>
             <div>
                 <p>{{ subtitle }}</p>
-                <a
-                    v-if="spotlight.url"
-                    :href="utmUrl"
-                    target="_blank"
-                    @click="(e) => e.stopPropagation()"
-                >
+                <a v-if="spotlight.url" :href="utmUrl" target="_blank" @click="(e) => e.stopPropagation()">
                     artikel lezen <span class="pi pi-angle-double-right"></span>
                 </a>
             </div>
@@ -40,7 +30,7 @@
 import { vIntersectionObserver } from "@vueuse/components"
 import * as API from "@/api/search"
 import type { SpotlightBlock } from "@/types/spotlight"
-import { config } from "@/main";
+import { config } from "@/main"
 
 // Props
 const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
@@ -48,9 +38,13 @@ const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
 // Fields
 const svgBlob = ref()
 const title = spotlight.title ?? spotlight.graph?.word ?? spotlight.graph?.lemma
-const subtitle = spotlight.subtitle ?? (spotlight.graph ? `sinds ${spotlight.graph.start.split("-")[0]}` : "")
+const startDate = spotlight.graph?.start ?? config.period.start
+const subtitle = spotlight.subtitle ?? (spotlight.graph ? `sinds ${startDate.split("-")[0]}` : "")
+const interval = spotlight.graph?.interval ?? "3m"
 
-const utmUrl = computed(() =>  `${spotlight.url}?utm_source=${config.app.name.toLowerCase()}&utm_medium=referral&utm_campaign=article_link`)
+const utmUrl = computed(
+    () => `${spotlight.url}?utm_source=${config.app.name.toLowerCase()}&utm_medium=referral&utm_campaign=article_link`,
+)
 
 // Methods
 function getGraphUrl(spotlight: SpotlightBlock): string {
@@ -58,12 +52,7 @@ function getGraphUrl(spotlight: SpotlightBlock): string {
         const params = new URLSearchParams({ w: spotlight.words.join() }).toString()
         return `/grafiek?${params}`
     }
-    const params = {
-        w: spotlight.graph.word,
-        l: spotlight.graph.lemma,
-        i: spotlight.graph.interval,
-        start: spotlight.graph.start,
-    }
+    const params = { w: spotlight.graph.word, l: spotlight.graph.lemma, i: interval, start: startDate }
     Object.keys(params).forEach((k) => params[k] === undefined && delete params[k])
     return `/grafiek?${new URLSearchParams(params)}`
 }
@@ -79,8 +68,8 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
     const request: API.SearchRequest = {
         w: graph.word?.toLowerCase()?.trim(),
         l: graph.lemma?.toLowerCase()?.trim(),
-        start: graph.start,
-        i: graph.interval,
+        start: startDate,
+        i: interval,
     }
 
     API.getSVG(request).then((res) => (svgBlob.value = res.data))
