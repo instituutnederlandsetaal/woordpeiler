@@ -1,7 +1,7 @@
 <template>
     <p class="event-banner">
         Meer leren over de functionaliteiten van Woordpeiler, over hoe je de grafieken interpreteert en op wat voor manieren je het kunt gebruiken? 
-        Schrijf je in voor het <a href="https://ivdnt.org/evenement/webinar-woordpeiler/?utm_source=woordpeiler&utm_medium=referral&utm_campaign=banner">gratis webinar op 7 oktober</a>!
+        Schrijf je in voor het <a href="https://ivdnt.org/evenement/webinar-woordpeiler/?utm_source=woordpeiler&utm_medium=referral&utm_campaign=banner" target="_blank">gratis webinar op 7 oktober</a>!
     </p>
     <main>
         <div class="wrapper">
