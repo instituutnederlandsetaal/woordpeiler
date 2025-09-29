@@ -56,7 +56,7 @@
                     search()
                 }
             "
-            :disabled="!isValid"
+            :disabled="!validSearchItems.length"
         />
     </Panel>
 </template>
@@ -73,7 +73,7 @@ import { config } from "@/main"
 // Stores
 const { searchSettings } = storeToRefs(useSearchSettings())
 const { resetDates, timeBucketOptions, frequencyTypeOptions } = useSearchSettings()
-const { isValid } = storeToRefs(useSearchItems())
+const { validSearchItems } = storeToRefs(useSearchItems())
 const { search } = useSearchResults()
 
 // Fields

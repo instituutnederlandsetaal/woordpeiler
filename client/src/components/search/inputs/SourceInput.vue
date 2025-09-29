@@ -5,7 +5,7 @@
             id="source"
             :options
             showClear
-            v-model="item.source"
+            v-model="source"
             :clearIconProps="{ tabindex: 0 }"
             :placeholder="config.search.filters[1].name"
             :loading="!options"
@@ -18,4 +18,5 @@ import { config } from "@/main"
 import { useSources } from "@/stores/fetch/sources"
 
 const { options } = storeToRefs(useSources())
+const source = defineModel<string>()
 </script>

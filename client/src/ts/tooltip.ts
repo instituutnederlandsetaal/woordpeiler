@@ -1,13 +1,15 @@
 // Libraries
 import * as d3 from "d3"
 // Types
-import { displayName, type GraphItem, type SearchSettings } from "@/types/search"
+import { searchToString } from "@/types/search"
+import type { GraphItem } from "@/types/graph"
+import { type SearchSettings } from "@/types/SearchSettings"
 // Utils
 import { constructTooltipLink } from "@/ts/blacklab/blacklab"
 import { config } from "@/main"
 
 export function tooltipHtml(point: GraphItem, settings: SearchSettings): string {
-    const name = displayName(point.searchItem).split("–")[0]
+    const name = searchToString(point.searchItem).split("–")[0]
     let language_or_source
     if (point.searchItem.language) {
         language_or_source = point.searchItem.language
@@ -22,7 +24,7 @@ export function tooltipHtml(point: GraphItem, settings: SearchSettings): string 
     }
 
     const date = d3.timeFormat("%Y-%m-%d")(point.x)
-    const abs_or_rel = settings.frequencyType == "abs_freq" ? "voorkomens" : "/ mln. woorden"
+    const abs_or_rel = settings.frequencyType == "abs" ? "voorkomens" : "/ mln. woorden"
     const value = `${truncateRound(point.y, 2).toLocaleString()} <small>${abs_or_rel}</small>`
     const href = constructTooltipLink(point, settings)
     const a = containsMath(name) ? "" : `<a target='_blank' href='${href}'>Zoeken in ${config.corpus.name}</a>`

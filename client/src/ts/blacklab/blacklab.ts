@@ -1,4 +1,6 @@
-import { type GraphItem, type SearchSettings, type SearchItem, IntervalType } from "@/types/search"
+import { type SearchItem } from "@/types/search"
+import { type GraphItem } from "@/types/graph"
+import { type SearchSettings, IntervalType } from "@/types/searchSettings"
 import * as d3 from "d3"
 import { config } from "@/main"
 

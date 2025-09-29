@@ -1,5 +1,6 @@
 // Types
-import type { SearchItem, SearchSettings } from "@/types/search"
+import type { SearchItem } from "@/types/search"
+import type { SearchSettings } from "@/types/SearchSettings"
 
 export function plausibleWordsEvent(goal: string, searchSettings: SearchSettings, searchItems: SearchItem[]) {
     // each word individually

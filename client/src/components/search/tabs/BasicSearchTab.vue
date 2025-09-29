@@ -1,10 +1,25 @@
 <template>
-    <WordInput :item />
-    <LanguageInput :item />
+    <WordInput v-model="wordform" :ngram="config.search.ngram" />
 </template>
 
 <script setup lang="ts">
-import LanguageInput from "../inputs/LanguageInput.vue"
+import { config } from "@/main"
+import type { SearchItem, SearchTerm } from "@/types/search"
 
-const { item } = defineProps<{ item: SearchItem }>()
+const item = defineModel<SearchItem>()
+const wordform = ref<string | undefined>(item.value?.terms?.map((t: SearchTerm) => t.wordform).join(" "))
+watch(wordform, (newVal) => {
+    if (newVal) {
+        item.value = {
+            ...item.value,
+            terms: newVal
+                .replace(/\s+/g, " ")
+                .trim()
+                .split(" ")
+                .map((w) => ({ wordform: w })),
+        }
+    } else {
+        item.value = { ...item.value, terms: undefined }
+    }
+})
 </script>

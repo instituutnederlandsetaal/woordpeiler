@@ -19,7 +19,10 @@ const router = useRouter()
 function doSearch() {
     const interval = window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
     const intervalStr: string = interval.size + interval.type
-    router.push({ path: "/grafiek", query: { i: intervalStr, w: word.value, start: toTimestamp(new Date(config.period.start)) } })
+    router.push({
+        path: "/grafiek",
+        query: { i: intervalStr, w: word.value, start: toTimestamp(new Date(config.period.start)) },
+    })
 }
 </script>
 
@@ -53,8 +56,8 @@ search {
             font-size: 1.1rem;
             border: 0;
             outline: 0;
-            &:focus {
-                outline: 1px solid black;
+            &:focus-visible {
+                outline: 2px solid blue;
                 outline-offset: 0;
             }
         }
@@ -69,8 +72,8 @@ search {
             &:active {
                 background-color: #ccc;
             }
-            &:focus {
-                outline: 1px solid black;
+            &:focus-visible {
+                outline: 2px solid blue;
                 outline-offset: 0;
             }
 

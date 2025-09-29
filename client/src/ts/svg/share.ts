@@ -1,5 +1,7 @@
 // Types
-import { displayName, type GraphItem, type SearchSettings } from "@/types/search"
+import { searchToString } from "@/types/search"
+import type { GraphItem } from "@/types/graph"
+import { type SearchSettings } from "@/types/SearchSettings"
 import type { ResizeState } from "@/ts/resizeObserver"
 // Utils
 import { svgString2Image } from "@/ts/svg/conversion"
@@ -8,7 +10,7 @@ import { plausibleWordsEvent } from "@/ts/plausible"
 
 export function share(resizeState: ResizeState, words: GraphItem[], searchSettings: SearchSettings) {
     // choose first truthy display name or null
-    const word: string | null = words.map((i) => displayName(i.searchItem)).find((i) => i) || null
+    const word: string | null = words.map((i) => searchToString(i.searchItem)).find((i) => i) || null
 
     if (canShareFiles()) {
         shareImage(resizeState, words)

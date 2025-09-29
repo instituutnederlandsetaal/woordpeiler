@@ -10,7 +10,9 @@ import * as d3 from "d3"
 import { useSearchResults } from "@/stores/search/searchResults"
 // Util
 import useResizeObserver from "@/ts/resizeObserver"
-import { displayName, IntervalType, type GraphItem } from "@/types/search"
+import { IntervalType } from "@/types/searchSettings"
+import { searchToString } from "@/types/search"
+import { type GraphItem } from "@/types/graph"
 import { tooltipHtml } from "@/ts/tooltip"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
 
@@ -22,7 +24,7 @@ const visible = computed<GraphItem[]>(() => searchResults.value.filter((d) => d.
 const graphTitle = computed(() => {
     if (!lastSearchSettings.value) return ""
 
-    const freqType = lastSearchSettings.value.frequencyType === "abs_freq" ? "Absolute" : "Relatieve"
+    const freqType = lastSearchSettings.value.frequencyType === "abs" ? "Absolute" : "Relatieve"
     const timeBucketSize = lastSearchSettings.value.intervalLength
     const timeBucketType = lastSearchSettings.value.intervalType
     let timeBucketStr
@@ -146,9 +148,7 @@ onMounted(() => {
 
         // Add Y axis label (rotated 90 vertical)
         const yAxisLabel =
-            lastSearchSettings.value.frequencyType === "abs_freq"
-                ? "Absolute frequentie"
-                : "Frequentie per miljoen woorden"
+            lastSearchSettings.value.frequencyType === "abs" ? "Absolute frequentie" : "Frequentie per miljoen woorden"
         svg.select(".y-axis-label").text(yAxisLabel)
         svg.select(".title").text(graphTitle.value)
 
@@ -165,8 +165,8 @@ onMounted(() => {
         // .map(series => ({
         //     ...series,
         //     data: {
-        //         abs_freq: flat.filter((_, index) => index % sampleRate === 0),
-        //         rel_freq: flat.filter((_, index) => index % sampleRate === 0)
+        //         abs: flat.filter((_, index) => index % sampleRate === 0),
+        //         rel: flat.filter((_, index) => index % sampleRate === 0)
         //     }
         // }));
 
@@ -203,7 +203,7 @@ onMounted(() => {
                 .attr("xlink:href", chnLink)
                 .attr("target", "_blank")
                 .append("text")
-                .text(displayName(series.searchItem))
+                .text(searchToString(series.searchItem))
                 .style("fill", "black")
                 .style("font-size", "calc(0.5vw + 0.6rem)")
                 .attr("x", 20)
@@ -229,10 +229,10 @@ onMounted(() => {
         sampledData.forEach((series) => {
             if (series.data[lastSearchSettings.value.frequencyType].length > maxPoints) return
             // link data
-            series.data.abs_freq.forEach((d) => {
+            series.data.abs.forEach((d) => {
                 d.searchItem = series.searchItem
             })
-            series.data.rel_freq.forEach((d) => {
+            series.data.rel.forEach((d) => {
                 d.searchItem = series.searchItem
             })
 

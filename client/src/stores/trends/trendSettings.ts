@@ -1,12 +1,11 @@
 import { getNewYearsDay, getNewYearsEve, toFirstDayOfMonth, toLastDayOfMonth } from "@/ts/date"
 import type { TrendSettings } from "@/types/trends"
 import type { SelectLabel } from "@/types/ui"
-import { config } from "@/main"
 
 export const useTrendSettings = defineStore("trendSettings", () => {
     // Fields
     const trendSettings = ref<TrendSettings>({
-        year: { start: getNewYearsDay(), end: getNewYearsEve() },
+        year: { start: getNewYearsDay(), end: getNewYearsEve() }, // TODO if corpus.end
         month: { start: toFirstDayOfMonth(new Date()), end: toLastDayOfMonth(new Date()) },
         week: { start: new Date(), end: new Date() },
         other: { start: new Date(), end: new Date() },
@@ -29,15 +28,6 @@ export const useTrendSettings = defineStore("trendSettings", () => {
         { label: "jaar", value: "year" },
         { label: "anders", value: "other" },
     ]
-    const ngramOptions: SelectLabel[] = generateNGramOptions()
-    // Methods
-    function generateNGramOptions(): SelectLabel[] {
-        const options: SelectLabel[] = []
-        for (let n = 1; n <= config.search.ngram; n++) {
-            options.push({ label: `${n}-gram`, value: n })
-        }
-        return options
-    }
     // Lifecycle
     watch(
         () => ({ ...trendSettings.value }),
@@ -53,5 +43,5 @@ export const useTrendSettings = defineStore("trendSettings", () => {
         },
     )
     // Export
-    return { trendSettings, trendTypeOptions, modifierOptions, periodOptions, ngramOptions }
+    return { trendSettings, trendTypeOptions, modifierOptions, periodOptions }
 })

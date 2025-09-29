@@ -1,17 +1,10 @@
 // Libraries & Stores
-import { v4 as uuidv4 } from "uuid"
 import { useSearchSettings } from "@/stores/search/searchSettings"
 import { useSearchItems } from "@/stores/search/searchItems"
 // Types & API
-import {
-    type SearchItem,
-    type GraphItem,
-    equalSearchItem,
-    type SearchSettings,
-    equalSearchSettings,
-    displayName,
-    toIntervalStr,
-} from "@/types/search"
+import { type SearchItem, equalSearchItem, searchToString } from "@/types/search"
+import { type GraphItem } from "@/types/graph"
+import { type SearchSettings, equalSearchSettings, toIntervalStr } from "@/types/searchSettings"
 import * as SearchAPI from "@/api/search"
 // Utils
 import { toTimestamp } from "@/ts/date"
@@ -41,7 +34,7 @@ export const useSearchResults = defineStore("searchResults", () => {
         setSearchParamsInUrl()
         // set window title, but only if we are not on the trends page
         if (router.currentRoute.value.name != "trends")
-            document.title = `${config.app.name} - ` + validSearchItems.value.map((i) => displayName(i)).join(", ")
+            document.title = `${config.app.name} - ` + validSearchItems.value.map((i) => searchToString(i)).join(", ")
 
         // if search settings changed, all search results are invalidated
         const oldSearchSettings = JSON.parse(localStorage.getItem("searchSettings") || "{}")
@@ -90,10 +83,10 @@ export const useSearchResults = defineStore("searchResults", () => {
         // construct search request, partly from unsanitized user input
         const searchRequest: SearchAPI.SearchRequest = {
             // unsanitized user input
-            w: item.wordform?.trim()?.toLowerCase(),
-            l: item.lemma?.trim()?.toLowerCase(),
+            w: item.terms?.map((t) => t.wordform).filter(Boolean).join(" ") || undefined,
+            l: item.terms?.map((t) => t.lemma).filter(Boolean).join(" ") || undefined,
+            p: item.terms?.map((t) => t.pos).filter(Boolean).join(" ") || undefined,
             // fixed values
-            p: item.pos,
             s: item.source,
             v: item.language,
             i: toIntervalStr(searchSettings.value.intervalType, searchSettings.value.intervalLength),
@@ -107,10 +100,10 @@ export const useSearchResults = defineStore("searchResults", () => {
             .then((res) => {
                 const dataset: GraphItem = {
                     searchItem: JSON.parse(JSON.stringify(item)),
-                    uuid: uuidv4(),
+                    uuid: crypto.randomUUID(),
                     data: {
-                        abs_freq: res.data.map((i) => ({ x: i[0] * 1000, y: i[1] })),
-                        rel_freq: res.data.map((i) => ({ x: i[0] * 1000, y: i[2] })),
+                        abs: res.data.map((i) => ({ x: i[0] * 1000, y: i[1] })),
+                        rel: res.data.map((i) => ({ x: i[0] * 1000, y: i[2] })),
                     },
                 }
                 searchResults.value.push(dataset)
@@ -121,16 +114,22 @@ export const useSearchResults = defineStore("searchResults", () => {
             })
     }
     function searchItemPropToUrlStr(items: SearchItem[], prop: string): string | undefined {
-        const split = ","
-        const itemStrs: string[] | undefined = items.map((i) => i[prop] || "")
-        return itemStrs.every((i) => i == "") ? undefined : itemStrs.join(split)
+        const itemStrs: string[] | undefined = items.map((i) => i[prop] || undefined)
+        return joinItemStrs(itemStrs)
+    }
+    function searchTermToUrlStr(items: SearchItem[], prop: string): string | undefined {
+        const itemStrs = items.map((i) => i.terms?.map((t) => t[prop]).filter(Boolean).join(" ") || undefined)
+        return joinItemStrs(itemStrs)
+    }
+    function joinItemStrs(itemStrs: string[]) {
+        return itemStrs.every((i) => !i) ? undefined : itemStrs.join(",")
     }
 
     function setSearchParamsInUrl() {
         const paramsObj = {
-            w: searchItemPropToUrlStr(validSearchItems.value, "wordform"),
-            l: searchItemPropToUrlStr(validSearchItems.value, "lemma"),
-            p: searchItemPropToUrlStr(validSearchItems.value, "pos"),
+            w: searchTermToUrlStr(validSearchItems.value, "wordform"),
+            l: searchTermToUrlStr(validSearchItems.value, "lemma"),
+            p: searchTermToUrlStr(validSearchItems.value, "pos"),
             s: searchItemPropToUrlStr(validSearchItems.value, "source"),
             v: searchItemPropToUrlStr(validSearchItems.value, "language"),
             c: searchItemPropToUrlStr(validSearchItems.value, "color"),
@@ -140,13 +139,10 @@ export const useSearchResults = defineStore("searchResults", () => {
             start: toTimestamp(searchSettings.value.startDate),
             end: toTimestamp(searchSettings.value.endDate),
         }
-        // Replace the browser URL without using the history API
-        const queryString = Object.entries(paramsObj)
-            .filter(([_, v]) => v !== undefined)
-            .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
-            .join("&")
-        const newUrl = `${window.location.pathname}${queryString ? "?" + queryString : ""}`
-        window.history.replaceState({}, "", newUrl)
+        // router without history (needs timeout to avoid too many history calls error)
+        setTimeout(() => {
+            router.replace({ query: { ...router.currentRoute.value.query, ...paramsObj } })
+        }, 1000)
     }
     // Lifecycle
     /** ensure that color and visibility updates to search items also update the result items */

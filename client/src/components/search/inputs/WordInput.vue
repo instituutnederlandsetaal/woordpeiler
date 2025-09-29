@@ -25,10 +25,10 @@
                 </InputGroupAddon>
 
                 <InputText
-                    :invalid="invalidInputText(item.wordform)"
+                    :invalid="invalidText(wordform, ngram)"
                     id="word"
                     placeholder="Woord"
-                    v-model.trim="item.wordform"
+                    v-model="wordform"
                     @keyup.enter="search"
                 />
             </InputGroup>
@@ -38,10 +38,16 @@
 
 <script setup lang="ts">
 import { useSearchResults } from "@/stores/search/searchResults"
-import { type SearchItem, invalidInputText } from "@/types/search"
+import { invalidText } from "@/types/search"
 
+const { ngram } = defineProps<{ ngram: number }>()
 const { search } = useSearchResults()
-const { item } = defineProps<{ item: SearchItem }>()
+const wordform = defineModel<string>({
+    set: (value) => {
+        if (value) return value
+        return undefined
+    },
+})
 </script>
 
 <style scoped lang="scss">
@@ -53,7 +59,6 @@ ul {
         dfn {
             font-style: normal;
             font-weight: bold;
-            font-size: 1.1rem;
         }
     }
 }

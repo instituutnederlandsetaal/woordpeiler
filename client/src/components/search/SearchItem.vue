@@ -14,8 +14,8 @@
                 </Button>
             </div>
             <div class="header">
-                <template v-if="displayName(item)">
-                    {{ displayName(item) }}
+                <template v-if="searchToString(item)">
+                    {{ searchToString(item) }}
                 </template>
                 <template v-else><i>lege zoekterm</i></template>
             </div>
@@ -41,70 +41,85 @@
             </Button>
         </template>
 
-        <p class="invalid" v-if="invalidInputText(item.lemma) || invalidInputText(item.wordform)">
-            Zoek op maximaal {{ config.search.ngram }} woorden.
-        </p>
-        <p class="invalid" v-if="invalidRegexUsage(item.lemma) || invalidRegexUsage(item.wordform)">
-            Voer minimaal 4 andere tekens in dan een *-joker.
-        </p>
-        <p class="invalid" v-if="invalidPos(item)">Voer maximaal {{ config.search.ngram }} woordsoorten in.</p>
-        <p class="invalid" v-if="invalidTermsForPos(item)">Voer evenveel woorden als woordsoorten in.</p>
-
-        <Tabs value="0">
+        <Tabs :value="tab" @update:value="tabChanged">
             <TabList>
                 <Tab value="0">Basiszoeken</Tab>
                 <Tab value="1">Geavanceerd</Tab>
             </TabList>
             <TabPanels>
                 <TabPanel value="0" tabindex="-1">
-                    <BasicSearchTab :item />
+                    <SearchItemValidation :item />
+                    <BasicSearchTab v-model="basicItem" />
                 </TabPanel>
                 <TabPanel value="1" tabindex="-1">
-                    <AdvancedSearchTab :item />
+                    <AdvancedSearchTab v-model="advancedItem" />
                 </TabPanel>
             </TabPanels>
         </Tabs>
 
-        <a
-            v-if="item.wordform && !invalidSearchItem(item)"
-            :href="constructSearchLink(item, searchSettings)"
-            target="_blank"
-        >
-            {{ searchCorpusText }}
-        </a>
+        <div class="sources">
+            <LanguageInput v-model="item.language" />
+            <SourceInput v-if="$internal" v-model="item.source" />
+        </div>
+
+        <CorpusSearchLink :item />
     </Panel>
 </template>
 
 <script setup lang="ts">
-import { config } from "@/main"
-import { constructSearchLink } from "@/ts/blacklab/blacklab"
-import { useSearchSettings } from "@/stores/search/searchSettings"
-import { useSearchResults } from "@/stores/search/searchResults"
 import { useSearchItems } from "@/stores/search/searchItems"
-import { toYear } from "@/ts/date"
-import {
-    displayName,
-    invalidSearchItem,
-    invalidInputText,
-    invalidRegexUsage,
-    type SearchItem,
-    invalidPos,
-    invalidTermsForPos,
-} from "@/types/search"
+import { invalidSearchItem, searchToString, type SearchItem } from "@/types/search"
 
-// Props
-const { item, collapsed } = defineProps<{ item: SearchItem; collapsed: boolean }>()
+const { collapsed } = defineProps<{ collapsed: boolean }>()
+const { searchItems } = storeToRefs(useSearchItems())
 
-// Stores
-const { searchItems } = useSearchItems()
-const { search } = useSearchResults()
-const { searchSettings } = storeToRefs(useSearchSettings())
+const tab = ref<string>("0")
 
-// Computed
-const endYear = computed<string>(() => (config.period.end ? ` ${toYear(config.period.end)}` : "nu"))
-const searchCorpusText = computed<string>(
-    () => `Zoeken in ${config.corpus.name} (${toYear(config.period.start)} – ${endYear.value})`,
+const item = defineModel<SearchItem>()
+const basicItem = ref<SearchItem>({
+    terms: structuredClone(toRaw(item.value?.terms))?.forEach((t) => {
+        t.lemma = undefined
+        t.pos = undefined
+    }),
+})
+const advancedItem = ref<SearchItem>({ terms: structuredClone(toRaw(item.value?.terms)) })
+
+watch(
+    basicItem,
+    (newVal) => {
+        item.value = { ...item.value, ...newVal }
+    },
+    { deep: true },
 )
+
+watch(
+    advancedItem,
+    (newVal) => {
+        item.value = { ...item.value, ...newVal }
+    },
+    { deep: true },
+)
+
+onMounted(() => {
+    // if the current item contains advanced fields, switch to advanced tab
+    if (item.value?.terms?.some((t) => t.lemma !== undefined || t.pos !== undefined)) {
+        tab.value = "1"
+    }
+})
+
+function tabChanged(value: string) {
+    console.log("tab changed to", value)
+    if (value === "0") {
+        // switch to basic tab
+        console.log("switching to basic tab")
+        const override = { ...item.value, ...basicItem.value }
+        console.log("override:", override)
+        item.value = override
+    } else {
+        // switch to advanced tab
+        item.value = { ...item.value, ...advancedItem.value }
+    }
+}
 </script>
 
 <style scoped lang="scss">
@@ -140,25 +155,18 @@ const searchCorpusText = computed<string>(
     button.p-tab {
         padding: 0.5rem;
     }
-    a {
-        display: block;
-        color: blue;
-        // margin: -0.5rem 0;
-        font-size: 0.9rem;
-    }
     &.hidden {
         filter: brightness(0.9);
     }
     &.invalid {
         border: 2px solid red;
     }
-    p.invalid {
-        color: red;
-        margin-bottom: 0.25rem;
-    }
-    .visible-btn:focus {
-        outline: 1px solid black;
+    .visible-btn:focus-visible {
+        outline: 2px solid blue;
         outline-offset: -3px;
     }
+}
+.sources {
+    margin-bottom: 0.5rem;
 }
 </style>

@@ -1,128 +1,120 @@
 import { config } from "@/main"
 
-export enum IntervalType {
-    DAY = "d",
-    WEEK = "w",
-    MONTH = "m",
-    YEAR = "y",
-}
-
-export const intervalMap = { d: "day", w: "week", m: "month", y: "year" }
-
-/** converts 1 month to 1m */
-export function toIntervalStr(period_type: string, period_length: number): string {
-    return period_length + period_type[0]
-}
-
-export type SearchSettings = {
-    intervalType: string
-    intervalLength: number
-    startDate: Date
-    endDate: Date
-    frequencyType: string
-    languageSplit: boolean
-}
-
-export function equalSearchSettings(a: SearchSettings, b: SearchSettings): boolean {
-    return (
-        a.languageSplit == b.languageSplit &&
-        a.intervalType == b.intervalType &&
-        a.intervalLength == b.intervalLength &&
-        a.startDate.getTime() == b.startDate.getTime() &&
-        a.endDate.getTime() == b.endDate.getTime()
-    )
-}
-
 export interface SearchItem {
-    wordform?: string
-    pos?: string
-    lemma?: string
+    terms?: SearchTerm[]
     source?: string
     language?: string
     color?: string
     visible?: boolean
     loading?: boolean
+    uuid: string
+}
+
+export interface SearchTerm {
+    wordform?: string
+    pos?: string
+    lemma?: string
+}
+
+export function termToString(t: SearchTerm): string | undefined {
+    return Object.values({
+        w: t.wordform,
+        l: t.lemma ? `‘${t.lemma}’` : undefined,
+        p: t.pos,
+    }).filter(Boolean).join("–") || undefined
+}
+
+export function searchToString(item: SearchItem): string | undefined {
+    const terms = item.terms?.map(termToString).filter(Boolean).join(" ") || undefined
+    const source = item.language ?? item.source ?? undefined
+    const sourceStr = source ? `(${source})` : undefined
+    return [terms, sourceStr].filter(Boolean).join(" ") || undefined
 }
 
 export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
-    return (
-        a.wordform == b.wordform &&
-        a.pos == b.pos &&
-        a.lemma == b.lemma &&
-        a.source == b.source &&
-        a.language == b.language
-    )
-}
-
-export function displayName(i: SearchItem): string {
-    const attrs = {
-        wordform: i.wordform,
-        lemma: i.lemma ? `‘${i.lemma}’` : undefined,
-        pos: i.pos,
-        source: i.source,
-        language: i.language,
+    if (a.terms?.length != b.terms?.length) {
+        return false
     }
-    const cleanedAttrs: string[] = Object.values(attrs)
-        .map((v) => v?.trim())
-        .filter((v) => v != undefined)
-        .filter((v) => v != "")
-    const nDash = "–"
-    return cleanedAttrs.join(nDash)
+    for (let i = 0; i < a.terms?.length; i++) {
+        if (!equalSearchTerm(a.terms[i], b.terms[i])) {
+            return false
+        }
+    }
+    return a.source == b.source && a.language == b.language
 }
 
-export function invalidInputText(text?: string): boolean {
-    const num_words = text?.trim().split(" ").length ?? 0
-    return num_words > config.search.ngram // 5-grams not supported
+export function equalSearchTerm(a: SearchTerm, b: SearchTerm): boolean {
+    return a.wordform == b.wordform && a.pos == b.pos && a.lemma == b.lemma
 }
 
-export function invalidRegexUsage(text?: string): boolean {
-    const split = text?.trim()?.split(" ") ?? []
-    for (const word of split) {
-        // regex only allowed with at least 4 characters
-        if (word.includes("*")) {
-            if (word.replaceAll("*", "").length < 4) {
-                return true // invalid
+export function invalidNgram(item: SearchItem): boolean {
+    return (item.terms?.length ?? 0) > config.search.ngram
+}
+
+export function invalidText(text: string, ngram: number): boolean {
+    const dummyItem: SearchItem = { terms: [{ wordform: text }] }
+    return invalidNgramText(text, ngram) || invalidStarWildcard(dummyItem) || invalidQuestionWildcard(dummyItem)
+}
+
+export function invalidNgramText(text: string, ngram: number): boolean {
+    // trim leading, trailing, and multiple spaces inside
+    const trimmedText = text?.replace(/\s+/g, " ").trim() ?? "" 
+    const num_words = trimmedText.split(" ").length ?? 0
+    if (num_words > ngram) {
+        return true // invalid
+    }
+    return false // valid
+}
+
+export function invalidStarWildcard(item: SearchItem): boolean {
+    return invalidWildcard(item, "*", 4)
+}
+
+export function invalidQuestionWildcard(item: SearchItem): boolean {
+    return invalidWildcard(item, "?", 2)
+}
+
+function invalidWildcardsUsage(item: SearchItem): boolean {
+    return invalidStarWildcard(item) || invalidQuestionWildcard(item)
+}
+
+function invalidWildcard(item: SearchItem, wildcard: string, minChars: number): boolean {
+    for (const term of item.terms ?? []) {
+        for (const text of [term.lemma, term.wordform]) {
+            const split = text?.trim()?.split(" ") ?? []
+            for (const word of split) {
+                // regex only allowed with at least minChars characters
+                if (word.includes(wildcard)) {
+                    if (word.replaceAll(wildcard, "").length < minChars) {
+                        return true // invalid
+                    }
+                }
             }
         }
     }
-    return false // not invalid
-}
-
-export function invalidPos(item: SearchItem): boolean {
-    const num_posses = item.pos?.split(" ").length ?? 0
-    return num_posses > config.search.ngram
-}
-
-export function invalidTermsForPos(item: SearchItem): boolean {
-    const num_posses = item.pos?.split(" ").length ?? 0
-    const num_words = item.wordform?.trim().split(" ").length ?? 0
-    const num_lemmas = item.lemma?.trim().split(" ").length ?? 0
-    return num_posses > num_words && num_posses > num_lemmas
+    return false // valid
 }
 
 export function invalidSearchItem(item: SearchItem): boolean {
-    if (displayName(item) == "") {
-        // An empty item is invalid
-        return true
-    } else {
-        // not empty
-        // check ngram length and regex usage
-        if (
-            invalidInputText(item.lemma) ||
-            invalidInputText(item.wordform) ||
-            invalidRegexUsage(item.lemma) ||
-            invalidRegexUsage(item.wordform) ||
-            invalidPos(item) ||
-            invalidTermsForPos(item)
-        ) {
-            return true // invalid
-        }
+    // Either lemma or wordform must be truthy.
+    if (!item.terms) { // todo not just pos
+        return true // invalid
     }
-    return false // not invalid
+    // Truthy, but check ngram and wildcards too.
+    if (invalidNgram(item) || invalidWildcardsUsage(item)) {
+        return true // invalid
+    }
+    return false // valid
 }
 
-export type TimeSeries = { x: number; y: number }
-
-export type TimeSeriesWrapper = { abs_freq: TimeSeries[]; rel_freq: TimeSeries[] }
-
-export type GraphItem = { searchItem: SearchItem; data: TimeSeriesWrapper; uuid: string }
+export function invalidSearchTerm(term: SearchTerm): boolean {
+    // Either lemma or wordform must be truthy.
+    if (!term.wordform && !term.lemma) {
+        return true // invalid
+    }
+    // Truthy, but check ngram and wildcards too.
+    if (invalidNgramText(term.wordform, 1) || invalidNgramText(term.lemma, 1)) {
+        return true // invalid
+    }
+    return false // valid
+}

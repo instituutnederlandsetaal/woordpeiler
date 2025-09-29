@@ -8,7 +8,7 @@
             </Panel>
             <div class="settings">
                 <TrendSettings />
-                <SearchSettings v-if="isValid" />
+                <SearchSettings v-if="validSearchItems" />
             </div>
         </aside>
         <GraphWrapper />
@@ -23,7 +23,7 @@ import { useSearchItems } from "@/stores/search/searchItems"
 
 // Stores
 const { trendResults, trendsLoading } = storeToRefs(useTrendResults())
-const { isValid } = storeToRefs(useSearchItems())
+const { validSearchItems } = storeToRefs(useSearchItems())
 </script>
 
 <style scoped lang="scss">

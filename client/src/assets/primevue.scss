@@ -42,7 +42,7 @@ $theme: var(--theme); // Default theme color
     --p-togglebutton-content-padding: 0.25rem 0.55rem;
 
     // Accordion
-    --p-accordion-content-padding: 0 0 1rem 0;
+    --p-accordion-content-padding: 0 0 0 0;
     --p-accordion-header-padding: 1rem 0 1rem 0;
 
     .p-button-rounded {
@@ -78,7 +78,43 @@ $theme: var(--theme); // Default theme color
     }
 
     .p-popover {
-        margin: 0 0.5rem;
+        border: none;
+        box-shadow: none;
+        background: none;
+        .p-datatable {
+            max-width: none !important;
+        }
+
+        .p-popover-content {
+            border: 1px solid #ccc;
+            background: white;
+            padding: 1rem 2rem;
+
+            @media screen and (max-width: 480px) {
+                margin: 0 1rem;
+            }
+        }
+    }
+
+    .p-inputgroupaddon {
+        .p-button:focus-visible {
+            outline: 2px solid blue;
+            outline-offset: -1px;
+        }
+    }
+
+    .p-inputtext.p-invalid {
+        border: 2px solid red;
+    }
+
+    .p-accordion.invalid {
+        border: 2px solid red;
+        margin: 0 -0.75rem;
+        padding: 0 0.75rem;
+    }
+
+    .p-accordionpanel-active {
+        padding-bottom: 0.5rem;
     }
 }
 

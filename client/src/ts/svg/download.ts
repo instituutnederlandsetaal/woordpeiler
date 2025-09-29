@@ -1,7 +1,8 @@
 // Libraries
 import { saveAs } from "file-saver"
 // Types
-import type { GraphItem, SearchSettings } from "@/types/search"
+import type { GraphItem } from "@/types/graph"
+import { type SearchSettings } from "@/types/SearchSettings"
 import type { ResizeState } from "@/ts/resizeObserver"
 // Utils
 import { svgString2Image } from "@/ts/svg/conversion"

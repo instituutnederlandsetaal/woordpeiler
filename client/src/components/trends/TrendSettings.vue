@@ -13,17 +13,7 @@
                         <TabPanels>
                             <!-- Word tab -->
                             <TabPanel value="0">
-                                <fieldset>
-                                    <label for="ngram">N-gram</label>
-                                    <Select
-                                        id="ngram"
-                                        v-model="trendSettings.ngram"
-                                        :options="ngramOptions"
-                                        optionLabel="label"
-                                        optionValue="value"
-                                        placeholder="N-gram"
-                                    />
-                                </fieldset>
+                                <AdvancedNgramInput v-model="trendSettings.ngram" />
 
                                 <fieldset>
                                     <label for="variant">{{ config.search.filters[0].name }}</label>

@@ -22,10 +22,10 @@
                     </HelpButton>
                 </InputGroupAddon>
                 <InputText
-                    :invalid="invalidInputText(item.lemma)"
+                    :invalid="invalidText(lemma, ngram)"
                     id="lemma"
                     placeholder="Lemma"
-                    v-model.trim="item.lemma"
+                    v-model.trim="lemma"
                     @keyup.enter="search"
                 />
             </InputGroup>
@@ -35,8 +35,14 @@
 
 <script setup lang="ts">
 import { useSearchResults } from "@/stores/search/searchResults"
-import { type SearchItem, invalidInputText } from "@/types/search"
+import { invalidText } from "@/types/search"
 
+const { ngram } = defineProps<{ ngram: number }>()
 const { search } = useSearchResults()
-const { item } = defineProps<{ item: SearchItem }>()
+const lemma = defineModel<string>({
+    set: (value) => {
+        if (value) return value
+        return undefined
+    },
+})
 </script>

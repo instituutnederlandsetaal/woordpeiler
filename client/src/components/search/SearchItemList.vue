@@ -1,6 +1,6 @@
 <template>
     <div class="search-items">
-        <SearchItem v-for="(item, i) in searchItems" :key="i" :item :collapsed />
+        <SearchItem v-for="(item, i) in searchItems" :key="item.uuid" v-model="searchItems[i]" :collapsed />
         <Button outlined class="add-btn" severity="secondary" title="Zoekterm toevoegen" @click="add">
             <span class="pi pi-plus"></span>
         </Button>
@@ -9,42 +9,25 @@
 
 <script setup lang="ts">
 import { useSearchItems } from "@/stores/search/searchItems"
-import { useSearchSettings } from "@/stores/search/searchSettings"
 import { useSearchResults } from "@/stores/search/searchResults"
+import { useSearchSettings } from "@/stores/search/searchSettings"
 import { randomColor } from "@/ts/color"
 
 const { searchItems } = storeToRefs(useSearchItems())
-const { readURLParams } = useSearchItems()
+const { searchItemsFromUrl } = useSearchItems()
 const { search } = useSearchResults()
-const searchSettingsStore = useSearchSettings()
-const { loadSearchSettings } = searchSettingsStore
-const collapsed = ref<boolean>(false)
+const { searchSettingsFromUrl } = useSearchSettings()
+const collapsed = ref<boolean>(searchItems.value.length > 3)
 
 function add() {
-    searchItems.value.push({ color: randomColor(), visible: true })
+    searchItems.value.push({ color: randomColor(), visible: true, uuid: crypto.randomUUID() })
 }
 
-// Lifecycle
-onMounted(() => {
-    // read wordform url parameter
-    if (new URLSearchParams(window.location.search).size > 0) {
-        readURLParams()
-        searchSettingsStore.readUrlParams()
-        search()
-    } else {
-        // retrieve dataseries from cookies
-        if (localStorage.getItem("searchItems")) {
-            searchItems.value = JSON.parse(localStorage.getItem("searchItems"))
-            loadSearchSettings()
-            search()
-        }
-    }
-    // if there are more than 3 search items
-    // default to collapsed panels
-    if (searchItems.value.length > 3) {
-        collapsed.value = true
-    }
-})
+if (new URLSearchParams(window.location.search).size > 0) {
+    searchItemsFromUrl()
+    searchSettingsFromUrl()
+    search()
+}
 </script>
 
 <style scoped lang="scss">

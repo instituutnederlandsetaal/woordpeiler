@@ -13,8 +13,7 @@ function hsl2rgb(h: number, s: number, l: number): string {
 
 let lastUsedIndex = -1
 export function randomColor(): string {
-    const color = colorScheme[lastUsedIndex++ % colorScheme.length]
-    return color
+    return colorScheme[++lastUsedIndex % colorScheme.length]
 }
 
 export const colorScheme = [

@@ -1,22 +1,20 @@
-// Types & API
-import type { SearchSettings } from "@/types/search"
+import type { SearchSettings } from "@/types/searchSettings"
 import type { SelectLabel } from "@/types/ui"
 import { config } from "@/main"
 import { toUTCDate } from "@/ts/date"
 
 export const useSearchSettings = defineStore("searchSettings", () => {
-    // Fields
     const searchSettings = ref<SearchSettings>({
         intervalType: initTimeBucket().type,
         intervalLength: initTimeBucket().size,
         startDate: new Date(config.period.start),
         endDate: config.period.end ? new Date(config.period.end) : toUTCDate(new Date()),
-        frequencyType: "rel_freq",
+        frequencyType: "rel",
         languageSplit: false,
     })
     const frequencyTypeOptions: SelectLabel[] = [
-        { label: "relatief", value: "rel_freq" },
-        { label: "absoluut", value: "abs_freq" },
+        { label: "relatief", value: "rel" },
+        { label: "absoluut", value: "abs" },
     ]
     const timeBucketOptions: SelectLabel[] = [
         { label: "dag", value: "d" },
@@ -24,19 +22,14 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         { label: "maand", value: "m" },
         { label: "jaar", value: "y" },
     ]
-    function loadSearchSettings() {
-        if (localStorage.getItem("searchSettings")) {
-            searchSettings.value = JSON.parse(localStorage.getItem("searchSettings"))
-            // convert to Date
-            searchSettings.value.startDate = new Date(searchSettings.value.startDate)
-            searchSettings.value.endDate = new Date(searchSettings.value.endDate)
-        }
+    function initTimeBucket(): { type: string; size: number } {
+        return window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
     }
     function resetDates() {
         searchSettings.value.startDate = new Date(config.period.start)
         searchSettings.value.endDate = config.period.end ? new Date(config.period.end) : toUTCDate(new Date())
     }
-    function readUrlParams() {
+    function searchSettingsFromUrl() {
         const params = new URLSearchParams(window.location.search)
         const interval = params.get("i")
         const legacyIntervalLength = params.get("il")
@@ -64,12 +57,9 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         if (startDate) searchSettings.value.startDate = toDate(startDate)
         if (endDate) searchSettings.value.endDate = toDate(endDate)
 
-        const freqMap = { rel: "rel_freq", abs: "abs_freq" }
-        if (frequencyType) searchSettings.value.frequencyType = freqMap[frequencyType]
+        if (frequencyType) searchSettings.value.frequencyType = frequencyType
     }
-    function initTimeBucket(): { type: string; size: number } {
-        return window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
-    }
+
     // Lifecycle
     watch(
         () => ({ ...searchSettings.value }),
@@ -82,6 +72,7 @@ export const useSearchSettings = defineStore("searchSettings", () => {
             }
         },
     )
+
     // Export
     return {
         // Fields
@@ -89,8 +80,7 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         frequencyTypeOptions,
         timeBucketOptions,
         // Methods
-        loadSearchSettings,
         resetDates,
-        readUrlParams,
+        searchSettingsFromUrl,
     }
 })

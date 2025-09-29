@@ -5,7 +5,7 @@
             id="variant"
             :options
             showClear
-            v-model="item.language"
+            v-model="language"
             optionLabel="label"
             optionValue="value"
             :placeholder="config.search.filters[0].name"
@@ -18,5 +18,10 @@
 import { config } from "@/main"
 import { useLanguages } from "@/stores/fetch/languages"
 const { options } = storeToRefs(useLanguages())
-const { item } = defineProps<{ item: SearchItem }>()
+const language = defineModel<string>({
+    set: (value) => {
+        if (value) return value
+        return undefined
+    },
+})
 </script>
