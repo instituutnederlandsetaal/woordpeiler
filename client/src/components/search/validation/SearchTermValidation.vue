@@ -2,7 +2,7 @@
     <section>
         <p v-if="!term.wordform && !term.lemma"><strong> Voer een woord in. </strong></p>
         <p v-if="invalidNgramText(term.wordform, 1) || invalidNgramText(term.lemma, 1)">
-            <strong> Zoek op maximaal één woorden. </strong>
+            <strong> Zoek op één woord of pas het aantal woorden aan. </strong>
         </p>
         <p v-if="invalidStarWildcard(dummyItem)">
             <strong> Voer minimaal 4 andere tekens in bij een *-joker. </strong>
@@ -22,8 +22,8 @@ const { term } = defineProps<{ term: SearchTerm }>()
 
 <style scoped lang="scss">
 strong {
-    color: red;
     font-weight: normal;
+    font-style: italic;
 }
 
 section {

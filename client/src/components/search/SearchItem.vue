@@ -157,9 +157,6 @@ function tabChanged(value: string) {
     &.hidden {
         filter: brightness(0.9);
     }
-    &.invalid {
-        border: 2px solid red;
-    }
     .visible-btn:focus-visible {
         outline: 2px solid blue;
         outline-offset: -3px;

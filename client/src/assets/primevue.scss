@@ -103,12 +103,7 @@ $theme: var(--theme); // Default theme color
         }
     }
 
-    .p-inputtext.p-invalid {
-        border: 2px solid red;
-    }
-
     .p-accordion.invalid {
-        border: 2px solid red;
         margin: 0 -0.75rem;
         padding: 0 0.75rem;
     }

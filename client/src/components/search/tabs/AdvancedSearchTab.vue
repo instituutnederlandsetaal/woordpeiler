@@ -2,9 +2,9 @@
     <SimpleNgramInput v-model="ngram" />
     <Accordion v-for="(term, idx) in terms" :key="idx" :value="idx" :class="{ invalid: invalidTerm(term) }">
         <AccordionPanel :value="0">
-            <AccordionHeader
-                >Woord {{ idx + 1 }}{{ termToString(term) ? ":" : "" }} {{ termToString(term) }}</AccordionHeader
-            >
+            <AccordionHeader>
+                {{ headerName(idx, term) }}
+            </AccordionHeader>
             <AccordionContent>
                 <SearchTermValidation :term="term" />
                 <AdvancedWordInput v-model="terms[idx]" />
@@ -18,7 +18,6 @@ import { type SearchItem } from "@/types/search"
 import { type SearchTerm, invalidTerm, termToString } from "@/types/searchTerm"
 
 const item = defineModel<SearchItem>()
-
 const terms = ref<SearchTerm[]>(structuredClone(toRaw(item.value?.terms)) ?? [])
 const ngram = ref<number>(terms.value.length || 1)
 watch(
@@ -47,30 +46,10 @@ watch(
     { deep: true },
 )
 
-// function combine(feature: string) {
-//     // combines a feature from all items into a single string, separated by spaces. Null values are replaced by "[]"
-//     return items.value.map((i) => i[feature] ?? "[]").join(" ")
-// }
-
-// function split(item: SearchItem): SearchTerm[] {
-//     // splits a SearchItem into an array of ShallowSearchItems based on spaces in the wordform
-//     if (!item.wordform) {
-//         return [{ wordform: undefined, pos: undefined, lemma: undefined }]
-//     }
-//     const wordforms = item.wordform.split(" ")
-//     const poses = item.pos ? item.pos.split(" ") : []
-//     const lemmas = item.lemma ? item.lemma.split(" ") : []
-//     const maxLength = Math.max(wordforms.length, poses.length, lemmas.length)
-//     const result: SearchTerm[] = []
-//     for (let i = 0; i < maxLength; i++) {
-//         result.push({
-//             wordform: wordforms[i] === "[]" ? undefined : wordforms[i],
-//             pos: poses[i] === "[]" ? undefined : poses[i],
-//             lemma: lemmas[i] === "[]" ? undefined : lemmas[i],
-//         })
-//     }
-//     return result
-// }
+function headerName(i: number, term: SearchTerm) {
+    const termStr = termToString(term)
+    return termStr ? `Woord ${i + 1}: ${termStr}` : `Woord ${i + 1}: lege zoekterm`
+}
 </script>
 
 <style scoped lang="scss">

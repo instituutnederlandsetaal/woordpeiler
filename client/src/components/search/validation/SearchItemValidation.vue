@@ -22,8 +22,8 @@ const { item } = defineProps<{ item: SearchItem }>()
 
 <style scoped lang="scss">
 strong {
-    color: red;
     font-weight: normal;
+    font-style: italic;
 }
 
 section {
