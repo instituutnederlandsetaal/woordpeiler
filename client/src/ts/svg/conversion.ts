@@ -19,7 +19,7 @@ function getSVGString(width, height, w, h) {
 }
 
 // Space for title and subtitle
-const titleMargin = 30
+const titleMargin = 50
 
 export function svgString2Image(resizeState: ResizeState, callback: (dataBlob: Blob, filesize: string) => void) {
     // original dimensions
@@ -67,11 +67,18 @@ export function svgString2Image(resizeState: ResizeState, callback: (dataBlob: B
 
             const date = new Date().toLocaleDateString()
 
-            const title: CanvasText = { ...baseText, text: `woordpeiler.ivdnt.org ${date}`, align: "left", x: 5 }
+            const title: CanvasText = {
+                ...baseText,
+                text: `woordpeiler.ivdnt.org ${date}`,
+                align: "left",
+                x: 5,
+                y: height - 10,
+            }
             const subtitle: CanvasText = {
                 ...baseText,
                 text: "/instituut voor de Nederlandse taal/",
                 align: "right",
+                y: height - 10,
                 x: width - 5,
             }
             const largeWatermark: CanvasText = {
