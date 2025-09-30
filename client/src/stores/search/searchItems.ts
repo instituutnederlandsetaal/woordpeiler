@@ -52,10 +52,10 @@ export const useSearchItems = defineStore("searchItems", () => {
     function toTerm(wordform?: string, lemma?: string, pos?: string): SearchTerm[] {
         const split = " "
         const ngram = Math.max(
-                    wordform?.split(split).length || 0,
-                    lemma?.split(split).length || 0,
-                    pos?.split(split).length || 0,
-                )
+            wordform?.split(split).length || 0,
+            lemma?.split(split).length || 0,
+            pos?.split(split).length || 0,
+        )
         const terms: SearchTerm[] = []
         for (let i = 0; i < ngram; i++) {
             const term: SearchTerm = {

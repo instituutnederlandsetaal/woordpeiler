@@ -3,7 +3,7 @@ import * as d3 from "d3"
 // Types
 import { searchToString } from "@/types/search"
 import type { GraphItem } from "@/types/graph"
-import { type SearchSettings } from "@/types/SearchSettings"
+import { type SearchSettings } from "@/types/searchSettings"
 // Utils
 import { constructTooltipLink } from "@/ts/blacklab/blacklab"
 import { config } from "@/main"

@@ -83,9 +83,21 @@ export const useSearchResults = defineStore("searchResults", () => {
         // construct search request, partly from unsanitized user input
         const searchRequest: SearchAPI.SearchRequest = {
             // unsanitized user input
-            w: item.terms?.map((t) => t.wordform).filter(Boolean).join(" ") || undefined,
-            l: item.terms?.map((t) => t.lemma).filter(Boolean).join(" ") || undefined,
-            p: item.terms?.map((t) => t.pos).filter(Boolean).join(" ") || undefined,
+            w:
+                item.terms
+                    ?.map((t) => t.wordform)
+                    .filter(Boolean)
+                    .join(" ") || undefined,
+            l:
+                item.terms
+                    ?.map((t) => t.lemma)
+                    .filter(Boolean)
+                    .join(" ") || undefined,
+            p:
+                item.terms
+                    ?.map((t) => t.pos)
+                    .filter(Boolean)
+                    .join(" ") || undefined,
             // fixed values
             s: item.source,
             v: item.language,
@@ -118,7 +130,13 @@ export const useSearchResults = defineStore("searchResults", () => {
         return joinItemStrs(itemStrs)
     }
     function searchTermToUrlStr(items: SearchItem[], prop: string): string | undefined {
-        const itemStrs = items.map((i) => i.terms?.map((t) => t[prop]).filter(Boolean).join(" ") || undefined)
+        const itemStrs = items.map(
+            (i) =>
+                i.terms
+                    ?.map((t) => t[prop])
+                    .filter(Boolean)
+                    .join(" ") || undefined,
+        )
         return joinItemStrs(itemStrs)
     }
     function joinItemStrs(itemStrs: string[]) {

@@ -17,11 +17,11 @@ export interface SearchTerm {
 }
 
 export function termToString(t: SearchTerm): string | undefined {
-    return Object.values({
-        w: t.wordform,
-        l: t.lemma ? `‘${t.lemma}’` : undefined,
-        p: t.pos,
-    }).filter(Boolean).join("–") || undefined
+    return (
+        Object.values({ w: t.wordform, l: t.lemma ? `‘${t.lemma}’` : undefined, p: t.pos })
+            .filter(Boolean)
+            .join("–") || undefined
+    )
 }
 
 export function searchToString(item: SearchItem): string | undefined {
@@ -58,7 +58,7 @@ export function invalidText(text: string, ngram: number): boolean {
 
 export function invalidNgramText(text: string, ngram: number): boolean {
     // trim leading, trailing, and multiple spaces inside
-    const trimmedText = text?.replace(/\s+/g, " ").trim() ?? "" 
+    const trimmedText = text?.replace(/\s+/g, " ").trim() ?? ""
     const num_words = trimmedText.split(" ").length ?? 0
     if (num_words > ngram) {
         return true // invalid
@@ -97,7 +97,8 @@ function invalidWildcard(item: SearchItem, wildcard: string, minChars: number): 
 
 export function invalidSearchItem(item: SearchItem): boolean {
     // Either lemma or wordform must be truthy.
-    if (!item.terms) { // todo not just pos
+    if (!item.terms) {
+        // todo not just pos
         return true // invalid
     }
     // Truthy, but check ngram and wildcards too.

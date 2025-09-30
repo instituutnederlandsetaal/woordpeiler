@@ -1,7 +1,7 @@
 // Types
 import { searchToString } from "@/types/search"
 import type { GraphItem } from "@/types/graph"
-import { type SearchSettings } from "@/types/SearchSettings"
+import { type SearchSettings } from "@/types/searchSettings"
 import type { ResizeState } from "@/ts/resizeObserver"
 // Utils
 import { svgString2Image } from "@/ts/svg/conversion"

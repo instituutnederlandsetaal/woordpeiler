@@ -13,7 +13,7 @@ export type Config = {
     tagset: Record<string, string>
     language: Record<string, string>
     corpus: { name: string; url: string }
-    period: { start: string, end: string }
+    period: { start: string; end: string }
     theme: { color: string; logo: string; favicon: string }
     blacklab: {
         url: { external: string; internal: string }

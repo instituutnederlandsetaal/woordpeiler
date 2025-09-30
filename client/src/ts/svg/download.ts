@@ -2,7 +2,7 @@
 import { saveAs } from "file-saver"
 // Types
 import type { GraphItem } from "@/types/graph"
-import { type SearchSettings } from "@/types/SearchSettings"
+import { type SearchSettings } from "@/types/searchSettings"
 import type { ResizeState } from "@/ts/resizeObserver"
 // Utils
 import { svgString2Image } from "@/ts/svg/conversion"
