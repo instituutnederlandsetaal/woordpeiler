@@ -36,6 +36,7 @@ section {
     gap: 1rem;
     padding: 1rem 0;
     border-top: 1px solid #ccc;
+    max-width: 2560px;
 
     header {
         display: flex;
