@@ -12,6 +12,7 @@ import { useSearchItems } from "@/stores/search/searchItems"
 import { useSearchResults } from "@/stores/search/searchResults"
 import { useSearchSettings } from "@/stores/search/searchSettings"
 import { randomColor } from "@/ts/color"
+import { v4 as uuidv4 } from "uuid"
 
 const { searchItems } = storeToRefs(useSearchItems())
 const { searchItemsFromUrl } = useSearchItems()
@@ -20,7 +21,7 @@ const { searchSettingsFromUrl } = useSearchSettings()
 const collapsed = ref<boolean>(searchItems.value.length > 3)
 
 function add() {
-    searchItems.value.push({ color: randomColor(), visible: true, uuid: crypto.randomUUID() })
+    searchItems.value.push({ color: randomColor(), visible: true, uuid: uuidv4() })
 }
 
 if (new URLSearchParams(window.location.search).size > 0) {

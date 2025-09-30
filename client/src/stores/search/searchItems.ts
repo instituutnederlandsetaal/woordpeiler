@@ -1,6 +1,7 @@
 import { invalidSearchItem, type SearchItem } from "@/types/search"
 import { type SearchTerm } from "@/types/searchTerm"
 import { randomColor } from "@/ts/color"
+import { v4 as uuidv4 } from "uuid"
 
 /** list of words that will be used as search items when querying frequency data. */
 export const useSearchItems = defineStore("searchItems", () => {
@@ -41,12 +42,12 @@ export const useSearchItems = defineStore("searchItems", () => {
                         language: language?.split(split)[i] || undefined,
                         color: colors?.split(split)[i] || randomColor(),
                         visible: i < 3 ? true : false,
-                        uuid: crypto.randomUUID(),
+                        uuid: uuidv4(),
                     }
                 })
             }
         } catch {
-            searchItems.value = [{ color: randomColor(), visible: true, uuid: crypto.randomUUID() }]
+            searchItems.value = [{ color: randomColor(), visible: true, uuid: uuidv4() }]
         }
     }
 

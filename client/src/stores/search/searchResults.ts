@@ -11,6 +11,7 @@ import { toTimestamp } from "@/ts/date"
 import { plausibleWordsEvent } from "@/ts/plausible"
 import { config } from "@/main"
 import { useLanguages } from "@/stores/fetch/languages"
+import { v4 as uuidv4 } from "uuid"
 
 export const useSearchResults = defineStore("searchResults", () => {
     // Fields
@@ -100,7 +101,7 @@ export const useSearchResults = defineStore("searchResults", () => {
             .then((res) => {
                 const dataset: GraphItem = {
                     searchItem: JSON.parse(JSON.stringify(item)),
-                    uuid: crypto.randomUUID(),
+                    uuid: uuidv4(),
                     data: {
                         abs: res.data.map((i) => ({ x: i[0] * 1000, y: i[1] })),
                         rel: res.data.map((i) => ({ x: i[0] * 1000, y: i[2] })),
