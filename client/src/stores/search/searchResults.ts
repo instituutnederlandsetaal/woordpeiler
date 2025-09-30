@@ -142,9 +142,7 @@ export const useSearchResults = defineStore("searchResults", () => {
             end: toTimestamp(searchSettings.value.endDate),
         }
         // router without history (needs timeout to avoid too many history calls error)
-        setTimeout(() => {
-            router.replace({ query: { ...router.currentRoute.value.query, ...paramsObj } })
-        }, 1000)
+        router.push({ query: { ...router.currentRoute.value.query, ...paramsObj }, replace: true })
     }
     // Lifecycle
     /** ensure that color and visibility updates to search items also update the result items */

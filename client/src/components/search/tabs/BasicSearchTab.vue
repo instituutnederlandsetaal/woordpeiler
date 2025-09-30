@@ -8,7 +8,12 @@ import type { SearchItem } from "@/types/search"
 import type { SearchTerm } from "@/types/searchTerm"
 
 const item = defineModel<SearchItem>()
-const wordform = ref<string | undefined>(item.value?.terms?.map((t: SearchTerm) => t.wordform).join(" "))
+const wordform = ref<string | undefined>(
+    item.value?.terms
+        ?.map((t: SearchTerm) => t.wordform)
+        .filter(Boolean)
+        .join(" "),
+)
 watch(wordform, (newVal) => {
     if (newVal) {
         item.value = {

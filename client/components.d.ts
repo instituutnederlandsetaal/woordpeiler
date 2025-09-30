@@ -12,7 +12,7 @@ declare module 'vue' {
     AccordionContent: typeof import('primevue/accordioncontent')['default']
     AccordionHeader: typeof import('primevue/accordionheader')['default']
     AccordionPanel: typeof import('primevue/accordionpanel')['default']
-    AdvancedNGramInput: typeof import('./src/components/search/inputs/ngram/AdvancedNGramInput.vue')['default']
+    AdvancedNgramInput: typeof import('./src/components/search/inputs/ngram/AdvancedNgramInput.vue')['default']
     AdvancedSearchTab: typeof import('./src/components/search/tabs/AdvancedSearchTab.vue')['default']
     AdvancedWordInput: typeof import('./src/components/search/inputs/AdvancedWordInput.vue')['default']
     AppFooter: typeof import('./src/components/layout/AppFooter.vue')['default']

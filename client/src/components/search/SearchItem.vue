@@ -77,7 +77,12 @@ const tab = ref<string>("0")
 
 const item = defineModel<SearchItem>()
 const basicItem = ref<SearchItem>({
-    terms: structuredClone(toRaw(item.value?.terms))?.map((t) => ({ ...t, lemma: undefined, pos: undefined })),
+    terms: (() => {
+        const terms = structuredClone(toRaw(item.value?.terms))
+            ?.map((t) => ({ ...t, lemma: undefined, pos: undefined }))
+            .filter((t) => Object.values(t).filter(Boolean).length)
+        return terms && terms.length ? terms : undefined
+    })(),
 })
 const advancedItem = ref<SearchItem>({ terms: structuredClone(toRaw(item.value?.terms)) })
 
@@ -105,12 +110,9 @@ onMounted(() => {
 })
 
 function tabChanged(value: string) {
-    console.log("tab changed to", value)
     if (value === "0") {
         // switch to basic tab
-        console.log("switching to basic tab")
         const override = { ...item.value, ...basicItem.value }
-        console.log("override:", override)
         item.value = override
     } else {
         // switch to advanced tab
