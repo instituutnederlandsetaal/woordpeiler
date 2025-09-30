@@ -9,7 +9,7 @@ import { constructTooltipLink } from "@/ts/blacklab/blacklab"
 import { config } from "@/main"
 
 export function tooltipHtml(point: GraphItem, settings: SearchSettings): string {
-    const name = searchToString(point.searchItem).split("–")[0]
+    const name = searchToString(point.searchItem)
     let language_or_source
     if (point.searchItem.language) {
         language_or_source = point.searchItem.language

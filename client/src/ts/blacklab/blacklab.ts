@@ -3,6 +3,7 @@ import { type GraphItem } from "@/types/graph"
 import { type SearchSettings, IntervalType } from "@/types/searchSettings"
 import * as d3 from "d3"
 import { config } from "@/main"
+import type { SearchTerm } from "@/types/searchTerm"
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
@@ -58,51 +59,28 @@ function getBaseURL(): string {
 }
 
 function constructBLPatt(item: SearchItem) {
-    // assume the number of n-grams in lemma, word is equal
-    const lemmas = item.lemma?.split(" ")
-    const words = item.wordform?.split(" ")
-    const posses = item.pos?.split(" ")
-    const n = lemmas?.length || words?.length
-
-    let patt = ""
-    for (let i = 0; i < n; i++) {
-        const singleItem: SearchItem = { lemma: lemmas?.[i], wordform: words?.[i], pos: posses?.[i] }
-        patt += constructSingleBLPatt(singleItem)
-    }
-    return patt
+    // blacklab pattern format:
+    // [word=l"hello" & pos=l"int"][lemma=l"world"]
+    // Or without 'l' if regex:
+    return item.terms.map(constructSingleBLPatt).join("")
 }
 
-function constructSingleBLPatt(item: SearchItem) {
-    const pattTerms = { lemma: item.lemma, word: item.wordform }
-    // Add pos separately because only one can be present
-    if (item.pos?.includes("(")) {
-        pattTerms[config.blacklab.annotations.pos] = item.pos
-    } else {
-        pattTerms[config.blacklab.annotations.poshead] = item.pos
-    }
+function constructSingleBLPatt(term: SearchTerm): string {
+    const wordform = constructSingleBLPattProp(term, "wordform", "word")
+    const lemma = constructSingleBLPattProp(term, "lemma", "lemma")
+    const pos = constructSingleBLPattProp(term, "pos", "pos")
 
-    // Remove falsy values, and blank strings (could be tabs and spaces)
-    Object.keys(pattTerms).forEach(
-        (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key],
-    )
-    const isRegex =
-        item.wordform?.includes("*") ||
-        item.lemma?.includes("*") ||
-        item.wordform?.includes("?") ||
-        item.lemma?.includes("?")
-    if (isRegex) {
-        if (pattTerms["word"]) {
-            pattTerms["word"] = toBLRegex(item.wordform)
-        }
-        if (pattTerms["lemma"]) {
-            pattTerms["lemma"] = toBLRegex(item.lemma)
-        }
-    }
-    const literal = isRegex ? "" : "l"
-    const patt = Object.entries(pattTerms)
-        .map(([key, value]) => `${key}=${literal}"${value}"`)
-        .join("&")
+    const patt = [wordform, lemma, pos].filter(Boolean).join("&")
     return `[${patt}]`
+}
+
+function constructSingleBLPattProp(term: SearchTerm, prop: string, blName: string): string | undefined {
+    const propValue = term[prop as keyof SearchTerm]
+    if (!propValue) return undefined
+    const isRegex = propValue.includes("*") || propValue.includes("?")
+    const literal = isRegex ? "" : "l"
+    const value = isRegex ? toBLRegex(propValue) : propValue
+    return `${blName}=${literal}"${value}"`
 }
 
 function toBLRegex(s: string): string {
