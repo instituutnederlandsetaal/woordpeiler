@@ -57,7 +57,7 @@ export const useSearchResults = defineStore("searchResults", () => {
             (i: SearchItem) => !searchResults.value.map((x) => x.searchItem).some((j) => equalSearchItem(i, j)),
         )
         // search for each search item
-        toBeSearched.forEach((ds) => {
+        toBeSearched.forEach((ds, idx) => {
             if (searchSettings.value.languageSplit && !(ds.language || ds.source)) {
                 // split by language, but only if language or source is not set
                 const colors = config.search.autosplit.colors
@@ -70,8 +70,10 @@ export const useSearchResults = defineStore("searchResults", () => {
                 //     getFrequency(ds)
                 // }, 100)
             } else {
-                // only one search
-                getFrequency(ds)
+                setTimeout(() => {
+                    // only one search
+                    getFrequency(ds)
+                }, idx * 100) // space out
             }
         })
         // only show loading screen and send to plausible if we're searching
