@@ -18,17 +18,24 @@ const { searchItems } = storeToRefs(useSearchItems())
 const { searchItemsFromUrl } = useSearchItems()
 const { search } = useSearchResults()
 const { searchSettingsFromUrl } = useSearchSettings()
-const collapsed = ref<boolean>(searchItems.value.length > 3)
+const collapsed = ref<boolean>(false)
 
 function add() {
     searchItems.value.push({ color: randomColor(), visible: true, uuid: uuidv4() })
 }
 
-if (new URLSearchParams(window.location.search).size > 0) {
-    searchItemsFromUrl()
-    searchSettingsFromUrl()
-    search()
-}
+onMounted(() => {
+    if (new URLSearchParams(window.location.search).size > 0) {
+        searchItemsFromUrl()
+        searchSettingsFromUrl()
+        search()
+    }
+    // if there are more than 3 search items
+    // default to collapsed panels
+    if (searchItems.value.length > 3) {
+        collapsed.value = true
+    }
+})
 </script>
 
 <style scoped lang="scss">
