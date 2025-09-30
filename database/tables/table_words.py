@@ -25,19 +25,12 @@ class WordsTableBuilder(TableBuilder):
             )                    
         """).format(words=self.words)
 
-        wordform_ids: str = ",".join(
-            [f"(wordform_ids[{i + 1}])" for i in range(self.ngram)]
-        )
-        lemma_ids: str = ",".join([f"(lemma_ids[{i + 1}])" for i in range(self.ngram)])
         self.add_indices = SQL("""
             CREATE INDEX ON {words} (id); -- for trends
-            CREATE INDEX ON {words} ({wordform_ids}) INCLUDE (id); -- for frequency queries
-            CREATE INDEX ON {words} ({lemma_ids}) INCLUDE (id); -- for frequency queries
-        """).format(
-            words=self.words,
-            wordform_ids=SQL(wordform_ids),
-            lemma_ids=SQL(lemma_ids),
-        )
+            CREATE INDEX ON {words} USING GIN (wordform_ids); -- for frequency
+            CREATE INDEX ON {words} USING GIN (lemma_ids); -- for frequency
+            CREATE INDEX ON {words} USING GIN (pos_ids); -- for frequency
+        """).format(words=self.words)
 
     def create(self):
         execute_query(self.create_table)

@@ -1,4 +1,5 @@
-import { invalidSearchItem, type SearchItem, type SearchTerm } from "@/types/search"
+import { invalidSearchItem, type SearchItem } from "@/types/search"
+import { type SearchTerm } from "@/types/searchTerm"
 import { randomColor } from "@/ts/color"
 
 /** list of words that will be used as search items when querying frequency data. */

@@ -44,7 +44,12 @@ class FrequencyQuery(QueryBuilder):
 
         self.words_table = Identifier(f"words_{self.ngram}")
         self.freq_table = Identifier(f"frequencies_{self.ngram}")
-        self.word_filter = FrequencyQuery.get_word_filter(wordform, lemma, pos, poshead)
+        self.word_filter = FrequencyQuery.get_word_position_filter(
+            wordform, lemma, pos, poshead
+        )
+        self.word_array_filter = FrequencyQuery.get_word_array_filter(
+            wordform, lemma, pos, poshead
+        )
         self.source_filter = FrequencyQuery.get_source_filter(source, language)
         self.size_table = FrequencyQuery.get_size_table(self.source_filter, self.ngram)
         self.date_filter = QueryBuilder.get_date_filter(
@@ -124,7 +129,49 @@ class FrequencyQuery(QueryBuilder):
         return source_filter
 
     @staticmethod
-    def get_word_filter(
+    def get_word_array_filter(
+        wordform: Optional[str],
+        lemma: Optional[str],
+        pos: Optional[str],
+        poshead: Optional[str],
+    ) -> Composable:
+        """
+        Create filter for arrays. Example:
+        wordform_ids && ARRAY(SELECT id FROM wordforms WHERE wordform = 'een');
+        """
+        # verify regex usage
+        FrequencyQuery.limit_regex(wordform, lemma, pos, poshead)
+        filters: list[Composable] = []
+        for table, ids, column, values in [
+            ("wordforms", "wordform_ids", "wordform", wordform),
+            ("lemmas", "lemma_ids", "lemma", lemma),
+            ("posses", "pos_ids", "pos", pos),
+            ("posses", "pos_ids", "poshead", poshead),
+        ]:
+            if values is not None:
+                for i, value in enumerate(values.strip().split(" ")):
+                    if value == "[]":  # the empty term
+                        continue  # ignore
+                    equals_like = (
+                        SQL("LIKE") if ("*" in value or "?" in value) else SQL("=")
+                    )
+                    value = value.replace("*", "%")
+                    value = value.replace("?", "_")
+                    filter = SQL(
+                        "{ids} && ARRAY(SELECT id FROM {table} WHERE {column} {equals_like} {value})"
+                    ).format(
+                        i=Literal(i + 1),
+                        ids=Identifier(ids),
+                        column=Identifier(column),
+                        table=Identifier(table),
+                        value=Literal(value),
+                        equals_like=equals_like,
+                    )
+                    filters.append(filter)
+        return SQL(" AND ").join(filters)
+
+    @staticmethod
+    def get_word_position_filter(
         wordform: Optional[str],
         lemma: Optional[str],
         pos: Optional[str],
@@ -141,6 +188,8 @@ class FrequencyQuery(QueryBuilder):
         ]:
             if values is not None:
                 for i, value in enumerate(values.strip().split(" ")):
+                    if value == "[]":  # the empty term
+                        continue  # ignore
                     equals_like = (
                         SQL("LIKE") if ("*" in value or "?" in value) else SQL("=")
                     )
@@ -158,7 +207,7 @@ class FrequencyQuery(QueryBuilder):
                     )
                     filters.append(filter)
 
-        return SQL("WHERE ") + SQL(" AND ").join(filters)
+        return SQL(" AND ").join(filters)
 
     @staticmethod
     def limit_regex(
@@ -180,8 +229,11 @@ class FrequencyQuery(QueryBuilder):
         query = SQL(
             """
             -- get the word ids
-            WITH word_ids AS (
-                SELECT id FROM {words_table} {word_filter}
+            WITH word_array_ids AS (
+                SELECT * FROM {words_table} WHERE {word_array_filter}
+            ),
+            word_ids AS (
+                SELECT id FROM word_array_ids WHERE {word_filter}
             ),
             -- get corresponding frequencies
             frequencies_data AS (
@@ -227,5 +279,6 @@ class FrequencyQuery(QueryBuilder):
             date_filter=self.date_filter,
             time_bucket=self.interval,
             word_filter=self.word_filter,
+            word_array_filter=self.word_array_filter,
         )
         return ExecutableQuery(cursor, query)

@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchTerm } from "@/types/search"
+import type { SearchTerm } from "@/types/searchTerm"
 
 const item = defineModel<SearchTerm>()
 </script>

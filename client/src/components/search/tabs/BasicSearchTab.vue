@@ -4,7 +4,8 @@
 
 <script setup lang="ts">
 import { config } from "@/main"
-import type { SearchItem, SearchTerm } from "@/types/search"
+import type { SearchItem } from "@/types/search"
+import type { SearchTerm } from "@/types/searchTerm"
 
 const item = defineModel<SearchItem>()
 const wordform = ref<string | undefined>(item.value?.terms?.map((t: SearchTerm) => t.wordform).join(" "))

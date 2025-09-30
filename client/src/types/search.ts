@@ -1,4 +1,5 @@
 import { config } from "@/main"
+import { type SearchTerm, termToString, equalTerm } from "@/types/searchTerm"
 
 export interface SearchItem {
     terms?: SearchTerm[]
@@ -10,17 +11,15 @@ export interface SearchItem {
     uuid: string
 }
 
-export interface SearchTerm {
-    wordform?: string
-    pos?: string
-    lemma?: string
-}
-
-export function termToString(t: SearchTerm): string | undefined {
+export function termPropToString(item: SearchItem, prop: keyof SearchTerm): string | undefined {
+    if (item.terms?.every((t) => !t[prop])) {
+        return undefined
+    }
     return (
-        Object.values({ w: t.wordform, l: t.lemma ? `‘${t.lemma}’` : undefined, p: t.pos })
-            .filter(Boolean)
-            .join("–") || undefined
+        item.terms
+            ?.map((t) => t[prop])
+            .map((s) => s || "[]")
+            .join(" ") || undefined
     )
 }
 
@@ -36,15 +35,11 @@ export function equalSearchItem(a: SearchItem, b: SearchItem): boolean {
         return false
     }
     for (let i = 0; i < a.terms?.length; i++) {
-        if (!equalSearchTerm(a.terms[i], b.terms[i])) {
+        if (!equalTerm(a.terms[i], b.terms[i])) {
             return false
         }
     }
     return a.source == b.source && a.language == b.language
-}
-
-export function equalSearchTerm(a: SearchTerm, b: SearchTerm): boolean {
-    return a.wordform == b.wordform && a.pos == b.pos && a.lemma == b.lemma
 }
 
 export function invalidNgram(item: SearchItem): boolean {
@@ -103,18 +98,6 @@ export function invalidSearchItem(item: SearchItem): boolean {
     }
     // Truthy, but check ngram and wildcards too.
     if (invalidNgram(item) || invalidWildcardsUsage(item)) {
-        return true // invalid
-    }
-    return false // valid
-}
-
-export function invalidSearchTerm(term: SearchTerm): boolean {
-    // Either lemma or wordform must be truthy.
-    if (!term.wordform && !term.lemma) {
-        return true // invalid
-    }
-    // Truthy, but check ngram and wildcards too.
-    if (invalidNgramText(term.wordform, 1) || invalidNgramText(term.lemma, 1)) {
         return true // invalid
     }
     return false // valid

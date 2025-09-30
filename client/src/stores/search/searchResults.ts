@@ -2,7 +2,7 @@
 import { useSearchSettings } from "@/stores/search/searchSettings"
 import { useSearchItems } from "@/stores/search/searchItems"
 // Types & API
-import { type SearchItem, equalSearchItem, searchToString } from "@/types/search"
+import { type SearchItem, equalSearchItem, searchToString, termPropToString } from "@/types/search"
 import { type GraphItem } from "@/types/graph"
 import { type SearchSettings, equalSearchSettings, toIntervalStr } from "@/types/searchSettings"
 import * as SearchAPI from "@/api/search"
@@ -83,21 +83,9 @@ export const useSearchResults = defineStore("searchResults", () => {
         // construct search request, partly from unsanitized user input
         const searchRequest: SearchAPI.SearchRequest = {
             // unsanitized user input
-            w:
-                item.terms
-                    ?.map((t) => t.wordform)
-                    .filter(Boolean)
-                    .join(" ") || undefined,
-            l:
-                item.terms
-                    ?.map((t) => t.lemma)
-                    .filter(Boolean)
-                    .join(" ") || undefined,
-            p:
-                item.terms
-                    ?.map((t) => t.pos)
-                    .filter(Boolean)
-                    .join(" ") || undefined,
+            w: termPropToString(item, "wordform"),
+            l: termPropToString(item, "lemma"),
+            p: termPropToString(item, "pos"),
             // fixed values
             s: item.source,
             v: item.language,
@@ -130,15 +118,10 @@ export const useSearchResults = defineStore("searchResults", () => {
         return joinItemStrs(itemStrs)
     }
     function searchTermToUrlStr(items: SearchItem[], prop: string): string | undefined {
-        const itemStrs = items.map(
-            (i) =>
-                i.terms
-                    ?.map((t) => t[prop])
-                    .filter(Boolean)
-                    .join(" ") || undefined,
-        )
+        const itemStrs = items.map((i) => termPropToString(i, prop))
         return joinItemStrs(itemStrs)
     }
+
     function joinItemStrs(itemStrs: string[]) {
         return itemStrs.every((i) => !i) ? undefined : itemStrs.join(",")
     }

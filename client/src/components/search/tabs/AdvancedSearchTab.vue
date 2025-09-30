@@ -1,9 +1,9 @@
 <template>
     <SimpleNgramInput v-model="ngram" />
-    <Accordion v-for="(term, idx) in terms" :key="idx" :value="idx" :class="{ invalid: invalidSearchTerm(term) }">
+    <Accordion v-for="(term, idx) in terms" :key="idx" :value="idx" :class="{ invalid: invalidTerm(term) }">
         <AccordionPanel :value="0">
             <AccordionHeader
-                >Woord {{ idx + 1 }} {{ termToString(term) ? "&nbsp;" : "" }} {{ termToString(term) }}</AccordionHeader
+                >Woord {{ idx + 1 }}{{ termToString(term) ? ":" : "" }} {{ termToString(term) }}</AccordionHeader
             >
             <AccordionContent>
                 <SearchTermValidation :term="term" />
@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { type SearchItem, type SearchTerm, invalidSearchTerm } from "@/types/search"
-import { termToString } from "@/types/search"
+import { type SearchItem } from "@/types/search"
+import { type SearchTerm, invalidTerm, termToString } from "@/types/searchTerm"
 
 const item = defineModel<SearchItem>()
 

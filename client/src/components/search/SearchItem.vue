@@ -77,10 +77,7 @@ const tab = ref<string>("0")
 
 const item = defineModel<SearchItem>()
 const basicItem = ref<SearchItem>({
-    terms: structuredClone(toRaw(item.value?.terms))?.forEach((t) => {
-        t.lemma = undefined
-        t.pos = undefined
-    }),
+    terms: structuredClone(toRaw(item.value?.terms))?.map((t) => ({ ...t, lemma: undefined, pos: undefined })),
 })
 const advancedItem = ref<SearchItem>({ terms: structuredClone(toRaw(item.value?.terms)) })
 
