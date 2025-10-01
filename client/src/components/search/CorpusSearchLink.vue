@@ -3,7 +3,7 @@
         v-if="!invalidSearchItem(item)"
         :href="constructSearchLink(item, searchSettings)"
         target="_blank"
-        @click="plausibleCorpus('searchterm')"
+        @click="plausibleCorpus('searchterm', item)"
     >
         {{ searchCorpusText }}
     </a>

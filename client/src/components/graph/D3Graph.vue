@@ -204,7 +204,7 @@ onMounted(() => {
                 .attr("xlink:href", chnLink)
                 .attr("target", "_blank")
                 // also add a onclick event to log to plausible
-                .on("click", () => plausibleCorpus("legend"))
+                .on("click", () => plausibleCorpus("legend", series.searchItem))
                 .append("text")
                 .text(searchToString(series.searchItem))
                 .style("fill", "black")
@@ -292,7 +292,7 @@ onMounted(() => {
                 tooltip.style("visibility", "visible")
                 tooltip.html(tooltipHtml(d, lastSearchSettings.value))
                 // the tooltip html will contain a link. Add an onclick event to log to plausible
-                tooltip.select("a").on("click", () => plausibleCorpus("tooltip"))
+                tooltip.select("a").on("click", () => plausibleCorpus("tooltip", d.searchItem))
             })
             .on("mousemove", function (event, d) {
                 showTooltip(event, d)
