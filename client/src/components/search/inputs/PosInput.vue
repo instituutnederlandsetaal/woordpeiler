@@ -61,4 +61,13 @@ const pos = defineModel<string>({
         font-size: 0.9rem;
     }
 }
+
+:deep(.p-datatable-table) {
+    tr {
+        td,
+        th {
+            padding: 0.25rem 0 !important;
+        }
+    }
+}
 </style>
