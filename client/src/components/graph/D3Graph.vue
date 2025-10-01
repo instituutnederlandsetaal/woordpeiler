@@ -15,6 +15,7 @@ import { searchToString } from "@/types/search"
 import { type GraphItem } from "@/types/graph"
 import { tooltipHtml } from "@/ts/tooltip"
 import { constructSearchLink } from "@/ts/blacklab/blacklab"
+import { plausibleCorpus } from "@/ts/plausible"
 
 // Stores
 const { searchResults, lastSearchSettings } = storeToRefs(useSearchResults())
@@ -202,6 +203,8 @@ onMounted(() => {
                 .append("a")
                 .attr("xlink:href", chnLink)
                 .attr("target", "_blank")
+                // also add a onclick event to log to plausible
+                .on("click", () => plausibleCorpus("legend"))
                 .append("text")
                 .text(searchToString(series.searchItem))
                 .style("fill", "black")
@@ -288,6 +291,8 @@ onMounted(() => {
                 if (tooltipVisible) return
                 tooltip.style("visibility", "visible")
                 tooltip.html(tooltipHtml(d, lastSearchSettings.value))
+                // the tooltip html will contain a link. Add an onclick event to log to plausible
+                tooltip.select("a").on("click", () => plausibleCorpus("tooltip"))
             })
             .on("mousemove", function (event, d) {
                 showTooltip(event, d)
@@ -514,6 +519,9 @@ function resetZoom() {
 
 .legend-item {
     user-select: none;
+    text:hover {
+        text-decoration: underline;
+    }
 }
 
 .overlay {

@@ -1,5 +1,10 @@
 <template>
-    <a v-if="!invalidSearchItem(item)" :href="constructSearchLink(item, searchSettings)" target="_blank">
+    <a
+        v-if="!invalidSearchItem(item)"
+        :href="constructSearchLink(item, searchSettings)"
+        target="_blank"
+        @click="plausibleCorpus('searchterm')"
+    >
         {{ searchCorpusText }}
     </a>
 </template>
@@ -10,6 +15,7 @@ import { constructSearchLink } from "@/ts/blacklab/blacklab"
 import { useSearchSettings } from "@/stores/search/searchSettings"
 import { toYear } from "@/ts/date"
 import { invalidSearchItem, type SearchItem } from "@/types/search"
+import { plausibleCorpus } from "@/ts/plausible"
 
 const { item } = defineProps<{ item: SearchItem }>()
 const { searchSettings } = storeToRefs(useSearchSettings())

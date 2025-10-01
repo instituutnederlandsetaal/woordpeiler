@@ -33,3 +33,7 @@ export function plausibleWordsEvent(goal: string, settings: SearchSettings, item
     }
     window.plausible(goal, { props })
 }
+
+export function plausibleCorpus(type: "tooltip" | "legend" | "searchterm") {
+    window.plausible("corpus", { props: { type } })
+}
