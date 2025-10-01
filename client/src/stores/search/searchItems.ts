@@ -31,20 +31,22 @@ export const useSearchItems = defineStore("searchItems", () => {
         ]
         try {
             if (numSearchItems.length > 0) {
-                searchItems.value = numSearchItems.map((i) => {
-                    const wordform = words?.split(split)[i]?.replace(/%2C/g, ",")?.trim() || undefined
-                    const lemma = lemmas?.split(split)[i]?.replace(/%2C/g, ",")?.trim() || undefined
-                    const pos = posses?.split(split)[i]?.trim() || undefined
-                    const terms = toTerm(wordform, lemma, pos)
-                    return {
-                        terms: terms,
-                        source: source?.split(split)[i] || undefined,
-                        language: language?.split(split)[i] || undefined,
-                        color: colors?.split(split)[i] || randomColor(),
-                        visible: i < 3 ? true : false,
-                        uuid: uuidv4(),
-                    }
-                })
+                searchItems.value = numSearchItems
+                    .map((i) => {
+                        const wordform = words?.split(split)[i]?.replace(/%2C/g, ",")?.trim() || undefined
+                        const lemma = lemmas?.split(split)[i]?.replace(/%2C/g, ",")?.trim() || undefined
+                        const pos = posses?.split(split)[i]?.trim() || undefined
+                        const terms = toTerm(wordform, lemma, pos)
+                        return {
+                            terms: terms,
+                            source: source?.split(split)[i] || undefined,
+                            language: language?.split(split)[i] || undefined,
+                            color: colors?.split(split)[i] || randomColor(),
+                            visible: i < 3 ? true : false,
+                            uuid: uuidv4(),
+                        }
+                    })
+                    .filter((item) => !invalidSearchItem(item))
             }
         } catch {
             searchItems.value = [{ color: randomColor(), visible: true, uuid: uuidv4() }]
@@ -58,6 +60,7 @@ export const useSearchItems = defineStore("searchItems", () => {
             lemma?.split(split).length || 0,
             pos?.split(split).length || 0,
         )
+        if (ngram === 0) return undefined
         const terms: SearchTerm[] = []
         for (let i = 0; i < ngram; i++) {
             const term: SearchTerm = {

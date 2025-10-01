@@ -29,6 +29,9 @@ onMounted(() => {
         searchItemsFromUrl()
         searchSettingsFromUrl()
         search()
+    } else {
+        // set default
+        searchItems.value = [{ color: randomColor(), visible: true, uuid: uuidv4() }]
     }
     // if there are more than 3 search items
     // default to collapsed panels
