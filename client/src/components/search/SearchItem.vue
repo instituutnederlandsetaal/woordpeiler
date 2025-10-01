@@ -44,7 +44,7 @@
         <Tabs :value="tab" @update:value="tabChanged">
             <TabList>
                 <Tab value="0">Basiszoeken</Tab>
-                <Tab value="1">Geavanceerd</Tab>
+                <Tab value="1">Geavanceerd zoeken</Tab>
             </TabList>
             <TabPanels>
                 <TabPanel value="0" tabindex="-1">

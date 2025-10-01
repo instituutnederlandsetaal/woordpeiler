@@ -8,7 +8,7 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         intervalType: initTimeBucket().type,
         intervalLength: initTimeBucket().size,
         startDate: new Date(config.period.start),
-        endDate: config.period.end ? new Date(config.period.end) : toUTCDate(new Date()),
+        endDate: getEndDate(),
         frequencyType: "rel",
         languageSplit: false,
     })
@@ -29,6 +29,9 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         searchSettings.value.startDate = new Date(config.period.start)
         searchSettings.value.endDate = config.period.end ? new Date(config.period.end) : toUTCDate(new Date())
     }
+    function getEndDate() {
+        return config.period.end ? new Date(config.period.end) : toUTCDate(new Date())
+    }
     function searchSettingsFromUrl() {
         const params = new URLSearchParams(window.location.search)
         const interval = params.get("i")
@@ -47,6 +50,9 @@ export const useSearchSettings = defineStore("searchSettings", () => {
                 searchSettings.value.intervalType = interval[0]
                 if (legacyIntervalLength) searchSettings.value.intervalLength = parseInt(legacyIntervalLength)
             }
+        } else {
+            searchSettings.value.intervalType = initTimeBucket().type
+            searchSettings.value.intervalLength = initTimeBucket().size
         }
         /** dateStr is either a unix time stamp or a date string like YYYY-MM-DD */
         function toDate(dateStr: string): Date {
@@ -54,8 +60,8 @@ export const useSearchSettings = defineStore("searchSettings", () => {
             return new Date(parseInt(dateStr) * 1000)
         }
 
-        if (startDate) searchSettings.value.startDate = toDate(startDate)
-        if (endDate) searchSettings.value.endDate = toDate(endDate)
+        searchSettings.value.startDate = startDate ? toDate(startDate) : new Date(config.period.start)
+        searchSettings.value.endDate = endDate ? toDate(endDate) : getEndDate()
 
         if (frequencyType) searchSettings.value.frequencyType = frequencyType
     }

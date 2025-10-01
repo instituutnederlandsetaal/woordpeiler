@@ -1,5 +1,5 @@
 import { config } from "@/main"
-import { type SearchTerm, termToString, equalTerm } from "@/types/searchTerm"
+import { type SearchTerm, termToString, equalTerm, invalidTerm } from "@/types/searchTerm"
 
 export interface SearchItem {
     terms?: SearchTerm[]
@@ -17,7 +17,7 @@ export function termPropToString(item: SearchItem, prop: keyof SearchTerm): stri
     }
     return (
         item.terms
-            ?.map((t) => t[prop])
+            ?.map((t) => t[prop]?.toLowerCase())
             .map((s) => s || "[]")
             .join(" ") || undefined
     )
@@ -95,6 +95,12 @@ export function invalidSearchItem(item: SearchItem): boolean {
     if (!item.terms) {
         // todo not just pos
         return true // invalid
+    }
+    // Each term must be valid.
+    for (const term of item.terms) {
+        if (invalidTerm(term)) {
+            return true // invalid
+        }
     }
     // Truthy, but check ngram and wildcards too.
     if (invalidNgram(item) || invalidWildcardsUsage(item)) {

@@ -32,9 +32,9 @@ export const useSearchItems = defineStore("searchItems", () => {
         try {
             if (numSearchItems.length > 0) {
                 searchItems.value = numSearchItems.map((i) => {
-                    const wordform = words?.split(split)[i] || undefined
-                    const lemma = lemmas?.split(split)[i] || undefined
-                    const pos = posses?.split(split)[i] || undefined
+                    const wordform = words?.split(split)[i]?.replace(/%2C/g, ",")?.trim() || undefined
+                    const lemma = lemmas?.split(split)[i]?.replace(/%2C/g, ",")?.trim() || undefined
+                    const pos = posses?.split(split)[i]?.trim() || undefined
                     const terms = toTerm(wordform, lemma, pos)
                     return {
                         terms: terms,

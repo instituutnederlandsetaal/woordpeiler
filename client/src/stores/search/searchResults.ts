@@ -73,7 +73,7 @@ export const useSearchResults = defineStore("searchResults", () => {
                 setTimeout(() => {
                     // only one search
                     getFrequency(ds)
-                }, idx * 100) // space out
+                }, idx * 150) // space out
             }
         })
         // only show loading screen and send to plausible if we're searching
@@ -121,7 +121,7 @@ export const useSearchResults = defineStore("searchResults", () => {
         return joinItemStrs(itemStrs)
     }
     function searchTermToUrlStr(items: SearchItem[], prop: string): string | undefined {
-        const itemStrs = items.map((i) => termPropToString(i, prop))
+        const itemStrs = items.map((i) => termPropToString(i, prop)?.replace(/,/g, "%2C"))
         return joinItemStrs(itemStrs)
     }
 

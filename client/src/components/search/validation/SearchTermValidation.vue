@@ -2,7 +2,7 @@
     <section>
         <p v-if="!term.wordform && !term.lemma"><strong> Voer een woord in. </strong></p>
         <p v-if="invalidNgramText(term.wordform, 1) || invalidNgramText(term.lemma, 1)">
-            <strong> Zoek op één woord of pas het aantal woorden aan. </strong>
+            <strong> Voer één woord in per kopje. </strong>
         </p>
         <p v-if="invalidStarWildcard(dummyItem)">
             <strong> Voer minimaal 4 andere tekens in bij een *-joker. </strong>
@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { invalidNgramText, invalidStarWildcard, invalidQuestionWildcard, type SearchItem } from "@/types/search"
+import type { SearchTerm } from "@/types/searchTerm"
 
 const dummyItem = computed<SearchItem>(() => ({ terms: [term] }))
 const { term } = defineProps<{ term: SearchTerm }>()
