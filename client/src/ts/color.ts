@@ -1,5 +1,8 @@
 // https://stackoverflow.com/a/54014428
 // input: h in [0,360] and s,v in [0,1]
+
+import type { SearchItem } from "@/types/search"
+
 // output: hexstring
 function hsl2rgb(h: number, s: number, l: number): string {
     const a = s * Math.min(l, 1 - l)
@@ -14,6 +17,15 @@ function hsl2rgb(h: number, s: number, l: number): string {
 let lastUsedIndex = -1
 export function randomColor(): string {
     return colorScheme[++lastUsedIndex % colorScheme.length]
+}
+
+export function randomUnusedColor(items: SearchItem[]): string {
+    const usedColors = new Set(items.map((d) => d.color?.replace("#", "").toUpperCase()))
+    const available = colorScheme.filter((d) => !usedColors.has(d))
+    if (available.length === 0) {
+        return randomColor() // tough luck
+    }
+    return available[0]
 }
 
 export const colorScheme = [

@@ -11,7 +11,7 @@
 import { useSearchItems } from "@/stores/search/searchItems"
 import { useSearchResults } from "@/stores/search/searchResults"
 import { useSearchSettings } from "@/stores/search/searchSettings"
-import { randomColor } from "@/ts/color"
+import { randomColor, randomUnusedColor } from "@/ts/color"
 import { v4 as uuidv4 } from "uuid"
 
 const { searchItems } = storeToRefs(useSearchItems())
@@ -21,7 +21,7 @@ const { searchSettingsFromUrl } = useSearchSettings()
 const collapsed = ref<boolean>(false)
 
 function add() {
-    searchItems.value.push({ color: randomColor(), visible: true, uuid: uuidv4() })
+    searchItems.value.push({ color: randomUnusedColor(searchItems.value), visible: true, uuid: uuidv4() })
 }
 
 onMounted(() => {
