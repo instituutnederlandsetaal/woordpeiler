@@ -34,7 +34,7 @@
         "@vue/tsconfig": "^0.8.1",
         "eslint": "^9.36.0",
         "eslint-plugin-vue": "^10.5.0",
-        "jiti": "^2.6.0",
+        "jiti": "^2.6.1",
         "npm-check-updates": "^19.0.0",
         "prettier": "^3.6.2",
         "sass-embedded": "^1.93.2",
