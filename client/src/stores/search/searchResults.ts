@@ -29,7 +29,7 @@ export const useSearchResults = defineStore("searchResults", () => {
 
         // save current search to local storage
         localStorage.setItem("searchItems", JSON.stringify(validSearchItems.value))
-        lastSearchSettings.value = JSON.parse(JSON.stringify(searchSettings.value))
+        lastSearchSettings.value = structuredClone(toRaw(searchSettings.value))
 
         // set them as url params
         setSearchParamsInUrl()
