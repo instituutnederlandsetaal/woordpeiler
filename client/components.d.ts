@@ -66,6 +66,7 @@ declare module 'vue' {
     Tabs: typeof import('primevue/tabs')['default']
     TrendResultsList: typeof import('./src/components/trends/TrendResultsList.vue')['default']
     TrendSettings: typeof import('./src/components/trends/TrendSettings.vue')['default']
+    WildcardHelp: typeof import('./src/components/help/WildcardHelp.vue')['default']
     WordInput: typeof import('./src/components/search/inputs/WordInput.vue')['default']
   }
 }

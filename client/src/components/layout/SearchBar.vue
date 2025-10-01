@@ -1,9 +1,18 @@
 <template>
     <search>
-        <h2>{{ config.app.slogan.toLowerCase() }}</h2>
+        <h2>/{{ config.app.slogan.toLowerCase() }}/</h2>
         <InputGroup>
+            <InputGroupAddon>
+                <HelpButton>
+                    <p>Met komma's kunt u zoektermen naast elkaar tonen.</p>
+                    <ul>
+                        <li><dfn>het weekeinde, het weekend</dfn> toont beide in de grafiek.</li>
+                    </ul>
+                    <WildcardHelp />
+                </HelpButton>
+            </InputGroupAddon>
             <InputText v-model.trim="word" placeholder="zoeken" @keyup.enter="doSearch" />
-            <Button severity="secondary" @click="doSearch" title="Zoeken" icon="pi pi-search" />
+            <Button class="search-btn" severity="secondary" @click="doSearch" title="Zoeken" icon="pi pi-search" />
         </InputGroup>
         <QuickNav />
     </search>
@@ -42,6 +51,7 @@ function doSearch() {
 search {
     background-color: $theme;
     width: 100%;
+    padding-top: 0.25rem;
     padding-bottom: 0.75rem;
     display: flex;
     justify-content: start;
@@ -55,6 +65,7 @@ search {
         font-weight: normal;
         font-size: 1.5rem;
         color: white;
+        text-align: center;
     }
 
     :deep(.p-inputgroup) {
@@ -64,7 +75,7 @@ search {
 
         .p-inputtext {
             font-size: 1.1rem;
-            border: 0;
+            // border: 0;
             outline: 0;
             &:focus-visible {
                 outline: 2px solid blue;
@@ -72,7 +83,7 @@ search {
             }
         }
 
-        .p-button {
+        .p-button.search-btn {
             border: 0;
             outline: 0;
             padding: 0 1.8rem;

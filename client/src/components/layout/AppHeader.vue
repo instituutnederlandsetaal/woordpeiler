@@ -12,7 +12,7 @@
                 </h1>
                 <h2>
                     <a href="https://ivdnt.org/" target="_blank" rel="noopener noreferrer">
-                        /&nbsp;instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal&nbsp;/
+                        /instituut&nbsp;voor&nbsp;de&nbsp;Nederlandse&nbsp;taal/
                     </a>
                 </h2>
             </figcaption>
