@@ -154,11 +154,16 @@ export const useSearchResults = defineStore("searchResults", () => {
             // for each search item, try to find the corresponding search result (using equalSearchItem())
             searchResults.value.forEach((result) => {
                 // find the corresponding search item
-                const searchItem = validSearchItems.value.find((item) => equalSearchItem(item, result.searchItem))
+                const searchItem = validSearchItems.value.find(
+                    (item: SearchItem) => item.uuid === result.searchItem.uuid,
+                )
                 // if found, update the color and visibility
                 if (searchItem) {
-                    result.searchItem.color = searchItem.color
                     result.searchItem.visible = searchItem.visible
+                    // language split overrides color
+                    if (!lastSearchSettings.value?.languageSplit) {
+                        result.searchItem.color = searchItem.color
+                    }
                 }
             })
         },

@@ -38,7 +38,7 @@
                         />
                     </fieldset>
 
-                    <fieldset style="margin: 0.2rem 0 -0.2rem 0">
+                    <fieldset class="lang-split">
                         <label>Splits automatisch op taalvariëteit</label>
                         <Checkbox v-model="searchSettings.languageSplit" binary />
                     </fieldset>
@@ -140,5 +140,9 @@ function closeTab() {
             margin-right: 0.25rem;
         }
     }
+}
+
+fieldset.lang-split {
+    padding: 0.5rem 0 0.15rem 0;
 }
 </style>
