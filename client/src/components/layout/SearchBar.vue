@@ -28,11 +28,13 @@ const router = useRouter()
 function doSearch() {
     // example word.value: "mark rutte, geert wilders"
     const props = {
-        query: word.value
-            .split(",")
-            .map((w) => w.trim().toLowerCase())
-            .sort()
-            .join(","),
+        query:
+            word.value
+                .split(",")
+                .map((w) => w.trim().toLowerCase())
+                .filter(Boolean)
+                .sort()
+                .join(",") || undefined,
     }
     window.plausible("zoekbalk", { props })
 
