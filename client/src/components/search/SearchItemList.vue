@@ -8,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+import { config } from "@/main"
 import { useSearchItems } from "@/stores/search/searchItems"
 import { useSearchResults } from "@/stores/search/searchResults"
 import { useSearchSettings } from "@/stores/search/searchSettings"
@@ -28,6 +29,10 @@ onMounted(() => {
     if (new URLSearchParams(window.location.search).size > 0) {
         searchItemsFromUrl()
         searchSettingsFromUrl()
+        search()
+    } else if (localStorage.getItem("version") === config.version && localStorage.getItem("searchItems")) {
+        // load from local storage
+        searchItems.value = JSON.parse(localStorage.getItem("searchItems"))
         search()
     } else {
         // set default
