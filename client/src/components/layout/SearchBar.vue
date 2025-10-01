@@ -17,6 +17,16 @@ const word = ref()
 const router = useRouter()
 
 function doSearch() {
+    // example word.value: "mark rutte, geert wilders"
+    const props = {
+        query: word.value
+            .split(",")
+            .map((w) => w.trim().toLowerCase())
+            .sort()
+            .join(","),
+    }
+    window.plausible("zoekbalk", { props })
+
     const interval = window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
     const intervalStr: string = interval.size + interval.type
     router.push({

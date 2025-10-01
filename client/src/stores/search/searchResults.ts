@@ -79,7 +79,7 @@ export const useSearchResults = defineStore("searchResults", () => {
         // only show loading screen and send to plausible if we're searching
         if (toBeSearched.length > 0) {
             isSearching.value = true
-            plausibleWordsEvent("grafiek", searchSettings.value, validSearchItems.value)
+            plausibleWordsEvent("zoeken", searchSettings.value, validSearchItems.value)
         }
     }
     function getFrequency(item: SearchItem) {

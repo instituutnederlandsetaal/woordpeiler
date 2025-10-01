@@ -1,12 +1,33 @@
 <template>
     <article :style="{ backgroundColor: spotlight.color }">
-        <router-link v-if="spotlight.graph || spotlight.words" class="spotlight-link" :to="getGraphUrl(spotlight)" />
-        <a v-else-if="spotlight.url" :href="utmUrl" target="_blank" class="spotlight-link" />
+        <router-link
+            v-if="spotlight.graph || spotlight.words"
+            @click="spotlightEvent(false)"
+            class="spotlight-link"
+            :to="getGraphUrl(spotlight)"
+        />
+        <a
+            v-else-if="spotlight.url"
+            @click="spotlightEvent(true)"
+            :href="utmUrl"
+            target="_blank"
+            class="spotlight-link"
+        />
         <header>
             <h2>{{ title }}</h2>
             <div>
                 <p>{{ subtitle }}</p>
-                <a v-if="spotlight.url" :href="utmUrl" target="_blank" @click="(e) => e.stopPropagation()">
+                <a
+                    v-if="spotlight.url"
+                    :href="utmUrl"
+                    target="_blank"
+                    @click="
+                        (e) => {
+                            spotlightEvent(true)
+                            e.stopPropagation()
+                        }
+                    "
+                >
                     artikel lezen <span class="pi pi-angle-double-right"></span>
                 </a>
             </div>
@@ -73,6 +94,19 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
     }
 
     API.getSVG(request).then((res) => (svgBlob.value = res.data))
+}
+
+function spotlightEvent(external: boolean) {
+    const props = {
+        title,
+        subtitle: spotlight.subtitle,
+        content: Boolean(spotlight.content),
+        graph: Boolean(spotlight.graph),
+        words: Boolean(spotlight.words),
+        url: Boolean(spotlight.url),
+        external,
+    }
+    window.plausible("spotlight", { props })
 }
 </script>
 

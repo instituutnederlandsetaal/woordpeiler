@@ -8,8 +8,19 @@
 
 <script setup lang="ts">
 import { useSpotlights } from "@/stores/fetch/spotlights"
+import { useEventListener } from "@vueuse/core"
 
 const { spotlight } = storeToRefs(useSpotlights())
+let scrolledToBottom = false
+
+useEventListener("scroll", () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        if (!scrolledToBottom && spotlight.value?.sections) {
+            scrolledToBottom = true
+            window.plausible("scrolled_to_bottom")
+        }
+    }
+})
 </script>
 
 <style scoped lang="scss">

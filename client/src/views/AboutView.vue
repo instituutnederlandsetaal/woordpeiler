@@ -73,6 +73,21 @@
     <AppFooter />
 </template>
 
+<script setup lang="ts">
+import { useEventListener } from "@vueuse/core"
+
+let scrolledToBottom = false
+
+useEventListener("scroll", () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        if (!scrolledToBottom) {
+            scrolledToBottom = true
+            window.plausible("scrolled_to_bottom")
+        }
+    }
+})
+</script>
+
 <style scoped lang="scss">
 main {
     min-height: initial;
