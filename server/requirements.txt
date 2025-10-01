@@ -17,7 +17,7 @@ markupsafe==3.0.2
 mdurl==0.1.2
 pip==25.2
 polstringconvertor==1.0.0
-psycopg==3.2.9
+psycopg==3.2.10
 psycopg-binary==3.2.9
 psycopg-pool==3.2.6
 pydantic==2.11.7
