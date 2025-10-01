@@ -144,7 +144,9 @@ async def get_freq(
         raise HTTPException(status_code=403, detail="Permission denied")
 
     # at least a lemma or wordform should be defined
-    if not any([l, w]):
+    clean_w = w.replace("[]", "").strip() if w else ""
+    clean_l = l.replace("[]", "").strip() if l else ""
+    if not any([clean_l, clean_w]):
         raise HTTPException(status_code=400, detail="No wordform or lemma provided")
 
     # does the number of pos match the number of lemmas or wordforms
@@ -154,22 +156,25 @@ async def get_freq(
     if num_pos > num_lemma and num_pos > num_words:
         raise HTTPException(status_code=400, detail="Provide as many posses as words")
 
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor() as cur:
-            return (
-                await FrequencyQuery(
-                    wordform=w,
-                    lemma=l,
-                    pos=p,
-                    source=s,
-                    language=v,
-                    interval=i,
-                    start=start,
-                    end=end,
+    try:
+        async with request.app.pool.connection() as conn:
+            async with conn.cursor() as cur:
+                return (
+                    await FrequencyQuery(
+                        wordform=w,
+                        lemma=l,
+                        pos=p,
+                        source=s,
+                        language=v,
+                        interval=i,
+                        start=start,
+                        end=end,
+                    )
+                    .build(cur)
+                    .execute_fetchall()
                 )
-                .build(cur)
-                .execute_fetchall()
-            )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # Get all words that match the given parameters, can be regex

@@ -216,13 +216,17 @@ class FrequencyQuery(QueryBuilder):
         pos: Optional[str],
         poshead: Optional[str],
     ) -> None:
-        # make sure at least 4 characters are specified when using regex
+        # make sure at least 2/4 characters are specified when using regex
         for values in [wordform, lemma, pos, poshead]:
             if values is not None:
                 for value in values.strip().split(" "):  # note ngram split
                     if "*" in value and len(value.replace("*", "")) < 4:
                         raise ValueError(
-                            "When using wildcards, at least 4 characters must be specified"
+                            "When using * wildcards, at least 4 characters must be specified"
+                        )
+                    if "?" in value and len(value.replace("?", "")) < 2:
+                        raise ValueError(
+                            "When using ? wildcards, at least 2 characters must be specified"
                         )
 
     def build(self, cursor: BaseCursor) -> ExecutableQuery[DataSeries]:
