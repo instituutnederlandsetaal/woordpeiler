@@ -220,7 +220,7 @@ article {
         figure {
             // flex: 1 0;
             min-height: 0;
-            flex: 1 0 calc(100px + 10vw);
+            flex: 1 0 calc(100px + 5vw);
             // height: auto;
             // max-height: calc(100px + 10vw);
 
