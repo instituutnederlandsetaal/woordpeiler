@@ -47,7 +47,7 @@ async def get_spotlights(request: Request):
 
 
 @app.get("/health")
-async def health():
+async def health(request: Request):
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
