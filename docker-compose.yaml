@@ -17,7 +17,7 @@ x-defaults: &defaults
 services:
     database:
         <<: *defaults
-        image: timescale/timescaledb:2.22.0-pg17
+        image: timescale/timescaledb:2.22.1-pg17
         volumes:
             - database:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
@@ -25,7 +25,7 @@ services:
 
     builder:
         <<: *defaults
-        image: timescale/timescaledb:2.22.0-pg17
+        image: timescale/timescaledb:2.22.1-pg17
         ports:
             - ${BUILDER_PORT}:5432
         volumes:
