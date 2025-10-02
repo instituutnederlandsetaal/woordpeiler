@@ -49,6 +49,7 @@ useEventListener("scroll", () => {
     flex-direction: column;
     padding: 1rem 0;
     img {
+        width: 100%;
         border: 1px solid #ddd;
         padding: 0.5rem;
         display: flex;
