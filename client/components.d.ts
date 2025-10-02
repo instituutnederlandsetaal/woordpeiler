@@ -32,6 +32,7 @@ declare module 'vue' {
     ErrorDialog: typeof import('./src/components/ErrorDialog.vue')['default']
     GraphWrapper: typeof import('./src/components/graph/GraphWrapper.vue')['default']
     HelpButton: typeof import('./src/components/HelpButton.vue')['default']
+    Image: typeof import('primevue/image')['default']
     InputGroup: typeof import('primevue/inputgroup')['default']
     InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputText: typeof import('primevue/inputtext')['default']

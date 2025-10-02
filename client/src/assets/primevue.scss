@@ -45,6 +45,15 @@ $theme: var(--theme); // Default theme color
     --p-accordion-content-padding: 0 0 0 0;
     --p-accordion-header-padding: 1rem 0 1rem 0;
 
+    // Image preview
+    --p-image-toolbar-border-radius: 0;
+    --p-image-action-border-radius: 0;
+    --p-image-toolbar-background: grey;
+    .p-image-rotate-right-button,
+    .p-image-rotate-left-button {
+        display: none;
+    }
+
     .p-button-rounded {
         border-radius: 0;
     }
