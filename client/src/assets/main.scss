@@ -123,3 +123,15 @@ fieldset {
         margin-bottom: 0.4rem;
     }
 }
+
+dfn {
+    font-family: monospace;
+    font-style: normal;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    padding: 0.1rem 0.4rem;
+}
+
+.popup li {
+    padding: 0.25rem 0 !important;
+}
