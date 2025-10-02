@@ -5,6 +5,7 @@
                 <TabList>
                     <Tab value="0">Algemeen</Tab>
                     <Tab value="1">Basiszoeken</Tab>
+                    <Tab value="2">Geavanceerd zoeken</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel value="0" tabindex="-1">
@@ -12,6 +13,9 @@
                     </TabPanel>
                     <TabPanel value="1" tabindex="-1">
                         <BasicHelp />
+                    </TabPanel>
+                    <TabPanel value="2" tabindex="-1">
+                        <AdvancedHelp />
                     </TabPanel>
                 </TabPanels>
             </Tabs>
@@ -24,6 +28,7 @@
 import { useEventListener } from "@vueuse/core"
 import BasicHelp from "@/views/help/BasicHelp.vue"
 import GeneralHelp from "@/views/help/GeneralHelp.vue"
+import AdvancedHelp from "@/views/help/AdvancedHelp.vue"
 
 let scrolledToBottom = false
 
@@ -51,6 +56,22 @@ useEventListener("scroll", () => {
     }
     figcaption {
         margin-top: 0.5rem;
+    }
+}
+
+:deep(ul) {
+    h3 {
+        display: inline;
+        font-size: 1rem;
+        font-weight: bold;
+        font-family: inherit;
+        margin-right: 0.3rem;
+    }
+    ul {
+        padding-left: 2rem;
+        li {
+            list-style-type: disc;
+        }
     }
 }
 
