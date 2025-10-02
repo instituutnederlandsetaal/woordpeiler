@@ -91,6 +91,7 @@ nohup bash -c "
 
     # check if TSV_DIR contains lz4 files and extract them
     if compgen -G $TSV_DIR/*.lz4 > /dev/null; then
+        echo Unpacking $TSV_DIR/*.lz4...
         lz4 --rm -m $TSV_DIR/*.lz4
     fi
 
