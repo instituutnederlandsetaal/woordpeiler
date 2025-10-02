@@ -3,13 +3,13 @@ x-defaults: &defaults
     shm_size: 2gb
     command: "-c 'config_file=/etc/postgres/postgresql.conf'"
     environment: &environment
-        POSTGRES_DB: ${POSTGRES_DB}
-        POSTGRES_USER: ${POSTGRES_USER}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        READER_USER: ${READER_USER}
-        READER_PASSWORD: ${READER_PASSWORD}
+        POSTGRES_DB: $POSTGRES_DB
+        POSTGRES_USER: $POSTGRES_USER
+        POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+        READER_USER: $READER_USER
+        READER_PASSWORD: $READER_PASSWORD
     healthcheck: &db-health
-        test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+        test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
         interval: 3s
         timeout: 5s
         retries: 5
@@ -27,30 +27,33 @@ services:
         <<: *defaults
         image: timescale/timescaledb:2.22.1-pg17
         ports:
-            - ${BUILDER_PORT}:5432
+            - $BUILDER_PORT:5432
         volumes:
             - builder:/var/lib/postgresql/data
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
 
     server:
-        image: instituutnederlandsetaal/woordpeiler-server:${VERSION_LABEL}
+        image: instituutnederlandsetaal/woordpeiler-server:$VERSION
         environment:
             <<: *environment
-            POSTGRES_HOST: database # Always refer to the database container
-            POSTGRES_PORT: ${POSTGRES_PORT}
+            POSTGRES_HOST: database # Always refer to database container
+            POSTGRES_PORT: $POSTGRES_PORT
             INTERNAL: ${INTERNAL:-false}
+        depends_on:
+            database:
+                condition: service_healthy
         build:
             context: server
         restart: unless-stopped
 
     client:
-        image: instituutnederlandsetaal/woordpeiler-client:${VERSION_LABEL}
+        image: instituutnederlandsetaal/woordpeiler-client:$VERSION
         build:
             context: client
         restart: unless-stopped
         volumes:
-            - ${CLIENT_CONFIG}:/usr/share/nginx/html/assets/config/
+            - $CLIENT_CONFIG:/usr/share/nginx/html/assets/config/
 
     proxy:
         image: nginx:1.29.1-alpine3.22-slim
@@ -65,6 +68,6 @@ services:
 
 volumes:
     database:
-        name: ${DATABASE_VOLUME}
+        name: $DATABASE_VOLUME
     builder:
-        name: ${BUILDER_VOLUME}
+        name: $BUILDER_VOLUME
