@@ -1,12 +1,12 @@
 {
     "version": "2.0.0",
-    "internal": true,
-    "basePath": "/woordpeiler",
+    "internal": false,
+    "basePath": "/",
     "spotlights": { "url": "https://ivdnt.org/woordpeiler.json", "default": "assets/config/spotlights.json" },
     "app": {
         "name": "Woordpeiler",
         "slogan": "Woordtrends van 2000 tot nu",
-        "description": "De Woordpeiler toont hoe vaak woorden voorkomen in Nederlandstalige kranten."
+        "description": "Woordpeiler toont hoe vaak woorden voorkomen in Nederlandstalige kranten."
     },
     "search": {
         "ngram": 2,
