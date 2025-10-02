@@ -63,9 +63,9 @@ useEventListener("scroll", () => {
 :deep(ul) {
     h3 {
         display: inline;
-        font-size: 1rem;
+        font-size: inherit !important;
         font-weight: bold;
-        font-family: inherit;
+        font-family: inherit !important;
         margin-right: 0.3rem;
     }
     ul {
