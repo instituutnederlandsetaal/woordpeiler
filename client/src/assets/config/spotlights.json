@@ -4,75 +4,70 @@
         {
             "blocks": [
                 {
-                    "title": "juni 2025",
+                    "title": "zomer 2025",
                     "subtitle": "woordpeiling",
-                    "url": "https://ivdnt.org/actueel/woordpeiling/navo-top-kabinetsval-en-donorschandaal/",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/femicide-hoornaars-en-klimtijdrit/",
                     "color": "#fff064",
-                    "content": [
-                        "Veruit de meeste aandacht ging naar de NAVO-top, de Nederlandse kabinetsval en het donorschandaal in België."
-                    ],
+                    "content": ["De meest kenmerkende woorden van juli en augustus 2025."],
                     "words": [
-                        "navo-top",
-                        "kabinetsval",
-                        "meerwaardebelasting",
-                        "defensie-uitgaven",
-                        "f-35's",
-                        "rode lijn-demonstratie",
-                        "ereloonsupplementen",
-                        "huurbevriezing",
-                        "drones",
+                        "femicide",
+                        "wereldspelen",
+                        "tweestatenoplossing",
+                        "natuurbranden",
+                        "hoornaars",
+                        "druzen",
                         "asielwetten",
-                        "donors",
-                        "donorschandaal"
+                        "staalslakken",
+                        "klimtijdrit",
+                        "hoofdpodium"
                     ]
                 },
-                { "color": "#e74c3c", "graph": { "word": "asielwetten", "start": "2025-01-01", "interval": "1w" } },
-                {
-                    "color": "#ecf0f1",
-                    "graph": { "word": "ereloonsupplementen", "start": "2000-01-01", "interval": "3m" }
-                },
-                { "color": "#e67e22", "graph": { "word": "huurbevriezing", "start": "2025-01-01", "interval": "1w" } },
-                {
-                    "color": "#f1c40f",
-                    "graph": { "word": "meerwaardebelasting", "start": "2014-01-01", "interval": "1m" }
-                },
-                { "color": "#3498db", "graph": { "word": "kabinetsval", "start": "2000-01-01", "interval": "3m" } },
-                { "color": "#1abc9c", "graph": { "word": "navo-norm", "start": "2023-01-01", "interval": "1w" } },
-                { "color": "#2ecc71", "graph": { "word": "drones", "start": "2010-01-01", "interval": "3m" } }
+                { "color": "#e74c3c", "graph": { "word": "femicide", "start": "2015-01-01" } },
+                { "color": "#ecf0f1", "graph": { "word": "tweestatenoplossing" } },
+                { "color": "#e67e22", "graph": { "word": "natuurbranden" } },
+                { "color": "#f1c40f", "graph": { "word": "hoornaars" } },
+                { "color": "#3498db", "graph": { "word": "druzen" } },
+                { "color": "#1abc9c", "graph": { "word": "staalslakken", "start": "2018-01-01" } },
+                { "color": "#2ecc71", "graph": { "word": "klimtijdrit" } }
             ]
         },
         {
             "id": "nieuwe-woorden",
             "blocks": [
                 {
-                    "title": "nieuw woord van de week",
+                    "title": "nieuwe woorden",
                     "color": "#ecf0f1",
                     "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/",
                     "content": [
-                        "Kijksluiter, toetsenbordterrorist en weigerpensionado: dagelijks komen er nieuwe woorden bij in het Nederlands. In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/'>Nieuw woord van de week</a> bespreken we elke week een actueel nieuw woord."
+                        "Dagelijks komen er nieuwe woorden bij in het Nederlands. In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/'>Nieuw woord van de week</a> bespreken we elke week een."
                     ],
-                    "words": ["zonnebrandpaal", "manosfeer", "statiegeldwinkel"]
+                    "words": [
+                        "labubu",
+                        "herbewapeningsplan",
+                        "molkoffer",
+                        "bidongooier",
+                        "zesvrouwenregel",
+                        "kolenprijshuizen"
+                    ]
                 },
                 {
                     "color": "#f1c40f",
-                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/zonnecremepunt/",
-                    "graph": { "word": "zonnebrandpaal", "start": "2021-01-01", "interval": "2m" },
-                    "content": ["Punt waar gratis zonnebrandcrème wordt verstrekt."]
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/troostfiets/ ",
+                    "graph": { "word": "troostfiets", "start": "2025-01-01", "interval": "1w" },
+                    "content": ["Bakfiets voor kleinschalige uitvaarten."]
                 },
                 {
                     "color": "#2ecc71",
                     "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/womanosphere/",
-                    "graph": { "word": "manosfeer", "start": "2025-01-01", "interval": "1w" },
+                    "graph": { "word": "womanosphere", "start": "2025-01-01", "interval": "1w" },
                     "content": [
-                        "Gemeenschap van mannen die bekendstaat om machogedrag, antifeministische, vrouwonvriendelijke en seksistische opvattingen."
+                        "Gemeenschap van vrouwen (online) waarbinnen met name traditionele ideeën over de vrouw verspreid worden."
                     ]
                 },
                 {
                     "color": "#f368e0",
                     "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/statiegeldwinkel/",
-                    "content": [
-                        "Speciale winkel waar je niets kunt kopen maar waar je verpakkingen met statiegeld erop kunt inleveren."
-                    ],
+                    "content": ["Speciale winkel waar je verpakkingen met statiegeld erop kunt inleveren."],
                     "graph": { "word": "statiegeldwinkel", "start": "2025-01-01", "interval": "1w" }
                 }
             ]
@@ -83,78 +78,35 @@
                 {
                     "color": "#fff064",
                     "title": "verdwijnwoorden",
-                    "content": ["Welke woorden worden vandaag de dag minder gebruikt?"],
-                    "words": ["allochtoon", "weekeinde", "verscheidene keren", "televisie", "telefonie"]
+                    "content": ["Welke woorden komen steeds minder vaak voor in de kranten?"],
+                    "words": ["telefonie", "televisie", "weekeinde", "gisteren", "cd", "omroepen"]
                 },
-                { "color": "#1abc9c", "graph": { "word": "allochtonen", "start": "2000-01-01", "interval": "6m" } },
-                {
-                    "color": "#e74c3c",
-                    "content": ["‘Weekeinde’ moet het afleggen tegen ‘weekend’."],
-                    "graph": { "word": "weekeinde", "start": "2000-01-01", "interval": "3m" },
-                    "words": ["weekend", "weekeinde"]
-                },
-                {
-                    "color": "#e67e22",
-                    "graph": { "word": "verscheidene keren", "start": "2000-01-01", "interval": "6m" }
-                }
+                { "color": "#e74c3c", "graph": { "word": "weekeinde" }, "words": ["weekend", "weekeinde"] },
+                { "color": "#e67e22", "graph": { "word": "telefonie" } },
+                { "color": "#1abc9c", "graph": { "word": "cd" } }
             ]
         },
         {
             "blocks": [
                 {
-                    "color": "#fff064",
-                    "title": "21e eeuw",
-                    "content": [
-                        "Nieuwe uitvindingen, sociale veranderingen en wereldwijde gebeurtenissen. Welke woorden kenmerken onze maatschappij in de 21e eeuw?"
-                    ],
-                    "words": [
-                        "smartphone",
-                        "klimaatverandering",
-                        "sociale media",
-                        "elektrische fiets",
-                        "kunstmatige intelligentie",
-                        "russische troepen",
-                        "corona"
-                    ]
-                },
-                {
-                    "color": "#95a5a6",
-                    "graph": { "word": "kunstmatige intelligentie", "start": "2010-01-01", "interval": "6m" }
-                },
-                { "color": "#ecf0f1", "graph": { "word": "smartphone", "start": "2000-01-01", "interval": "3m" } },
-                {
-                    "color": "#2ecc71",
-                    "graph": { "word": "klimaatverandering", "start": "2000-01-01", "interval": "3m" }
-                },
-                { "color": "#f368e0", "graph": { "word": "sociale media", "start": "2010-01-01", "interval": "3m" } },
-                {
-                    "color": "#1abc9c",
-                    "graph": { "word": "elektrische fiets", "start": "2004-01-01", "interval": "3m" }
-                },
-                {
-                    "color": "#e74c3c",
-                    "graph": { "word": "russische troepen", "start": "2008-01-01", "interval": "3m" }
-                },
-                { "color": "#3498db", "graph": { "word": "corona", "start": "2019-01-01", "interval": "1m" } }
-            ]
-        },
-        {
-            "blocks": [
-                {
-                    "color": "#fff064",
+                    "color": "#3498db",
                     "title": "periodieke woorden",
                     "content": [
-                        "Welke woorden vertonen een periodieke lijn?",
-                        "Worden de pieken en dalen steeds hoger of lager?"
+                        "Welke woorden komen op regelmatige basis terug in de kranten en vertonen een periodieke lijn?"
                     ],
-                    "words": ["olympische spelen", "hittegolf", "schrikkeljaar"]
+                    "words": [
+                        "olympische spelen",
+                        "hittegolf",
+                        "schrikkeljaar",
+                        "inauguratie",
+                        "conclaaf",
+                        "songfestival",
+                        "avondvierdaagse"
+                    ]
                 },
-                {
-                    "color": "#ecf0f1",
-                    "graph": { "word": "olympische spelen", "start": "2000-01-01", "interval": "3m" }
-                },
-                { "color": "#f1c40f", "graph": { "word": "hittegolf", "start": "2000-01-01", "interval": "2m" } },
-                { "color": "#2ecc71", "graph": { "word": "schrikkeljaar", "start": "2000-01-01", "interval": "6m" } }
+                { "color": "#ecf0f1", "graph": { "word": "olympische spelen" } },
+                { "color": "#f1c40f", "graph": { "word": "hittegolf" } },
+                { "color": "#2ecc71", "graph": { "word": "inauguratie" } }
             ]
         },
         {
