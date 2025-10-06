@@ -48,6 +48,8 @@ import { type TrendResult, displayName } from "@/types/trends"
 // Util
 import { randomColor } from "@/ts/color"
 import { usePosses } from "@/stores/fetch/posses"
+import type { SearchItem } from "@/types/search"
+import { v4 as uuidv4 } from "uuid"
 
 // Stores
 const { trendResults, lastTrendSettings } = storeToRefs(useTrendResults())
@@ -83,13 +85,14 @@ function formatNumber(num: number): number {
 watch(selectedTrend, () => {
     searchItems.value = []
     for (const item of selectedTrend.value) {
-        searchItems.value.push({
-            wordform: item.wordform,
-            pos: item.pos,
-            lemma: item.lemma,
-            color: randomColor(),
-            visible: true,
-        })
+        const ngram = item.wordform.split(" ").length
+        const terms = Array.from({ length: ngram }, (_, i) => ({
+            wordform: item.wordform.split(" ")[i],
+            pos: item.pos.split(" ")[i],
+            lemma: item.lemma?.split(" ")[i],
+        }))
+        const searchItem: SearchItem = { terms: terms, color: randomColor(), visible: true, uuid: uuidv4() }
+        searchItems.value.push(searchItem)
     }
     search()
 })
