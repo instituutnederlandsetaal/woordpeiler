@@ -11,7 +11,7 @@
                 <h3>Verschil lemma en woord:</h3>
                 bij woord is het enkel mogelijk om een specifieke woordvorm te zoeken. Zoeken naar
                 <em>fatbike</em> geeft enkel informatie over die vorm. Zoekt u echter bij lemma op <em>fatbike</em>, dan
-                wordt ook op alle vormen gezocht die bij het lemma horen, in dit geval het meervoud <em>fatbikes</em>
+                wordt ook op alle vormen gezocht die bij het lemma horen, in dit geval het meervoud <em>fatbikes</em>.
                 <ul>
                     <li>
                         <h3>Tooltip lemma:</h3>
@@ -35,7 +35,7 @@
                         klik op <span class="pi pi-question"></span> om uitleg te krijgen over de verschillende
                         woordsoorten. Sommige woorden (of lemmata) behoren tot meerdere woordsoorten. U kunt kiezen uit:
                         bijvoeglijk naamwoord, bijwoord, eigennaam, lidwoord, telwoord, tussenwerpsel, voegwoord,
-                        voornaamwoord, voorzetsel, werkwoord, zelfstandig naamwoord
+                        voornaamwoord, voorzetsel, werkwoord, zelfstandig naamwoord.
                     </li>
                 </ul>
             </li>

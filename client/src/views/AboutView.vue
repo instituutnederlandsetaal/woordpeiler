@@ -79,9 +79,7 @@
                 <h2>Suggesties of vragen</h2>
                 <p>
                     Voor suggesties of vragen kunt u een mail sturen naar
-                    <address>
-                        <a href="mailto:servicedesk@ivdnt.org">servicedesk@ivdnt.org</a>
-                    </address>.
+                    <a href="mailto:servicedesk@ivdnt.org">servicedesk@ivdnt.org</a>.
                 </p>
             </section>
         </Panel>
