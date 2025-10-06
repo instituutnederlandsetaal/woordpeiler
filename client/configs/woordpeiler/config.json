@@ -45,7 +45,7 @@
     "blacklab": {
         "url": {
             "external": "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits",
-            "internal": "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
+            "internal": "http://chn-i.ivdnt.loc/blacklab-frontend/chn-intern/search/hits"
         },
         "filter": { "medium": "newspaper" },
         "annotations": { "word": "word", "lemma": "lemma", "pos": "pos_full", "poshead": "pos" },
