@@ -1,21 +1,15 @@
-import type { TrendResult } from "@/types/trends"
 import axios, { type AxiosResponse } from "axios"
-import { toMidnightUTC } from "@/ts/date"
-
-export type TrendResponse = AxiosResponse<TrendResult[]>
+import type { TrendResult } from "@/types/trends"
 
 export type TrendRequest = {
-    trend_type: string;
-    modifier: number;
-    start_date: number;
-    end_date: number;
-    enriched: boolean;
-    language?: string;
-    ascending: boolean;
+    trend_type: string
+    modifier: number
+    start: string
+    end: string
+    language?: string
+    ngram: number
 }
 
-export function getTrends(request: TrendRequest): Promise<TrendResponse> {
-    request.start_date = toMidnightUTC(request.start_date)
-    request.end_date = toMidnightUTC(request.end_date)
+export function getTrends(request: TrendRequest): Promise<AxiosResponse<TrendResult[]>> {
     return axios.get("/trends", { params: request })
 }

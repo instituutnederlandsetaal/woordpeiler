@@ -3,4 +3,9 @@ venv
 *.csv
 node_modules
 .vscode
-.env
+*.env
+*.tsv
+*.lz4
+dist
+logs
+client/src/assets/config

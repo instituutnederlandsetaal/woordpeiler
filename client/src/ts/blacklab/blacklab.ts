@@ -1,26 +1,33 @@
-import type { GraphItem, SearchSettings, SearchItem } from "@/types/Search";
-import { isInternal } from "@/ts/internal";
-import * as d3 from "d3";
-
-const titles = '("NRC" "Het Parool" "De Volkskrant" "Trouw" "Algemeen Dagblad" "Het Nieuwsblad" "De Standaard" "Het Belang van Limburg" "Gazet van Antwerpen" "Het Laatste Nieuws" "De Morgen" "Starnieuws" "Antilliaans Dagblad" "Bonaire.nu" "Bonaire.Nu")'
-const titleFilter = `titleLevel2_untokenized:${titles}`
+import { type SearchItem } from "@/types/search"
+import { type GraphItem } from "@/types/graph"
+import { type SearchSettings, IntervalType } from "@/types/searchSettings"
+import * as d3 from "d3"
+import { config } from "@/main"
+import type { SearchTerm } from "@/types/searchTerm"
 
 export function constructSearchLink(item: SearchItem, settings: SearchSettings): string {
     // group on year or year-month
     let group
-    if (settings.timeBucketType == "year") {
-        group = "field:grouping_year:i"
-    } else if (settings.timeBucketType == "month") {
-        group = "field:grouping_year:i,field:grouping_month:i"
-    } else { // week or day
-        group = "field:grouping_year:i,field:grouping_month:i,field:grouping_day:i"
+    if (settings.intervalType == IntervalType.YEAR) {
+        group = `field:${config.blacklab.grouping.year}:i`
+    } else if (settings.intervalType == IntervalType.MONTH) {
+        group = `field:${config.blacklab.grouping.year}:i,field:${config.blacklab.grouping.month}:i`
+    } else {
+        // week or day
+        group = `field:${config.blacklab.grouping.year}:i,field:${config.blacklab.grouping.month}:i,field:${config.blacklab.grouping.day}:i`
     }
 
     // optionally filter on language
-    let filter = `medium:newspaper`
-    if (item.language) {
-        filter += ` AND languageVariant:${item.language}`
+    const filterObj = {
+        settingLocation_country: item.language,
+        titleLevel2: item.source,
+        ...structuredClone(config.blacklab.filter || {}),
     }
+    const filter =
+        Object.entries(filterObj)
+            .filter((i) => i[1])
+            .map(([key, value]) => `${key}:"${value}"`)
+            .join(" AND ") || null
 
     const params = {
         patt: constructBLPatt(item),
@@ -28,7 +35,9 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
         groupDisplayMode: "hits",
         group: group,
         sort: "-identity",
-        filter: filter,
+    }
+    if (filter) {
+        params["filter"] = filter
     }
     const base = getBaseURL()
 
@@ -42,7 +51,7 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
         filter: constructBLFilter(point, settings),
         interface: JSON.stringify({ form: "search", patternMode: "expert" }),
         groupDisplayMode: "relative hits",
-        group: "field:titleLevel2:i"
+        group: `field:${config.blacklab.title}:i`,
     }
     const base = getBaseURL()
 
@@ -50,35 +59,32 @@ export function constructTooltipLink(point: GraphItem, settings: SearchSettings)
 }
 
 function getBaseURL(): string {
-    const internalBase = "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
-    const externalBase = "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits"
-    return isInternal() ? internalBase : externalBase;
+    return config.internal ? config.blacklab.url.internal : config.blacklab.url.external
 }
 
 function constructBLPatt(item: SearchItem) {
-    const pattTerms = {
-        lemma: item.lemma,
-        word: item.wordform,
-    }
-    // Add pos separately because only one can be present
-    if (item.pos?.includes("(")) {
-        pattTerms["pos_full"] = item.pos
-    }
-    else {
-        pattTerms["pos"] = item.pos
-    }
+    // blacklab pattern format:
+    // [word=l"hello" & pos=l"int"][lemma=l"world"]
+    // Or without 'l' if regex:
+    return item.terms.map(constructSingleBLPatt).join("")
+}
 
-    // Remove falsy values, and blank strings (could be tabs and spaces)
-    Object.keys(pattTerms).forEach(
-        (key) => (pattTerms[key] == null || pattTerms[key].trim() === "") && delete pattTerms[key]
-    )
-    const isRegex = item.wordform?.includes("*") || item.wordform?.includes("?")
-    if (isRegex) {
-        pattTerms["word"] = toBLRegex(item.wordform)
-    }
-    const literal = (isInternal() && !isRegex) ? "l" : ""
-    const patt = Object.entries(pattTerms).map(([key, value]) => `${key}=${literal}"${value}"`).join("&")
+function constructSingleBLPatt(term: SearchTerm): string {
+    const wordform = constructSingleBLPattProp(term, "wordform", "word")
+    const lemma = constructSingleBLPattProp(term, "lemma", "lemma")
+    const pos = constructSingleBLPattProp(term, "pos", "pos")
+
+    const patt = [wordform, lemma, pos].filter(Boolean).join("&")
     return `[${patt}]`
+}
+
+function constructSingleBLPattProp(term: SearchTerm, prop: string, blName: string): string | undefined {
+    const propValue = term[prop as keyof SearchTerm]
+    if (!propValue) return undefined
+    const isRegex = propValue.includes("*") || propValue.includes("?")
+    const literal = isRegex ? "" : "l"
+    const value = isRegex ? toBLRegex(propValue) : propValue
+    return `${blName}=${literal}"${value}"`
 }
 
 function toBLRegex(s: string): string {
@@ -86,42 +92,47 @@ function toBLRegex(s: string): string {
 }
 
 function constructBLFilter(point: GraphItem, settings: SearchSettings) {
-    const filters = {
-        medium: "newspaper",
+    let filters = {}
+    if (config.blacklab.filter) {
+        filters = structuredClone(config.blacklab.filter)
     }
-    const bucketType = settings.timeBucketType;
-    const bucketSize = settings.timeBucketSize;
+    const bucketType = settings.intervalType
+    const bucketSize = settings.intervalLength
     const year: number = parseInt(d3.timeFormat("%Y")(point.x))
     const month: number = parseInt(d3.timeFormat("%m")(point.x))
     const day: number = parseInt(d3.timeFormat("%d")(point.x))
 
     const start = d3.timeFormat("%Y%m%d")(point.x)
-    let end;
+    let end
     // end depends on the bucket type and size.
-    if (bucketType == "year") {
+    if (bucketType == IntervalType.YEAR) {
         // end is the last day of the year
         end = d3.timeFormat("%Y%m%d")(new Date(year + bucketSize - 1, 11, 31))
-    } else if (bucketType == "month") {
+    } else if (bucketType == IntervalType.MONTH) {
         // end is the last day of the month
         end = d3.timeFormat("%Y%m%d")(new Date(year, month + bucketSize - 1, 0))
-    } else if (bucketType == "week") {
+    } else if (bucketType == IntervalType.WEEK) {
         // weekEnd is 6 days later, inclusive. Not 7 days later, because that is the start of the next data point.
         const offset = bucketSize * 7 - 1
         end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
-    } else if (bucketType == "day") {
+    } else if (bucketType == IntervalType.DAY) {
         // end is the last day of the period defined by the bucket size
-        const offset = bucketSize - 1;
-        end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset));
+        const offset = bucketSize - 1
+        end = d3.timeFormat("%Y%m%d")(d3.timeDay.offset(point.x, offset))
     }
-    filters["witnessDate_from"] = `[${start} TO ${end}]`
+    const dateRange = `[${start} TO ${end}]`
+    const dateFilter = `(${config.blacklab.date.from}:${dateRange} AND ${config.blacklab.date.to}:${dateRange})`
 
     if (point.searchItem.source) {
-        filters["titleLevel2"] = `"${point.searchItem.source}"`
+        filters[config.blacklab.title] = `"${point.searchItem.source}"`
     }
 
     if (point.searchItem.language) {
-        filters["languageVariant"] = `"${point.searchItem.language}"`
+        filters[config.blacklab.language] = `"${point.searchItem.language}"`
     }
 
-    return Object.entries(filters).map(([key, value]) => `${key}:${value}`).join(" AND ")
+    const otherFilters = Object.entries(filters)
+        .map(([key, value]) => `${key}:${value}`)
+        .join(" AND ")
+    return [dateFilter, otherFilters].filter((i) => i).join(" AND ")
 }

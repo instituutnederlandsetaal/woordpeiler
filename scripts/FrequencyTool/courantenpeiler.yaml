@@ -1,0 +1,121 @@
+runConfig:
+    docsInParallel: 1_000_000 # we can easily handle all couranten without chunking
+    compressed: true
+    databaseFormat: true
+
+frequencyLists:
+    -   name: "unigram"
+        ngramSize: 1
+        annotations:
+            -   name: word
+            -   name: lemma
+            -   name: grouping_pos_full
+                prettyName: pos
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true
+
+    -   name: "unigram_size"
+        ngramSize: 1
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true
+
+    -   name: "bigram"
+        ngramSize: 2
+        annotations:
+            -   name: word
+            -   name: lemma
+            -   name: grouping_pos_full
+                prettyName: pos
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true
+
+    -   name: "bigram_size"
+        ngramSize: 2
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true
+
+    -   name: "trigram"
+        ngramSize: 3
+        annotations:
+            -   name: word
+            -   name: lemma
+            -   name: grouping_pos_full
+                prettyName: pos
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true
+
+    -   name: "trigram_size"
+        ngramSize: 3
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true
+
+    -   name: "tetragram"
+        ngramSize: 4
+        annotations:
+            -   name: word
+            -   name: lemma
+            -   name: grouping_pos_full
+                prettyName: pos
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true
+
+    -   name: "tetragram_size"
+        ngramSize: 4
+        metadata:
+            -   name: witnessDateLevel1_from
+                required: true
+            -   name: titleLevel2
+                required: true
+                outputAsId: true
+            -   name: settingLocation_country
+                nullValue: "Onbekend"
+                outputAsId: true

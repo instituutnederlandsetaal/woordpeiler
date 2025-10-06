@@ -1,0 +1,10 @@
+{
+    "editor.codeActionsOnSave": { "source.fixAll": "explicit" },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "tsconfig.json": "tsconfig*, *.d.ts",
+        "package.json": "package-lock.json, eslint*, .prettier*"
+    }
+}

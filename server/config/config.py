@@ -10,6 +10,8 @@ from datetime import datetime
 # third party
 from fastapi import FastAPI, Request, Response
 from psycopg_pool import AsyncConnectionPool
+from psycopg import AsyncConnection
+from psycopg.types.numeric import FloatLoader
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.logging import ColourizedFormatter
 from dotenv import load_dotenv
@@ -19,18 +21,23 @@ from pytz import timezone
 # local
 from server.config.connection import get_reader_conn_str
 
+load_dotenv()
+
 # Disable uvicorn access logger
 uvicorn_access = logging.getLogger("uvicorn.access")
 uvicorn_access.addFilter(lambda _: False)
 logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.getLevelName(logging.DEBUG))
-
-load_dotenv()
+logging_level = logging.DEBUG if os.getenv("VERSION_LABEL") == "dev" else logging.INFO
+logger.setLevel(logging.getLevelName(logging_level))
 
 
 class FastAPI(FastAPI):
-    async_pool: AsyncConnectionPool
+    pool: AsyncConnectionPool
     internal: bool = False
+
+
+async def set_float_loader(conn: AsyncConnection) -> None:
+    conn.adapters.register_loader("numeric", FloatLoader)
 
 
 @asynccontextmanager
@@ -46,22 +53,23 @@ async def lifespan(app: FastAPI):
 
     # Connection pool
     conn_str = get_reader_conn_str()
-    app.async_pool = AsyncConnectionPool(
+    app.pool = AsyncConnectionPool(
         conninfo=conn_str,
         open=False,
         kwargs={"prepare_threshold": 0},
         check=AsyncConnectionPool.check_connection,
         max_size=12,
+        configure=set_float_loader,
     )
-    await app.async_pool.open()
-    await app.async_pool.wait()
+    await app.pool.open()
+    await app.pool.wait()
     logger.info("Connection pool opened")
 
     # internal or external?
     app.internal = os.getenv("INTERNAL", "false").lower() == "true"
 
     yield
-    await app.async_pool.close()
+    await app.pool.close()
 
 
 origins = [
@@ -76,7 +84,7 @@ origins = [
 
 
 def create_app_with_config() -> FastAPI:
-    app = FastAPI(lifespan=lifespan)
+    app = FastAPI(lifespan=lifespan, ignore_trailing_slash=True)
 
     app.add_middleware(
         CORSMiddleware,

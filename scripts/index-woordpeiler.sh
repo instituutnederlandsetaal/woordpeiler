@@ -9,9 +9,9 @@ WOORDPEILER_CONFIG="$WOORDPEILER_DIR/unigram.yaml" # only index unigrams for now
 rm -rf $WOORDPEILER_OUTPUT
 java -Xmx48G -cp "$WOORDPEILER_DIR/blacklab-tools.jar:lib/*" nl.inl.blacklab.tools.frequency.FrequencyTool --no-merge $WOORDPEILER_INPUT $WOORDPEILER_CONFIG $WOORDPEILER_DIR
 
-# copy the results to the woordpeiler servers and create databases
-WOORDPEILER_DEV=corpustrends.dev.ivdnt.loc # will later be svowwr01.ivdnt.loc
-WOORDPEILER_PROD=svatwr01.ivdnt.loc # will later be svprwr01.ivdnt.loc
+# rsync the results to the woordpeiler servers
+WOORDPEILER_DEV=corpustrends.dev.ivdnt.loc
+WOORDPEILER_PROD=svprwr01.ivdnt.loc
 WOORDPEILER_DEST=/vol1/tsv/
-./update-woordpeiler-server.sh $WOORDPEILER_OUTPUT $WOORDPEILER_DEV $WOORDPEILER_DEST
-./update-woordpeiler-server.sh $WOORDPEILER_OUTPUT $WOORDPEILER_PROD $WOORDPEILER_DEST
+rsync -avz --checksum --delete $WOORDPEILER_OUTPUT $WOORDPEILER_DEV:$WOORDPEILER_DEST
+rsync -avz --checksum --delete $WOORDPEILER_OUTPUT $WOORDPEILER_PROD:$WOORDPEILER_DEST

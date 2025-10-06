@@ -1,7 +1,6 @@
-@use 'sass:color';
+@use "sass:color";
 
-
-$theme: #48e;
+$theme: var(--theme); // Default theme color
 
 :root:root {
     --p-scrollpanel-bar-background: #aaa;
@@ -9,13 +8,18 @@ $theme: #48e;
     --p-highlight-color: #000;
     --p-highlight-focus-color: #000;
 
+    --p-highlight-background: color-mix(in srgb, var(--theme), #fff 30%);
+    --p-highlight-focus-background: color-mix(in srgb, var(--theme), #fff 20%);
+
     // colors
-    --p-highlight-focus-background: #{color.adjust($theme, $lightness: 20%)};
-    --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
-    --p-primary-active-color: #{color.adjust($theme, $lightness: -20%)};
-    --p-primary-hover-color: #{color.adjust($theme, $lightness: -10%)};
-    --p-button-primary-background: #46a9ff;
+    // --p-highlight-focus-background: #{color.adjust($theme, $lightness: 20%)};
+    // --p-highlight-background: #{color.adjust($theme, $lightness: 20%)};
+    --p-primary-active-color: color-mix(in srgb, var(--theme), #000 20%);
+    --p-primary-hover-color: color-mix(in srgb, var(--theme), #000 10%);
     --p-tabs-tab-active-color: #{$theme};
+    --p-button-primary-background: #{$theme};
+    // --p-button-text-primary-active-background: var(--p-button-text-secondary-active-background)
+    // --p-button-text-primary-color: var(--p-panel-color);
 
     // Dialog
     --p-dialog-header-padding: 1rem 1rem 0.3rem 1rem;
@@ -34,18 +38,24 @@ $theme: #48e;
     --p-checkbox-icon-size: 1.2rem;
 
     // SelectButton
-    --p-togglebutton-padding: 0.5rem 0.8rem;
+    --p-togglebutton-padding: 0.25rem 0.25rem;
+    --p-togglebutton-content-padding: 0.25rem 0.55rem;
 
     // Accordion
-    --p-accordion-content-padding: 0 0 1rem 0;
+    --p-accordion-content-padding: 0 0 0 0;
     --p-accordion-header-padding: 1rem 0 1rem 0;
+
+    // Image preview
+    --p-image-toolbar-border-radius: 0;
+    --p-image-action-border-radius: 0;
+    --p-image-toolbar-background: grey;
+    .p-image-rotate-right-button,
+    .p-image-rotate-left-button {
+        display: none;
+    }
 
     .p-button-rounded {
         border-radius: 0;
-    }
-
-    *:focus-visible {
-        outline: 0;
     }
 
     .p-cascadeselect-list {
@@ -59,14 +69,70 @@ $theme: #48e;
         background-color: #ccc;
         border-color: #ccc;
     }
-}
 
-.wordlist {
-
-    .p-select,
-    .p-inputtext,
-    .p-cascadeselect {
-        width: 200px;
+    .p-accordionpanel {
+        border: none;
     }
 
+    input.p-inputtext[type="number"] {
+        width: 80px;
+    }
+
+    .p-inputgroupaddon {
+        min-width: 0;
+        width: 30px;
+        span {
+            font-size: 1.1rem;
+        }
+    }
+
+    .p-popover {
+        border: none;
+        box-shadow: none;
+        background: none;
+        .p-datatable {
+            max-width: none !important;
+        }
+
+        .p-popover-content {
+            border: 1px solid #ccc;
+            background: white;
+            padding: 1rem 2rem;
+
+            @media screen and (max-width: 480px) {
+                margin: 0 1rem;
+            }
+        }
+    }
+
+    .p-inputgroupaddon {
+        .p-button:focus-visible {
+            outline: 2px solid blue;
+            outline-offset: -1px;
+        }
+    }
+
+    .p-accordion.invalid {
+        margin: 0 -0.75rem;
+        padding: 0 0.75rem;
+    }
+
+    .p-accordionpanel-active {
+        padding-bottom: 0.5rem;
+    }
+}
+
+// MultiSelect has on overlay on the global document level
+// Hence why we don't style it scoped
+.p-multiselect-header::after {
+    content: "Alles selecteren";
+    font-style: italic;
+}
+
+.p-multiselect-header {
+    border-bottom: 1px solid #ccc;
+}
+
+.p-multiselect-list-container {
+    max-height: 28rem !important;
 }

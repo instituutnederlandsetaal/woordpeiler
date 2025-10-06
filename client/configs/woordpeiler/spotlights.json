@@ -1,0 +1,241 @@
+{
+    "version": "2.0.0",
+    "sections": [
+        {
+            "blocks": [
+                {
+                    "title": "zomer 2025",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/femicide-hoornaars-en-klimtijdrit/",
+                    "color": "#fff064",
+                    "content": ["De meest kenmerkende woorden van juli en augustus 2025."],
+                    "words": [
+                        "femicide",
+                        "wereldspelen",
+                        "tweestatenoplossing",
+                        "natuurbranden",
+                        "hoornaars",
+                        "druzen",
+                        "asielwetten",
+                        "staalslakken",
+                        "klimtijdrit",
+                        "hoofdpodium"
+                    ]
+                },
+                { "color": "#e74c3c", "graph": { "word": "femicide", "start": "2015-01-01" } },
+                { "color": "#ecf0f1", "graph": { "word": "tweestatenoplossing" } },
+                { "color": "#e67e22", "graph": { "word": "natuurbranden" } },
+                { "color": "#f1c40f", "graph": { "word": "hoornaars" } },
+                { "color": "#3498db", "graph": { "word": "druzen" } },
+                { "color": "#1abc9c", "graph": { "word": "staalslakken", "start": "2018-01-01" } },
+                { "color": "#2ecc71", "graph": { "word": "klimtijdrit" } }
+            ]
+        },
+        {
+            "id": "nieuwe-woorden",
+            "blocks": [
+                {
+                    "title": "nieuwe woorden",
+                    "color": "#ecf0f1",
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/",
+                    "content": [
+                        "Dagelijks komen er nieuwe woorden bij in het Nederlands. In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/'>Nieuw woord van de week</a> bespreken we elke week een."
+                    ],
+                    "words": [
+                        "labubu",
+                        "herbewapeningsplan",
+                        "molkoffer",
+                        "bidongooier",
+                        "zesvrouwenregel",
+                        "kolenprijshuizen"
+                    ]
+                },
+                {
+                    "color": "#f1c40f",
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/troostfiets/ ",
+                    "graph": { "word": "troostfiets", "start": "2025-01-01", "interval": "1w" },
+                    "content": ["Bakfiets voor kleinschalige uitvaarten."]
+                },
+                {
+                    "color": "#2ecc71",
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/womanosphere/",
+                    "graph": { "word": "womanosphere", "start": "2025-01-01", "interval": "1w" },
+                    "content": [
+                        "Gemeenschap van vrouwen (online) waarbinnen met name traditionele ideeën over de vrouw verspreid worden."
+                    ]
+                },
+                {
+                    "color": "#f368e0",
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/nieuw-woord-van-de-week/statiegeldwinkel/",
+                    "content": ["Speciale winkel waar je verpakkingen met statiegeld erop kunt inleveren."],
+                    "graph": { "word": "statiegeldwinkel", "start": "2025-01-01", "interval": "1w" }
+                }
+            ]
+        },
+        {
+            "id": "verdwijnwoorden",
+            "blocks": [
+                {
+                    "color": "#fff064",
+                    "title": "verdwijnwoorden",
+                    "content": ["Welke woorden komen steeds minder vaak voor in de kranten?"],
+                    "words": ["telefonie", "televisie", "weekeinde", "gisteren", "cd", "omroepen"]
+                },
+                { "color": "#e74c3c", "graph": { "word": "weekeinde" }, "words": ["weekend", "weekeinde"] },
+                { "color": "#e67e22", "graph": { "word": "telefonie" } },
+                { "color": "#1abc9c", "graph": { "word": "cd" } }
+            ]
+        },
+        {
+            "blocks": [
+                {
+                    "color": "#3498db",
+                    "title": "periodieke woorden",
+                    "content": [
+                        "Welke woorden komen op regelmatige basis terug in de kranten en vertonen een periodieke lijn?"
+                    ],
+                    "words": [
+                        "olympische spelen",
+                        "hittegolf",
+                        "schrikkeljaar",
+                        "inauguratie",
+                        "conclaaf",
+                        "songfestival",
+                        "avondvierdaagse"
+                    ]
+                },
+                { "color": "#ecf0f1", "graph": { "word": "olympische spelen" } },
+                { "color": "#f1c40f", "graph": { "word": "hittegolf" } },
+                { "color": "#2ecc71", "graph": { "word": "inauguratie" } }
+            ]
+        },
+        {
+            "id": "woordpeilingen",
+            "blocks": [
+                {
+                    "title": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/",
+                    "color": "#fff064",
+                    "content": [
+                        "Welke woorden zijn het meest kenmerkend voor een bepaalde periode? Elke maand brengen we een <a target='_blank' href='https://ivdnt.org/actueel/woordpeiling/'>Woordpeiling</a> uit op basis van een data-analyse van zo’n tien miljoen krantenartikelen uit het <a target='_blank' href='https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands/'>Corpus Hedendaags Nederlands (CHN)</a>."
+                    ]
+                },
+                {
+                    "title": "juni 2025",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/navo-top-kabinetsval-en-donorschandaal/",
+                    "color": "#ecf0f1",
+                    "content": [
+                        "Veruit de meeste aandacht ging naar de NAVO-top, de Nederlandse kabinetsval en het donorschandaal in België."
+                    ],
+                    "words": [
+                        "rode lijn-demonstratie",
+                        "ereloonsupplementen",
+                        "huurbevriezing",
+                        "asielwetten",
+                        "donors",
+                        "donorschandaal"
+                    ]
+                },
+                {
+                    "title": "mei 2025",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/conclaaf-struikelstenen-en-vapen/",
+                    "color": "#e67e22",
+                    "content": ["Op 8 mei 2025 werd kardinaal Robert Francis Prevost gekozen tot 267ste paus."],
+                    "words": [
+                        "kardinalen",
+                        "conclaaf",
+                        "huurbevriezing",
+                        "minimumdoelen",
+                        "struikelstenen",
+                        "alcoholslot",
+                        "vapen"
+                    ]
+                },
+                {
+                    "title": "april 2025",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/handelsoorlog-lintjes-en-bidongooier/",
+                    "color": "#f368e0",
+                    "content": ["April 2025 stond in het teken van handelsoorlog en alle denkbare woorden daaromheen."],
+                    "words": [
+                        "handelsoorlog",
+                        "importheffingen",
+                        "paasakkoord",
+                        "voorjaarsnota",
+                        "lintjes",
+                        "bidon",
+                        "kardinalen"
+                    ]
+                },
+                {
+                    "title": "1e kwartaal 2025",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/inauguratie-importheffingen-en-defensie-uitgaven/",
+                    "color": "#3498db",
+                    "content": [
+                        "Drie roerige maanden waarin de woorden inauguratie, importheffingen en defensie-uitgaven een hoofdrol speelden in de berichtgeving in kranten."
+                    ],
+                    "words": [
+                        "meerwaardebelasting",
+                        "veiligheidsgaranties",
+                        "importheffingen",
+                        "inauguratie",
+                        "defensie-uitgaven",
+                        "tussenronde",
+                        "staakt-het-vuren",
+                        "doorstroomtoets",
+                        "importtarieven",
+                        "vuurwerkverbod"
+                    ]
+                },
+                {
+                    "title": "februari 2025",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/veiligheid/",
+                    "color": "#2ecc71",
+                    "content": ["In februari was ‘veiligheid’ het grote thema in de Nederlandse en Vlaamse kranten."],
+                    "words": [
+                        "veiligheidsconferentie",
+                        "veiligheidsgaranties",
+                        "schietpartijen",
+                        "patser",
+                        "asielwetten",
+                        "meerwaardebelasting",
+                        "doorstroomtoets"
+                    ]
+                },
+                {
+                    "title": "januari 2025",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/inauguratie/",
+                    "color": "#1abc9c",
+                    "content": [
+                        "Het woord inauguratie domineerde zowel de Vlaamse als de Nederlandse kranten afgelopen maand."
+                    ],
+                    "words": ["inauguratie", "doorstroomtoets", "vuurwerkverbod", "supernota", "tussenronde"]
+                },
+                {
+                    "title": "woord van het jaar 2024",
+                    "subtitle": "woordpeiling van het jaar",
+                    "content": ["Fatbikes, supernota en Europapa: de Woordpeiling van 2024."],
+                    "url": "https://ivdnt.org/actueel/nieuws/persbericht-fatbikes-supernota-en-europapa-de-woordpeiling-van-2024/",
+                    "color": "#e74c3c",
+                    "words": [
+                        "fatbikes",
+                        "hoofdlijnenakkoord",
+                        "kabinet-schoof",
+                        "spreidingswet",
+                        "ai",
+                        "initiatiefrecht",
+                        "supernota",
+                        "pro-palestijns",
+                        "opkomstplicht",
+                        "europapa"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,67 @@
+{
+    "version": "2.0.0",
+    "sections": [
+        {
+            "id": "terug-in-de-taal",
+            "blocks": [
+                {
+                    "color": "#89C24B",
+                    "title": "terug in de taal",
+                    "content": [
+                        "In de rubriek <a target='_blank' href='https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/'>Terug in de taal</a> bespreken we woorden of betekenissen die ooit in het Nederlands bestonden, maar nu verdwenen zijn."
+                    ],
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/"
+                },
+                {
+                    "color": "#FFF064",
+                    "title": "geldsnoeier",
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/geldsnoeier/",
+                    "graph": { "word": "gel*snoey*", "start": "1685-01-01", "interval": "6m" }
+                },
+                {
+                    "color": "#FF8000",
+                    "title": "kinderpokjes",
+                    "url": "https://ivdnt.org/actueel/woorden-van-de-week/terug-in-de-taal/kinderpokjes/",
+                    "graph": { "word": "kinder*po*", "start": "1650-01-01", "interval": "1y" }
+                }
+            ]
+        },
+        {
+            "blocks": [
+                { "color": "#F3F3F3", "graph": { "lemma": "zilvervloot", "start": "1618-01-01", "interval": "2y" } },
+                {
+                    "color": "#E8503D",
+                    "title": "hertog van lotharingen",
+                    "graph": { "word": "hertog* van lot*ring*", "start": "1618-01-01", "interval": "1y" }
+                },
+                { "color": "#89C24B", "graph": { "lemma": "amerika", "start": "1630-01-01", "interval": "1y" } },
+                {
+                    "color": "#E8503D",
+                    "graph": { "lemma": "volgens de brief", "start": "1670-01-01", "interval": "1y" }
+                },
+                { "color": "#359FF0", "graph": { "lemma": "zweeds konvooi", "start": "1685-01-01", "interval": "3m" } },
+                { "color": "#FF8000", "graph": { "lemma": "nassau", "start": "1618-01-01", "interval": "1y" } },
+                {
+                    "color": "#FF8000",
+                    "title": "prins van oranje",
+                    "graph": { "lemma": "prince van oranje", "start": "1618-01-01", "interval": "3m" }
+                },
+                {
+                    "color": "#359FF0",
+                    "title": "het franse leger",
+                    "graph": { "lemma": "het frans leger", "start": "1618-01-01", "interval": "3y" }
+                },
+                {
+                    "color": "#F3F3F3",
+                    "graph": { "lemma": "de raad van state", "start": "1660-01-01", "interval": "3m" }
+                },
+                { "color": "#FFF064", "graph": { "lemma": "een aanslag op", "start": "1618-01-01", "interval": "1y" } },
+                {
+                    "color": "#FFF064",
+                    "title": "Z.K.M van Denemarken",
+                    "graph": { "lemma": "koninklijk majesteit van denemarken", "start": "1618-01-01", "interval": "1y" }
+                }
+            ]
+        }
+    ]
+}

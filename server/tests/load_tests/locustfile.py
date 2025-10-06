@@ -17,12 +17,11 @@ class RandomUser(HttpUser):
 
     @task
     def search(self):
-        url = "word_frequency?wordform="
-        self.client.request_name = f"{url}[lemma]"
+        word = random.choice(self.word_list)
+        url = "frequency?w=" + word
+        self.client.request_name = url
 
-        with self.client.get(
-            url + random.choice(self.word_list), catch_response=True
-        ) as response:
+        with self.client.get(url, catch_response=True) as response:
             data = json.loads(response.text)
             num_of_years = 42  # valid for 2024. This is just a simple check.
             if len(data) >= num_of_years:  # more years is ok.

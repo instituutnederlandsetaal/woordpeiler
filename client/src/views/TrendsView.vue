@@ -1,78 +1,58 @@
 <template>
     <main>
         <aside>
-            <TrendSettings />
-
             <TrendResultsList v-if="trendResults?.length > 0" />
             <Skeleton class="trendlist" v-else-if="trendsLoading" />
             <Panel v-else-if="trendResults?.length == 0" class="trendlist" header="Geen resultaten">
                 <p>Probeer een andere zoekopdracht.</p>
             </Panel>
-
-            <SearchSettings v-if="isValid" />
+            <div class="settings">
+                <TrendSettings />
+                <SearchSettings v-if="validSearchItems" />
+            </div>
         </aside>
-        <D3Graph />
+        <GraphWrapper />
     </main>
 </template>
 
 <script setup lang="ts">
 // Libraries & Stores
 import { storeToRefs } from "pinia"
-import { useTrendResultsStore } from "@/stores/TrendResultsStore"
-import { useSearchItemsStore } from "@/stores/SearchItemsStore"
-// Primevue
-import Skeleton from "primevue/skeleton"
-import Panel from "primevue/panel"
-// Components
-import SearchSettings from "@/components/SearchSettings.vue"
-import TrendSettings from "@/components/trends/TrendSettings.vue"
-import D3Graph from "@/components/graph/GraphWrapper.vue"
-import TrendResultsList from "@/components/trends/TrendResultsList.vue"
+import { useTrendResults } from "@/stores/trends/trendResults"
+import { useSearchItems } from "@/stores/search/searchItems"
 
 // Stores
-const { trendResults, trendsLoading } = storeToRefs(useTrendResultsStore());
-const { isValid } = storeToRefs(useSearchItemsStore());
-
+const { trendResults, trendsLoading } = storeToRefs(useTrendResults())
+const { validSearchItems } = storeToRefs(useSearchItems())
 </script>
 
 <style scoped lang="scss">
 :deep(.trendlist) {
     flex: 1;
-    min-height: 0;
-    overflow: hidden;
+}
+
+.settings {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+}
 
-    .p-panel-content-container {
+@media screen and (max-width: 1024px) {
+    .trendlist {
+        min-height: 500px;
+    }
+    .settings {
         flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-
-        .p-panel-content {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-
-            .formSplit {
-                margin-bottom: 0.5rem;
-            }
-
-            .p-listbox {
-                flex: 1;
-                min-height: 0;
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-
-                .p-listbox-list-container {
-                    flex: 1;
-                    max-height: none !important;
-                    min-height: 0 !important;
-                }
-            }
-        }
+    }
+}
+@media screen and (max-width: 768px) {
+    .settings {
+        flex: auto;
+    }
+}
+@media screen and (max-width: 480px) {
+    .settings {
+        gap: 0.5rem;
     }
 }
 </style>

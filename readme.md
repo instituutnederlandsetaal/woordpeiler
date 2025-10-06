@@ -1,82 +1,80 @@
-# woordpeiler
-Time-based trends of words using the newspaper part of Corpus Hedendaags Nederlands.
+# [Woordpeiler](https://woordpeiler.ivdnt.org)
+Woordpeiler provides corpus-based temporal word frequencies and trend analysis. It consists of a Vue 3 + D3.js frontend, a Python FastAPI backend, a PostgreSQL/TimescaleDB database, and nginx proxy. Data is provided via a [BlackLab](https://github.com/instituutnederlandsetaal/blacklab) corpus, specifically via the BlackLab FrequencyTool.
 
-# Project environment variables
-Create a `.env` with:
+## Team
+- Principal engineer: Vincent Prins (vincent.prins@ivdnt.org)
+- Scientific advisor: Kris Heylen
+
+# Development
+A vscode workspace is available: `.code-workspace`.
+Debug configurations for client & server are available: `client/.vscode`, `server/.vscode`.
+Development requires a .env. Depending on you setup, you might have to copy over the .env to the respective subfolders.
+
+## .env
 ```sh
 # db config
 POSTGRES_DB=woordpeiler
 POSTGRES_HOST=localhost
-POSTGRES_PORT=127.0.0.1:5432 # local ip forces docker not to expose to outside
-# databuilder also needs a port other than POSTGRES_PORT
-DATABUILDER_PORT=127.0.0.1:5433 # local ip forces docker not to expose to outside
-# user with write access, used by databuilder
+POSTGRES_PORT=5432
+# builder also needs a port other than POSTGRES_PORT
+BUILDER_PORT=5433
+# user with write access, used by builder
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=[fill in]
 # user with read access, used by server
 READER_USER=reader
 READER_PASSWORD=[fill in]
-# docker image tag for server and client docker container
-VERSION_LABEL=dev
+# docker image tag for server and client
+VERSION=[dev | x.x.x]
+# server settings
+INTERNAL=[true | false]
+# proxy settings
+PROXY_PORT=80
+# client settings folder with config.json and assets
+CLIENT_CONFIG=[fill in]
+# database docker volume name
+DATABASE_VOLUME=[fill in]
 ```
-
-Because we want to rotate the database docker volume every week, we use separate .env files the database and databuilder that can be editted programatically.
-We create them by `cat`'ing the .env and appending a DATABUILDER_VOLUME or DATABASE_VOLUME variable with the correct volume name, pointing to that week's data.
-For development you could do the same once and update them only when needed. So:
-
-.env.databuilder:
-```sh
-# [copy over everything from .env]
-
-# docker volume name
-DATABUILDER_VOLUME="woordpeiler-[YYYY-MM-DD]"
-```
-
-.env.databuilder:
-```sh
-# [copy over everything from .env]
-
-# docker volume name
-DATABASE_VOLUME="woordpeiler-[YYYY-MM-DD]"
-```
-
-# How to develop
-A vscode workspace is available: `.code-workspace`.
-Debug configurations for client & server are available: `client/.vscode`, `server/.vscode`.
 
 ## Client
-First install npm. See `client/Dockerfile` for the version.
-
-`cd ./client`, `npm install`, `npm run dev`, go to `http://localhost:5173`.
+- Install node + npm (e.g. via [nvm](https://github.com/nvm-sh/nvm)). See `client/Dockerfile` for the version.
+- `cd client`
+- `npm i`
+- `npm run dev`, go to `http://localhost:5173`.
 
 ## Server
-First install python. See `server/Dockerfile` for the version
-
-`cd ./server`, `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, `fastapi dev`, go to `http://localhost:8000`. Go to `http://localhost:8000/docs` for the docs.
+- Install python (e.g. via [uv](https://github.com/astral-sh/uv)). See `server/Dockerfile` for the version
+- `cd server`
+- `python -m venv .venv` (or `uv venv`)
+- `source .venv/bin/activate`
+- `pip install -r requirements.txt` (or `uv pip [...]`)
+- `fastapi dev`, go to `http://localhost:8000`. Go to `http://localhost:8000/docs` for the docs.
 
 ## Database
-First install docker (the database will be a psql container + docker volume) and python (for all kinds of insertion scripts). We use the same python version as the server.
-Fill in `.env`, `.env.databuilder`, and `.env.database`!
+- Install docker, psql and python (see above). The python version matches the server.
+- `cd database`, 
+- `python -m venv venv`, 
+- `source venv/bin/activate`, 
+- `pip install -r requirements.txt`
+- For database creation, see `database/readme.md`.
 
-`cd ./database`, `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, 
+## Testing
+### Load tests
+- Install locust (`pip install locust`) either globally or create a venv.
+- `cd server/tests/load_tests`
+- `locust`, go to `http://localhost:8089/`
 
-Next, see `database/readme.md`.
+# Deployment
+- Install docker. 
+- `git clone https://github.com/instituutnederlandsetaal/woordpeiler`
+- `cd woordpeiler`.
+- Fill in the `.env`.
+- For database creation, see `database/readme.md`.
+- `docker compose up -d --force-recreate proxy` 
+    - docker compose "depends_on" will up the rest.
+    - "force-recreate" will clear any cache.
 
-# How to unit & load test
-
-## unit tests (server)
-For unit tests, we use the standard library `unittest` python package. If you open the vscode workspace, unit tests should be auto-discovered and appear on the sidebar. Otherwise, you can run `python -m unittest discover ./server/tests`.
-
-## load tests (server)
-For load tests we use locust. Either install this globally (`pip install locust`) or create a venv.
-
-`cd ./server/tests/load_tests`, `locust`, go to `http://localhost:8089/`
-
-# How to deploy
-Deployment works solely with docker.
-Install docker. Fill in the `.env`.
-`git clone [...]`, `cd [...]`, `docker compose up -d`.
-Or set a continuous cronjob for `scripts/deploy.sh`. 
-
-# How to populate the database
-See `database/readme.md`.
+## Docker images
+Docker images are available on Docker Hub.
+- [instituutnederlandsetaal/woordpeiler-server](https://hub.docker.com/repository/docker/instituutnederlandsetaal/woordpeiler-server)
+- [instituutnederlandsetaal/woordpeiler-client](https://hub.docker.com/repository/docker/instituutnederlandsetaal/woordpeiler-client)

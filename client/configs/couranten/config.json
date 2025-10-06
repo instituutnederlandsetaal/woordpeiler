@@ -1,0 +1,49 @@
+{
+    "version": "2.0.0",
+    "internal": true,
+    "basePath": "/couranten",
+    "spotlights": { "url": "https://ivdnt.org/courantenpeiler.json", "default": "assets/config/spotlights.json" },
+    "app": {
+        "name": "Courantenpeiler",
+        "slogan": "Woordtrends in de 17de eeuw",
+        "description": "De Courantenpeiler toont hoe vaak woorden voorkwamen in Nederlandstalige kranten uit de 17de eeuw."
+    },
+    "search": {
+        "ngram": 4,
+        "interval": { "desktop": { "type": "y", "size": 1 }, "mobile": { "type": "y", "size": 2 } },
+        "filters": [
+            { "name": "Locatie", "api": "language", "advanced": true },
+            { "name": "Krant", "api": "source", "advanced": false }
+        ]
+    },
+    "tagset": {
+        "aa": "Bijvoeglijk naamwoord",
+        "adp": "Voorzetsel",
+        "adv": "Bijwoord",
+        "conj": "Voegwoord",
+        "int": "Tussenwerpsel",
+        "nou-c": "Zelfstandig naamwoord",
+        "nou-p": "Eigennaam",
+        "num": "Telwoord",
+        "pd": "Voornaamwoord, lidwoord",
+        "vrb": "Werkwoord"
+    },
+    "corpus": { "name": "Couranten", "url": "https://ivdnt.org/corpora-lexica/courantencorpus" },
+    "period": { "start": "1600-01-01", "end": "1700-01-01" },
+    "theme": {
+        "color": "#ae0932",
+        "logo": "assets/config/courantenpeiler-logo.jpg",
+        "favicon": "assets/config/courantenpeiler-logo.jpg"
+    },
+    "blacklab": {
+        "url": {
+            "external": "https://couranten.ivdnt.org/corpus-frontend/couranten/search/hits",
+            "internal": "http://svotmc10.ivdnt.loc/blacklab-frontend/Couranten/search/hits"
+        },
+        "annotations": { "word": "word", "lemma": "lemma", "pos": "grouping_pos_full", "poshead": "pos" },
+        "grouping": { "year": "witness_year_from", "month": "witness_month_from", "day": "witness_day_from" },
+        "date": { "from": "date_from", "to": "date_to" },
+        "title": "titleLevel2",
+        "language": "settingLocation_country"
+    }
+}

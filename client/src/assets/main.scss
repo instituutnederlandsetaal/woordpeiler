@@ -1,139 +1,138 @@
-@use 'sass:color';
-@import './base.css';
+@use "sass:color";
+@import "./base.css";
+
+@font-face {
+    font-family: "Schoolboek";
+    src: url("@/assets/Schoolboek-Regular.woff") format("woff");
+}
+
+h1,
+h2,
+h3 {
+    font-weight: normal;
+    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+a {
+    &:visited {
+        color: blue;
+    }
+    &:focus {
+        color: red;
+    }
+}
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background-color: #f8f8f8;
-}
-
-html,
-body,
-#app {
-  overflow-x: hidden;
-}
-
-#app {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-height: 100vh;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #f8f8f8;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 100vh;
 }
 
 main {
-  flex: 1 1 0;
-  display: flex;
-  min-height: 100%;
-  gap: 1rem;
-  padding: 1rem;
+    flex: 1 1 0;
+    display: flex;
+    min-height: 100%;
+    gap: 1rem;
+    padding: 1rem;
 }
 
 aside {
-  width: 430px;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  gap: 1rem;
+    display: flex;
+    flex: 0 1 400px;
+    max-width: 400px;
+    flex-direction: column;
+    min-height: 0;
+    gap: 1rem;
+    justify-content: space-between;
 }
 
-.settings>div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+fieldset {
+    border: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.p-panel {
-  border: 1px solid #e2e8f0;
-  background: white;
-}
-
-
-.formSplit {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.panelHeader {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: left;
-  flex: 1 1 0;
-}
-
-div.invalid {
-  border-color: red;
-  border-width: 2px;
-}
-
-p.invalid {
-  color: red;
-  margin-bottom: 0.5rem;
-}
-
-// Because #overlayMenu is a direct child of body
+// Because #hamburger-menu is a direct child of body
 // and therefore lives above the AppHeader component
 // it needs to be styled here.
-#overlayMenu {
-  font-size: 1.1rem;
-  min-width: min-content;
+#hamburger-menu {
+    font-size: 1.1rem;
+    min-width: min-content;
+    font-family: "Schoolboek", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  * {
-    font-size: inherit;
-    min-width: inherit;
-  }
+    * {
+        font-size: inherit;
+        min-width: inherit;
+        color: inherit;
+    }
 }
 
 // help & about
-.textPanel {
-  width: 100%;
-  min-height: 100%;
-  height: fit-content;
-  flex: 1;
+.text-panel {
+    width: 100%;
+    min-height: 100%;
+    height: fit-content;
+    flex: 1;
 
-  p {
-    margin-bottom: 0.5rem;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-weight: 400;
-  }
-
-  .p-panel-header {
-    padding: 0.4rem;
-  }
-
-  .p-panel-content-container,
-  .p-tabpanels {
-    display: flex !important;
-    justify-content: center !important;
-
-    .p-panel-content,
-    .p-tabpanel {
-      max-width: 1000px !important;
-      padding-bottom: 3rem !important;
+    p {
+        margin-bottom: 0.5rem;
     }
-  }
 
-
-  section {
-    margin-bottom: 1rem;
-  }
-
-  ul {
-    list-style-type: none;
-    padding-left: 0;
-  }
-
-  li {
-    margin-bottom: 0.4rem;
-
-    b {
-      margin-right: 0.25rem;
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-weight: normal;
     }
-  }
 
+    .p-panel-header {
+        padding: 0.4rem;
+    }
+
+    .p-panel-content-container,
+    .p-tabpanels {
+        display: flex !important;
+        justify-content: center !important;
+
+        .p-panel-content,
+        .p-tabpanel {
+            max-width: 1000px !important;
+        }
+    }
+
+    section {
+        margin-bottom: 1rem;
+    }
+
+    ul {
+        list-style-type: none;
+        padding-left: 0;
+        ul {
+            li {
+                margin-top: 0.5rem;
+            }
+        }
+    }
+
+    li {
+        margin-bottom: 0.4rem;
+    }
+}
+
+dfn {
+    font-family: monospace;
+    font-style: normal;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    padding: 0.1rem 0.4rem;
+}
+
+.popup li {
+    padding: 0.25rem 0 !important;
 }

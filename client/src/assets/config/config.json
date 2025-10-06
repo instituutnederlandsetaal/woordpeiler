@@ -1,0 +1,57 @@
+{
+    "version": "2.0.0",
+    "internal": false,
+    "basePath": "/",
+    "spotlights": { "url": "https://ivdnt.org/woordpeiler.json", "default": "assets/config/spotlights.json" },
+    "app": {
+        "name": "Woordpeiler",
+        "slogan": "Woordtrends van 2000 tot nu",
+        "description": "Woordpeiler toont hoe vaak woorden voorkomen in Nederlandstalige kranten."
+    },
+    "search": {
+        "ngram": 2,
+        "interval": { "desktop": { "type": "m", "size": 3 }, "mobile": { "type": "y", "size": 1 } },
+        "filters": [
+            { "name": "Taalvariëteit", "api": "language", "advanced": false },
+            { "name": "Krant", "api": "source", "advanced": true }
+        ],
+        "autosplit": { "on": "language", "colors": { "NN": "F6C141", "BN": "DC050C", "SN": "4EB265", "AN": "1965B0" } }
+    },
+    "tagset": {
+        "aa": "Bijvoeglijk naamwoord",
+        "adp": "Voorzetsel",
+        "adv": "Bijwoord",
+        "conj": "Voegwoord",
+        "int": "Tussenwerpsel",
+        "nou-c": "Zelfstandig naamwoord",
+        "nou-p": "Eigennaam",
+        "num": "Telwoord",
+        "pd": "Voornaamwoord, lidwoord",
+        "vrb": "Werkwoord"
+    },
+    "language": {
+        "NN": "Nederlands-Nederlands",
+        "BN": "Belgisch-Nederlands",
+        "SN": "Surinaams-Nederlands",
+        "AN": "Antilliaans-Nederlands"
+    },
+    "corpus": { "name": "CHN", "url": "https://ivdnt.org/corpora-lexica/corpus-hedendaags-nederlands" },
+    "period": { "start": "2000-01-01" },
+    "theme": {
+        "color": "#4488ee",
+        "logo": "assets/config/woordpeiler-logo.svg",
+        "favicon": "assets/config/woordpeiler-logo.svg"
+    },
+    "blacklab": {
+        "url": {
+            "external": "https://portal.clarin.ivdnt.org/corpus-frontend-chn/chn-extern/search/hits",
+            "internal": "http://chn-i.ivdnt.loc/corpus-frontend/chn-intern/search/hits"
+        },
+        "filter": { "medium": "newspaper" },
+        "annotations": { "word": "word", "lemma": "lemma", "pos": "pos_full", "poshead": "pos" },
+        "grouping": { "year": "grouping_year", "month": "grouping_month", "day": "grouping_day" },
+        "date": { "from": "witnessDate_from", "to": "witnessDate_to" },
+        "title": "titleLevel2",
+        "language": "languageVariant"
+    }
+}

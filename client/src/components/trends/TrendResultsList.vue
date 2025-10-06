@@ -1,15 +1,28 @@
 <template>
-    <Panel header="Trendresultaten" class="trendlist">
-
-        <div class="formSplit" v-if="trendResults[0].poshead">
+    <Panel :header="`Trendresultaten: ${displayName(lastTrendSettings)}`" class="trendlist">
+        <fieldset>
             <label>Uitsluiten</label>
-            <MultiSelect v-model="selectedPosHead" display="chip" :options="posHeadOptions" placeholder="Woordsoort"
-                :loading="posHeadLoading" class="posSelect" />
-        </div>
+            <MultiSelect
+                v-model="excludedPos"
+                display="chip"
+                :options="posOptions"
+                placeholder="Woordsoort"
+                :loading="!posOptions"
+                class="pos-select"
+            />
+        </fieldset>
 
-        <Listbox multiple metaKeySelection v-model="selectedTrend" filter :options="filteredTrends"
-            filterPlaceholder="Zoeken" optionLabel="wordform" :virtualScrollerOptions="{ itemSize: 45 }"
-            listStyle="height:100%">
+        <Listbox
+            multiple
+            metaKeySelection
+            v-model="selectedTrend"
+            filter
+            :options="filteredTrends"
+            filterPlaceholder="Zoeken"
+            optionLabel="wordform"
+            :virtualScrollerOptions="{ itemSize: 45 }"
+            listStyle="flex: 1; display: flex; flex-direction: column"
+        >
             <template #option="{ option }">
                 <!-- index -->
                 <span class="index" title="Rangnummer">{{ trendResults.indexOf(option) + 1 }}.</span>
@@ -17,87 +30,65 @@
                 &nbsp;
                 <span> {{ option.wordform }} </span>
                 &nbsp;
-                <Chip :label="option.poshead" v-if="option.poshead" />
+                <Chip :label="option.pos" />
                 &nbsp;
                 <Badge :value="`${badgeName}: ${formatNumber(option.keyness)}`" severity="secondary" />
             </template>
         </Listbox>
-
     </Panel>
 </template>
 
 <script setup lang="ts">
-// Libraries & Stores
-import { ref, computed, watch, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
 // Stores
-import { useTrendResultsStore } from '@/stores/TrendResultsStore';
-import { useSearchResultsStore } from '@/stores/SearchResultsStore';
-import { useSearchItemsStore } from '@/stores/SearchItemsStore';
+import { useTrendResults } from "@/stores/trends/trendResults"
+import { useSearchResults } from "@/stores/search/searchResults"
+import { useSearchItems } from "@/stores/search/searchItems"
 // Types & API
-import type { TrendResult } from '@/types/trends';
-import * as ListingAPI from '@/api/listing';
-// Primevue
-import Listbox from "primevue/listbox"
-import Panel from "primevue/panel"
-import Chip from "primevue/chip"
-import Badge from "primevue/badge"
-import MultiSelect from "primevue/multiselect"
-
-import { randomColor } from '@/ts/color';
+import { type TrendResult, displayName } from "@/types/trends"
+// Util
+import { randomColor } from "@/ts/color"
+import { usePosses } from "@/stores/fetch/posses"
 
 // Stores
-const { trendResults, lastTrendSettings } = storeToRefs(useTrendResultsStore());
-const { searchItems } = storeToRefs(useSearchItemsStore());
-const { search } = useSearchResultsStore();
+const { trendResults, lastTrendSettings } = storeToRefs(useTrendResults())
+const { searchItems } = storeToRefs(useSearchItems())
+const { search } = useSearchResults()
 
 // Fields
 const selectedTrend = ref<TrendResult[]>([])
 /** poshead exclusion */
-const selectedPosHead = ref([])
-const posHeadOptions = ref<string[]>([])
-const posHeadLoading = ref(true)
+const { rawOptions: posOptions } = storeToRefs(usePosses())
+const excludedPos = ref<string[]>(["nou-p", "res", "num"])
 
 // Computed
 const filteredTrends = computed(() => {
-    return trendResults.value?.filter((i) => !selectedPosHead.value.includes(i.poshead))
+    return trendResults.value?.filter((trend) => {
+        const union = new Set(excludedPos.value).intersection(new Set(trend.pos.split(" ")))
+        return union.size === 0
+    })
 })
+
 const badgeName = computed(() => {
     // key for keyness, freq for frequency
-    return lastTrendSettings.value.trendType === 'keyness' ? 'key' : 'freq'
+    return lastTrendSettings.value.trendType === "keyness" ? "key" : "freq"
 })
 
 // Methods
 function formatNumber(num: number): number {
+    if (num < 1) num = Math.abs(Math.log2(num))
     return Math.floor(num * 10) / 10
 }
-
-function getPosHeadOptions() {
-    posHeadLoading.value = true
-    ListingAPI.getPosheads()
-        .then((response) => {
-            posHeadOptions.value = response.data;
-        })
-        .finally(() => {
-            posHeadLoading.value = false
-        })
-}
-
-// Lifecycle
-onMounted(() => {
-    getPosHeadOptions()
-})
 
 /** Insert selected trends into search items, and search them. */
 watch(selectedTrend, () => {
     searchItems.value = []
-    for (const trendItem of selectedTrend.value) {
+    for (const item of selectedTrend.value) {
         searchItems.value.push({
-            wordform: trendItem.wordform,
-            pos: trendItem.pos,
-            lemma: trendItem.lemma,
+            wordform: item.wordform,
+            pos: item.pos,
+            lemma: item.lemma,
             color: randomColor(),
-            visible: true
+            visible: true,
         })
     }
     search()
@@ -111,13 +102,9 @@ watch(selectedTrend, () => {
     font-size: smaller;
 }
 
-.posSelect {
+.pos-select {
     flex: 1;
     min-width: 0;
-}
-
-.formSplit {
-    gap: 1rem;
 }
 
 .index {
@@ -125,18 +112,27 @@ watch(selectedTrend, () => {
 }
 
 .trendlist {
-    :deep(.p-panel-content) {
-        padding: 0 !important;
-
-        .formSplit {
-            padding: 0 1rem;
-        }
-
-        .p-listbox {
-            border: none;
-
-            .p-listbox-list-container {
-                padding: 0 0 0 1rem;
+    display: flex;
+    flex-direction: column;
+    :deep(.p-panel-content-container) {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        .p-panel-content {
+            padding: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            fieldset {
+                gap: 0.5rem;
+                padding: 0 1rem 0.5rem 1rem;
+                min-width: 0;
+            }
+            .p-listbox {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                border: none;
             }
         }
     }

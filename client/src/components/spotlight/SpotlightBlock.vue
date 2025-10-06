@@ -1,116 +1,287 @@
 <template>
-    <section class="spotlight" :style="{ backgroundColor: spotlight.color }" @click="search(spotlight)">
+    <article :style="{ backgroundColor: spotlight.color }">
+        <router-link
+            v-if="spotlight.graph || spotlight.words"
+            @click="spotlightEvent(false)"
+            class="spotlight-link"
+            :to="getGraphUrl(spotlight)"
+        />
+        <a
+            v-else-if="spotlight.url"
+            @click="spotlightEvent(true)"
+            :href="utmUrl"
+            target="_blank"
+            class="spotlight-link"
+        />
         <header>
-            <h2>
-                {{ spotlight.word.toLowerCase().trim() }}
-            </h2>
+            <h2>{{ title }}</h2>
+            <div>
+                <p>{{ subtitle }}</p>
+                <a
+                    v-if="spotlight.url"
+                    :href="utmUrl"
+                    target="_blank"
+                    @click="
+                        (e) => {
+                            spotlightEvent(true)
+                            e.stopPropagation()
+                        }
+                    "
+                >
+                    artikel lezen <span class="pi pi-angle-double-right"></span>
+                </a>
+            </div>
         </header>
-        <p>sinds {{ spotlight.start_date.split("-")[0] }}</p>
-        <div>
-            <img v-if="svgBlob" :src="svgBlob" />
+        <div class="spotlight-content">
+            <div v-if="spotlight.content">
+                <p v-for="(c, i) in spotlight.content" :key="i" v-html="c" />
+            </div>
+            <hr v-if="spotlight.graph && spotlight.content" />
+            <figure v-if="spotlight.graph" v-html="svgBlob" v-intersection-observer="loadSvg" />
+            <ul v-if="spotlight.words">
+                <li v-for="(w, i) in spotlight.words" :key="i">
+                    {{ w }}
+                </li>
+            </ul>
         </div>
-    </section>
+    </article>
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { useRouter } from 'vue-router';
-import { onMounted, ref } from "vue";
-// API
+import { vIntersectionObserver } from "@vueuse/components"
 import * as API from "@/api/search"
-import { toTimestamp } from '@/ts/date';
-// Types
-import { type Spotlight } from "@/types/spotlight";
+import type { SpotlightBlock } from "@/types/spotlight"
+import { config } from "@/main"
 
 // Props
-const props = defineProps({
-    spotlight: {
-        type: Object as PropType<Spotlight>,
-        required: true
-    }
-})
+const { spotlight } = defineProps<{ spotlight: SpotlightBlock }>()
 
 // Fields
-const router = useRouter()
 const svgBlob = ref()
+const title = spotlight.title ?? spotlight.graph?.word ?? spotlight.graph?.lemma
+const startDate = spotlight.graph?.start ?? config.period.start
+const subtitle = spotlight.subtitle ?? (spotlight.graph ? `sinds ${startDate.split("-")[0]}` : "")
+const interval = spotlight.graph?.interval ?? "3m"
+
+const utmUrl = computed(
+    () => `${spotlight.url}?utm_source=${config.app.name.toLowerCase()}&utm_medium=referral&utm_campaign=article_link`,
+)
 
 // Methods
-function search(spotlight: Spotlight) {
-    const params = {
-        w: spotlight.word,
-        i: spotlight.period_type,
-        il: spotlight.period_length,
-        start: toTimestamp(new Date(spotlight.start_date)),
-        end: spotlight.end_date == undefined ? undefined : toTimestamp(new Date(spotlight.end_date)),
+function getGraphUrl(spotlight: SpotlightBlock): string {
+    if (spotlight.words) {
+        const params = new URLSearchParams({ w: spotlight.words.join() }).toString()
+        return `/grafiek?${params}`
     }
-    router.push({ path: '/grafiek', query: params });
+    const params = { w: spotlight.graph.word, l: spotlight.graph.lemma, i: interval, start: startDate }
+    Object.keys(params).forEach((k) => params[k] === undefined && delete params[k])
+    return `/grafiek?${new URLSearchParams(params)}`
 }
 
-// Lifecycle
-onMounted(() => {
-    const spotlight = props.spotlight
+function loadSvg([entry]: IntersectionObserverEntry[]) {
+    if (!entry?.isIntersecting || svgBlob.value) {
+        return
+    }
+    const graph = spotlight.graph
+    if (!graph) {
+        return // not a graph spotlight
+    }
     const request: API.SearchRequest = {
-        wordform: spotlight.word.toLowerCase().trim(),
-        start_date: toTimestamp(new Date(spotlight.start_date)),
-        period_type: spotlight.period_type,
-        period_length: spotlight.period_length,
+        w: graph.word?.toLowerCase()?.trim(),
+        l: graph.lemma?.toLowerCase()?.trim(),
+        start: startDate,
+        i: interval,
     }
 
-    API.getSVG(request)
-        .then((response) => {
-            const blob = response.data
-            svgBlob.value = `data:image/svg+xml;base64,${blob}`
-        })
-})
+    API.getSVG(request).then((res) => (svgBlob.value = res.data))
+}
+
+function spotlightEvent(external: boolean) {
+    const props = {
+        title,
+        subtitle: spotlight.subtitle,
+        content: Boolean(spotlight.content),
+        graph: Boolean(spotlight.graph),
+        words: Boolean(spotlight.words),
+        url: Boolean(spotlight.url),
+        external,
+    }
+    window.plausible("spotlight", { props })
+}
 </script>
 
 <style scoped lang="scss">
-section {
-    font-family: 'Schoolboek';
+article {
+    pointer-events: none;
+    .spotlight-link {
+        position: absolute;
+        inset: 0;
+        outline-offset: -3px;
+    }
+    > :not(.spotlight-link) {
+        position: relative;
+        z-index: 1;
+    }
+    :deep(a) {
+        position: relative;
+        pointer-events: auto;
+    }
+    position: relative;
+    color: initial;
+    text-decoration: initial;
     display: flex;
     flex-direction: column;
     padding: 1rem 2rem;
+    cursor: pointer;
+    // height
+    min-height: calc(300px + 5vw);
+    height: auto;
+    // height: 400px;
+    // height: ;
 
-    header {
-        border-bottom: 1px solid black;
-    }
+    // max-width: 500px;
+    // min-width: 100%;
+    // Without this, boxes with long text will grow to max-width, even if the screen is smaller
+    overflow: hidden;
+    gap: 0.5rem;
 
-    p {
-        font-size: 1rem;
-        font-weight: 400;
-    }
-
-    div {
-        flex: 1 0;
-        min-height: 0;
-        padding-top: 0.3rem;
-
-        img {
-            height: 100%;
-            // strech svg without keeping aspect ratio
-            width: 100%;
+    &:hover,
+    &:focus {
+        header h2 {
+            text-decoration: underline;
         }
     }
 
-    h2 {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: inline-block;
-        min-width: 0;
-        font-size: 2rem;
-        font-weight: 400;
-        padding-bottom: 0.5rem;
-        width: 100%;
+    header {
+        h2 {
+            border-bottom: 1px solid black;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            min-width: 0;
+            font-size: 2rem;
+            font-weight: normal;
+            padding-bottom: 0.5rem;
+            width: 100%;
+        }
+        div {
+            display: flex;
+            justify-content: space-between;
+            a {
+                color: inherit;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+
+                span {
+                    display: inline;
+                    font-size: 0.8rem;
+                }
+            }
+        }
+    }
+
+    .spotlight-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        flex: 1; // needed on chrome
+        gap: 0.5rem;
+        justify-content: space-between;
+
+        :deep(a) {
+            color: black;
+            text-decoration: underline;
+
+            &:hover {
+                text-decoration: none;
+            }
+        }
+
+        ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0;
+            border-top: 1px solid black;
+            padding-top: 1rem;
+
+            li {
+                list-style: none;
+                line-height: 1;
+                border: 1px solid black;
+                padding: 0.5rem;
+            }
+        }
+
+        figure {
+            // flex: 1 0;
+            min-height: 0;
+            flex: 1 0 calc(100px + 5vw);
+            // height: auto;
+            // max-height: calc(100px + 10vw);
+
+            :deep(svg) {
+                user-select: none;
+                height: 100%;
+                width: 100%;
+                fill: none;
+                stroke: black;
+                stroke-width: 0.005;
+            }
+            :deep(svg polyline) {
+                stroke-dasharray: 100;
+                stroke-dashoffset: 100;
+                animation: draw 10s forwards;
+            }
+            @keyframes draw {
+                to {
+                    stroke-dashoffset: 0;
+                }
+            }
+        }
+
+        hr {
+            width: 100%;
+            border: none;
+            border-top: 1px solid black;
+        }
     }
 }
 
-section:hover,
-section:focus {
-    cursor: pointer;
+@media screen and (max-width: 1024px) {
+    article header h2 {
+        font-size: 1.8rem;
+    }
+}
+@media screen and (max-width: 640px) {
+    article {
+        padding: 0.65rem 1.35rem;
 
-    h2 {
-        color: white;
+        header {
+            h2 {
+                font-size: 1.5rem;
+            }
+            p,
+            a {
+                font-size: 0.9rem;
+            }
+        }
+        .spotlight-content {
+            p {
+                font-size: 0.9rem;
+            }
+            ul {
+                padding-top: 0.5rem;
+                gap: 0.35rem;
+                li {
+                    padding: 0.35rem;
+                }
+            }
+        }
     }
 }
 </style>

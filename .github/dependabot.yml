@@ -30,6 +30,7 @@ updates:
       - "/server"
       - "/client"
       - "/proxy"
+      - "/database"
     schedule:
       interval: "monthly"
       

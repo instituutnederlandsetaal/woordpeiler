@@ -1,16 +1,15 @@
 # standard
 from enum import Enum
-import os
 from typing import Optional, Any
 from datetime import datetime
+import logging
 
 # third party
-from dotenv import load_dotenv
 from psycopg import AsyncCursor, Cursor
 from psycopg.sql import Composable, Identifier, Literal, SQL, Composed
 
-load_dotenv()
-internal = os.getenv("INTERNAL", "false").lower() == "true"
+logger = logging.getLogger("uvicorn")
+logger.setLevel(logging.getLevelName(logging.DEBUG))
 
 type BaseCursor = Cursor | AsyncCursor
 type Query = SQL | Composed
@@ -39,24 +38,22 @@ class QueryBuilder:
         raise NotImplementedError()
 
     @staticmethod
-    def where(column: Enum, value: Optional[str]) -> Composable:
+    def where(column: str, value: Optional[str]) -> Composable:
         if value is not None:
-            if (
-                "*" in value or "?" in value
-            ) and internal:  # only allow regex internally
+            if "*" in value or "?" in value:
                 escaped = value.replace("*", "%").replace("?", "_")
                 return SQL("{column} LIKE {value}").format(
-                    column=Identifier(column.value), value=Literal(escaped)
+                    column=Identifier(column), value=Literal(escaped)
                 )
             else:
                 return SQL("{column} = {value}").format(
-                    column=Identifier(column.value), value=Literal(value)
+                    column=Identifier(column), value=Literal(value)
                 )
 
         return SQL("")
 
     @staticmethod
-    def where_and(columns: list[Enum], values: list[Optional[str]]) -> Composable:
+    def where_and(columns: list[str], values: list[Optional[str]]) -> Composable:
         return SQL(" AND ").join(
             [
                 QueryBuilder.where(column, value)
@@ -72,7 +69,7 @@ class QueryBuilder:
         unixtime: Optional[int],
     ) -> Optional[Composable]:
         if unixtime is not None:
-            date: str = datetime.fromtimestamp(unixtime).strftime("%Y%m%d")
+            date = unixtime
             return SQL("{column} {operator} {date}").format(
                 column=column,
                 operator=SQL(operator.value),
@@ -106,6 +103,9 @@ class ExecutableQuery[T]:
         self.verbose = verbose
 
     async def execute(self) -> BaseCursor:
+        if self.verbose:
+            logger.debug(self.query.as_string(self.cursor))
+
         if type(self.cursor) is AsyncCursor:
             await self.cursor.execute(self.query)
         else:

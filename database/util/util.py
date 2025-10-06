@@ -1,3 +1,4 @@
+# standard
 import sys
 
 
@@ -12,5 +13,5 @@ def ask_confirmation():
             print("Please enter 'y' or 'n'.")
 
 
-def eprint(*args, **kwargs):
+def eprint(*args, **kwargs) -> None:
     print(*args, file=sys.stderr, **kwargs)

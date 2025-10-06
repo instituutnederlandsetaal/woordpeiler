@@ -1,12 +1,13 @@
-import { displayName, type GraphItem } from "@/types/Search"
-
-export function firstTruthyWord(words: GraphItem[]): string | null {
-    return words.map((i) => displayName(i.searchItem)).find((i) => i) || null
-}
+import { searchToString } from "@/types/search"
+import type { GraphItem } from "@/types/graph"
 
 export function getFileName(words: GraphItem[]): string {
     const word = firstTruthyWord(words)
     return word ? `woordpeiler_${word}_${dateTimeStamp()}.png` : `woordpeiler_${dateTimeStamp()}.png`
+}
+
+function firstTruthyWord(words: GraphItem[]): string | null {
+    return words.map((i) => searchToString(i.searchItem)).find((i) => i) || null
 }
 
 function dateTimeStamp(): string {

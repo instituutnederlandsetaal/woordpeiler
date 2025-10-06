@@ -1,58 +1,83 @@
+"""
+Woordpeiler API endpoints.
+
+Endpoints themselves do permission checks and pass the request to the appropriate QueryBuilder class.
+That class may raise exceptions, which are caught and returned as HTTPExceptions.
+"""
+
 # standard
-from math import trunc
-from typing import Annotated, Any, Optional
-import base64
+from datetime import date
+from typing import Any, Optional
 
 # third party
 from psycopg.rows import dict_row
-from fastapi import Request, HTTPException, Query
+from fastapi import Request, HTTPException, Response
 import uvicorn
-from unidecode import unidecode
+import httpx
 
 # local
-from server.query.arithmetical_query import ArithmeticalQuery
+from server.query.svg_query import SvgQuery
 from server.query.listing_query import ListingQuery
-from server.query.trends_query import TrendsQuery
-from server.query.word_frequency_query import WordFrequencyQuery
+from server.query.trends.trends_query import TrendsQuery
+from server.query.frequency_query import FrequencyQuery
+from server.query.words_query import WordsQuery
+from server.query.sources_query import SourcesQuery
 from server.config.config import FastAPI, create_app_with_config
 from server.util.dataseries_row_factory import (
-    DataSeriesRowFactory,
     SingleValueRowFactory,
 )
-from server.util.datatypes import DataSeries
 
 app: FastAPI = create_app_with_config()
 
 
 @app.get("/")
-def read_root():
-    return {"version": "0.0.1"}
+async def read_root():
+    return "woordpeiler.ivdnt.org"
+
+
+@app.get("/spotlights")
+async def get_spotlights(request: Request):
+    """A way for the client to get the spotlights without CORS issues."""
+    async with httpx.AsyncClient() as client:
+        r = await client.get("https://ivdnt.org/woordpeiler-intern.json")
+        if r.status_code != 200:
+            # that's ok, the client has a backup spotlights.json
+            return ""
+        return Response(content=r.content, media_type="application/json")
 
 
 @app.get("/health")
-def health():
-    return app.async_pool.get_stats()
+async def health(request: Request):
+    if not request.app.internal:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
+    return app.pool.get_stats()
 
 
 @app.get("/sources")
 async def get_sources(request: Request) -> list[str]:
-    async with request.app.async_pool.connection() as conn:
+    if not request.app.internal:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("sources", "source").build(cur).execute_fetchall()
+            return await SourcesQuery().build(cur).execute_fetchall()
+
+
+@app.get("/languages")
+async def get_languages(request: Request) -> list[str]:
+    async with request.app.pool.connection() as conn:
+        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
+            return (
+                await ListingQuery("sources", "language").build(cur).execute_fetchall()
+            )
 
 
 @app.get("/posses")
 async def get_posses(request: Request) -> list[str]:
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("words", "pos").build(cur).execute_fetchall()
-
-
-@app.get("/posheads")
-async def get_posheads(request: Request) -> list[str]:
-    async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("words", "poshead").build(cur).execute_fetchall()
+            return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
 
 
 @app.get("/trends")
@@ -60,27 +85,24 @@ async def get_trends(
     request: Request,
     trend_type: str = "absolute",
     modifier: float = 1,
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
-    enriched: bool = True,
+    start: Optional[date] = None,
+    end: Optional[date] = None,
     language: Optional[str] = None,
-    ascending: bool = False,
-    exclude: Annotated[Optional[list[str]], Query()] = None,
+    ngram: int = 1,
 ) -> list[Any]:
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    async with request.app.async_pool.connection() as conn:
+    async with request.app.pool.connection() as conn:
         async with conn.cursor(row_factory=dict_row) as cur:
             return (
-                await TrendsQuery(
+                await TrendsQuery.create(
                     trend_type,
                     modifier,
-                    start_date,
-                    end_date,
-                    enriched,
+                    start,
+                    end,
                     language,
-                    ascending,
+                    ngram,
                 )
                 .build(cur)
                 .execute_fetchall()
@@ -90,152 +112,85 @@ async def get_trends(
 @app.get("/svg")
 async def get_svg(
     request: Request,
-    id: Optional[int] = None,
-    wordform: Optional[str] = None,
-    lemma: Optional[str] = None,
-    pos: Optional[str] = None,
-    source: Optional[str] = None,
-    language: Optional[str] = None,
-    period_type: str = "year",
-    period_length: int = 1,
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
+    w: Optional[str] = None,
+    l: Optional[str] = None,
+    p: Optional[str] = None,
+    s: Optional[str] = None,
+    v: Optional[str] = None,
+    start: Optional[date] = None,
+    end: Optional[date] = None,
+    i: str = "1y",
 ) -> str:
-    # get the word as a regular WordFrequencyQuery
-    data = await get_freq(
-        request,
-        id,
-        wordform,
-        lemma,
-        pos,
-        source,
-        language,
-        period_type,
-        period_length,
-        start_date,
-        end_date,
-    )
-    # create a <svg> and <polyline> element
-    svg = f'<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 100 100">'
-    svg += f'<polyline points="'
-
-    # normalize the data between 0 and 100
-    max_freq = max([d.rel_freq for d in data])
-    max_time = max([d.time for d in data])
-    min_time = min([d.time for d in data])
-    for d in data:
-        d.rel_freq = d.rel_freq / max_freq * 100
-        d.time = (d.time - min_time) / (max_time - min_time) * 100
-
-    for d in data:
-        # convert 12.66666 to 12.66
-        trunc_freq = trunc(d.rel_freq * 100) / 100
-        trunc_time = trunc(d.time * 100) / 100
-        svg += f"{trunc_time},{100 - trunc_freq} "
-    svg += f'" fill="none" stroke="black" stroke-width="0.5" />'
-    svg += f"</svg>"
-    svg_base64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
-    return svg_base64
+    async with request.app.pool.connection() as conn:
+        async with conn.cursor() as cur:
+            freq = FrequencyQuery(w, l, p, s, v, start, end, i)
+            return await SvgQuery(freq).execute(cur)
 
 
-async def get_math(
-    request: Request,
-    formula: str,
-    source: Optional[str] = None,
-    language: Optional[str] = None,
-    period_type: str = "year",
-    period_length: int = 1,
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
-) -> list[DataSeries]:
-    async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
-            return await ArithmeticalQuery(
-                formula,
-                source,
-                language,
-                period_type,
-                period_length,
-                start_date,
-                end_date,
-            ).execute(cur)
-
-
-@app.get("/word_frequency")
+@app.get("/frequency")
 async def get_freq(
     request: Request,
-    id: Optional[int] = None,
-    wordform: Optional[str] = None,
-    lemma: Optional[str] = None,
-    pos: Optional[str] = None,
-    source: Optional[str] = None,
-    language: Optional[str] = None,
-    period_type: str = "year",
-    period_length: int = 1,
-    start_date: Optional[int] = None,
-    end_date: Optional[int] = None,
-) -> list[DataSeries]:
-    # permission check
-    if any([source, lemma, pos, id]) and not request.app.internal:
+    w: Optional[str] = None,
+    l: Optional[str] = None,
+    p: Optional[str] = None,
+    s: Optional[str] = None,
+    v: Optional[str] = None,
+    start: Optional[date] = None,
+    end: Optional[date] = None,
+    i: str = "1y",
+) -> list[Any]:
+    # permission check for source
+    if s is not None and not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    # unicode normalization
-    if wordform is not None:
-        wordform = unidecode(wordform)
+    # at least a lemma or wordform should be defined
+    clean_w = w.replace("[]", "").strip() if w else ""
+    clean_l = l.replace("[]", "").strip() if l else ""
+    if not any([clean_l, clean_w]):
+        raise HTTPException(status_code=400, detail="No wordform or lemma provided")
 
-    if lemma is not None:
-        lemma = unidecode(lemma)
+    # does the number of pos match the number of lemmas or wordforms
+    num_pos = len(p.strip().split(" ")) if p else 0
+    num_lemma = len(l.strip().split(" ")) if l else 0
+    num_words = len(w.strip().split(" ")) if w else 0
+    if num_pos > num_lemma and num_pos > num_words:
+        raise HTTPException(status_code=400, detail="Provide as many posses as words")
 
-    # period_length check
-    if period_length < 1:
-        raise HTTPException(status_code=400, detail="Invalid periodLength")
-
-    # send to math
-    if wordform and ("+" in wordform or "/" in wordform):
-        return await get_math(
-            request,
-            wordform,
-            source,
-            language,
-            period_type,
-            period_length,
-            start_date,
-            end_date,
-        )
-
-    # Validate
-    poshead = None
-    if pos is not None:
-        if "(" not in pos:
-            poshead = pos
-            pos = None
-
-    # ensure at least one parameter is provided
-    if not any([id, wordform, lemma, pos, poshead, source, language]):
-        raise HTTPException(
-            status_code=400, detail="At least one parameter is required"
-        )
-
-    # execute
-    async with request.app.async_pool.connection() as conn:
-        async with conn.cursor(row_factory=DataSeriesRowFactory) as cur:
-            return (
-                await WordFrequencyQuery(
-                    id=id,
-                    wordform=wordform,
-                    lemma=lemma,
-                    pos=pos,
-                    poshead=poshead,
-                    source=source,
-                    language=language,
-                    bucket_type=period_type,
-                    bucket_size=period_length,
-                    start_date=start_date,
-                    end_date=end_date,
+    try:
+        async with request.app.pool.connection() as conn:
+            async with conn.cursor() as cur:
+                return (
+                    await FrequencyQuery(
+                        wordform=w,
+                        lemma=l,
+                        pos=p,
+                        source=s,
+                        language=v,
+                        interval=i,
+                        start=start,
+                        end=end,
+                    )
+                    .build(cur)
+                    .execute_fetchall()
                 )
-                .build(cur)
-                .execute_fetchall()
-            )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# Get all words that match the given parameters, can be regex
+@app.get("/words")
+async def get_words(
+    request: Request,
+    w: Optional[str] = None,
+    l: Optional[str] = None,
+    p: Optional[str] = None,
+) -> list[Any]:
+    if not request.app.internal:
+        raise HTTPException(status_code=403, detail="Permission denied")
+
+    async with request.app.pool.connection() as conn:
+        async with conn.cursor(row_factory=dict_row) as cur:
+            return await WordsQuery(w, l, p).build(cur).execute_fetchall()
 
 
 if __name__ == "__main__":

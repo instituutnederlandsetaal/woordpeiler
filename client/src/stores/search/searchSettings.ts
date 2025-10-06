@@ -1,0 +1,92 @@
+import type { SearchSettings } from "@/types/searchSettings"
+import type { SelectLabel } from "@/types/ui"
+import { config } from "@/main"
+import { toUTCDate } from "@/ts/date"
+
+export const useSearchSettings = defineStore("searchSettings", () => {
+    const searchSettings = ref<SearchSettings>({
+        intervalType: initTimeBucket().type,
+        intervalLength: initTimeBucket().size,
+        startDate: new Date(config.period.start),
+        endDate: getEndDate(),
+        frequencyType: "rel",
+        languageSplit: false,
+    })
+    const frequencyTypeOptions: SelectLabel[] = [
+        { label: "relatief", value: "rel" },
+        { label: "absoluut", value: "abs" },
+    ]
+    const timeBucketOptions: SelectLabel[] = [
+        { label: "dag", value: "d" },
+        { label: "week", value: "w" },
+        { label: "maand", value: "m" },
+        { label: "jaar", value: "y" },
+    ]
+    function initTimeBucket(): { type: string; size: number } {
+        return window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
+    }
+    function resetDates() {
+        searchSettings.value.startDate = new Date(config.period.start)
+        searchSettings.value.endDate = config.period.end ? new Date(config.period.end) : toUTCDate(new Date())
+    }
+    function getEndDate() {
+        return config.period.end ? new Date(config.period.end) : toUTCDate(new Date())
+    }
+    function searchSettingsFromUrl() {
+        const params = new URLSearchParams(window.location.search)
+        const interval = params.get("i")
+        const legacyIntervalLength = params.get("il")
+        const startDate = params.get("start")
+        const endDate = params.get("end")
+        const frequencyType = params.get("f")
+
+        if (interval) {
+            if (interval.match(/\d/)) {
+                // new format
+                searchSettings.value.intervalType = interval.slice(-1)
+                searchSettings.value.intervalLength = parseInt(interval.slice(0, -1))
+            } else {
+                // legacy format
+                searchSettings.value.intervalType = interval[0]
+                if (legacyIntervalLength) searchSettings.value.intervalLength = parseInt(legacyIntervalLength)
+            }
+        } else {
+            searchSettings.value.intervalType = initTimeBucket().type
+            searchSettings.value.intervalLength = initTimeBucket().size
+        }
+        /** dateStr is either a unix time stamp or a date string like YYYY-MM-DD */
+        function toDate(dateStr: string): Date {
+            if (dateStr.includes("-")) return new Date(dateStr)
+            return new Date(parseInt(dateStr) * 1000)
+        }
+
+        searchSettings.value.startDate = startDate ? toDate(startDate) : new Date(config.period.start)
+        searchSettings.value.endDate = endDate ? toDate(endDate) : getEndDate()
+
+        if (frequencyType) searchSettings.value.frequencyType = frequencyType
+    }
+
+    // Lifecycle
+    watch(
+        () => ({ ...searchSettings.value }),
+        (newValue, oldValue) => {
+            const entries = Object.values(newValue)
+            if (entries.some((entry) => entry == null || entry == undefined)) {
+                setTimeout(() => {
+                    searchSettings.value = oldValue
+                }, 0)
+            }
+        },
+    )
+
+    // Export
+    return {
+        // Fields
+        searchSettings,
+        frequencyTypeOptions,
+        timeBucketOptions,
+        // Methods
+        resetDates,
+        searchSettingsFromUrl,
+    }
+})

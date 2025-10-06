@@ -1,7 +1,6 @@
 <template>
-    <div class="graph">
+    <figure>
         <Panel class="p-panel">
-
             <!--icons-->
             <template #header v-if="visible.length > 0">
                 <Button text severity="secondary" @click="downloadBtn">
@@ -18,60 +17,52 @@
             <template v-if="searchResults.length > 0">
                 <div v-if="visible.length == 0">
                     Alle woorden zijn verborgen. <br />
-                    Toon woorden door op <span class="pi pi-eye-slash"></span> te klikken.
+                    Toon woorden door op
+                    <span class="pi pi-eye-slash"></span> te klikken.
                 </div>
                 <D3Graph v-else ref="graph" />
             </template>
             <template v-else>
-                <ProgressSpinner v-if="isSearching" />
+                <ProgressSpinner v-if="isSearching" animationDuration=".5s" />
                 <div v-else>Zoek een woord</div>
             </template>
         </Panel>
-    </div>
+    </figure>
 </template>
 
 <script setup lang="ts">
-// Libraries
-import { computed, ref } from "vue";
-import { storeToRefs } from "pinia";
 // Stores
-import { useSearchResultsStore } from "@/stores/SearchResultsStore";
-// Components
-import D3Graph from "@/components/graph/D3Graph.vue";
-// Primevue
-import ProgressSpinner from "primevue/progressspinner";
-import Panel from "primevue/panel";
-import Button from "primevue/button";
+import { useSearchResults } from "@/stores/search/searchResults"
 // Util
-import { share } from "@/ts/svg/share";
-import { download } from "@/ts/svg/download";
+import { share } from "@/ts/svg/share"
+import { download } from "@/ts/svg/download"
 
 // Stores
-const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResultsStore());
+const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearchResults())
 
 // Fields
-const graph = ref(null);
-const canShare = navigator.share != undefined;
+const graph = ref(null)
+const canShare = navigator.share != undefined
 
 // Computed
-const visible = computed<GraphItem[]>(() => searchResults.value.filter(d => d.searchItem.visible));
-const zoomedIn = computed(() => graph.value?.zoomedIn);
+const visible = computed<GraphItem[]>(() => searchResults.value.filter((d) => d.searchItem.visible))
+const zoomedIn = computed(() => graph.value?.zoomedIn)
 
 // Methods
 function downloadBtn() {
-    download(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
+    download(graph.value.resizeState, searchResults.value, lastSearchSettings.value)
 }
 function shareBtn() {
-    share(graph.value.resizeState, searchResults.value, lastSearchSettings.value);
+    share(graph.value.resizeState, searchResults.value, lastSearchSettings.value)
 }
 
 function resetZoom() {
-    graph.value.resetZoom();
+    graph.value.resetZoom()
 }
 </script>
 
 <style scoped lang="scss">
-.graph {
+figure {
     flex: 1 1 0;
 
     :deep(.p-panel) {
@@ -92,7 +83,6 @@ function resetZoom() {
                 justify-content: center;
                 align-items: center;
 
-
                 #svg-container {
                     flex: 1;
                     max-height: 100%;
@@ -110,6 +100,45 @@ function resetZoom() {
             button {
                 z-index: 1;
                 margin-top: 34px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    figure {
+        max-height: 500px !important;
+        min-height: 500px !important;
+    }
+}
+@media screen and (max-width: 768px) {
+    figure {
+        max-height: 400px !important;
+        min-height: 400px !important;
+    }
+}
+@media screen and (max-width: 480px) {
+    figure {
+        max-height: 350px !important;
+        min-height: 350px !important;
+        margin-top: 30px;
+
+        :deep(.p-panel) {
+            .p-panel-header {
+                box-sizing: border-box !important;
+                background-color: white;
+                height: 30px !important;
+                margin-top: -30px;
+                position: static;
+                border: 1px solid #e2e8f0;
+                border-bottom: none;
+                margin-left: -1px !important;
+                position: absolute;
+
+                .p-button {
+                    height: 100%;
+                    margin: 0 !important;
+                }
             }
         }
     }
