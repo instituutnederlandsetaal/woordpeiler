@@ -230,11 +230,11 @@ article {
                 width: 100%;
                 fill: none;
                 stroke: black;
-                stroke-width: 0.005;
+                stroke-width: 0.5;
             }
             :deep(svg polyline) {
-                stroke-dasharray: 100;
-                stroke-dashoffset: 100;
+                stroke-dasharray: 10000;
+                stroke-dashoffset: 10000;
                 animation: draw 10s forwards;
             }
             @keyframes draw {
