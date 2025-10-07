@@ -14,7 +14,7 @@ class SvgQuery:
         # get the word as a regular FrequencyQuery
         data = await self.freq.build(cursor).execute_fetchall()
 
-        flat_line = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 100 100'><polyline points='0,100 100,100'/></svg>"
+        flat_line = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 1 1'><polyline points='0,1 1,1'/></svg>"
 
         if len(data) == 0:
             # no data
@@ -36,10 +36,10 @@ class SvgQuery:
             new_freq = 1 - (freq / max_freq)
             new_time = (time - min_time) / max_time
             # truncate
-            new_freq = trunc(new_freq * 100)
-            new_time = trunc(new_time * 100)
+            new_freq = trunc(new_freq * 100) / 100
+            new_time = trunc(new_time * 100) / 100
             # add to points string
             points += f"{new_time},{new_freq} "
 
         # create <svg> and <polyline>
-        return f"<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 100 100'><polyline points='{points}'/></svg>"
+        return f"<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 1 1'><polyline points='{points}'/></svg>"
