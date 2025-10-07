@@ -107,20 +107,20 @@ figure {
 
 @media screen and (max-width: 1024px) {
     figure {
-        max-height: 500px !important;
-        min-height: 500px !important;
+        min-height: 500px;
+        height: 500px;
     }
 }
 @media screen and (max-width: 768px) {
     figure {
-        max-height: 400px !important;
-        min-height: 400px !important;
+        min-height: 400px;
+        height: 400px;
     }
 }
 @media screen and (max-width: 480px) {
     figure {
-        max-height: 350px !important;
-        min-height: 350px !important;
+        min-height: 350px;
+        height: 350px;
         margin-top: 30px;
 
         :deep(.p-panel) {
