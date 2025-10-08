@@ -27,8 +27,8 @@ class WordsTableBuilder(TableBuilder):
 
         self.add_indices = SQL("""
             CREATE INDEX ON {words} (id); -- for trends
-            CREATE INDEX ON {words} USING GIN (wordform_ids); -- for frequency
-            CREATE INDEX ON {words} USING GIN (lemma_ids); -- for frequency
+            CREATE INDEX ON {words} USING GIN (wordform_ids, pos_ids); -- for frequency
+            CREATE INDEX ON {words} USING GIN (lemma_ids, pos_ids); -- for frequency
             CREATE INDEX ON {words} USING GIN (pos_ids); -- for frequency
         """).format(words=self.words)
 
