@@ -1,4 +1,4 @@
-FROM node:24.9.0-alpine3.22 AS build
+FROM node:25.1.0-alpine3.22 AS build
 COPY . .
 RUN npm ci && npm run build && mv /dist/*.* /dist/assets && mv /dist/assets/index.html /dist/assets/robots.txt /dist/
 
