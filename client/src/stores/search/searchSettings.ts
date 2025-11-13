@@ -39,6 +39,7 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         const startDate = params.get("start")
         const endDate = params.get("end")
         const frequencyType = params.get("f")
+        const split = params.get("split")
 
         if (interval) {
             if (interval.match(/\d/)) {
@@ -64,6 +65,7 @@ export const useSearchSettings = defineStore("searchSettings", () => {
         searchSettings.value.endDate = endDate ? toDate(endDate) : getEndDate()
 
         if (frequencyType) searchSettings.value.frequencyType = frequencyType
+        if (split) searchSettings.value.languageSplit = split === "true"
     }
 
     // Lifecycle
