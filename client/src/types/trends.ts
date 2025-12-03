@@ -8,6 +8,7 @@ export type TrendSettings = {
     period: string
     language?: string
     ngram: number
+    asc: boolean
 }
 
 export type DateRange = { start: Date; end: Date }

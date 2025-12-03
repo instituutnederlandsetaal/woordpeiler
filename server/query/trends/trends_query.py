@@ -22,6 +22,7 @@ class TrendsQuery(QueryBuilder):
         end: Optional[int] = None,
         language: Optional[str] = None,
         ngram: int = 1,
+        desc: bool = True,
     ) -> None:
         self.counts = Identifier(f"counts_{ngram}")
         self.words_table = Identifier(f"words_{ngram}")
@@ -34,6 +35,7 @@ class TrendsQuery(QueryBuilder):
         self.rel_freq = Identifier("rel_freq")
         self.end_date = end
         self.begin_date = start
+        self.sorting = SQL("DESC") if desc else SQL("ASC")
 
     @staticmethod
     def get_source_filter(language: Optional[str]) -> Composable:

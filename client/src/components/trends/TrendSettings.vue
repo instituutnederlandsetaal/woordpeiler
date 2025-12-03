@@ -121,6 +121,11 @@
                                     <label>{{ modifierLabel }}</label>
                                     <input type="number" class="p-inputtext" v-model="trendSettings.modifier" min="0" />
                                 </fieldset>
+
+                                <fieldset v-if="trendSettings.trendType === 'keyness'">
+                                    <label>Verdwijnwoord</label>
+                                    <Checkbox v-model="trendSettings.asc" binary />
+                                </fieldset>
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
