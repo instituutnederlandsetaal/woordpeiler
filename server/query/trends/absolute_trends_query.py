@@ -46,7 +46,7 @@ class AbsoluteTrendsQuery(TrendsQuery):
                 FROM target
                 LEFT JOIN total ON target.word_id = total.word_id
                 LEFT JOIN after ON target.word_id = after.word_id
-                WHERE (total.abs_freq - COALESCE(after.abs_freq, 0) - target.abs_freq) < {modifier}
+                WHERE (total.abs_freq - COALESCE(after.abs_freq, 0) - target.abs_freq) <= {modifier}
                 ORDER BY target.abs_freq DESC
                 LIMIT 1000
             )
