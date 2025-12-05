@@ -231,15 +231,16 @@ article {
                 fill: none;
                 stroke: black;
                 stroke-width: 0.005;
-            }
-            :deep(svg polyline) {
-                stroke-dasharray: 100;
-                stroke-dashoffset: 100;
-                animation: draw 10s forwards;
-            }
-            @keyframes draw {
-                to {
-                    stroke-dashoffset: 0;
+
+                mask-image: linear-gradient(to right, black 0%, black 50%, transparent 51%, transparent 100%);
+                mask-size: 200% 100%;
+                mask-position: 100% 0;
+                animation: reveal 2.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+
+                @keyframes reveal {
+                    100% {
+                        mask-position: 0 0;
+                    }
                 }
             }
         }
