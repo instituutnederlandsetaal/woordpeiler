@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.4
+
 FROM python:3.14.2-alpine3.23
 # Cache dependencies
 COPY --link requirements.txt ./server/
