@@ -89,6 +89,7 @@ async def get_trends(
     end: Optional[date] = None,
     language: Optional[str] = None,
     ngram: int = 1,
+    desc: bool = True,
 ) -> list[Any]:
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
@@ -103,6 +104,7 @@ async def get_trends(
                     end,
                     language,
                     ngram,
+                    desc,
                 )
                 .build(cur)
                 .execute_fetchall()

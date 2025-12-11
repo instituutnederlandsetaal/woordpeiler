@@ -26,6 +26,7 @@ export const useTrendResults = defineStore("trendResults", () => {
             end: toTimestamp(selectedPeriod.end),
             language: trendSettings.value.language,
             ngram: trendSettings.value.ngram,
+            desc: !trendSettings.value.asc,
         }
 
         TrendAPI.getTrends(trendRequest)

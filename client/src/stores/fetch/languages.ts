@@ -6,8 +6,8 @@ export const useLanguages = defineStore("languages", () => {
     const options = ref<SelectLabel[]>()
     const rawOptions = ref<string[]>()
 
-    function fetch() {
-        API.getLanguages().then((res) => {
+    function fetch(): Promise<void> {
+        return API.getLanguages().then((res) => {
             rawOptions.value = res.data
             options.value = res.data.map(format)
         })
@@ -20,5 +20,5 @@ export const useLanguages = defineStore("languages", () => {
 
     fetch()
 
-    return { options, rawOptions }
+    return { options, rawOptions, fetch }
 })

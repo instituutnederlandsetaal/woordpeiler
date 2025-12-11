@@ -46,7 +46,7 @@ class KeynessTrendsQuery(TrendsQuery):
                 FROM target
                 LEFT JOIN total ON target.word_id = total.word_id
                 LEFT JOIN after ON target.word_id = after.word_id
-                ORDER BY keyness DESC
+                ORDER BY keyness {sorting}
                 LIMIT 1000
             )
             SELECT
@@ -65,7 +65,7 @@ class KeynessTrendsQuery(TrendsQuery):
             GROUP BY
                 k.word_id, k.keyness
             ORDER BY
-                k.keyness DESC
+                k.keyness {sorting}
             """
         ).format(
             words_table=self.words_table,
@@ -77,5 +77,6 @@ class KeynessTrendsQuery(TrendsQuery):
             end_date=self.end_date,
             begin_date=self.begin_date,
             source_filter=self.source_filter,
+            sorting=self.sorting,
         )
         return ExecutableQuery(cursor, query)

@@ -19,6 +19,7 @@ export const useSearchResults = defineStore("searchResults", () => {
     const searchResults = ref<GraphItem[]>([])
     const { searchSettings } = storeToRefs(useSearchSettings())
     const { validSearchItems } = storeToRefs(useSearchItems())
+    const { fetch: fetchLanguages } = useLanguages()
     const { rawOptions: languageOptions } = storeToRefs(useLanguages())
     const isSearching = ref(false)
     const lastSearchSettings = ref<SearchSettings>()
@@ -58,10 +59,12 @@ export const useSearchResults = defineStore("searchResults", () => {
             (i: SearchItem) => !searchResults.value.map((x) => x.searchItem).some((j) => equalSearchItem(i, j)),
         )
         // search for each search item
-        toBeSearched.forEach((ds, idx) => {
+        toBeSearched.forEach(async (ds, idx) => {
             if (searchSettings.value.languageSplit && !(ds.language || ds.source)) {
                 // split by language, but only if language or source is not set
                 const colors = config.search.autosplit.colors
+                // force await the language fetch promise if not yet fetched
+                if (!languageOptions.value) await fetchLanguages()
                 languageOptions.value.forEach((lang) => {
                     getFrequency({ ...ds, language: lang, color: colors[lang] })
                 })
@@ -143,6 +146,7 @@ export const useSearchResults = defineStore("searchResults", () => {
             f: searchSettings.value.frequencyType.split("_")[0], // f for frequency
             start: toTimestamp(searchSettings.value.startDate),
             end: toTimestamp(searchSettings.value.endDate),
+            split: searchSettings.value.languageSplit ? "true" : undefined,
         }
         // router without history (needs timeout to avoid too many history calls error)
         router.push({ query: { ...router.currentRoute.value.query, ...paramsObj }, replace: true })

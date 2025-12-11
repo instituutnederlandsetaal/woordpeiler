@@ -8,6 +8,7 @@ export type TrendRequest = {
     end: string
     language?: string
     ngram: number
+    desc: boolean
 }
 
 export function getTrends(request: TrendRequest): Promise<AxiosResponse<TrendResult[]>> {
