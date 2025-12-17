@@ -1,0 +1,154 @@
+{ 
+    "introduction": {
+        "title": "woord van het jaar",
+        "subtitle": "2025",
+        "color": "#fff064",
+        "content": [
+            "Het Instituut voor de Nederlandse Taal blikt terug op de meest opvallende woorden van het 2025 in Nederland en België."
+        ]
+    },
+    "sections": [
+    {
+        "timeline": "januari",
+        "carousel": [
+            { "color": "#e74c3c", "graph": { "word": "inauguratie" } },
+            { "color": "#ecf0f1", "graph": { "word": "doorstroomtoets" } },
+            { "color": "#e67e22", "graph": { "word": "vuurwerkverbod" } },
+            { "color": "#f1c40f", "graph": { "word": "supernota" } },
+            { "color": "#3498db", "graph": { "word": "tussenronde" } }
+        ],
+        "article":                 {
+            "title": "inauguratie",
+            "subtitle": "woordpeiling",
+            "url": "https://ivdnt.org/actueel/woordpeiling/inauguratie/",
+            "color": "#1abc9c",
+            "content": [
+                "Het woord inauguratie domineerde zowel de Vlaamse als de Nederlandse kranten afgelopen maand."
+            ],
+            "words": ["inauguratie", "doorstroomtoets", "vuurwerkverbod", "supernota", "tussenronde"]
+        }
+    },
+    {
+        "timeline": "februari",
+        "carousel": [
+            { "color": "#9b59b6", "graph": { "word": "veiligheidsconferentie" } },
+            { "color": "#34495e", "graph": { "word": "veiligheidsgaranties" } },
+            { "color": "#95a5a6", "graph": { "word": "schietpartijen" } },
+            { "color": "#d35400", "graph": { "word": "patser" } },
+            { "color": "#27ae60", "graph": { "word": "asielwetten" } },
+            { "color": "#2980b9", "graph": { "word": "meerwaardebelasting" } },
+            { "color": "#8e44ad", "graph": { "word": "doorstroomtoets" } }
+        ],
+        "article": {
+            "title": "veiligheid",
+            "subtitle": "woordpeiling",
+            "url": "https://ivdnt.org/actueel/woordpeiling/veiligheid/",
+            "color": "#2ecc71",
+            "content": ["In februari was ‘veiligheid’ het grote thema in de Nederlandse en Vlaamse kranten."],
+            "words": [
+                "veiligheidsconferentie",
+                "veiligheidsgaranties",
+                "schietpartijen",
+                "patser",
+                "asielwetten",
+                "meerwaardebelasting",
+                "doorstroomtoets"
+            ]
+        }
+    },
+    {
+        "timeline": "april",
+        "carousel": [
+            { "color": "#34495e", "graph": { "word": "handelsoorlog" } },
+            { "color": "#95a5a6", "graph": { "word": "importheffingen" } },
+            { "color": "#d35400", "graph": { "word": "paasakkoord" } },
+            { "color": "#27ae60", "graph": { "word": "voorjaarsnota" } },
+            { "color": "#2980b9", "graph": { "word": "lintjes" } },
+            { "color": "#8e44ad", "graph": { "word": "bidon" } }
+        ],
+        "article": {
+            "title": "handelsoorlog",
+            "subtitle": "woordpeiling",
+            "url": "https://ivdnt.org/actueel/woordpeiling/handelsoorlog-lintjes-en-bidongooier/",
+            "color": "#f368e0",
+            "content": ["April 2025 stond in het teken van handelsoorlog en alle denkbare woorden daaromheen."],
+            "words": [
+                "handelsoorlog",
+                "importheffingen",
+                "paasakkoord",
+                "voorjaarsnota",
+                "lintjes",
+                "bidon"
+            ]
+        }
+    },
+    {
+        "timeline": "mei",
+        "carousel": [
+            { "color": "#9b59b6", "graph": { "word": "kardinalen" } },
+            { "color": "#34495e", "graph": { "word": "conclaaf" } },
+            { "color": "#95a5a6", "graph": { "word": "huurbevriezing" } },
+            { "color": "#d35400", "graph": { "word": "minimumdoelen" } },
+            { "color": "#27ae60", "graph": { "word": "asielwetten" } },
+            { "color": "#2980b9", "graph": { "word": "struikelstenen" } },
+            { "color": "#8e44ad", "graph": { "word": "alcoholslot" } },
+            { "color": "#8e44ad", "graph": { "word": "vapen" } }
+        ],
+        "article": {
+            "title": "conclaaf",
+            "subtitle": "woordpeiling",
+            "url": "https://ivdnt.org/actueel/woordpeiling/conclaaf-struikelstenen-en-vapen/",
+            "color": "#e67e22",
+            "content": ["Op 8 mei 2025 werd kardinaal Robert Francis Prevost gekozen tot 267ste paus."],
+            "words": [
+                "kardinalen",
+                "conclaaf",
+                "huurbevriezing",
+                "minimumdoelen",
+                "struikelstenen",
+                "alcoholslot",
+                "vapen"
+            ]
+        }
+    },
+    {
+        "timeline": "juni",
+        "carousel": [
+            { "color": "#9b59b6", "graph": { "word": "rode lijn-demonstratie" } },
+            { "color": "#34495e", "graph": { "word": "ereloonsupplementen" } },
+            { "color": "#95a5a6", "graph": { "word": "schietpartijen" } },
+            { "color": "#d35400", "graph": { "word": "huurbevriezing" } },
+            { "color": "#27ae60", "graph": { "word": "asielwetten" } },
+            { "color": "#2980b9", "graph": { "word": "donors" } },
+            { "color": "#8e44ad", "graph": { "word": "donorschandaal" } }
+        ],
+        "article": {
+            "title": "donorschandaal",
+            "subtitle": "woordpeiling",
+            "url": "https://ivdnt.org/actueel/woordpeiling/navo-top-kabinetsval-en-donorschandaal/",
+            "color": "#ecf0f1",
+            "content": [
+                "Veruit de meeste aandacht ging naar de NAVO-top, de Nederlandse kabinetsval en het donorschandaal in België."
+            ],
+            "words": [
+                "rode lijn-demonstratie",
+                "ereloonsupplementen",
+                "huurbevriezing",
+                "asielwetten",
+                "donors",
+                "donorschandaal"
+            ]
+        }
+    },
+    {
+        "timeline": "2025",
+        "carousel": [
+            { "color": "#9bFFb6", "graph": { "word": "ai" } }
+        ],
+        "article": {
+            "color": "#ecf0f1",
+            "graph": { "word": "chatbot" }
+        }
+    }
+    ]
+}

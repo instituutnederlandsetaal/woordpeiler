@@ -7,6 +7,7 @@ import router from "@/router"
 
 import PrimeVue from "primevue/config"
 import Aura from "@primeuix/themes/aura"
+import AnimateOnScroll from 'primevue/animateonscroll';
 
 import App from "@/App.vue"
 import type { Config } from "@/ts/config"
@@ -41,6 +42,8 @@ app.use(PrimeVue, {
     },
 })
 app.use(PrimeVue, { unstyled: true })
+app.directive('animateonscroll', AnimateOnScroll);
+
 
 // setup pinia store
 app.use(createPinia())

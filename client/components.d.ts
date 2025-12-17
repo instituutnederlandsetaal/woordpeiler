@@ -23,6 +23,7 @@ declare module 'vue' {
     Badge: typeof import('primevue/badge')['default']
     BasicSearchTab: typeof import('./src/components/search/tabs/BasicSearchTab.vue')['default']
     Button: typeof import('primevue/button')['default']
+    Carousel: typeof import('primevue/carousel')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Chip: typeof import('primevue/chip')['default']
     ColorPicker: typeof import('primevue/colorpicker')['default']
@@ -68,9 +69,13 @@ declare module 'vue' {
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabPanels: typeof import('primevue/tabpanels')['default']
     Tabs: typeof import('primevue/tabs')['default']
+    Tag: typeof import('primevue/tag')['default']
     TrendResultsList: typeof import('./src/components/trends/TrendResultsList.vue')['default']
     TrendSettings: typeof import('./src/components/trends/TrendSettings.vue')['default']
     WildcardHelp: typeof import('./src/components/help/WildcardHelp.vue')['default']
     WordInput: typeof import('./src/components/search/inputs/WordInput.vue')['default']
+  }
+  export interface GlobalDirectives {
+    AnimateOnScroll: typeof import('primevue/animateonscroll')['default']
   }
 }
