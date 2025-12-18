@@ -55,4 +55,14 @@ const { spotlights } = defineProps<{ spotlights: SpotlightBlock[] }>()
         }
     }
 }
+
+@media screen and (max-width: 480px) {
+    .carousel {
+        article {
+            :deep(figure) {
+                min-height: 150px;
+            }
+        }
+    }
+}
 </style>
