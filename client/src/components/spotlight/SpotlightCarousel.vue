@@ -19,7 +19,8 @@ const { spotlights } = defineProps<{ spotlights: SpotlightBlock[] }>()
 
 <style scoped lang="scss">
 .fake {
-    padding: 0 2.5rem 1rem 2.5rem;
+    padding: 40px;
+    padding-top: 0;
 }
 .carousel {
     :deep(.p-icon) {
@@ -37,6 +38,21 @@ const { spotlights } = defineProps<{ spotlights: SpotlightBlock[] }>()
     :deep(.p-carousel-indicator-list) {
         padding-left: 0;
         padding-right: 0;
+    }
+    article {
+        height: 100% !important;
+        :deep(figure) {
+            min-height: 280px;
+        }
+    }
+    :deep(.p-carousel-content-container) {
+        height: 100% !important;
+        .p-carousel-content {
+            height: 100% !important;
+            .p-carousel-item-list {
+                height: 100% !important;
+            }
+        }
     }
 }
 </style>

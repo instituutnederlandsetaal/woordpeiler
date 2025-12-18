@@ -73,7 +73,13 @@ function getGraphUrl(spotlight: SpotlightBlock): string {
         const params = new URLSearchParams({ w: spotlight.words.join() }).toString()
         return `/grafiek?${params}`
     }
-    const params = { w: spotlight.graph.word, l: spotlight.graph.lemma, i: interval, start: startDate }
+    const params = {
+        w: spotlight.graph.word,
+        l: spotlight.graph.lemma,
+        i: interval,
+        start: startDate,
+        v: spotlight.graph.language,
+    }
     Object.keys(params).forEach((k) => params[k] === undefined && delete params[k])
     return `/grafiek?${new URLSearchParams(params)}`
 }
@@ -89,6 +95,7 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
     const request: API.SearchRequest = {
         w: graph.word?.toLowerCase()?.trim(),
         l: graph.lemma?.toLowerCase()?.trim(),
+        v: graph.language,
         start: startDate,
         i: interval,
     }

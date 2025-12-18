@@ -12,7 +12,7 @@ export type SpotlightBlock = {
     graph?: SpotlightGraph
 }
 
-export type SpotlightGraph = { word?: string; lemma?: string; start: string; interval: string }
+export type SpotlightGraph = { word?: string; lemma?: string; start: string; interval: string; language?: string }
 
 export type Woordpeiling = { version: string; sections: WoordpeilingSection[] }
 

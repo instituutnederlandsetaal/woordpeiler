@@ -18,7 +18,6 @@ $theme: var(--theme); // Default theme color
     --p-primary-hover-color: color-mix(in srgb, var(--theme), #000 10%);
     --p-tabs-tab-active-color: #{$theme};
     --p-button-primary-background: #{$theme};
-    --p-carousel-indicator-active-background: #666;
     // --p-button-text-primary-active-background: var(--p-button-text-secondary-active-background)
     // --p-button-text-primary-color: var(--p-panel-color);
 
@@ -45,6 +44,10 @@ $theme: var(--theme); // Default theme color
     // Accordion
     --p-accordion-content-padding: 0 0 0 0;
     --p-accordion-header-padding: 1rem 0 1rem 0;
+
+    // Carousel
+    --p-carousel-content-gap: 0;
+    --p-carousel-indicator-active-background: #666;
 
     // Image preview
     --p-image-toolbar-border-radius: 0;

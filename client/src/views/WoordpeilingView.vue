@@ -2,25 +2,22 @@
     <main>
         <template v-for="(section, i) in woordpeiling?.sections ?? []" :key="i">
             <section class="content">
-                <!-- decorative vertical line interrupted by the month name -->
                 <div class="middle">
                     <template v-if="Array.isArray(section.middle)">
                         <SpotlightCarousel :spotlights="section.middle" />
+                        <hr />
                     </template>
                     <template v-else>
                         <hr />
-                        <h2 v-if="section.middle">{{ section.middle }}</h2>
-                        <hr style="padding-bottom: 2.75rem" />
+                        <h2 v-if="section.middle" v-html="section.middle" />
+                        <hr />
                     </template>
                 </div>
-                <!-- carousel of the spotlight graphs of the words of the month -->
-
-                <div :class="{ left: i % 2, right: (i + 1) % 2 }" v-intersection-observer="animate">
-                    <SpotlightCarousel :spotlights="section.left ?? []" />
+                <div v-if="section.left" :class="{ left: i % 2, right: (i + 1) % 2 }" v-intersection-observer="appear">
+                    <SpotlightCarousel :spotlights="section.left" />
                 </div>
-                <!-- Editorial article about the words of the month -->
-                <div :class="{ left: (1 + i) % 2, right: i % 2 }" v-intersection-observer="animate">
-                    <SpotlightCarousel :spotlights="section.right ?? []" />
+                <div v-if="section.right" :class="{ left: (1 + i) % 2, right: i % 2 }" v-intersection-observer="appear">
+                    <SpotlightCarousel :spotlights="section.right" />
                 </div>
             </section>
             <section class="divider">
@@ -38,7 +35,7 @@ import { useEventListener } from "@vueuse/core"
 import { useWoordpeiling } from "@/stores/fetch/woordpeiling"
 import { vIntersectionObserver } from "@vueuse/components"
 
-function animate([entry]: IntersectionObserverEntry[]) {
+function appear([entry]: IntersectionObserverEntry[]) {
     if (entry?.isIntersecting) {
         const el = entry.target as HTMLElement
         el.classList.add("appear")
@@ -88,8 +85,17 @@ main {
             align-items: center;
             order: 2;
             min-width: 150px;
+            > h2 {
+                text-align: center;
+            }
             hr {
                 flex: 1;
+                &:last-child {
+                    padding-top: 2.75rem;
+                }
+            }
+            .carousel.fake {
+                padding-bottom: 0;
             }
         }
         .carousel {
@@ -98,12 +104,12 @@ main {
         }
     }
     section.divider {
-        height: 10rem;
+        height: 15rem;
     }
 }
 
 .appear {
-    animation: appear 1s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+    animation: appear 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
 }
 .stay {
     opacity: 1;
@@ -112,7 +118,7 @@ main {
 @keyframes appear {
     from {
         opacity: 0;
-        transform: translateY(2rem);
+        transform: translateY(5rem);
     }
     to {
         opacity: 1;
@@ -125,6 +131,7 @@ main {
         padding: 1rem 0;
         section.content {
             flex-direction: column;
+            gap: 1rem;
             .left,
             .right {
                 justify-content: center;
@@ -135,6 +142,9 @@ main {
                 hr {
                     padding: 0 !important;
                 }
+            }
+            .carousel.fake {
+                padding-bottom: 0;
             }
         }
         section.divider {

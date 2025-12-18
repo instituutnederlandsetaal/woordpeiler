@@ -12,7 +12,7 @@ const router = (): Router => {
         history: createWebHistory(config.basePath),
         routes: [
             { path: "/", component: HomeView, meta: { title: config.app.slogan } },
-            { path: "/woordpeiling", component: WoordpeilingView, meta: { title: "Woordpeiling 2025" } },
+            { path: "/woordpeiling/2025", component: WoordpeilingView, meta: { title: "Woordpeiling 2025" } },
             { path: "/trends", name: "trends", component: TrendsView, meta: { title: "Trends" } },
             { path: "/help", component: HelpView, meta: { title: "Help" } },
             { path: "/grafiek", component: GraphView },
