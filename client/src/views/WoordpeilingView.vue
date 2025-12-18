@@ -5,7 +5,6 @@
                 <div class="middle">
                     <template v-if="Array.isArray(section.middle)">
                         <SpotlightCarousel :spotlights="section.middle" />
-                        <hr />
                     </template>
                     <template v-else>
                         <hr />
@@ -128,6 +127,7 @@ main {
 
 @media screen and (max-width: 1024px) {
     main {
+        gap: 1rem;
         padding: 1rem 0;
         section.content {
             flex-direction: column;

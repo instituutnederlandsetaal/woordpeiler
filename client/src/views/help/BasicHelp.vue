@@ -50,8 +50,8 @@
                     <li>
                         Het vraagteken staat voor een willekeurig karakter. Met <dfn>z?n</dfn> vindt u bijvoorbeeld
                         <em>zon</em>, <em>zin</em> en <em>zen</em> en met <dfn>?z?n</dfn> vindt u bijvoorbeeld
-                        <em>azen</em> en <em>ozo</em>. U kunt meerdere vraagtekens combineren, zolang er maar ten minste
-                        twee andere tekens gebruikt worden;
+                        <em>azen</em> en <em>ozon</em>. U kunt meerdere vraagtekens combineren, zolang er maar ten
+                        minste twee andere tekens gebruikt worden;
                     </li>
                     <li>
                         De asterisk staat voor geen, één of meer willekeurige karakters. Met <dfn>*gebaar</dfn> vindt u
