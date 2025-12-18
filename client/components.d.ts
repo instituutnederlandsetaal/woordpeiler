@@ -63,6 +63,7 @@ declare module 'vue' {
     Skeleton: typeof import('primevue/skeleton')['default']
     SourceInput: typeof import('./src/components/search/inputs/SourceInput.vue')['default']
     SpotlightBlock: typeof import('./src/components/spotlight/SpotlightBlock.vue')['default']
+    SpotlightCarousel: typeof import('./src/components/spotlight/SpotlightCarousel.vue')['default']
     SpotlightSection: typeof import('./src/components/spotlight/SpotlightSection.vue')['default']
     Tab: typeof import('primevue/tab')['default']
     TabList: typeof import('primevue/tablist')['default']

@@ -1,74 +1,45 @@
 <template>
-    <!-- Woordpeiling: Shows a vertical timeline of the dutch words of the year (per month) -->
     <main>
-        <template v-if="woordpeiling">
-            <div class="introduction">
-                <SpotlightBlock :spotlight="woordpeiling.introduction" />
-                <hr />
+        <section v-for="(section, i) in woordpeiling?.sections ?? []" :key="i">
+            <!-- decorative vertical line interrupted by the month name -->
+            <div class="middle">
+                <template v-if="Array.isArray(section.middle)">
+                    <SpotlightCarousel :spotlights="section.middle" />
+                </template>
+                <template v-else>
+                    <hr />
+                    <h2>{{ section.middle }}</h2>
+                    <hr />
+                </template>
             </div>
-            <!-- The following section must align with no gaps, such that the <hr> (styled to be vertical) align nicely -->
-            <template v-for="(wp, i) in woordpeiling.sections" :key="i">
-                <section>
-                    <!-- carousel of the spotlight graphs of the words of the month -->
-                    <div :class="{ left: i % 2, right: (i + 1) % 2 }" v-animateonscroll="{ enterClass: 'appear'}">
-                        <template v-if="wp.carousel.length > 1">
-                            <Carousel class="carousel" :value="wp.carousel" :numVisible="1" :numScroll="1" circular :autoplayInterval="5000">
-                                <template #item="slotProps">
-                                    <SpotlightBlock :spotlight="slotProps.data" />
-                                </template>
-                            </Carousel>
-                        </template>
-                        <template v-else>
-                            <SpotlightBlock :spotlight="wp.carousel[0]" />
-                        </template>
-                    </div>
-                    <!-- decorative vertical line interrupted by the month name -->
-                    <div class="timeline">
-                        <hr />
-                        <h2>{{ wp.timeline }}</h2>
-                        <hr />
-                    </div>
-                    <!-- Editorial article about the words of the month -->
-                    <div :class="{ left: (1 + i) % 2, right: i % 2 }" v-animateonscroll="{ enterClass: 'appear'}">
-                        <SpotlightBlock :spotlight="wp.article" />
-                    </div>
-                </section>
-            </template>
-        </template>
+            <!-- carousel of the spotlight graphs of the words of the month -->
+            <div :class="{ left: i % 2, right: (i + 1) % 2 }" v-animateonscroll="{ enterClass: 'appear' }">
+                <SpotlightCarousel :spotlights="section.left ?? []" />
+            </div>
+            <!-- Editorial article about the words of the month -->
+            <div :class="{ left: (1 + i) % 2, right: i % 2 }" v-animateonscroll="{ enterClass: 'appear' }">
+                <SpotlightCarousel :spotlights="section.right ?? []" />
+            </div>
+        </section>
     </main>
     <AppFooter />
 </template>
 
 <script setup lang="ts">
 import { useEventListener } from "@vueuse/core"
-import axios from "axios"
-import { type SpotlightGraph } from "@/types/spotlight"
+import { useWoordpeiling } from "@/stores/fetch/woordpeiling"
+
+const { woordpeiling } = storeToRefs(useWoordpeiling())
 
 let scrolledToBottom = false
 
 useEventListener("scroll", () => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        if (!scrolledToBottom && spotlight.value?.sections) {
+        if (!scrolledToBottom && woordpeiling.value?.sections) {
             scrolledToBottom = true
             window.plausible("scrolled_to_bottom")
         }
     }
-})
-
-type Woordpeiling = {
-    introduction: SpotlightBlock,
-    sections: {
-        timeline: string,
-        carousel: SpotlightGraph[]
-        article: SpotlightBlock
-    }[]
-}
-
-const woordpeiling = ref<Woordpeiling>(undefined)
-onMounted(() => {
-    import("@/assets/woordpeiling.json").then((module) => {
-        woordpeiling.value = module.default
-    })
 })
 </script>
 
@@ -78,8 +49,11 @@ main {
     display: flex;
     flex-direction: column;
     min-height: initial;
-    // align-content: stretch;
+    // align-content: center;
     gap: 0;
+    .skeleton {
+        justify-content: center;
+    }
     > .introduction {
         display: flex;
         justify-content: center;
@@ -94,7 +68,8 @@ main {
     }
     > section {
         display: flex;
-        .left, .right {
+        .left,
+        .right {
             flex: 1 1 0;
             min-width: 0;
             padding: 2rem;
@@ -127,7 +102,7 @@ main {
         }
         // Decorative vertical line interrupted by the month name
         // Needs to continuously align with the other sections
-        > .timeline {
+        > .middle {
             display: flex;
             flex-direction: column;
             flex: 0 0 100px;
@@ -150,10 +125,16 @@ main {
 }
 
 .appear {
-  animation: appear 1s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+    animation: appear 1s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
 }
 @keyframes appear {
-  from { opacity: 0; transform: translateY(2rem); }
-  to { opacity: 1; transform: none; }
+    from {
+        opacity: 0;
+        transform: translateY(2rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 </style>

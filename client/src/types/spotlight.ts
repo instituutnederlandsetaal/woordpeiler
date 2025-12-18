@@ -13,3 +13,7 @@ export type SpotlightBlock = {
 }
 
 export type SpotlightGraph = { word?: string; lemma?: string; start: string; interval: string }
+
+export type Woordpeiling = { version: string; sections: WoordpeilingSection[] }
+
+export type WoordpeilingSection = { left: SpotlightBlock[]; middle: string | SpotlightBlock[]; right: SpotlightBlock[] }
