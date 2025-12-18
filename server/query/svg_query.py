@@ -1,9 +1,10 @@
 # standard
 from math import trunc
 
+from server.query.frequency_query import FrequencyQuery
+
 # local
 from server.query.query_builder import BaseCursor
-from server.query.frequency_query import FrequencyQuery
 
 
 class SvgQuery:
@@ -13,8 +14,10 @@ class SvgQuery:
     async def execute(self, cursor: BaseCursor) -> str:
         # get the word as a regular FrequencyQuery
         data = await self.freq.build(cursor).execute_fetchall()
+        SIZE = 1000
+        STROKE = SIZE / 200
 
-        flat_line = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 100 100'><polyline stroke-width='1' points='0,100 100,100'/></svg>"
+        flat_line = f"<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 {SIZE} {SIZE}'><polyline stroke-width='{STROKE}' points='0,{SIZE} {SIZE},{SIZE}'/></svg>"
 
         if len(data) == 0:
             # no data
@@ -36,10 +39,10 @@ class SvgQuery:
             new_freq = 1 - (freq / max_freq)
             new_time = (time - min_time) / max_time
             # truncate
-            new_freq = trunc(new_freq * 100)
-            new_time = trunc(new_time * 100)
+            new_freq = trunc(new_freq * SIZE)
+            new_time = trunc(new_time * SIZE)
             # add to points string
             points += f"{new_time},{new_freq} "
 
         # create <svg> and <polyline>
-        return f"<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 100 100'><polyline stroke-width='0.5' points='{points}'/></svg>"
+        return f"<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 {SIZE} {SIZE}'><polyline stroke-width='{STROKE}' points='{points}'/></svg>"
