@@ -201,6 +201,12 @@ article {
             }
         }
 
+        div {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
         ul {
             display: flex;
             flex-wrap: wrap;

@@ -8,7 +8,9 @@
                     "subtitle": "2025",
                     "color": "#fff064",
                     "content": [
-                        "Het Instituut voor de Nederlandse Taal blikt terug op de meest opvallende woorden van het 2025 in Nederland en België."
+                        "Het Instituut voor de Nederlandse Taal blikt terug op de meest trending woorden van 2025 in Nederland en België.",
+                        "Dit jaar kondigen we ook het <b>verschijn- en verdwijnwoord van 2025</b> aan.",
+                        "Laten we eerst een kijkje nemen naar de afgelopen maanden."
                     ]
                 }
             ]
@@ -16,7 +18,7 @@
         {
             "middle": "januari",
             "left": [
-                { "color": "#e74c3c", "graph": { "word": "inauguratie" } },
+                { "color": "#e74c3c", "graph": { "word": "inauguratie", "interval": "1m" } },
                 { "color": "#ecf0f1", "graph": { "word": "doorstroomtoets" } },
                 { "color": "#e67e22", "graph": { "word": "vuurwerkverbod" } },
                 { "color": "#f1c40f", "graph": { "word": "supernota" } },
@@ -61,6 +63,44 @@
                         "asielwetten",
                         "meerwaardebelasting",
                         "doorstroomtoets"
+                    ]
+                }
+            ]
+        },
+        {
+            "middle": "1e kwartaal",
+            "left": [
+                { "color": "#e74c3c", "graph": { "word": "meerwaardebelasting" } },
+                { "color": "#ecf0f1", "graph": { "word": "veiligheidsgaranties" } },
+                { "color": "#e67e22", "graph": { "word": "importheffingen" } },
+                { "color": "#f1c40f", "graph": { "word": "inauguratie" } },
+                { "color": "#3498db", "graph": { "word": "defensie-uitgaven" } },
+                { "color": "#1abc9c", "graph": { "word": "tussenronde" } },
+                { "color": "#9b59b6", "graph": { "word": "staakt-het-vuren" } },
+                { "color": "#34495e", "graph": { "word": "doorstroomtoets" } },
+                { "color": "#95a5a6", "graph": { "word": "importtarieven" } },
+                { "color": "#d35400", "graph": { "word": "vuurwerkverbod" } }
+            ],
+            "right": [
+                {
+                    "title": "importheffingen",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/inauguratie-importheffingen-en-defensie-uitgaven/",
+                    "color": "#3498db",
+                    "content": [
+                        "Drie roerige maanden waarin de woorden inauguratie, importheffingen en defensie-uitgaven een hoofdrol speelden in de berichtgeving in kranten."
+                    ],
+                    "words": [
+                        "meerwaardebelasting",
+                        "veiligheidsgaranties",
+                        "importheffingen",
+                        "inauguratie",
+                        "defensie-uitgaven",
+                        "tussenronde",
+                        "staakt-het-vuren",
+                        "doorstroomtoets",
+                        "importtarieven",
+                        "vuurwerkverbod"
                     ]
                 }
             ]
@@ -149,9 +189,168 @@
             ]
         },
         {
+            "middle": "zomer",
+            "left": [
+                { "color": "#27ae60", "graph": { "word": "femicide" } },
+                { "color": "#8e44ad", "graph": { "word": "wereldspelen" } },
+                { "color": "#2980b9", "graph": { "word": "tweestatenoplossing" } },
+                { "color": "#d35400", "graph": { "word": "natuurbranden" } },
+                { "color": "#2980b9", "graph": { "word": "hoornaars" } },
+                { "color": "#34495e", "graph": { "word": "druzen" } },
+                { "color": "#95a5a6", "graph": { "word": "asielwetten" } },
+                { "color": "#9b59b6", "graph": { "word": "staalslakken" } },
+                { "color": "#8e44ad", "graph": { "word": "klimtijdrit" } }
+            ],
+            "right": [
+                {
+                    "title": "femicide",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/femicide-hoornaars-en-klimtijdrit/",
+                    "color": "#fff064",
+                    "content": ["De meest kenmerkende woorden van juli en augustus 2025."],
+                    "words": [
+                        "femicide",
+                        "wereldspelen",
+                        "tweestatenoplossing",
+                        "natuurbranden",
+                        "hoornaars",
+                        "druzen",
+                        "asielwetten",
+                        "staalslakken",
+                        "klimtijdrit"
+                    ]
+                }
+            ]
+        },
+        {
+            "middle": "oktober",
+            "left": [
+                { "color": "#9bFFb6", "graph": { "word": "drones" } },
+                { "color": "#ecf0f1", "graph": { "word": "vrijwilligerskorps" } },
+                { "color": "#ff9b85", "graph": { "word": "antifa" } },
+                { "color": "#d1ff85", "graph": { "word": "azc's" } },
+                { "color": "#85ffd4", "graph": { "word": "verkiezingsprogramma's" } },
+                { "color": "#8586ff", "graph": { "word": "btw-verhoging" } },
+                { "color": "#ff85e2", "graph": { "word": "langdurig zieken" } },
+                { "color": "#a885ff", "graph": { "word": "sjorders" } },
+                { "color": "#85ffe3", "graph": { "word": "tomahawks" } },
+                { "color": "#ff8585", "graph": { "word": "gedragscode" } },
+                { "color": "#85ff94", "graph": { "word": "vredesplan" } },
+                { "color": "#ffb785", "graph": { "word": "twintigpuntenplan" } }
+            ],
+            "right": [
+                {
+                    "title": "langdurig zieken",
+                    "subtitle": "woordpeiling",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/sjorders-btw-verhoging-en-verkiezingsprogrammas/",
+                    "color": "#9bFFb6",
+                    "content": [
+                        "In oktober zijn de kranten nog niet uitgeschreven over drones, het vrijwilligerskorps, antifa en azc’s. Maar in Nederland ging de aandacht deze maand vooral uit naar de verkiezingsprogramma’s, en België was in de ban van btw-verhoging."
+                    ],
+                    "words": [
+                        "drones",
+                        "vrijwilligerskorps",
+                        "antifa",
+                        "azc's",
+                        "verkiezingsprogramma's",
+                        "btw-verhoging",
+                        "langdurig zieken",
+                        "sjorders",
+                        "tomahawks",
+                        "gedragscode",
+                        "vredesplan",
+                        "twintigpuntenplan"
+                    ]
+                }
+            ]
+        },
+        {
+            "middle": "november",
+            "left": [
+                { "color": "#ff9b85", "graph": { "word": "drones" } },
+                { "color": "#d1ff85", "graph": { "word": "middenkabinet" } },
+                { "color": "#85ffd4", "graph": { "word": "centenindex" } },
+                { "color": "#8586ff", "graph": { "word": "feeks" } },
+                { "color": "#ff85e2", "graph": { "word": "indexsprong" } },
+                { "color": "#ffdd85", "graph": { "word": "klimaattop" } },
+                { "color": "#a885ff", "graph": { "word": "herstellening" } }
+            ],
+            "right": [
+                {
+                    "title": "drones",
+                    "subtitle": "november 2025",
+                    "url": "https://ivdnt.org/actueel/woordpeiling/november-2025/",
+                    "color": "#ff85e2",
+                    "content": [
+                        "Drones teisteren Belgische luchthavens en Nederland bereidt zich voor op een potentieel middenkabinet."
+                    ],
+                    "words": [
+                        "drones",
+                        "middenkabinet",
+                        "centenindex",
+                        "feeks",
+                        "indexsprong",
+                        "klimaattop",
+                        "herstellening"
+                    ]
+                }
+            ]
+        },
+        { "middle": "verschijnwoord" },
+        {
+            "middle": [
+                {
+                    "title": "verschijnwoord",
+                    "subtitle": "2025",
+                    "color": "#fff064",
+                    "content": [
+                        "Het verschijnwoord is een woord dat de afgelopen jaren niet of amper voorkwam en in 2025 een plotse doorbraak maakte in de kranten.",
+                        "Het <b>verschijnwoord van 2025</b> is volgens het Instituut voor de Nederlandse Taal..."
+                    ]
+                }
+            ]
+        },
+        {
             "middle": "2025",
-            "left": [{ "color": "#9bFFb6", "graph": { "word": "ai" } }],
-            "right": [{ "color": "#ecf0f1", "graph": { "word": "chatbot" } }]
+            "left": [{ "color": "#e74c3c", "subtitle": "verschijnwoord van 2025", "graph": { "word": "het" } }],
+            "right": [
+                {
+                    "title": "de",
+                    "subtitle": "verschijnwoord van 2025",
+                    "color": "#e74c3c",
+                    "content": [
+                        "Het Instituut voor de Nederlandse Taal heeft ‘het’ uitgeroepen tot het verschijnwoord van 2025."
+                    ]
+                }
+            ]
+        },
+        { "middle": "verdwijnwoord" },
+        {
+            "middle": [
+                {
+                    "title": "verdwijnwoord",
+                    "subtitle": "2025",
+                    "color": "#fff064",
+                    "content": [
+                        "Het verdwijnwoord is een woord dat de afgelopen jaren frequent voorkwam in de kranten, maar in 2025 bijna volledig uit de berichtgeving is verdwenen.",
+                        "Het <b>verdwijnwoord van 2025</b> is volgens het Instituut voor de Nederlandse Taal..."
+                    ]
+                }
+            ]
+        },
+        {
+            "middle": "2025",
+            "left": [{ "color": "#3498db", "subtitle": "verdwijnwoord van 2025", "graph": { "word": "de" } }],
+            "right": [
+                {
+                    "title": "de",
+                    "subtitle": "verdwijnwoord van 2025",
+                    "color": "#3498db",
+                    "content": [
+                        "Het Instituut voor de Nederlandse Taal heeft ‘de’ uitgeroepen tot het verdwijnwoord van 2025."
+                    ]
+                }
+            ]
         }
     ]
 }
