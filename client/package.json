@@ -17,7 +17,7 @@
         "primeicons": "^7.0.0",
         "primevue": "^4.5.3",
         "uuid": "^13.0.0",
-        "vue": "^3.5.25",
+        "vue": "^3.5.26",
         "vue-router": "^4.6.4",
         "@vueuse/components": "^14.1.0",
         "@vueuse/core": "^14.1.0"
