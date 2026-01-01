@@ -37,7 +37,7 @@
         "jiti": "^2.6.1",
         "npm-check-updates": "^19.2.0",
         "prettier": "^3.7.4",
-        "sass-embedded": "^1.97.0",
+        "sass-embedded": "^1.97.1",
         "typescript": "~5.9.3",
         "unplugin-auto-import": "^20.3.0",
         "unplugin-vue-components": "^30.0.0",
