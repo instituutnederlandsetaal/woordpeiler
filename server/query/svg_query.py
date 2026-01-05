@@ -8,12 +8,15 @@ from server.query.query_builder import BaseCursor
 
 
 class SvgQuery:
-    size = 1000
-    stroke_width = size * 0.02
-    margin = size * 0.05
-    title_height = size * 0.1
-    # subtitle_height = size / 150
-    margin_hr = size * 0.025
+    width = 1000
+    height = 800
+    stroke_width = height * 0.005
+    margin = height * 0.05
+    title_font = height * 0.064
+    subtitle_font = height * 0.028
+    title_height = height * 0.075
+    subtitle_height = height * 0.05
+    margin_hr = height * 0.025
 
     def __init__(self, freq: FrequencyQuery) -> None:
         self.freq = freq
@@ -21,7 +24,7 @@ class SvgQuery:
     def _get_flat_line(self) -> ET.Element:
         el = ET.Element("polyline")
         el.set("stroke-width", str(self.stroke_width))
-        el.set("points", f"0,{self.size} {self.size},{self.size}")
+        el.set("points", f"0,{self.height} {self.height},{self.height}")
         return el
 
     async def _get_polyline(self, cursor: BaseCursor) -> ET.Element:
@@ -50,8 +53,8 @@ class SvgQuery:
             new_freq = 1 - (freq / max_freq)
             new_time = (time - min_time) / max_time
             # truncate
-            new_freq = trunc(new_freq * self.size)
-            new_time = trunc(new_time * self.size)
+            new_freq = trunc(new_freq * self.height)
+            new_time = trunc(new_time * self.width)
             # add to points string
             points += f"{new_time},{new_freq} "
         el.set("points", points.strip())
@@ -64,7 +67,7 @@ class SvgQuery:
         svg = ET.Element("svg")
         svg.set("xmlns", "http://www.w3.org/2000/svg")
         svg.set("preserveAspectRatio", "none")
-        svg.set("viewBox", f"0 0 {self.size} {self.size}")
+        svg.set("viewBox", f"0 0 {self.height} {self.height}")
         svg.append(polyline)
         return ET.tostring(svg, encoding="unicode")
 
@@ -73,14 +76,20 @@ class SvgQuery:
         polyline.set("fill", "none")
         polyline.set("stroke", "#000000")
         line_y_scale = 1 - (
-            (self.title_height + self.margin_hr * 2 + self.margin) / self.size
+            (
+                self.title_height
+                + self.margin_hr * 2
+                + self.margin
+                + self.subtitle_height
+            )
+            / self.height
         )
-        line_x_scale = 1 - ((self.margin * 2) / self.size)
+        line_x_scale = 1 - ((self.margin * 2) / self.width)
         polyline.set("transform", f"scale({line_x_scale},{line_y_scale})")
         # create a yellow square with a title and the polyline
         rect = ET.Element("rect")
-        rect.set("width", str(self.size))
-        rect.set("height", str(self.size))
+        rect.set("width", "100%")
+        rect.set("height", "100%")
         rect.set("fill", "#FFF064")
 
         title = ET.Element("title")
@@ -94,7 +103,7 @@ class SvgQuery:
         header.set(
             "font-family", "Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif"
         )
-        header.set("font-size", "64px")
+        header.set("font-size", f"{self.title_font}px")
         header.text = self.freq.wordform
 
         # add a <hr> like line below the header
@@ -102,23 +111,35 @@ class SvgQuery:
         hr_x = self.title_height + self.margin_hr
         hr.set("x1", str(self.margin))
         hr.set("y1", str(hr_x))
-        hr.set("x2", str(self.size - self.margin))
+        hr.set("x2", str(self.width - self.margin))
         hr.set("y2", str(hr_x))
         hr.set("stroke", "#000000")
-        hr.set("stroke-width", "3")
+        hr.set("stroke-width", str(self.stroke_width / 2))
+
+        # add subtitle below the hr
+        subtitle = ET.Element("text")
+        subtitle.set("x", str(self.margin))
+        subtitle.set("y", str(hr_x + self.subtitle_height))
+        subtitle.set("fill", "#000000")
+        subtitle.set(
+            "font-family", "Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif"
+        )
+        subtitle.set("font-size", f"{self.subtitle_font}px")
+        subtitle.text = f"sinds {self.freq.start.year}"
 
         svg = ET.Element("svg")
         svg.set("xmlns", "http://www.w3.org/2000/svg")
-        svg.set("viewBox", f"0 0 {self.size} {self.size}")
+        svg.set("viewBox", f"0 0 {self.width} {self.height}")
         svg.append(
             title
         )  # Note: title should be first child for compatibility with SVG 1.1
         svg.append(rect)
         svg.append(header)
         svg.append(hr)
+        svg.append(subtitle)
         # create some margin
         g = ET.Element("g")
-        g_y = self.title_height + (self.margin_hr * 2)
+        g_y = self.title_height + (self.margin_hr * 2) + self.subtitle_height
         g.set("transform", f"translate({self.margin},{g_y})")
         g.append(polyline)
         svg.append(g)
