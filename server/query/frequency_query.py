@@ -32,7 +32,8 @@ class FrequencyQuery(QueryBuilder):
             wordform = unidecode(wordform.strip(), errors="preserve")
         if lemma is not None:
             lemma = unidecode(lemma.strip(), errors="preserve")
-
+        self.wordform = wordform
+        self.lemma = lemma
         # get poshead from pos if no parentheses present
         poshead = None
         if pos is not None:
