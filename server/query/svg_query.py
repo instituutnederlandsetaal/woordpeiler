@@ -18,8 +18,9 @@ class SvgQuery:
     subtitle_height = height * 0.05
     margin_hr = height * 0.025
 
-    def __init__(self, freq: FrequencyQuery) -> None:
+    def __init__(self, freq: FrequencyQuery, bg_color: str = "FFF064") -> None:
         self.freq = freq
+        self.bg_color = bg_color
 
     def _get_flat_line(self) -> ET.Element:
         el = ET.Element("polyline")
@@ -90,7 +91,7 @@ class SvgQuery:
         rect = ET.Element("rect")
         rect.set("width", "100%")
         rect.set("height", "100%")
-        rect.set("fill", "#FFF064")
+        rect.set("fill", f"#{self.bg_color}")
 
         title = ET.Element("title")
         title.text = f"Woordpeiler - {self.freq.wordform}"
