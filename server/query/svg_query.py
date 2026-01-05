@@ -8,19 +8,25 @@ from server.query.query_builder import BaseCursor
 
 
 class SvgQuery:
-    width = 1000
-    height = 800
-    stroke_width = height * 0.005
-    margin = height * 0.05
-    title_font = height * 0.064
-    subtitle_font = height * 0.028
-    title_height = height * 0.075
-    subtitle_height = height * 0.05
-    margin_hr = height * 0.025
 
-    def __init__(self, freq: FrequencyQuery, bg_color: str = "FFF064") -> None:
+    def __init__(
+        self,
+        freq: FrequencyQuery,
+        bg_color: str = "FFF064",
+        width: int = 1000,
+        height: int = 1000,
+    ) -> None:
         self.freq = freq
         self.bg_color = bg_color
+        self.width = width
+        self.height = height
+        self.stroke_width = height * 0.005
+        self.margin = height * 0.05
+        self.title_font = height * 0.064
+        self.subtitle_font = height * 0.028
+        self.title_height = height * 0.075
+        self.subtitle_height = height * 0.05
+        self.margin_hr = height * 0.025
 
     def _get_flat_line(self) -> ET.Element:
         el = ET.Element("polyline")
@@ -68,7 +74,7 @@ class SvgQuery:
         svg = ET.Element("svg")
         svg.set("xmlns", "http://www.w3.org/2000/svg")
         svg.set("preserveAspectRatio", "none")
-        svg.set("viewBox", f"0 0 {self.height} {self.height}")
+        svg.set("viewBox", f"0 0 {self.width} {self.height}")
         svg.append(polyline)
         return ET.tostring(svg, encoding="unicode")
 
