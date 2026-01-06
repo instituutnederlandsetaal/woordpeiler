@@ -141,11 +141,13 @@ async def get_huisstijl_svg(
     start: Optional[date] = None,
     end: Optional[date] = None,
     i: str = "1y",
+    x: int = 960,
+    y: int = 720,
 ) -> Response:
     async with req.app.pool.connection() as conn:
         async with conn.cursor() as cur:
             freq = FrequencyQuery(w, l, p, s, v, start, end, i)
-            svg = await SvgQuery(freq, c).styled_svg(cur)
+            svg = await SvgQuery(freq, c, x, y).styled_svg(cur)
             return Response(content=svg, media_type="image/svg+xml")
 
 
