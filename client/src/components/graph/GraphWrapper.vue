@@ -3,7 +3,7 @@
         <Panel class="p-panel">
             <!--icons-->
             <template #header v-if="visible.length > 0">
-                <Button text severity="secondary" @click="downloadBtn">
+                <Button text severity="secondary" @click="downloadVisible = true">
                     <span class="pi pi-download" title="Downloaden"></span>
                 </Button>
                 <Button text severity="secondary" @click="shareBtn" v-if="canShare">
@@ -28,6 +28,7 @@
             </template>
         </Panel>
     </figure>
+    <DownloadDialog v-model="downloadVisible" />
 </template>
 
 <script setup lang="ts">
@@ -43,6 +44,7 @@ const { searchResults, isSearching, lastSearchSettings } = storeToRefs(useSearch
 // Fields
 const graph = ref(null)
 const canShare = navigator.share != undefined
+const downloadVisible = ref<boolean>(false)
 
 // Computed
 const visible = computed<GraphItem[]>(() => searchResults.value.filter((d) => d.searchItem.visible))
@@ -50,7 +52,8 @@ const zoomedIn = computed(() => graph.value?.zoomedIn)
 
 // Methods
 function downloadBtn() {
-    download(graph.value.resizeState, searchResults.value, lastSearchSettings.value)
+    downloadVisible.value = true
+    //download(graph.value.resizeState, searchResults.value, lastSearchSettings.value)
 }
 function shareBtn() {
     share(graph.value.resizeState, searchResults.value, lastSearchSettings.value)
