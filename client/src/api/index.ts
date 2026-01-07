@@ -11,6 +11,6 @@ export function setAxiosBaseUrl() {
     }
 }
 
-export function cleanParams(params: Record<string, string>) {
+export function cleanParams(params: Record<string, string | number>) {
     return Object.fromEntries(Object.entries(params).filter(([_, v]) => v != undefined && v != null && v != ""))
 }

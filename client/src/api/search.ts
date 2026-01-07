@@ -15,7 +15,3 @@ export type SearchRequest = {
 export function getSearch(request: SearchRequest): Promise<AxiosResponse<number[][]>> {
     return axios.get("/frequency", { params: cleanParams(request) })
 }
-
-export function getSVG(request: SearchRequest): Promise<AxiosResponse<string>> {
-    return axios.get("/svg", { params: cleanParams(request) })
-}

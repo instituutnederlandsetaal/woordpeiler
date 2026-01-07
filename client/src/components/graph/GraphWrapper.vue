@@ -28,7 +28,7 @@
             </template>
         </Panel>
     </figure>
-    <DownloadDialog v-model="downloadVisible" />
+    <DownloadDialog :graph v-model="downloadVisible" />
 </template>
 
 <script setup lang="ts">

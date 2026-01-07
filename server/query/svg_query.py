@@ -32,7 +32,7 @@ class SvgQuery:
     def _get_flat_line(self) -> ET.Element:
         el = ET.Element("polyline")
         el.set("stroke-width", str(self.stroke_width))
-        el.set("points", f"0,{self.height} {self.height},{self.height}")
+        el.set("points", f"0,{self.height} {self.width},{self.height}")
         return el
 
     async def _get_polyline(self, cursor: BaseCursor) -> ET.Element:

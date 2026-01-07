@@ -14,6 +14,7 @@ from psycopg.rows import dict_row
 from fastapi import Request, HTTPException, Response
 import uvicorn
 import httpx
+import cairosvg
 
 # local
 from server.query.svg_query import SvgQuery
@@ -143,12 +144,17 @@ async def get_huisstijl_svg(
     i: str = "1y",
     x: int = 960,
     y: int = 720,
+    f: str = "svg",
 ) -> Response:
     async with req.app.pool.connection() as conn:
         async with conn.cursor() as cur:
             freq = FrequencyQuery(w, l, p, s, v, start, end, i)
             svg = await SvgQuery(freq, c, x, y).styled_svg(cur)
-            return Response(content=svg, media_type="image/svg+xml")
+            if f == "svg":
+                return Response(svg, media_type="svg+xml")
+            else:
+                png = cairosvg.svg2png(bytestring=svg)
+                return Response(content=png, media_type="image/png")
 
 
 @app.get("/frequency")

@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { vIntersectionObserver } from "@vueuse/components"
-import * as API from "@/api/search"
+import * as API from "@/api/svg"
 import type { SpotlightBlock } from "@/types/spotlight"
 import { config } from "@/main"
 
@@ -100,7 +100,7 @@ function loadSvg([entry]: IntersectionObserverEntry[]) {
         i: interval,
     }
 
-    API.getSVG(request).then((res) => (svgBlob.value = res.data))
+    API.getSvg(request).then((res) => (svgBlob.value = res.data))
 }
 
 function spotlightEvent(external: boolean) {
