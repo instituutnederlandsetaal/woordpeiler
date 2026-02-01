@@ -27,7 +27,7 @@ polstringconvertor==1.0.0
 psycopg==3.3.2
 psycopg-binary==3.3.2
 psycopg-pool==3.3.0
-pycparser==2.23
+pycparser==3.0
 pydantic==2.12.5
 pydantic-core==2.41.5
 pygments==2.19.2
