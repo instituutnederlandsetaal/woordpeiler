@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
 # Build stage
-FROM node:25.2.1-alpine3.23 AS build
+FROM node:25.5.0-alpine3.23 AS build
 # Cache dependencies
 COPY --link package.json package-lock.json ./
 RUN npm ci
