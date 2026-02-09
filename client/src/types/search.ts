@@ -92,7 +92,7 @@ function invalidWildcard(item: SearchItem, wildcard: string, minChars: number): 
 
 export function invalidSearchItem(item: SearchItem): boolean {
     // Either lemma or wordform must be truthy.
-    if (!item.terms) {
+    if (!item.terms || item.terms.length === 0) {
         // todo not just pos
         return true // invalid
     }

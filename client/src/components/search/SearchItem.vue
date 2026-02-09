@@ -49,10 +49,11 @@
             <TabPanels>
                 <TabPanel value="0" tabindex="-1">
                     <SearchItemValidation :item />
-                    <BasicSearchTab v-model="basicItem" />
+                    <!-- Force rerendering with v-if because the item can change in the other tab -->
+                    <BasicSearchTab v-if="tab == '0'" v-model="basicItem" />
                 </TabPanel>
                 <TabPanel value="1" tabindex="-1">
-                    <AdvancedSearchTab v-model="advancedItem" />
+                    <AdvancedSearchTab v-if="tab == '1'" v-model="advancedItem" />
                 </TabPanel>
             </TabPanels>
         </Tabs>
@@ -89,7 +90,9 @@ const advancedItem = ref<SearchItem>({ terms: structuredClone(toRaw(item.value?.
 watch(
     basicItem,
     (newVal) => {
+        if (tab.value !== "0") return
         item.value = { ...item.value, ...newVal }
+        advancedItem.value = { ...advancedItem.value, terms: structuredClone(toRaw(basicItem.value.terms)) }
     },
     { deep: true },
 )
@@ -97,7 +100,14 @@ watch(
 watch(
     advancedItem,
     (newVal) => {
+        if (tab.value !== "1") return
         item.value = { ...item.value, ...newVal }
+        basicItem.value = {
+            ...basicItem.value,
+            terms: structuredClone(toRaw(advancedItem.value.terms))
+                ?.map((t) => ({ ...t, lemma: undefined, pos: undefined }))
+                .filter((t) => t.wordform),
+        }
     },
     { deep: true },
 )
@@ -110,6 +120,7 @@ onMounted(() => {
 })
 
 function tabChanged(value: string) {
+    tab.value = value
     if (value === "0") {
         // switch to basic tab
         const override = { ...item.value, ...basicItem.value }
