@@ -18,10 +18,9 @@ export function constructSearchLink(item: SearchItem, settings: SearchSettings):
     }
 
     // optionally filter on language
-    const filterObj = {
-        settingLocation_country: item.language,
-        titleLevel2: item.source,
-        ...structuredClone(config.blacklab.filter || {}),
+    const filterObj = { titleLevel2: item.source, ...structuredClone(config.blacklab.filter || {}) }
+    if (item.language) {
+        filterObj[config.blacklab.language] = item.language
     }
     const filter =
         Object.entries(filterObj)
