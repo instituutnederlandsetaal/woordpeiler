@@ -1,12 +1,15 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
 
-FROM python:3.14.2-alpine3.23
+FROM python:3.14.3-alpine3.23
 # Font
 COPY --link config/schoolboek.woff /usr/local/share/fonts/schoolboek.woff
-RUN apk add --no-cache fontconfig cairo && fc-cache -f
+RUN --mount=type=cache,target=/var/cache/apk \
+    ln -s /var/cache/apk /etc/apk/cache && \
+    apk add fontconfig cairo && fc-cache -f
 # Cache dependencies
-COPY --link requirements.txt ./server/
-RUN pip install --no-cache-dir -r server/requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=bind,source=requirements.txt,target=requirements.txt \
+    pip install -r requirements.txt
 # Copy source
 COPY --link . ./server
 CMD ["fastapi", "run", "server/app.py"]
