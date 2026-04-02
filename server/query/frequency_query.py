@@ -1,13 +1,8 @@
-# standard
-from typing import Optional
-
-# third party
-from psycopg.sql import Literal, SQL, Composable, Identifier
+from psycopg.sql import SQL, Composable, Identifier, Literal
 from unidecode import unidecode
 
-# local
+from server.query.query_builder import BaseCursor, ExecutableQuery, QueryBuilder
 from server.util.datatypes import DataSeries, Interval, IntervalType
-from server.query.query_builder import ExecutableQuery, QueryBuilder, BaseCursor
 
 
 class FrequencyQuery(QueryBuilder):
@@ -18,13 +13,13 @@ class FrequencyQuery(QueryBuilder):
 
     def __init__(
         self,
-        wordform: Optional[str] = None,
-        lemma: Optional[str] = None,
-        pos: Optional[str] = None,
-        source: Optional[str] = None,
-        language: Optional[str] = None,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
+        wordform: str | None = None,
+        lemma: str | None = None,
+        pos: str | None = None,
+        source: str | None = None,
+        language: str | None = None,
+        start: int | None = None,
+        end: int | None = None,
         interval: str = "1y",
     ) -> None:
         # trimming and unicode normalization for non-fixed user input
@@ -47,25 +42,33 @@ class FrequencyQuery(QueryBuilder):
         self.words_table = Identifier(f"words_{self.ngram}")
         self.freq_table = Identifier(f"frequencies_{self.ngram}")
         self.word_filter = FrequencyQuery.get_word_position_filter(
-            wordform, lemma, pos, poshead
+            wordform,
+            lemma,
+            pos,
+            poshead,
         )
         self.word_array_filter = FrequencyQuery.get_word_array_filter(
-            wordform, lemma, pos, poshead
+            wordform,
+            lemma,
+            pos,
+            poshead,
         )
         self.source_filter = FrequencyQuery.get_source_filter(source, language)
         self.size_table = FrequencyQuery.get_size_table(self.source_filter, self.ngram)
         self.date_filter = QueryBuilder.get_date_filter(
-            Identifier("cs", "time"), start, end
+            Identifier("cs", "time"),
+            start,
+            end,
         )
         self.interval = Literal(Interval.from_string(interval).to_timescaledb_str())
         self.size = Identifier("size")
 
     @staticmethod
     def get_ngram(
-        wordform: Optional[str],
-        lemma: Optional[str],
-        pos: Optional[str],
-        poshead: Optional[str],
+        wordform: str | None,
+        lemma: str | None,
+        pos: str | None,
+        poshead: str | None,
     ) -> int:
         ngram = 1
         for values in [wordform, lemma, pos, poshead]:
@@ -88,12 +91,11 @@ class FrequencyQuery(QueryBuilder):
                     {size}
                 GROUP BY
                     time
-            )"""
+            )""",
             ).format(size=size)
-        else:
-            # get from source_frequencies table
-            return SQL(
-                """(
+        # get from source_frequencies table
+        return SQL(
+            """(
                 SELECT 
                     time,
                     SUM(size) AS size
@@ -103,11 +105,11 @@ class FrequencyQuery(QueryBuilder):
                     {source_filter}
                 GROUP BY
                     time
-            )"""
-            ).format(
-                size=size,
-                source_filter=source_filter,
-            )
+            )""",
+        ).format(
+            size=size,
+            source_filter=source_filter,
+        )
 
     @staticmethod
     def get_time_bucket(bucket_type: str, bucket_size: int) -> Literal:
@@ -117,25 +119,26 @@ class FrequencyQuery(QueryBuilder):
         return Literal(f"{bucket_size} {bucket_type.value}")
 
     @staticmethod
-    def get_source_filter(source: Optional[str], language: Optional[str]) -> Composable:
+    def get_source_filter(source: str | None, language: str | None) -> Composable:
         # example: AND source_id = ANY (SELECT id FROM sources WHERE language = 'BN')
         source_where = QueryBuilder.where_and(
-            ["source", "language"], [source, language]
+            ["source", "language"],
+            [source, language],
         )
         source_filter = SQL("")  # default
         if any([source, language]):
             source_filter = SQL(
-                "source_id = ANY (SELECT s.id FROM sources s WHERE {source_where})"
+                "source_id = ANY (SELECT s.id FROM sources s WHERE {source_where})",
             ).format(source_where=source_where)
 
         return source_filter
 
     @staticmethod
     def get_word_array_filter(
-        wordform: Optional[str],
-        lemma: Optional[str],
-        pos: Optional[str],
-        poshead: Optional[str],
+        wordform: str | None,
+        lemma: str | None,
+        pos: str | None,
+        poshead: str | None,
     ) -> Composable:
         """
         Create filter for arrays. Example:
@@ -160,7 +163,7 @@ class FrequencyQuery(QueryBuilder):
                     value = value.replace("*", "%")
                     value = value.replace("?", "_")
                     filter = SQL(
-                        "{ids} && ARRAY(SELECT id FROM {table} WHERE {column} {equals_like} {value})"
+                        "{ids} && ARRAY(SELECT id FROM {table} WHERE {column} {equals_like} {value})",
                     ).format(
                         i=Literal(i + 1),
                         ids=Identifier(ids),
@@ -174,10 +177,10 @@ class FrequencyQuery(QueryBuilder):
 
     @staticmethod
     def get_word_position_filter(
-        wordform: Optional[str],
-        lemma: Optional[str],
-        pos: Optional[str],
-        poshead: Optional[str],
+        wordform: str | None,
+        lemma: str | None,
+        pos: str | None,
+        poshead: str | None,
     ) -> Composable:
         # verify regex usage
         FrequencyQuery.limit_regex(wordform, lemma, pos, poshead)
@@ -198,7 +201,7 @@ class FrequencyQuery(QueryBuilder):
                     value = value.replace("*", "%")
                     value = value.replace("?", "_")
                     filter = SQL(
-                        "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} {equals_like} {value})"
+                        "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} {equals_like} {value})",
                     ).format(
                         i=Literal(i + 1),
                         ids=Identifier(ids),
@@ -213,10 +216,10 @@ class FrequencyQuery(QueryBuilder):
 
     @staticmethod
     def limit_regex(
-        wordform: Optional[str],
-        lemma: Optional[str],
-        pos: Optional[str],
-        poshead: Optional[str],
+        wordform: str | None,
+        lemma: str | None,
+        pos: str | None,
+        poshead: str | None,
     ) -> None:
         # make sure at least 2/4 characters are specified when using regex
         for values in [wordform, lemma, pos, poshead]:
@@ -224,11 +227,11 @@ class FrequencyQuery(QueryBuilder):
                 for value in values.strip().split(" "):  # note ngram split
                     if "*" in value and len(value.replace("*", "")) < 4:
                         raise ValueError(
-                            "When using * wildcards, at least 4 characters must be specified"
+                            "When using * wildcards, at least 4 characters must be specified",
                         )
                     if "?" in value and len(value.replace("?", "")) < 2:
                         raise ValueError(
-                            "When using ? wildcards, at least 2 characters must be specified"
+                            "When using ? wildcards, at least 2 characters must be specified",
                         )
 
     def build(self, cursor: BaseCursor) -> ExecutableQuery[DataSeries]:
@@ -271,7 +274,7 @@ class FrequencyQuery(QueryBuilder):
                 time_bucket({time_bucket},cs.time)
             ORDER BY
                 time_bucket({time_bucket},cs.time);
-        """
+        """,
         ).format(
             size=self.size,
             size_table=self.size_table,

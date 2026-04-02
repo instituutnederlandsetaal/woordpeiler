@@ -1,29 +1,27 @@
 """
 Woordpeiler API endpoints.
 
-Endpoints themselves do permission checks and pass the request to the appropriate QueryBuilder class.
+Endpoints themselves do permission checks and pass the request
+to the appropriate QueryBuilder class.
 That class may raise exceptions, which are caught and returned as HTTPExceptions.
 """
 
-# standard
 from datetime import date
-from typing import Any, Optional
+from typing import Any
 
-# third party
-from psycopg.rows import dict_row
-from fastapi import Request, HTTPException, Response
-import uvicorn
-import httpx
 import cairosvg
+import httpx
+import uvicorn
+from fastapi import HTTPException, Request, Response
+from psycopg.rows import dict_row
 
-# local
-from server.query.svg_query import SvgQuery
-from server.query.listing_query import ListingQuery
-from server.query.trends.trends_query import TrendsQuery
-from server.query.frequency_query import FrequencyQuery
-from server.query.words_query import WordsQuery
-from server.query.sources_query import SourcesQuery
 from server.config.config import FastAPI, create_app_with_config
+from server.query.frequency_query import FrequencyQuery
+from server.query.listing_query import ListingQuery
+from server.query.sources_query import SourcesQuery
+from server.query.svg_query import SvgQuery
+from server.query.trends.trends_query import TrendsQuery
+from server.query.words_query import WordsQuery
 from server.util.dataseries_row_factory import (
     SingleValueRowFactory,
 )
@@ -60,25 +58,29 @@ async def get_sources(request: Request) -> list[str]:
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await SourcesQuery().build(cur).execute_fetchall()
+    async with (
+        request.app.pool.connection() as conn,
+        conn.cursor(row_factory=SingleValueRowFactory) as cur,
+    ):
+        return await SourcesQuery().build(cur).execute_fetchall()
 
 
 @app.get("/languages")
 async def get_languages(request: Request) -> list[str]:
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return (
-                await ListingQuery("sources", "language").build(cur).execute_fetchall()
-            )
+    async with (
+        request.app.pool.connection() as conn,
+        conn.cursor(row_factory=SingleValueRowFactory) as cur,
+    ):
+        return await ListingQuery("sources", "language").build(cur).execute_fetchall()
 
 
 @app.get("/posses")
 async def get_posses(request: Request) -> list[str]:
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor(row_factory=SingleValueRowFactory) as cur:
-            return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
+    async with (
+        request.app.pool.connection() as conn,
+        conn.cursor(row_factory=SingleValueRowFactory) as cur,
+    ):
+        return await ListingQuery("posses", "poshead").build(cur).execute_fetchall()
 
 
 @app.get("/trends")
@@ -86,87 +88,87 @@ async def get_trends(
     request: Request,
     trend_type: str = "absolute",
     modifier: float = 1,
-    start: Optional[date] = None,
-    end: Optional[date] = None,
-    language: Optional[str] = None,
+    start: date | None = None,
+    end: date | None = None,
+    language: str | None = None,
     ngram: int = 1,
     desc: bool = True,
 ) -> list[Any]:
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor(row_factory=dict_row) as cur:
-            return (
-                await TrendsQuery.create(
-                    trend_type,
-                    modifier,
-                    start,
-                    end,
-                    language,
-                    ngram,
-                    desc,
-                )
-                .build(cur)
-                .execute_fetchall()
+    async with (
+        request.app.pool.connection() as conn,
+        conn.cursor(row_factory=dict_row) as cur,
+    ):
+        return (
+            await TrendsQuery
+            .create(
+                trend_type,
+                modifier,
+                start,
+                end,
+                language,
+                ngram,
+                desc,
             )
+            .build(cur)
+            .execute_fetchall()
+        )
 
 
 @app.get("/svg")
 async def get_svg(
     request: Request,
-    w: Optional[str] = None,
-    l: Optional[str] = None,
-    p: Optional[str] = None,
-    s: Optional[str] = None,
-    v: Optional[str] = None,
-    start: Optional[date] = None,
-    end: Optional[date] = None,
+    w: str | None = None,
+    l: str | None = None,
+    p: str | None = None,
+    s: str | None = None,
+    v: str | None = None,
+    start: date | None = None,
+    end: date | None = None,
     i: str = "1y",
 ) -> Response:
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor() as cur:
-            freq = FrequencyQuery(w, l, p, s, v, start, end, i)
-            return await SvgQuery(freq).plain_svg(cur)
+    async with request.app.pool.connection() as conn, conn.cursor() as cur:
+        freq = FrequencyQuery(w, l, p, s, v, start, end, i)
+        return await SvgQuery(freq).plain_svg(cur)
 
 
 @app.get("/huisstijl-svg")
 async def get_huisstijl_svg(
     req: Request,
-    w: Optional[str] = None,
-    l: Optional[str] = None,
-    p: Optional[str] = None,
-    s: Optional[str] = None,
-    v: Optional[str] = None,
-    c: Optional[str] = None,
-    start: Optional[date] = None,
-    end: Optional[date] = None,
+    w: str | None = None,
+    l: str | None = None,
+    p: str | None = None,
+    s: str | None = None,
+    v: str | None = None,
+    c: str | None = None,
+    start: date | None = None,
+    end: date | None = None,
     i: str = "1y",
     x: int = 960,
     y: int = 720,
     f: str = "svg",
 ) -> Response:
-    async with req.app.pool.connection() as conn:
-        async with conn.cursor() as cur:
-            freq = FrequencyQuery(w, l, p, s, v, start, end, i)
-            svg = await SvgQuery(freq, c, x, y).styled_svg(cur)
-            if f == "svg":
-                return Response(svg, media_type="svg+xml")
-            else:
-                png = cairosvg.svg2png(bytestring=svg)
-                return Response(content=png, media_type="image/png")
+    async with req.app.pool.connection() as conn, conn.cursor() as cur:
+        freq = FrequencyQuery(w, l, p, s, v, start, end, i)
+        svg = await SvgQuery(freq, c, x, y).styled_svg(cur)
+        if f == "svg":
+            return Response(svg, media_type="svg+xml")
+        png = cairosvg.svg2png(bytestring=svg)
+        return Response(content=png, media_type="image/png")
 
 
 @app.get("/frequency")
 async def get_freq(
     request: Request,
-    w: Optional[str] = None,
-    l: Optional[str] = None,
-    p: Optional[str] = None,
-    s: Optional[str] = None,
-    v: Optional[str] = None,
-    start: Optional[date] = None,
-    end: Optional[date] = None,
+    w: str | None = None,
+    l: str | None = None,
+    p: str | None = None,
+    s: str | None = None,
+    v: str | None = None,
+    start: date | None = None,
+    end: date | None = None,
     i: str = "1y",
 ) -> list[Any]:
     # permission check for source
@@ -187,22 +189,21 @@ async def get_freq(
         raise HTTPException(status_code=400, detail="Provide as many posses as words")
 
     try:
-        async with request.app.pool.connection() as conn:
-            async with conn.cursor() as cur:
-                return (
-                    await FrequencyQuery(
-                        wordform=w,
-                        lemma=l,
-                        pos=p,
-                        source=s,
-                        language=v,
-                        interval=i,
-                        start=start,
-                        end=end,
-                    )
-                    .build(cur)
-                    .execute_fetchall()
+        async with request.app.pool.connection() as conn, conn.cursor() as cur:
+            return (
+                await FrequencyQuery(
+                    wordform=w,
+                    lemma=l,
+                    pos=p,
+                    source=s,
+                    language=v,
+                    interval=i,
+                    start=start,
+                    end=end,
                 )
+                .build(cur)
+                .execute_fetchall()
+            )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -211,16 +212,18 @@ async def get_freq(
 @app.get("/words")
 async def get_words(
     request: Request,
-    w: Optional[str] = None,
-    l: Optional[str] = None,
-    p: Optional[str] = None,
+    w: str | None = None,
+    l: str | None = None,
+    p: str | None = None,
 ) -> list[Any]:
     if not request.app.internal:
         raise HTTPException(status_code=403, detail="Permission denied")
 
-    async with request.app.pool.connection() as conn:
-        async with conn.cursor(row_factory=dict_row) as cur:
-            return await WordsQuery(w, l, p).build(cur).execute_fetchall()
+    async with (
+        request.app.pool.connection() as conn,
+        conn.cursor(row_factory=dict_row) as cur,
+    ):
+        return await WordsQuery(w, l, p).build(cur).execute_fetchall()
 
 
 if __name__ == "__main__":

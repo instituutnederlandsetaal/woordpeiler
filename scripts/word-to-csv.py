@@ -1,7 +1,8 @@
 import sys
-import os
-import requests
 from datetime import datetime
+from pathlib import Path
+
+import requests
 
 BASE_URL = "http://woordpeiler.ivdnt.loc/api/word_frequency"
 
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     words = sys.argv[1:]
 
     # make output directory, okay if it already exists
-    os.makedirs("csv", exist_ok=True)
+    Path("csv").mkdir(exist_ok=True, parents=True)
 
     for word in words:
         # get word frequency
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 
         # write to csv
         csv_path = f"csv/{word}.csv"
-        with open(csv_path, "w") as f:
+        with Path(csv_path).open("w", encoding="utf-8") as f:
             # windows excel compatibility BOM
             f.write("\ufeff")
             f.write("sep=,\n")

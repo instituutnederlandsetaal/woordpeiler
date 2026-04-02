@@ -1,9 +1,7 @@
-# third party
 from psycopg.sql import SQL
 
-# local
+from server.query.query_builder import BaseCursor, ExecutableQuery
 from server.query.trends.trends_query import TrendsQuery
-from server.query.query_builder import ExecutableQuery, BaseCursor
 from server.util.datatypes import TrendItem
 
 
@@ -67,7 +65,7 @@ class AbsoluteTrendsQuery(TrendsQuery):
                 word_id, k.keyness
             ORDER BY
                 k.keyness DESC
-            """
+            """,
         ).format(
             words_table=self.words_table,
             counts=self.counts,

@@ -1,9 +1,11 @@
 # This locust test script example will simulate a user
 # browsing the Locust documentation on https://docs.locust.io
 
-import random
-from locust import HttpUser, between, task
 import json
+import random
+from pathlib import Path
+
+from locust import HttpUser, between, task
 
 
 class RandomUser(HttpUser):
@@ -12,8 +14,7 @@ class RandomUser(HttpUser):
     word_list = []
 
     def on_start(self):
-        with open("words.txt", encoding="utf8") as f:
-            self.word_list = f.read().split("\n")
+        self.word_list = Path("words.txt").read_text(encoding="utf8").split("\n")
 
     @task
     def search(self):

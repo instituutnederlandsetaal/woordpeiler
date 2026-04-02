@@ -1,15 +1,10 @@
-# standard
-from typing import Optional
+from psycopg.sql import SQL, Identifier, Literal
 
-# third party
-from psycopg.sql import Literal, SQL, Composable, Identifier
-
-# local
-from server.query.query_builder import ExecutableQuery, QueryBuilder, BaseCursor
+from server.query.query_builder import BaseCursor, ExecutableQuery, QueryBuilder
 
 
 class WordsQuery(QueryBuilder):
-    def __init__(self, w: Optional[str], l: Optional[str], p: Optional[str]) -> None:
+    def __init__(self, w: str | None, l: str | None, p: str | None) -> None:
         # get poshead from pos if no parentheses present
         poshead = None
         if p is not None:
@@ -32,7 +27,7 @@ class WordsQuery(QueryBuilder):
                     value = value.replace("*", "%")
                     value = value.replace("?", "_")
                     f = SQL(
-                        "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} {equals_like} {value})"
+                        "{ids}[{i}] = ANY (SELECT id FROM {table} WHERE {column} {equals_like} {value})",
                     ).format(
                         i=Literal(i + 1),
                         ids=Identifier(ids),

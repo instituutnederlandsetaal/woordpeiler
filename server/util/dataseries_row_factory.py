@@ -1,6 +1,8 @@
-from typing import Any, Sequence
-from psycopg import Cursor
+from collections.abc import Sequence
 from datetime import datetime
+from typing import Any
+
+from psycopg import Cursor
 
 from server.util.datatypes import DataSeries
 
@@ -14,7 +16,7 @@ class DataSeriesRowFactory:
             **{
                 field: self._parse_value(value, field)
                 for field, value in zip(self.fields, values)
-            }
+            },
         )
 
     def _parse_value(self, value: Any, field: str) -> Any:

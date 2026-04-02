@@ -1,8 +1,6 @@
-# third party
 from psycopg.sql import SQL, Identifier
 
-# local
-from server.query.query_builder import ExecutableQuery, QueryBuilder, BaseCursor
+from server.query.query_builder import BaseCursor, ExecutableQuery, QueryBuilder
 
 
 class ListingQuery(QueryBuilder):

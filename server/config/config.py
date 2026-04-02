@@ -1,24 +1,21 @@
-# standard
-from contextlib import asynccontextmanager
-from collections.abc import Awaitable, Callable
 import json
+import logging
 import os
 import time
-import logging
+from collections.abc import Awaitable, Callable
+from contextlib import asynccontextmanager
 from datetime import datetime
 
-# third party
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
-from psycopg_pool import AsyncConnectionPool
+from fastapi.middleware.cors import CORSMiddleware
 from psycopg import AsyncConnection
 from psycopg.types.numeric import FloatLoader
-from fastapi.middleware.cors import CORSMiddleware
-from uvicorn.logging import ColourizedFormatter
-from dotenv import load_dotenv
-from starlette.concurrency import iterate_in_threadpool
+from psycopg_pool import AsyncConnectionPool
 from pytz import timezone
+from starlette.concurrency import iterate_in_threadpool
+from uvicorn.logging import ColourizedFormatter
 
-# local
 from server.config.connection import get_reader_conn_str
 
 load_dotenv()
@@ -96,7 +93,8 @@ def create_app_with_config() -> FastAPI:
 
     @app.middleware("http")
     async def time_response(
-        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]],
     ):
         def colorize(string: str, color: int) -> str:
             COLOR_SEQ = "\033[1;%dm"
@@ -123,7 +121,7 @@ def create_app_with_config() -> FastAPI:
         status_str = colorize(str(response.status_code), status_color)
 
         if response.status_code < 300:
-            logger.info(f"{status_str} in {process_time_str}s: {url}")
+            logger.info("%s in %ss: %s", status_str, process_time_str, url)
         else:
             try:
                 response_body = [section async for section in response.body_iterator]

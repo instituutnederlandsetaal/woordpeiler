@@ -1,13 +1,9 @@
-# standard
 from collections import deque
 from decimal import Decimal
-from typing import Any, Optional
 
-# third party
-from psycopg import AsyncCursor
 from PolStringConvertor import infixToPostfix
+from psycopg import AsyncCursor
 
-# local
 from server.query.frequency_query import FrequencyQuery
 from server.util.datatypes import DataSeries
 
@@ -16,11 +12,11 @@ class ArithmeticalQuery:
     def __init__(
         self,
         formula: str,
-        source: Optional[str] = None,
-        language: Optional[str] = None,
+        source: str | None = None,
+        language: str | None = None,
         interval: str = "y",
-        start_date: Optional[int] = None,
-        end_date: Optional[int] = None,
+        start_date: int | None = None,
+        end_date: int | None = None,
     ):
         self.formula = formula
         self.source = source
@@ -64,13 +60,16 @@ class ArithmeticalQuery:
 
     # Perform a basic arithmetic operation using +,-,*,/,^
     def calculate(
-        self, operator: str, a: list[DataSeries], b: list[DataSeries]
+        self,
+        operator: str,
+        a: list[DataSeries],
+        b: list[DataSeries],
     ) -> list[DataSeries]:
         if operator == "+":
             return self.add(a, b)
-        elif operator == "-":
+        if operator == "-":
             return self.subtract(a, b)
-        elif operator == "/":
+        if operator == "/":
             return self.divide(a, b)
 
         raise ValueError(f"Unsupported operator: {operator}")
@@ -96,7 +95,6 @@ class ArithmeticalQuery:
     def safe_divide(self, numerator: Decimal, denominator: Decimal) -> Decimal:
         if denominator == 0 and numerator == 0:
             return Decimal(0)
-        elif denominator == 0:
+        if denominator == 0:
             return Decimal(1)
-        else:
-            return numerator / denominator
+        return numerator / denominator

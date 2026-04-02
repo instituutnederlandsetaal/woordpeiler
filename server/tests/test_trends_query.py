@@ -1,14 +1,10 @@
-# standard
 import unittest
 
-# third party
 import psycopg
-
-# local
-from server.query.frequency_query import FrequencyQuery
 from server.config.connection import get_reader_conn_str
-from server.util.datatypes import DataSeries
+from server.query.frequency_query import FrequencyQuery
 from server.util.dataseries_row_factory import DataSeriesRowFactory
+from server.util.datatypes import DataSeries
 
 
 class FrequencyQueryTest(unittest.IsolatedAsyncioTestCase):

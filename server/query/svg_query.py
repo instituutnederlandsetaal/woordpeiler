@@ -1,14 +1,11 @@
-# standard
 from math import trunc
 from xml.etree import ElementTree as ET
 
-# local
 from server.query.frequency_query import FrequencyQuery
 from server.query.query_builder import BaseCursor
 
 
 class SvgQuery:
-
     def __init__(
         self,
         freq: FrequencyQuery,
@@ -78,7 +75,7 @@ class SvgQuery:
 
     def _get_hr_line(self) -> ET.Element:
         return ET.XML(
-            f"<line y1='{self.hr_y}' x1='{self.margin_x}' y2='{self.hr_y}' x2='{self.width - self.margin_x}' stroke='black' stroke-width='{self.stroke_width / 2}'/>"
+            f"<line y1='{self.hr_y}' x1='{self.margin_x}' y2='{self.hr_y}' x2='{self.width - self.margin_x}' stroke='black' stroke-width='{self.stroke_width / 2}'/>",
         )
 
     def _get_svg(self) -> ET.Element:
@@ -89,12 +86,12 @@ class SvgQuery:
 
     def _get_header(self) -> ET.Element:
         return ET.XML(
-            f"<text x='{self.margin_x}' y='{self.title_y}' font-family='Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif' font-size='{self.title_font}'>{self.freq.wordform}</text>"
+            f"<text x='{self.margin_x}' y='{self.title_y}' font-family='Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif' font-size='{self.title_font}'>{self.freq.wordform}</text>",
         )
 
     def _get_subtitle(self) -> ET.Element:
         return ET.XML(
-            f"<text x='{self.margin_x}' y='{self.subtitle_y}' font-family='Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif' font-size='{self.subtitle_font}'>sinds {self.freq.start.year}</text>"
+            f"<text x='{self.margin_x}' y='{self.subtitle_y}' font-family='Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif' font-size='{self.subtitle_font}'>sinds {self.freq.start.year}</text>",
         )
 
     async def _get_graph(self, cursor: BaseCursor) -> ET.Element:

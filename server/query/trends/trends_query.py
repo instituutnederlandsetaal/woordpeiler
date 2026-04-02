@@ -1,11 +1,7 @@
-# standard
 from enum import Enum
-from typing import Optional
 
-# third party
-from psycopg.sql import Literal, Identifier, SQL, Composable
+from psycopg.sql import SQL, Composable, Identifier, Literal
 
-# local
 from server.query.query_builder import QueryBuilder
 
 
@@ -18,9 +14,9 @@ class TrendsQuery(QueryBuilder):
     def __init__(
         self,
         modifier: float = 1,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
-        language: Optional[str] = None,
+        start: int | None = None,
+        end: int | None = None,
+        language: str | None = None,
         ngram: int = 1,
         desc: bool = True,
     ) -> None:
@@ -38,13 +34,12 @@ class TrendsQuery(QueryBuilder):
         self.sorting = SQL("DESC") if desc else SQL("ASC")
 
     @staticmethod
-    def get_source_filter(language: Optional[str]) -> Composable:
+    def get_source_filter(language: str | None) -> Composable:
         if language is not None:
             return SQL(
-                "AND source_id = ANY (SELECT id FROM sources WHERE language = {language})"
+                "AND source_id = ANY (SELECT id FROM sources WHERE language = {language})",
             ).format(language=Literal(language))
-        else:
-            return SQL("")
+        return SQL("")
 
     @staticmethod
     def create(trend_type: str = "absolute", *args) -> "TrendsQuery":
@@ -53,5 +48,4 @@ class TrendsQuery(QueryBuilder):
 
         if TrendType(trend_type) == TrendType.ABSOLUTE:
             return AbsoluteTrendsQuery(*args)
-        else:
-            return KeynessTrendsQuery(*args)
+        return KeynessTrendsQuery(*args)
