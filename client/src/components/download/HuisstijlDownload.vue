@@ -54,6 +54,8 @@ import type { SelectLabel } from "@/types/ui"
 const sizes: SelectLabel[] = [
     { label: "960×720 (4:3)", value: { x: 960, y: 720 } },
     { label: "1920×1080 (16:9)", value: { x: 1920, y: 1080 } },
+    { label: "1080×1350 (4:5) (Instagram)", value: { x: 1080, y: 1350 } },
+    { label: "1080×1440 (3:4) (Instagram)", value: { x: 1080, y: 1440 } },
 ]
 
 const formats: string[] = ["png", "svg"]
