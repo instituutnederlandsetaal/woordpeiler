@@ -24,18 +24,17 @@ class FrequencyQuery(QueryBuilder):
     ) -> None:
         # trimming and unicode normalization for non-fixed user input
         if wordform is not None:
-            wordform = unidecode(wordform.strip(), errors="preserve")
+            wordform = unidecode(wordform.strip(), errors="preserve").lower()
         if lemma is not None:
-            lemma = unidecode(lemma.strip(), errors="preserve")
+            lemma = unidecode(lemma.strip(), errors="preserve").lower()
         self.wordform = wordform
         self.lemma = lemma
         self.start = start
         # get poshead from pos if no parentheses present
         poshead = None
-        if pos is not None:
-            if "(" not in pos:
-                poshead = pos
-                pos = None
+        if pos is not None and "(" not in pos:
+            poshead = pos
+            pos = None
 
         self.ngram = FrequencyQuery.get_ngram(wordform, lemma, pos, poshead)
 
