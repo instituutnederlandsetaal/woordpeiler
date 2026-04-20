@@ -149,10 +149,11 @@ async def get_huisstijl_svg(
     x: int = 960,
     y: int = 720,
     f: str = "svg",
+    t: str | None = None,
 ) -> Response:
     async with req.app.pool.connection() as conn, conn.cursor() as cur:
         freq = FrequencyQuery(w, l, p, s, v, start, end, i)
-        svg = await SvgQuery(freq, c, x, y).styled_svg(cur)
+        svg = await SvgQuery(freq, c, x, y, t).styled_svg(cur)
         if f == "svg":
             return Response(svg, media_type="svg+xml")
         png = cairosvg.svg2png(bytestring=svg)

@@ -12,6 +12,7 @@ class SvgQuery:
         color: str = "FFF064",
         width: int = 960,
         height: int = 720,
+        title: str | None = None,
     ) -> None:
         self.freq = freq
         self.color = color
@@ -25,6 +26,7 @@ class SvgQuery:
         self.graph_y = self.height * 0.3
         self.title_font = self.height / 12
         self.subtitle_font = self.height / 24
+        self.title = title
 
     def _get_flat_line(self) -> ET.Element:
         el = ET.Element("polyline")
@@ -68,7 +70,10 @@ class SvgQuery:
         return el
 
     def _get_title(self) -> ET.Element:
-        return ET.XML(f"<title>Woordpeiler - {self.freq.wordform}</title>")
+        return ET.XML(f"<title>Woordpeiler - {self._get_title_str()}</title>")
+
+    def _get_title_str(self) -> str:
+        return self.title if self.title is not None else self.freq.wordform
 
     def _get_colored_rect(self) -> ET.Element:
         return ET.XML(f"<rect width='100%' height='100%' fill='#{self.color}'/>")
@@ -86,7 +91,7 @@ class SvgQuery:
 
     def _get_header(self) -> ET.Element:
         return ET.XML(
-            f"<text x='{self.margin_x}' y='{self.title_y}' font-family='Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif' font-size='{self.title_font}'>{self.freq.wordform}</text>",
+            f"<text x='{self.margin_x}' y='{self.title_y}' font-family='Schoolboek, Helvetica Neue, Helvetica, Arial, sans-serif' font-size='{self.title_font}'>{self._get_title_str()}</text>",
         )
 
     def _get_subtitle(self) -> ET.Element:
