@@ -1,13 +1,10 @@
-# standard
 from pathlib import Path
 
-# third party
 from psycopg.sql import SQL
 
-# local
-from database.util.query import time_query, execute_query
-from database.util.table_builder import TableBuilder
 from database.util.psql_copy import PsqlCopy
+from database.util.query import execute_query, time_query
+from database.util.table_builder import TableBuilder
 
 
 class WordsTableBuilder(TableBuilder):
@@ -22,7 +19,14 @@ class WordsTableBuilder(TableBuilder):
                 wordform_ids INTEGER[],
                 lemma_ids INTEGER[],
                 pos_ids INTEGER[]
-            )                    
+            ) WITH (
+                tsdb.hypertable,
+                tsdb.columnstore,
+                timescaledb.create_default_indexes = false,
+                tsdb.partition_column = "id",
+                tsdb.chunk_interval = '1_000_000',
+                tsdb.orderby = 'pos_ids, lemma_ids, wordform_ids'
+            )
         """).format(words=self.words)
 
         self.add_indices = SQL("""
