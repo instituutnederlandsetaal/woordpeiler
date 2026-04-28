@@ -4,10 +4,11 @@ from pathlib import Path
 # third party
 from psycopg.sql import SQL
 
+from database.util.psql_copy import PsqlCopy
+
 # local
 from database.util.query import execute_query, time_query
 from database.util.table_builder import TableBuilder
-from database.util.psql_copy import PsqlCopy
 
 
 class FrequencyTableBuilder(TableBuilder):
@@ -22,6 +23,14 @@ class FrequencyTableBuilder(TableBuilder):
                 time DATE,
                 source_id INTEGER,
                 frequency INTEGER
+            ) WITH (
+                tsdb.hypertable,
+                tsdb.columnstore,
+                timescaledb.create_default_indexes = false,
+                tsdb.partition_column = "word_id",
+                tsdb.chunk_interval = '100_000',
+                tsdb.segmentby = 'source_id',
+                tsdb.orderby = 'time'
             )
         """).format(frequencies=self.frequencies)
 
