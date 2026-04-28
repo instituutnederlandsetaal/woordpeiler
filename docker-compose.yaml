@@ -17,19 +17,19 @@ x-defaults: &defaults
 services:
     database:
         <<: *defaults
-        image: timescale/timescaledb:2.26.1-pg18
+        image: timescale/timescaledb:2.26.3-pg18
         volumes:
-            - database:/var/lib/postgresql/data
+            - database:/var/lib/postgresql
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
 
     builder:
         <<: *defaults
-        image: timescale/timescaledb:2.26.1-pg18
+        image: timescale/timescaledb:2.26.3-pg18
         ports:
             - $BUILDER_PORT:5432
         volumes:
-            - builder:/var/lib/postgresql/data
+            - builder:/var/lib/postgresql
             - ./database/init_db:/docker-entrypoint-initdb.d/
             - ./database/postgresql.conf:/etc/postgres/postgresql.conf
 
@@ -56,7 +56,7 @@ services:
             - $CLIENT_CONFIG:/usr/share/nginx/html/assets/config/
 
     proxy:
-        image: nginx:1.29.7-alpine3.23-slim
+        image: nginx:1.29.8-alpine3.23-slim
         volumes:
             - ./proxy/nginx.conf:/etc/nginx/nginx.conf
         depends_on:
