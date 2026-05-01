@@ -23,7 +23,7 @@
         "@vueuse/core": ">=14.2.1"
     },
     "devDependencies": {
-        "@primevue/auto-import-resolver": ">=4.5.4",
+        "@primevue/auto-import-resolver": ">=4.5.5",
         "@tsconfig/node24": ">=24.0.4",
         "@types/d3": ">=7.4.3",
         "@types/file-saver": ">=2.0.7",
