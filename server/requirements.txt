@@ -28,7 +28,7 @@ psycopg==3.3.3
 psycopg-binary==3.3.3
 psycopg-pool==3.3.0
 pycparser==3.0
-pydantic==2.12.5
+pydantic==2.13.3
 pydantic-core==2.41.5
 pygments==2.20.0
 python-dotenv==1.2.2
