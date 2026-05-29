@@ -36,7 +36,6 @@ function doSearch() {
                 .sort()
                 .join(",") || undefined,
     }
-    window.plausible("zoekbalk", { props })
 
     const interval = window.innerWidth < 768 ? config.search.interval.mobile : config.search.interval.desktop
     const intervalStr: string = interval.size + interval.type
@@ -44,6 +43,9 @@ function doSearch() {
         path: "/grafiek",
         query: { i: intervalStr, w: word.value, start: toTimestamp(new Date(config.period.start)) },
     })
+
+    // Call plausible last in case it is down
+    window.plausible("zoekbalk", { props })
 }
 </script>
 
