@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.14.3-alpine3.23
+FROM python:3.14.5-alpine3.23
 # Font
 COPY --link config/schoolboek.woff /usr/local/share/fonts/schoolboek.woff
 RUN --mount=type=cache,target=/var/cache/apk \
