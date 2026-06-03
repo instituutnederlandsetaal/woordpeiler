@@ -11,6 +11,6 @@ COPY --link . .
 RUN npx vite build && mv /dist/*.* /dist/assets && mv /dist/assets/index.html /dist/assets/robots.txt /dist/
 
 # Server stage
-FROM nginx:1.29.8-alpine3.23-slim
+FROM nginx:1.31.1-alpine3.23-slim
 COPY --link nginx.conf /etc/nginx/nginx.conf
 COPY --link --from=build /dist /usr/share/nginx/html
