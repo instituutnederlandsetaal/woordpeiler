@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Build stage
-FROM node:25.8.2-alpine3.23 AS build
+FROM node:26.4.0-alpine3.23 AS build
 # Cache dependencies
 RUN --mount=type=cache,target=/root/.npm \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
